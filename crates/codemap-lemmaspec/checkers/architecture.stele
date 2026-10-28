@@ -1,0 +1,408 @@
+// Does a codebase keep its evaluation core free of presentation, and does
+// which files have no path in observed graph under entry-point policy
+// selected in the evidence? Admission never proves extraction completeness.
+//
+// This file is a checker. Its facts are a miniature crate that deliberately
+// contains all three findings the rules look for, so each rule has something
+// to derive and each expectation has a count to prove. `stele spec walk` and
+// `stele spec mutate` on this file are the checker's own self-test: if a rule
+// is dropped and no self-test expectation notices, that rule was not doing
+// any work.
+//
+// Applied to real code it is paired with evidence codemap-lemmaspec projects
+// from a codemap snapshot:
+//   stele code evidence --file snapshot.json --checker architecture \
+//     --core src/eval.rs --presentation src/html.rs --out evidence.stele
+//   stele spec check architecture.stele evidence.stele
+// The evidence supplies that codebase's own `defines` and verified `calls`
+// facts, its layout decision, and the claims the codebase must satisfy.
+
+spec architecture {
+
+  // ================================================================ evidence
+
+  relation snapshot_identity {
+    args: [symbol, symbol, symbol, symbol, symbol]
+    roles: [snapshot, repository, commit, tree, entry_policy]
+    reads: "snapshot {snapshot} records repository {repository}, commit {commit}, tree {tree}, under entry-point policy {entry_policy}"
+  }
+
+  // All recognized sites, including non-authoritative and external targets.
+  relation call_census {
+    args: [symbol, integer]
+    roles: [category, sites]
+    reads: "{sites} recognized call sites are classified {category}"
+  }
+
+  // per_mille is floor(1000 * Resolved / recognized); empty uses 0 and
+  // must fail the separate positive census guard, even at threshold 0.
+  relation coverage_input {
+    args: [symbol, integer, integer, integer, integer, integer, integer]
+    roles: [entry_policy, recognized, per_mille, minimum, semantic, parse_errors, skipped]
+    reads: "under entry-point policy {entry_policy}, {recognized} recognized sites have {per_mille} per mille exact in-repository resolution against minimum {minimum}; semantic={semantic}, parse errors={parse_errors}, skipped={skipped}"
+  }
+
+
+  // A symbol definition, and the file it was extracted from.
+  relation defines {
+    args: [symbol, symbol]
+    roles: [symbol, file]
+    reads: "{symbol} is defined in {file}"
+  }
+
+  // A verified call: resolved by a language server to a unique
+  // in-repository definition. Never guessed, never LLM-derived.
+  relation calls {
+    args: [symbol, symbol]
+    roles: [caller, callee]
+    reads: "{caller} calls {callee}"
+  }
+
+  // A file that ships in the binary rather than existing only to test.
+  relation production_file {
+    args: [symbol]
+    roles: [file]
+    reads: "{file} ships in the binary"
+  }
+
+  // A file that renders or guides rather than evaluates.
+  relation presentation_file {
+    args: [symbol]
+    roles: [file]
+    reads: "{file} is presentation, not evaluation"
+  }
+
+  // A file that exists only to test.
+  relation test_file {
+    args: [symbol]
+    roles: [file]
+    reads: "{file} exists only to test"
+  }
+
+  // The evaluation core: the file whose job is to derive, not to display.
+  relation core_file {
+    args: [symbol]
+    roles: [file]
+    reads: "{file} is the evaluation core"
+  }
+
+  // A place a user or a dependent enters the crate.
+  relation entry_point {
+    args: [symbol]
+    roles: [symbol]
+    reads: "{symbol} is an entry point"
+  }
+
+  // ============================================================== judgement
+
+  // A threshold policy over observations, never a completeness proof.
+  // Missing or rejected admission makes the evidence inconclusive even
+  // when every finding relation is empty.
+  relation coverage_admitted {
+    args: [symbol]
+    roles: [entry_policy]
+    reads: "observed-call-coverage/v1 admits conditional observed-graph checks under entry-point policy {entry_policy}; otherwise evidence is inconclusive"
+  }
+
+  rule observed_coverage_is_admitted {
+    derive: "coverage_admitted(Policy)"
+    when: {
+      measured: "coverage_input(Policy, Total, Ratio, Minimum, Semantic, Errors, Skipped)"
+      nonempty: "Total > 0"
+      threshold: "Ratio >= Minimum"
+      semantic: "Semantic > 0"
+      parsed: "Errors < 1"
+      unskipped: "Skipped < 1"
+    }
+  }
+
+
+  // A file something calls into, or that holds an entry point.
+  relation reached_file {
+    args: [symbol]
+    roles: [file]
+    reads: "execution reaches {file}"
+  }
+
+  // A file reached by a caller that is itself in production code.
+  relation reached_from_production {
+    args: [symbol]
+    roles: [file]
+    reads: "production code calls into {file}"
+  }
+
+  // A file reached by a caller that exists only to test.
+  relation reached_from_tests {
+    args: [symbol]
+    roles: [file]
+    reads: "the test tree calls into {file}"
+  }
+
+  // Production code without an observed caller.
+  relation unreferenced_production_file {
+    args: [symbol, symbol]
+    roles: [file, entry_policy]
+    reads: "{file}: no path in observed graph under entry-point policy {entry_policy} from an observed caller or entry"
+  }
+
+  // Production code with test callers and no observed production caller.
+  relation test_only_production_file {
+    args: [symbol, symbol]
+    roles: [file, entry_policy]
+    reads: "{file}: no path in observed graph under entry-point policy {entry_policy} from production callers (test callers observed)"
+  }
+
+  // What the evaluation core reaches, however deep.
+  relation core_reaches {
+    args: [symbol]
+    roles: [symbol]
+    reads: "the evaluation core reaches {symbol}"
+  }
+
+  // The evaluation core reaching a presentation symbol: the layering violation.
+  relation core_depends_on_presentation {
+    args: [symbol]
+    roles: [symbol]
+    reads: "evaluation core reaches presentation symbol {symbol}"
+  }
+
+  // How many symbols the core's closure covered: proves it is not empty.
+  relation core_reach_total {
+    args: [integer]
+    roles: [symbols]
+    reads: "the core reaches {symbols} symbols"
+  }
+
+  // ================================================================= rules
+
+  rule a_callee_reaches_its_file {
+    derive: "reached_file(File)"
+    when: {
+      target_defined: "defines(Callee, File)"
+      receives_call: "calls(_, Callee)"
+    }
+  }
+
+  // An entry point is a place execution starts, so the file holding one is
+  // reached without anyone calling into it.
+  rule an_entry_point_reaches_its_file {
+    derive: "reached_file(File)"
+    when: {
+      entry_defined: "defines(Entry, File)"
+      is_entry: "entry_point(Entry)"
+    }
+  }
+
+  rule a_production_caller_reaches_the_callees_file {
+    derive: "reached_from_production(File)"
+    when: {
+      caller_defined: "defines(Caller, CallerFile)"
+      caller_ships: "production_file(CallerFile)"
+      target_defined: "defines(Callee, File)"
+      production_call: "calls(Caller, Callee)"
+    }
+  }
+
+  rule a_test_caller_reaches_the_callees_file {
+    derive: "reached_from_tests(File)"
+    when: {
+      caller_defined: "defines(Caller, CallerFile)"
+      caller_tests: "test_file(CallerFile)"
+      target_defined: "defines(Callee, File)"
+      test_call: "calls(Caller, Callee)"
+    }
+  }
+
+  rule production_without_observed_reach {
+    derive: "unreferenced_production_file(File, Policy)"
+    when: {
+      admitted: "coverage_admitted(Policy)"
+      ships: "production_file(File)"
+      nothing_calls_in: "!reached_file(File)"
+    }
+  }
+
+  // Reached by the test tree and by nothing that ships.
+  rule test_reached_production_is_test_only {
+    derive: "test_only_production_file(File, Policy)"
+    when: {
+      admitted: "coverage_admitted(Policy)"
+      ships: "production_file(File)"
+      tests_reach_it: "reached_from_tests(File)"
+      no_production_caller: "!reached_from_production(File)"
+    }
+  }
+
+  // ---- the evaluation core's transitive closure over verified calls ----
+
+  rule core_calls_directly {
+    derive: "core_reaches(Symbol)"
+    when: {
+      is_core_symbol: "defines(From, File)"
+      is_core_file: "core_file(File)"
+      direct: "calls(From, Symbol)"
+    }
+  }
+
+  rule core_reach_is_transitive {
+    derive: "core_reaches(Symbol)"
+    when: {
+      already_reached: "core_reaches(Mid)"
+      next: "calls(Mid, Symbol)"
+    }
+  }
+
+  rule core_reaching_presentation_is_a_violation {
+    derive: "core_depends_on_presentation(Symbol)"
+    when: {
+      reached: "core_reaches(Symbol)"
+      reached_defined: "defines(Symbol, File)"
+      is_presentation: "presentation_file(File)"
+    }
+  }
+
+  rule core_reach_is_counted {
+    derive: "core_reach_total(count(Symbol))"
+    when: ["core_reaches(Symbol)"]
+  }
+
+  // ================================================================= fixture
+
+  // Admission counterexamples isolate every guard, including an empty
+  // census with a permissive threshold. All are synthetic policy inputs.
+  fact fx_coverage { relation: coverage_input args: [fixture_entries, 10, 1000, 1000, 1, 0, 0] }
+  fact fx_empty { relation: coverage_input args: [empty_entries, 0, 0, 0, 1, 0, 0] }
+  fact fx_partial { relation: coverage_input args: [partial_entries, 10, 900, 1000, 1, 0, 0] }
+  fact fx_syntax { relation: coverage_input args: [syntax_entries, 10, 1000, 1000, 0, 0, 0] }
+  fact fx_parse_error { relation: coverage_input args: [parse_entries, 10, 1000, 1000, 1, 1, 0] }
+  fact fx_skipped { relation: coverage_input args: [skipped_entries, 10, 1000, 1000, 1, 0, 1] }
+  expect fx_only_observed_coverage_is_admitted {
+    query: "coverage_admitted(P)"
+    count: 1
+  }
+
+  //
+  // A miniature crate shaped like the real one: a core, a helper it reaches
+  // only indirectly, a presentation file with one symbol the core reaches
+  // and one only the CLI reaches, a bin entry, a test tree with a helper of
+  // its own, and two defective production files. Each defect below is
+  // deliberate so that the rules and their mutations have something to find.
+
+  fact fx_defines_core_entry { relation: defines args: [core_entry, "src/core.rs"] }
+  fact fx_defines_helper { relation: defines args: [helper_fn, "src/helper.rs"] }
+  fact fx_defines_leaf { relation: defines args: [leaf_fn, "src/leaf.rs"] }
+  fact fx_defines_view { relation: defines args: [view_render, "src/view.rs"] }
+  fact fx_defines_footer { relation: defines args: [view_footer, "src/view.rs"] }
+  fact fx_defines_dead { relation: defines args: [dead_fn, "src/dead.rs"] }
+  fact fx_defines_testonly { relation: defines args: [testonly_fn, "src/testonly.rs"] }
+  fact fx_defines_main { relation: defines args: [cli_main, "src/main.rs"] }
+  fact fx_defines_probe { relation: defines args: [probe_test, "tests/arch_test.rs"] }
+  fact fx_defines_test_helper { relation: defines args: [helper_test, "tests/helper.rs"] }
+
+  fact fx_ships_core { relation: production_file args: ["src/core.rs"] }
+  fact fx_ships_helper { relation: production_file args: ["src/helper.rs"] }
+  fact fx_ships_leaf { relation: production_file args: ["src/leaf.rs"] }
+  fact fx_ships_view { relation: production_file args: ["src/view.rs"] }
+  fact fx_ships_dead { relation: production_file args: ["src/dead.rs"] }
+  fact fx_ships_testonly { relation: production_file args: ["src/testonly.rs"] }
+  fact fx_ships_main { relation: production_file args: ["src/main.rs"] }
+
+  fact fx_core_is_core { relation: core_file args: ["src/core.rs"] }
+  fact fx_view_is_presentation { relation: presentation_file args: ["src/view.rs"] }
+  fact fx_tests_are_tests { relation: test_file args: ["tests/arch_test.rs"] }
+  fact fx_test_helper_is_tests { relation: test_file args: ["tests/helper.rs"] }
+
+  fact fx_entry_main { relation: entry_point args: [cli_main] }
+
+  // The CLI reaches the core and the presentation layer.
+  fact fx_main_calls_core { relation: calls args: [cli_main, core_entry] }
+  fact fx_main_calls_view { relation: calls args: [cli_main, view_render] }
+  fact fx_main_calls_footer { relation: calls args: [cli_main, view_footer] }
+
+  // The core reaches a helper, and only the helper reaches the leaf: this is
+  // the second hop that only the transitive rule can find.
+  fact fx_core_calls_helper { relation: calls args: [core_entry, helper_fn] }
+  fact fx_helper_calls_leaf { relation: calls args: [helper_fn, leaf_fn] }
+
+  // Defect 1: the core reaches presentation code, one hop out.
+  fact fx_helper_calls_view { relation: calls args: [helper_fn, view_render] }
+
+  // Defect 2: src/dead.rs is shipped and nothing calls it.
+  // Defect 3: src/testonly.rs is shipped and only the test tree reaches it.
+  fact fx_probe_calls_testonly { relation: calls args: [probe_test, testonly_fn] }
+
+  // The test tree also reaches the core, which production reaches too, and
+  // its own helper, which nothing ships: neither is a finding.
+  fact fx_probe_calls_core { relation: calls args: [probe_test, core_entry] }
+  fact fx_probe_calls_test_helper { relation: calls args: [probe_test, helper_test] }
+
+  // ---- the checker's self-test: every rule must show up here ----
+
+  expect fx_layering_violation_is_found {
+    query: "core_depends_on_presentation(S)"
+    count: 1
+  }
+  expect fx_the_violation_is_the_reached_symbol {
+    query: "core_depends_on_presentation(view_render)"
+    count: 1
+  }
+  expect fx_unreferenced_production_is_found {
+    query: "unreferenced_production_file(F, _)"
+    count: 1
+  }
+  expect fx_test_only_production_is_found {
+    query: "test_only_production_file(F, _)"
+    count: 1
+  }
+  // Three symbols: helper_fn and leaf_fn (the second only via transitivity)
+  // and view_render.
+  expect fx_core_closure_is_three_deep {
+    query: "core_reaches(S)"
+    count: 3
+  }
+  expect fx_closure_is_counted {
+    query: "core_reach_total(N)"
+    count: 1
+  }
+  // Seven files: core, helper, leaf, view (all called), main (entry),
+  // testonly and tests/helper.rs (reached from the test tree). dead.rs is
+  // unreached by design, and nothing calls into the test itself.
+  expect fx_reached_files_are_complete {
+    query: "reached_file(F)"
+    count: 7
+  }
+  // Three files: testonly, the core, and the test tree's own helper.
+  expect fx_test_reach_is_complete {
+    query: "reached_from_tests(F)"
+    count: 3
+  }
+
+  // ============================================================== stress
+  //
+  // Every rule and condition must be load-bearing: dropping it must break a
+  // self-test expectation above. `mutate` reports a survivor as a gap.
+
+  mutation every_rule_is_load_bearing { operator: drop_rule }
+
+  mutation every_condition_is_load_bearing { operator: drop_condition }
+
+  // Forgetting that the test-only file ships must hide that finding.
+  mutation production_status_is_guarded {
+    operator: drop_fact
+    relation: production_file
+    except: [fx_ships_core, fx_ships_helper, fx_ships_leaf, fx_ships_view, fx_ships_dead, fx_ships_main]
+    must_fail: fx_test_only_production_is_found
+  }
+
+  mutation the_layout_decision_is_guarded {
+    operator: drop_fact
+    relation: presentation_file
+    must_fail: fx_layering_violation_is_found
+  }
+
+  mutation the_entry_point_is_guarded {
+    operator: drop_fact
+    relation: entry_point
+    must_fail: fx_reached_files_are_complete
+  }
+}

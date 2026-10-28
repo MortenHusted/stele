@@ -1,0 +1,104 @@
+{
+  "canonical": [
+    {
+      "site": "pick-int",
+      "definition": "pick-int",
+      "caller": "ops::run",
+      "callee": "ops::pick(int)"
+    },
+    {
+      "site": "pick-scale",
+      "definition": "pick-scale",
+      "caller": "ops::run",
+      "callee": "ops::pick(int, int)"
+    },
+    {
+      "site": "child-concrete",
+      "definition": "child-concrete",
+      "caller": "ops::run",
+      "callee": "ops::Child::concrete() const"
+    },
+    {
+      "site": "base-concrete",
+      "definition": "base-concrete",
+      "caller": "ops::run",
+      "callee": "ops::Base::concrete() const"
+    },
+    {
+      "site": "base-static",
+      "definition": "base-static",
+      "caller": "ops::run",
+      "callee": "ops::Base::shared(int)"
+    },
+    {
+      "site": "apply",
+      "definition": "apply",
+      "caller": "ops::run",
+      "callee": "ops::apply(Fn, int)"
+    },
+    {
+      "site": "through-macro",
+      "definition": "through-macro",
+      "caller": "ops::run",
+      "callee": "ops::through_macro(int)"
+    },
+    {
+      "site": "decoy-pick",
+      "definition": "decoy-pick",
+      "caller": "ops::run",
+      "callee": "decoy::pick(int)"
+    }
+  ],
+  "observations": [
+    {
+      "site": "virtual-base",
+      "shape": "indirect_and_virtual_dispatch",
+      "spelling": "base->id()"
+    },
+    {
+      "site": "virtual-child",
+      "shape": "indirect_and_virtual_dispatch",
+      "spelling": "child.id()"
+    },
+    {
+      "site": "virtual-grandchild",
+      "shape": "indirect_and_virtual_dispatch",
+      "spelling": "grandchild.id()"
+    },
+    {
+      "site": "fn-pointer",
+      "shape": "function_pointers",
+      "spelling": "fn(1)"
+    },
+    {
+      "site": "fn-pointer-apply",
+      "shape": "function_pointers",
+      "spelling": "fn(value)"
+    },
+    {
+      "site": "template-identity",
+      "shape": "instantiated_template_calls",
+      "spelling": "identity(4)"
+    },
+    {
+      "site": "header-target",
+      "shape": "header_body",
+      "spelling": "header_pick()"
+    },
+    {
+      "site": "header-inner",
+      "shape": "header_body",
+      "spelling": "pick(1)"
+    },
+    {
+      "site": "macro-expand",
+      "shape": "macro_expanded_calls",
+      "spelling": "DOUBLE(value)"
+    },
+    {
+      "site": "missing-generated",
+      "shape": "missing_generated_header",
+      "spelling": "stamp()"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "contract": "stele-public-corpus/v1",
+  "language": "go",
+  "repository": "https://github.com/jesseduffield/lazygit.git",
+  "commit": "0ecf818a739606d4255e009b66309e6e508ce08a",
+  "license": "MIT",
+  "license_url": "https://github.com/jesseduffield/lazygit/blob/0ecf818a739606d4255e009b66309e6e508ce08a/LICENSE",
+  "minimum_files_exclusive": 900,
+  "oracle": {
+    "scope": "synthetic labelled fixture; no application-wide precision claim",
+    "path": "crates/codemap/tests/fixtures/go_calls/expected.json",
+    "sha256": "fd73ab088a7d5c4c942a0514569094a437e0e1cffa86741eee5cf8de6ec9808c",
+    "test_target": "go_semantic_calls",
+    "test_name": "go_semantic_mode_matches_the_labelled_call_oracle"
+  },
+  "tool_lock": {
+    "path": "toolchain/go/go.sum",
+    "sha256": "2b69931cdcb880be8c2d1636cdde6eeda2c933bb6acdeef612f4b2f6c2710d6a"
+  },
+  "bundle_environment": "CODEMAP_GO_TOOL_BUNDLE",
+  "application_gate": [
+    "clean pinned source",
+    "nonempty canonical calls",
+    "two independent checkouts produce identical validated semantic snapshots"
+  ],
+  "copied_corpus_source": false,
+  "runtime_tests": [
+    {
+      "test_target": "go_callable_targets",
+      "test_name": "go_semantic_calls_require_exact_callable_declarations"
+    }
+  ]
+}

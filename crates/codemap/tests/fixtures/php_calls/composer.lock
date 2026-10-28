@@ -1,0 +1,10 @@
+{
+    "_readme": "A trap, not a lockfile: phpactor's auto-configuration reads it, finds phpstan, and would write its answer into .phpactor.json in the analyzed tree.",
+    "packages": [],
+    "packages-dev": [
+        {
+            "name": "phpstan/phpstan",
+            "version": "1.12.0"
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+{
+  "contract": "codemap-linux-owned-process-io-controls/v1",
+  "expected": {
+    "guarded_stdio_handoff": "accept",
+    "repeated_handoff": "reject",
+    "unguarded_handoff": "reject",
+    "live_nonreaping_probe": "accept",
+    "exited_probe": "reject",
+    "exited_probe_retains_unreaped_child": "accept",
+    "blocked_pipe_cleanup": "accept",
+    "stopped_child_cleanup": "accept",
+    "explicit_cleanup_reaps": "accept",
+    "dropped_owner_cleanup_reaps": "accept",
+    "expired_wait_budget_background_reaper": "accept"
+  }
+}

@@ -1,0 +1,24 @@
+Stele and LemmaSpec project material is supplied under the Stele
+Source-Available License 1.0 in LICENSE. Separately licensed portions retain
+their original grants as identified here and in THIRD_PARTY_NOTICES.md.
+Earlier MIT-licensed copies retain their existing permissions.
+
+The LemmaSpec engine in crates/lemmaspec includes files modified from Lemmalog 0.2.0 at commit
+74d428a2497066795f6328946457f22d713fcbd5:
+
+- crates/lemmaspec/src/ast.rs
+- crates/lemmaspec/src/eval.rs
+- crates/lemmaspec/src/eval/store.rs
+- crates/lemmaspec/src/eval/stratify.rs
+- crates/lemmaspec/src/intern.rs
+- crates/lemmaspec/src/lib.rs
+- crates/lemmaspec/src/magic.rs
+- crates/lemmaspec/tests/agg_test.rs
+- crates/lemmaspec/tests/differential_test.rs
+- crates/lemmaspec/tests/engine_test.rs
+
+Upstream source:
+https://github.com/JordyZomer/lemmalog/tree/74d428a2497066795f6328946457f22d713fcbd5
+
+Lemmalog is Copyright (c) 2026 Jordy and licensed under the MIT License.
+Its unmodified license notice is reproduced in THIRD_PARTY_NOTICES.md.

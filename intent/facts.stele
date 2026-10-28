@@ -1,0 +1,44 @@
+catalog facts {
+  // from README.md, introduction: "produces byte-deterministic output for
+  // the same clean commit", and AGENTS.md, Non-negotiable truth boundary.
+  intent answers_from_facts {
+    text: "Stele answers questions about code from facts extracted deterministically from the source, never from a guess."
+  }
+  // from crates/codemap/tests/determinism.rs
+  definition same_commit_same_facts {
+    refines: answers_from_facts
+    realized_by: [
+      "rust:crates/codemap/src/extract.rs#build_snapshot",
+      "rust:crates/codemap/src/extract.rs#extract",
+      "rust:crates/codemap/src/extract.rs#to_json",
+    ]
+    text: "Extracting the same clean commit twice gives byte-identical facts and the same snapshot ID."
+  }
+  // from README.md, Status: --calls=required "fails closed if
+  // rust-analyzer ... is absent", and crates/codemap/src/extract.rs.
+  intent fails_closed {
+    text: "When Stele cannot establish an answer, it says so instead of reporting clean."
+  }
+  // from crates/stele/src/check.rs (architecture and symbols require
+  // verified calls) and crates/codemap/src/extract.rs; no test that runs
+  // without rust-analyzer checks it yet.
+  definition missing_resolver_refuses {
+    refines: fails_closed
+    realized_by: [
+      "rust:crates/codemap/src/extract.rs#build_snapshot",
+      "rust:crates/codemap/src/rust_analyzer.rs#detect_at",
+      "rust:crates/stele/src/check.rs#check",
+    ]
+    text: "A check that needs verified calls exits 2 when the language's resolver is missing, rather than answering from syntax alone."
+  }
+  // from `stele intro`, Check code against a shipped checker.
+  intent one_step_check {
+    text: "A developer checks code against a shipped checker with one command."
+  }
+  // from crates/stele/tests/check.rs
+  definition check_matches_manual_steps {
+    refines: one_step_check
+    realized_by: ["rust:crates/stele/src/check.rs#check"]
+    text: "stele check prints the same report and exits the same way as running stele code evidence, stele code checker and stele spec check by hand."
+  }
+}

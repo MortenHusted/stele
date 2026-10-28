@@ -1,0 +1,328 @@
+{
+  "identity": {
+    "schema_version": "codemap.snapshot.v8",
+    "language": "rust",
+    "extractor_version": "0.4.0",
+    "repository": {
+      "id": "https://example.test/synthetic-topology.git",
+      "is_canonical": false
+    },
+    "commit_sha": "synthetic-commit",
+    "tree_sha": "synthetic-tree",
+    "tools": {
+      "tree_sitter": "0.25",
+      "tree_sitter_rust": "0.24.2",
+      "rust_analyzer": "rust-analyzer synthetic",
+      "rustc": "rustc synthetic",
+      "cargo": "cargo synthetic",
+      "target_triple": "synthetic-target",
+      "cargo_feature_policy": "default",
+      "rust_analyzer_policy": {
+        "cargo_offline": true,
+        "build_scripts_enabled": false,
+        "proc_macros_enabled": false,
+        "background_checks_enabled": false
+      }
+    },
+    "dirty": false,
+    "snapshot_id": "dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4"
+  },
+  "files": [
+    {
+      "rel_path": "src/main.rs",
+      "sha256": "synthetic-file-hash",
+      "byte_len": 300
+    }
+  ],
+  "nodes": [
+    {
+      "id": "rust:file:src/main.rs",
+      "kind": {
+        "kind": "File"
+      },
+      "name": "src/main.rs",
+      "symbol_key": "rust:src/main.rs#src/main.rs",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "src/main.rs",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "TreeSitter",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "rust:module:src/main.rs#demo",
+      "kind": {
+        "kind": "Module"
+      },
+      "name": "demo",
+      "symbol_key": "rust:src/main.rs#demo",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "src/main.rs",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "TreeSitter",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "rust:function:src/main.rs#entry",
+      "kind": {
+        "kind": "Function"
+      },
+      "name": "entry",
+      "symbol_key": "rust:src/main.rs#entry",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "src/main.rs",
+        "span": {
+          "start_byte": 10,
+          "end_byte": 90,
+          "start_line": 2,
+          "start_col": 0,
+          "end_line": 10,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "TreeSitter",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "rust:function:src/main.rs#work",
+      "kind": {
+        "kind": "Function"
+      },
+      "name": "work",
+      "symbol_key": "rust:src/main.rs#work",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "src/main.rs",
+        "span": {
+          "start_byte": 100,
+          "end_byte": 190,
+          "start_line": 11,
+          "start_col": 0,
+          "end_line": 20,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "TreeSitter",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "rust:function:src/main.rs#unused",
+      "kind": {
+        "kind": "Function"
+      },
+      "name": "unused",
+      "symbol_key": "rust:src/main.rs#unused",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "src/main.rs",
+        "span": {
+          "start_byte": 200,
+          "end_byte": 290,
+          "start_line": 21,
+          "start_col": 0,
+          "end_line": 30,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "TreeSitter",
+        "confidence": 255
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "contains:rust:file:src/main.rs->rust:module:src/main.rs#demo@0",
+      "kind": "Contains",
+      "from": "rust:file:src/main.rs",
+      "to": "rust:module:src/main.rs#demo",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "src/main.rs",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "TreeSitter",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "contains:rust:module:src/main.rs#demo->rust:function:src/main.rs#entry@0",
+      "kind": "Contains",
+      "from": "rust:module:src/main.rs#demo",
+      "to": "rust:function:src/main.rs#entry",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "src/main.rs",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "TreeSitter",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "contains:rust:module:src/main.rs#demo->rust:function:src/main.rs#work@0",
+      "kind": "Contains",
+      "from": "rust:module:src/main.rs#demo",
+      "to": "rust:function:src/main.rs#work",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "src/main.rs",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "TreeSitter",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "contains:rust:module:src/main.rs#demo->rust:function:src/main.rs#unused@0",
+      "kind": "Contains",
+      "from": "rust:module:src/main.rs#demo",
+      "to": "rust:function:src/main.rs#unused",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "src/main.rs",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "TreeSitter",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "calls:rust:function:src/main.rs#entry->rust:function:src/main.rs#work@30",
+      "kind": "Calls",
+      "from": "rust:function:src/main.rs#entry",
+      "to": "rust:function:src/main.rs#work",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "src/main.rs",
+        "span": {
+          "start_byte": 30,
+          "end_byte": 34,
+          "start_line": 4,
+          "start_col": 0,
+          "end_line": 4,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "RustAnalyzer",
+        "confidence": 255
+      }
+    }
+  ],
+  "call_sites": [
+    {
+      "rel_path": "src/main.rs",
+      "span": {
+        "start_byte": 30,
+        "end_byte": 34,
+        "start_line": 4,
+        "start_col": 0,
+        "end_line": 4,
+        "end_col": 0
+      },
+      "raw_name": "work",
+      "category": "Resolved"
+    },
+    {
+      "rel_path": "src/main.rs",
+      "span": {
+        "start_byte": 50,
+        "end_byte": 54,
+        "start_line": 6,
+        "start_col": 0,
+        "end_line": 6,
+        "end_col": 0
+      },
+      "raw_name": "dynamic_target",
+      "category": "Candidate"
+    }
+  ],
+  "report": {
+    "files_scanned": 1,
+    "files_skipped": 0,
+    "parse_errors": 0,
+    "node_counts": {
+      "file": 1,
+      "function": 3,
+      "module": 1
+    },
+    "edge_counts": {
+      "calls": 1,
+      "contains": 4
+    },
+    "call_sites_by_category": {
+      "Candidate": 1,
+      "Resolved": 1
+    },
+    "import_ref_nodes": 0
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "definitions": {
+    "leaf.js": [
+      "function:jsLeaf",
+      "function:arrow"
+    ],
+    "api.ts": [
+      "type:Shape",
+      "type:ID",
+      "type:Mode",
+      "module:Tools",
+      "function:Tools::helper",
+      "function:overload",
+      "type:Box",
+      "method:Box::constructor",
+      "method:Box::method",
+      "function:outer",
+      "function:outer::inner",
+      "function:outer::nested"
+    ],
+    "view.tsx": [
+      "function:View"
+    ],
+    "component.jsx": [
+      "function:default"
+    ],
+    "plain.mjs": [
+      "function:esm"
+    ],
+    "common.cjs": [
+      "function:local",
+      "function:run"
+    ],
+    "typed.mts": [
+      "function:mts"
+    ],
+    "common-types.cts": [
+      "function:cts"
+    ],
+    "declarations.d.ts": [
+      "type:Declared",
+      "type:TypeOnly"
+    ],
+    "callbacks.ts": [
+      "function:register",
+      "function:register::anonymous@59",
+      "function:consume"
+    ]
+  },
+  "intent": "Hand-labelled source-only definitions; overload signatures and declaration-only methods are not executable nodes."
+}

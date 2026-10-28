@@ -1,0 +1,59 @@
+// Models the boundary between LemmaSpec's deterministic projection and a
+// hypothetical durable-store adapter. The candidate is intentionally missing
+// datastore-owned semantics, so its expectation remains unsatisfied.
+
+spec persistence_adapter_readiness {
+  relation projection_capability {
+    args: [symbol, symbol]
+  }
+
+  relation adapter_provides {
+    args: [symbol, symbol]
+  }
+
+  relation persistence_ready {
+    args: [symbol, symbol]
+  }
+
+  fact projection_is_deterministic {
+    relation: projection_capability
+    args: [lemmaspec_projection, deterministic]
+    provenance: ["README.md"]
+  }
+
+  fact projection_is_closed {
+    relation: projection_capability
+    args: [lemmaspec_projection, internally_closed]
+    provenance: ["README.md", "src/projection.rs"]
+  }
+
+  fact projection_has_stable_ids {
+    relation: projection_capability
+    args: [lemmaspec_projection, stable_ids]
+    provenance: ["README.md", "src/projection.rs"]
+  }
+
+  fact candidate_validates_projection {
+    relation: adapter_provides
+    args: [store_adapter, projection_validation]
+  }
+
+  rule ready_only_when_adapter_owns_persistence_semantics {
+    derive: "persistence_ready(Projection, Adapter)"
+    when: {
+      projection_is_deterministic: "projection_capability(Projection, deterministic)"
+      projection_is_closed: "projection_capability(Projection, internally_closed)"
+      projection_ids_are_stable: "projection_capability(Projection, stable_ids)"
+      adapter_validates_projection: "adapter_provides(Adapter, projection_validation)"
+      adapter_adds_ingest_envelope: "adapter_provides(Adapter, ingest_envelope)"
+      adapter_defines_event_time: "adapter_provides(Adapter, event_time_policy)"
+      adapter_defines_revision_identity: "adapter_provides(Adapter, revision_identity)"
+      adapter_maps_entity_identity: "adapter_provides(Adapter, entity_identity_mapping)"
+    }
+  }
+
+  expect candidate_is_ready_for_durable_persistence {
+    query: "persistence_ready(lemmaspec_projection, store_adapter)"
+    count: 1
+  }
+}

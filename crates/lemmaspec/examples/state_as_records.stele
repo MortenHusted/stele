@@ -1,0 +1,154 @@
+// Which boolean columns in a Rails schema are really state transitions
+// that should be records instead?
+//
+// The Fizzy convention: a togglable state such as closed, pinned, or
+// published is a has_one record (Closure, Pin, Publication) that carries
+// who and when. A boolean column paired with a companion column such as
+// closed_at or closed_by is the tell that a state has been flattened.
+//
+// The asserted facts below are a fixture: a small schema with one clear
+// violation, one honest boolean, one reviewed exemption, and one model
+// already on the record pattern. The evidence relations are the ones an
+// agent or extractor would supply for a real schema.
+
+spec state_as_records {
+
+  // ================================================================ evidence
+
+  relation boolean_column {
+    args: [symbol, symbol]
+    roles: [model, column]
+    reads: "{model} has a boolean column {column}"
+  }
+  relation companion_column {
+    args: [symbol, symbol, symbol]
+    roles: [model, column, companion]
+    reads: "{model}.{column} is accompanied by {companion}"
+  }
+  relation transition {
+    args: [symbol, symbol]
+    roles: [model, column]
+    reads: "code flips {model}.{column} as a state change"
+  }
+  relation state_record {
+    args: [symbol, symbol]
+    roles: [model, record]
+    reads: "{model} keeps its state in a {record} record"
+  }
+  relation allowed_flag {
+    args: [symbol, symbol]
+    roles: [model, column]
+    reads: "{model}.{column} is a reviewed exception"
+  }
+
+  // ============================================================== judgement
+
+  relation state_flag {
+    args: [symbol, symbol]
+    roles: [model, column]
+    reads: "{model}.{column} is a state flattened into a boolean"
+  }
+  relation violation {
+    args: [symbol, symbol]
+    roles: [model, column]
+    reads: "{model}.{column} should be a record"
+  }
+  relation on_pattern {
+    args: [symbol]
+    roles: [model]
+    reads: "{model} already models state as records"
+  }
+
+  // ================================================================ fixture
+
+  // cards.closed with closed_at and closed_by is the textbook flattening.
+  fact cards_closed { relation: boolean_column args: [card, closed] }
+  fact cards_closed_at { relation: companion_column args: [card, closed, closed_at] }
+  fact cards_closed_by { relation: companion_column args: [card, closed, closed_by_id] }
+
+  // users.admin is a setting, not a transition: no companion, no finding.
+  fact users_admin { relation: boolean_column args: [user, admin] }
+
+  // users.active has no companion column, but a method flips it: the
+  // transition is visible in behaviour rather than in the schema.
+  fact users_active { relation: boolean_column args: [user, active] }
+  fact users_deactivate { relation: transition args: [user, active] provenance: ["app/models/user.rb:deactivate!"] }
+
+  // articles.published is flipped by publish!, but it is a datetime, not a
+  // boolean: a transition on its own is not a flattened flag.
+  fact articles_publish { relation: transition args: [article, published] }
+
+  // cards.published_at stands alone: the timestamp is the state and there is
+  // no boolean to flatten, so a companion by itself is not a flag.
+  fact cards_published_at { relation: companion_column args: [card, published, published_at] }
+
+  // boards.archived was reviewed and kept as a flag for now.
+  fact boards_archived { relation: boolean_column args: [board, archived] }
+  fact boards_archived_at { relation: companion_column args: [board, archived, archived_at] }
+  fact boards_archived_reviewed {
+    relation: allowed_flag
+    args: [board, archived]
+    provenance: ["review:2026-09-04"]
+  }
+
+  // comments already keep their state as a record.
+  fact comments_have_deletion { relation: state_record args: [comment, deletion] }
+
+  // ================================================================== rules
+
+  rule flag_with_companion_is_state {
+    derive: "state_flag(Model, Column)"
+    when: {
+      is_boolean: "boolean_column(Model, Column)"
+      has_companion: "companion_column(Model, Column, _)"
+    }
+  }
+
+  rule flag_with_transition_is_state {
+    derive: "state_flag(Model, Column)"
+    when: {
+      is_boolean: "boolean_column(Model, Column)"
+      is_flipped: "transition(Model, Column)"
+    }
+  }
+
+  rule unreviewed_state_flag_is_a_violation {
+    derive: "violation(Model, Column)"
+    when: {
+      is_state_flag: "state_flag(Model, Column)"
+      not_reviewed: "!allowed_flag(Model, Column)"
+    }
+  }
+
+  rule record_keeping_model_is_on_pattern {
+    derive: "on_pattern(Model)"
+    when: ["state_record(Model, _)"]
+  }
+
+  // =========================================================== expectations
+
+  expect three_flags_are_flattened_state { query: "state_flag(M, C)" count: 3 }
+  expect a_plain_setting_is_not_state { query: "state_flag(user, admin)" count: 0 }
+  expect a_flipped_datetime_is_not_a_flag { query: "state_flag(article, published)" count: 0 }
+  expect cards_closed_is_a_violation { query: "violation(card, closed)" count: 1 }
+  expect users_active_is_a_violation { query: "violation(user, active)" count: 1 }
+  expect exactly_two_violations { query: "violation(M, C)" count: 2 }
+  expect reviewed_flag_is_not_a_violation { query: "violation(board, archived)" count: 0 }
+  expect comments_are_on_pattern { query: "on_pattern(comment)" count: 1 }
+
+  // ============================================================== stress
+
+  mutation every_rule_is_load_bearing {
+    operator: drop_rule
+  }
+
+  mutation every_condition_is_load_bearing {
+    operator: drop_condition
+  }
+
+  mutation exemptions_are_guarded {
+    operator: drop_fact
+    relation: allowed_flag
+    must_fail: reviewed_flag_is_not_a_violation
+  }
+}

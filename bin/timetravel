@@ -1,0 +1,230 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# timetravel — query the structural change stream that `stele code history`
+# emits.
+#
+# `stele code history --path <repo> --out <dir>` writes three NDJSON streams:
+# commits.ndjson (one line per commit walked), transitions.ndjson (one line per
+# fact that appeared or disappeared) and metrics.ndjson (one line per node whose
+# fan-in or fan-out moved). This reads them back and answers the questions that
+# motivated emitting them: when did this symbol exist, what changed at this
+# commit, and what has been moving. A walk made with --measures also keeps a
+# measured snapshot per commit; `slop` hands those to `stele slop series` for
+# the per-commit erosion and clone series.
+#
+# Contract: bare run in a terminal → interactive command picker; --help and
+# `help <command>` come from Thor; every command takes args so agents and CI can
+# script it; no TTY and no args → help, exit non-zero.
+#
+# Everything here reads derived data. Transitions are graph math over Layer 0
+# facts; metric lines are Layer 1.5 heuristics and are not authoritative.
+
+require "json"
+require "time"
+
+def install_and_require(*gem_names)
+  missing = gem_names.reject do |name|
+    require name
+    true
+  rescue LoadError
+    false
+  end
+  return if missing.empty?
+
+  puts "Missing gems: #{missing.join(', ')}. Would you like to install them? (y/n)"
+  abort "#{missing.join(', ')} required for this script. Exiting." unless $stdin.gets.chomp.downcase == "y"
+  system("gem", "install", *missing) or abort("✗ gem install failed")
+  Gem.clear_paths
+  missing.each { |name| require name }
+end
+
+install_and_require "thor", "tty-prompt", "pastel"
+
+class Timetravel < Thor
+  class_option :dir, aliases: "-d", default: ENV.fetch("CODEMAP_HISTORY_DIR", "history"),
+                     desc: "Directory holding commits/transitions/metrics NDJSON"
+
+  def self.exit_on_failure? = true
+
+  desc "when SYMBOL", "The life of a symbol: when it appeared, vanished, and moved"
+  long_desc <<~DESC
+    Matches SYMBOL against node ids and names, then replays every transition and
+    metric move touching it, oldest first.
+
+      timetravel when load_snapshot
+      timetravel when 'rust:function:src/lib.rs#extract'
+  DESC
+  def when_(symbol = nil)
+    symbol ||= ask_for("Which symbol?")
+    matches = transitions.select { |t| touches?(t, symbol) }
+    moves = metrics.select { |m| m["node"].include?(symbol) }
+    raise Thor::Error, "no fact matching #{symbol.inspect} in #{options[:dir]}" if matches.empty? && moves.empty?
+
+    events = (matches.map { |t| [t["ts"], t["commit"], transition_line(t)] } +
+              moves.map { |m| [m["ts"], m["commit"], metric_line(m)] }).sort_by { |ts, commit, _| [ts, commit] }
+
+    puts pastel.bold("#{events.length} event(s) for #{symbol}")
+    events.each { |ts, commit, line| puts "  #{stamp(ts)}  #{short(commit)}  #{line}" }
+  end
+  map "when" => :when_
+
+  desc "at COMMIT", "Everything that changed at one commit"
+  method_option :limit, type: :numeric, default: 40, desc: "Cap the facts listed"
+  def at(commit = nil)
+    commit ||= ask_for("Which commit?")
+    facts = transitions.select { |t| t["commit"].start_with?(commit) }
+    moves = metrics.select { |m| m["commit"].start_with?(commit) }
+    raise Thor::Error, "no commit starting #{commit.inspect} in #{options[:dir]}" if facts.empty? && moves.empty?
+
+    puts pastel.bold("#{facts.length} transition(s), #{moves.length} metric move(s) at #{short(commit)}")
+    facts.first(options[:limit]).each { |t| puts "  #{transition_line(t)}" }
+    puts "  … #{facts.length - options[:limit]} more" if facts.length > options[:limit]
+    moves.first(options[:limit]).each { |m| puts "  #{metric_line(m)}" }
+  end
+
+  desc "churn", "Facts that changed most often across the walked history"
+  method_option :top, type: :numeric, default: 20, desc: "How many to show"
+  method_option :genesis, type: :boolean, default: false,
+                          desc: "Include the genesis commit (where every fact is an addition)"
+  def churn
+    stream = options[:genesis] ? transitions : transitions.reject { |t| t["commit"] == genesis_commit }
+    counts = stream.each_with_object(Hash.new(0)) { |t, acc| acc[t["key"]] += 1 }
+    rows = counts.sort_by { |key, count| [-count, key] }.first(options[:top])
+    raise Thor::Error, "no transitions in #{options[:dir]}" if rows.empty?
+
+    puts pastel.bold("Most-churned facts (#{stream.length} transitions, genesis #{options[:genesis] ? 'included' : 'excluded'})")
+    # Fact keys are long by construction — a table would wrap them into
+    # unreadable vertical blocks, so print one aligned line each instead.
+    rows.each { |key, count| puts "  #{count.to_s.rjust(4)}  #{key}" }
+  end
+
+  desc "stats", "Shape of the walked history"
+  def stats
+    walked = commits
+    raise Thor::Error, "no commits.ndjson in #{options[:dir]}" if walked.empty?
+
+    after_genesis = walked.drop(1)
+    counts = after_genesis.map { |c| c["transitions"] }.sort
+    total_ms = walked.sum { |c| c["extract_ms"] }
+    puts pastel.bold("#{walked.length} commits  #{walked.first['ts'] ? stamp(walked.first['ts']) : '?'} → #{stamp(walked.last['ts'])}")
+    puts "  genesis          #{walked.first['transitions']} facts (#{walked.first['nodes']} nodes, #{walked.first['edges']} edges)"
+    puts "  transitions      #{after_genesis.sum { |c| c['transitions'] }} after genesis"
+    puts "  metric moves     #{walked.sum { |c| c['metric_moves'] }}"
+    puts "  per commit       median #{counts[counts.length / 2]}, max #{counts.max}" unless counts.empty?
+    puts "  silent commits   #{after_genesis.count { |c| c['transitions'].zero? }} changed no structure"
+    puts "  extraction       #{(total_ms / 1000.0).round(1)}s total, #{(total_ms.to_f / walked.length).round}ms per commit"
+  end
+
+  desc "slop", "Per-commit erosion and clone series over a measured walk (stele slop series)"
+  long_desc <<~DESC
+    Needs a walk made with `stele code history --measures --out <dir>`; hands
+    the directory to `stele slop series`, which folds one line per commit and
+    the slope of each figure per author label. The author label is what the commit
+    says; what it means is your call.
+
+      timetravel slop -d history
+      timetravel slop -d history --window 20 --json
+  DESC
+  method_option :window, type: :numeric, desc: "Fit the slopes over the last N commits (default: the whole walk)"
+  method_option :json, type: :boolean, default: false, desc: "JSON instead of the text report"
+  def slop
+    listing = File.join(options[:dir], "measured.ndjson")
+    unless File.exist?(listing)
+      raise Thor::Error, "#{listing} not found — run `stele code history --measures --out #{options[:dir]}` first"
+    end
+
+    args = [stele, "slop", "series", "--history", options[:dir]]
+    args += ["--window", options[:window].to_s] if options[:window]
+    args += ["--format", "json"] if options[:json]
+    system(*args) or raise Thor::Error, "stele slop series failed (#{$?.exitstatus})"
+  end
+
+  desc "menu", "Pick a command interactively", hide: true
+  default_command :menu
+  def menu
+    raise Thor::Error, "no TTY — run: #{File.basename($0)} help" unless $stdin.tty?
+
+    command = prompt.select("What do you want to know?", %w[stats churn when at slop])
+    invoke(command == "when" ? :when_ : command.to_sym)
+  end
+
+  private
+    def transitions = @transitions ||= load_stream("transitions.ndjson")
+    def metrics = @metrics ||= load_stream("metrics.ndjson")
+    def commits = @commits ||= load_stream("commits.ndjson")
+    def genesis_commit = @genesis_commit ||= commits.first&.fetch("commit")
+
+    # A walk in progress is buffering into these files, so the final line can be
+    # half-written. Tolerate that one truncated tail; a malformed line anywhere
+    # else is a real corruption and should be loud.
+    def load_stream(name)
+      path = File.join(options[:dir], name)
+      raise Thor::Error, "#{path} not found — run `stele code history --out #{options[:dir]}` first" unless File.exist?(path)
+
+      lines = File.readlines(path, chomp: true).reject(&:empty?)
+      lines.each_with_index.filter_map do |line, index|
+        JSON.parse(line)
+      rescue JSON::ParserError => error
+        raise Thor::Error, "#{path}:#{index + 1} is not valid JSON: #{error.message}" unless index == lines.length - 1
+
+        warn "note: ignoring an incomplete final line in #{name} — a walk is probably still writing"
+        nil
+      end
+    end
+
+    # A transition touches a symbol if the fact itself is the symbol, or if the
+    # symbol is one end of the relationship the fact records. `was` carries a
+    # move's pre-move key, so searching by an old path still finds the symbol.
+    def touches?(transition, symbol)
+      %w[key was from to name].any? { |field| transition[field]&.include?(symbol) }
+    end
+
+    def transition_line(transition)
+      # A move is one fact relocating, so it prints as one line naming both
+      # ends rather than as a death next to an unrelated-looking birth.
+      if transition["op"] == "->"
+        return "#{pastel.cyan('→')} #{transition['kind']} #{transition['name']} " \
+               "[#{transition['from_path']} → #{transition['path']}]"
+      end
+
+      sign = transition["op"] == "+" ? pastel.green("+") : pastel.red("-")
+      if transition["fact"] == "node"
+        "#{sign} #{transition['kind']} #{transition['name']} [#{transition['path']}]"
+      else
+        "#{sign} #{transition['kind']} #{transition['from']} -> #{transition['to']}"
+      end
+    end
+
+    def metric_line(move)
+      "#{pastel.yellow('~')} #{move['node']} fan-in #{move['prev_fan_in']}→#{move['fan_in']}, " \
+        "fan-out #{move['prev_fan_out']}→#{move['fan_out']}"
+    end
+
+    def stamp(seconds) = seconds.to_i.zero? ? "?" : Time.at(seconds).strftime("%Y-%m-%d")
+    def short(sha) = sha[0, 12]
+
+    def ask_for(question)
+      raise Thor::Error, "no TTY — pass the argument (see `help`)" unless $stdin.tty?
+
+      prompt.ask(question, required: true)
+    end
+
+    # The stele binary: an installed `stele`, else the release or debug build
+    # of this repository.
+    def stele
+      return "stele" if system("command -v stele >/dev/null 2>&1")
+
+      root = File.expand_path("..", __dir__)
+      %w[release debug].each do |profile|
+        candidate = File.join(root, "target", profile, "stele")
+        return candidate if File.executable?(candidate)
+      end
+      raise Thor::Error, "stele not found on PATH or under target/ — run `cargo build -p stele`"
+    end
+
+    def prompt = @prompt ||= TTY::Prompt.new
+    def pastel = @pastel ||= Pastel.new
+end
+
+Timetravel.start(ARGV)

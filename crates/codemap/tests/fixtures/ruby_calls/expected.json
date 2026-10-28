@@ -1,0 +1,15 @@
+{
+  "canonical_edges": [
+    ["ruby:lib/callee.rb#Host::calls_mixin", "ruby:lib/callee.rb#Mixable::mixed_method"],
+    ["ruby:lib/callee.rb#WithAttr::sibling_target", "ruby:lib/callee.rb#WithAttr::uses_attr"],
+    ["ruby:lib/caller.rb#run", "ruby:lib/callee.rb#Greeter::self.create"],
+    ["ruby:lib/inherit.rb#Caller::constant_inherited", "ruby:lib/inherit.rb#Parent::self.make"],
+    ["ruby:lib/inherit.rb#Sub::inherited_call", "ruby:lib/callee.rb#Worker::receiver_method"],
+    ["ruby:lib/callee.rb#Billing::Invoice::build", "ruby:lib/callee.rb#Billing::Report::self.compile"],
+    ["ruby:lib/callee.rb#Recursive::descend", "ruby:lib/callee.rb#Recursive::descend"]
+  ],
+  "external_observations": ["dump"],
+  "standard_library_observations": ["attr_accessor", "new", "parse"],
+  "candidate_observations": ["label", "receiver_method"],
+  "unmapped_observations": ["cross_file_free", "receiver_method", "run"]
+}

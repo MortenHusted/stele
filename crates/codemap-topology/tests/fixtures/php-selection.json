@@ -1,0 +1,9 @@
+{
+  "entry_policy": "policy:entry-point/php",
+  "coverage_policy": "observed-call-coverage/v1",
+  "min_call_coverage_per_mille": 500,
+  "entry_points": [
+    "php:function:src/demo.php#entry"
+  ],
+  "public_api": []
+}

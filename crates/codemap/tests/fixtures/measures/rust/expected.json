@@ -1,0 +1,254 @@
+{
+  "policy": "cc-sloc-clones-form/rust/1",
+  "counted": "by hand on 2026-09-14 before the counter ran; loc counts first through last line of the span, cc is 1 plus the rule increments listed Form measures (params, nesting, chain) hand-counted on 2026-09-16 before the counters ran, under cc-sloc-clones-form/rust/1; Rust has no ivars.",
+  "files": {
+    "measured.rs": {
+      "loc": 165,
+      "sloc": 136,
+      "blank": 23,
+      "comment": 6,
+      "notes": "blank lines 3,5,11,23,32,38,44,61,70,80,84,94,97,101,104,114,120; comment-only lines 1,2,6,96,98,99; appended 2026-09-16: blank lines 125,137,147,151,155,161"
+    },
+    "toplevel.rs": {
+      "loc": 15,
+      "sloc": 9,
+      "blank": 4,
+      "comment": 2,
+      "notes": "blank lines 3,5,7,12; comment-only lines 1,2; callable sloc sums to 3, so top-level code is only visible at file level"
+    }
+  },
+  "callables": {
+    "measured.rs": {
+      "straight": {
+        "cc": 1,
+        "loc": 4,
+        "sloc": 4,
+        "rules": "base only; lines 7-10",
+        "form": {
+          "params": 2,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "a, b; no control structure; a + b is an operator"
+        }
+      },
+      "nested_ifs": {
+        "cc": 4,
+        "loc": 11,
+        "sloc": 11,
+        "rules": "if +1, nested if +1, else if +1; lines 12-22",
+        "form": {
+          "params": 2,
+          "nesting": 2,
+          "chain": 0,
+          "rules": "a, b; if (1) > if (2); the else if is a child of else_clause and stays at 1"
+        }
+      },
+      "guarded_match": {
+        "cc": 5,
+        "loc": 8,
+        "sloc": 8,
+        "rules": "4 arms +3, one guard +1; lines 24-31",
+        "form": {
+          "params": 2,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "n, flag; match is one level, arms add nothing"
+        }
+      },
+      "logic": {
+        "cc": 5,
+        "loc": 5,
+        "sloc": 5,
+        "rules": "&& +1, || +1, || +1, && +1; lines 33-37",
+        "form": {
+          "params": 3,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "a, b, c; boolean operators are not dots"
+        }
+      },
+      "questions": {
+        "cc": 3,
+        "loc": 5,
+        "sloc": 5,
+        "rules": "? +1, ? +1; lines 39-43",
+        "form": {
+          "params": 1,
+          "nesting": 0,
+          "chain": 2,
+          "rules": "input; input.trim().parse::<i32>()? is trim, parse: 2 through the turbofish and the ?; the literal 2 .parse() is 1"
+        }
+      },
+      "looping": {
+        "cc": 5,
+        "loc": 16,
+        "sloc": 16,
+        "rules": "loop +1, if +1, while +1, for +1; lines 45-60",
+        "form": {
+          "params": 1,
+          "nesting": 2,
+          "chain": 0,
+          "rules": "limit; loop (1) > if (2); while and for at 1; 0..3 is a range"
+        }
+      },
+      "iterator_heavy": {
+        "cc": 4,
+        "loc": 8,
+        "sloc": 8,
+        "rules": "closures count into the parent: && +1, if +1, if +1; lines 62-69",
+        "form": {
+          "params": 1,
+          "nesting": 2,
+          "chain": 5,
+          "rules": "values; closures at 1, the if inside map and filter_map at 2; iter.filter.map.filter_map.collect is 5"
+        }
+      },
+      "iterator_heavy_two": {
+        "cc": 4,
+        "loc": 9,
+        "sloc": 9,
+        "rules": "closure match with 3 arms +2, one guard +1; lines 71-79",
+        "form": {
+          "params": 1,
+          "nesting": 2,
+          "chain": 3,
+          "rules": "map; fold closure (1) > match (2); values.copied.fold is 3"
+        }
+      },
+      "bump": {
+        "cc": 2,
+        "loc": 7,
+        "sloc": 7,
+        "rules": "method in impl Counter: if +1; lines 86-92",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 1,
+          "rules": "&mut self is the receiver, by counts; if is one level; self.count is one hop"
+        }
+      },
+      "commented": {
+        "cc": 1,
+        "loc": 9,
+        "sloc": 4,
+        "rules": "base only; blank 97,101 and comment-only 96,98,99 leave 4 source lines of 9; lines 95-103",
+        "form": {
+          "params": 1,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "x; x + 1 is an operator"
+        }
+      },
+      "outer": {
+        "cc": 2,
+        "loc": 9,
+        "sloc": 9,
+        "rules": "if +1; the nested fn inner is its own callable and its if does not count here; the span still holds inner's lines; lines 105-113",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "a; if is one level; inner is its own callable; inner(a) is a bare call"
+        }
+      },
+      "inner": {
+        "cc": 2,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "nested fn: if +1; lines 106-108",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "b; if is one level"
+        }
+      },
+      "twice": {
+        "cc": 1,
+        "loc": 5,
+        "sloc": 5,
+        "rules": "macro_rules body is token trees, the if inside is never parsed as a branch; lines 115-119",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "macro_rules has no parameters and a token-tree body"
+        }
+      },
+      "macro_args": {
+        "cc": 1,
+        "loc": 4,
+        "sloc": 4,
+        "rules": "|| and && inside macro arguments are tokens, not expressions, and do not count; lines 121-124",
+        "form": {
+          "params": 2,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "a, b; macro arguments are tokens, > is an operator"
+        }
+      },
+      "else_chain": {
+        "cc": 4,
+        "loc": 11,
+        "sloc": 11,
+        "rules": "if +1, else if +1, else if +1; lines 126-136",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "a; two else ifs stay at the parent's depth; a == 1 is an operator"
+        }
+      },
+      "deep": {
+        "cc": 4,
+        "loc": 9,
+        "sloc": 9,
+        "rules": "for +1, if +1, closure if +1; lines 138-146",
+        "form": {
+          "params": 1,
+          "nesting": 4,
+          "chain": 3,
+          "rules": "items; for (1) > if (2) > closure (3) > if (4); row.iter().map().sum::<usize>() is 3, row.is_empty() is 1"
+        }
+      },
+      "path_len": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "method in impl Reader, base only; lines 157-159",
+        "form": {
+          "params": 1,
+          "nesting": 0,
+          "chain": 3,
+          "rules": "self: &Self is the receiver, extra counts; self.settings.path.len() is 3"
+        }
+      },
+      "fetch": {
+        "cc": 3,
+        "loc": 4,
+        "sloc": 4,
+        "rules": "? +1, ? +1; .await is not a branch; lines 162-165",
+        "form": {
+          "params": 1,
+          "nesting": 0,
+          "chain": 3,
+          "rules": "client; client.get().send().await?.text().await? is get, send, text: 3, ? and .await pass through; body.len() is 1"
+        }
+      }
+    },
+    "toplevel.rs": {
+      "limit_or": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base only; unwrap_or is a call, not a branch; lines 13-15",
+        "form": {
+          "params": 1,
+          "nesting": 0,
+          "chain": 1,
+          "rules": "value; value.unwrap_or(LIMIT) is one hop"
+        }
+      }
+    }
+  }
+}

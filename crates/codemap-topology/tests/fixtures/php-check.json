@@ -1,0 +1,326 @@
+{
+  "spec": "https___example_test_synthetic_topology_git",
+  "status": "incomplete",
+  "asserted": 16,
+  "derived": 5,
+  "facts": [
+    {
+      "relation": "call_census",
+      "args": [
+        "Ambiguous",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_0",
+        "snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6"
+      ],
+      "why": "call_census(Ambiguous, 0)  (conf 1.000, prov [\"call_census_0\", \"snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Candidate",
+        "1"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_1",
+        "snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6"
+      ],
+      "why": "call_census(Candidate, 1)  (conf 1.000, prov [\"call_census_1\", \"snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "ExternalCrate",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_2",
+        "snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6"
+      ],
+      "why": "call_census(ExternalCrate, 0)  (conf 1.000, prov [\"call_census_2\", \"snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Failed",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_3",
+        "snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6"
+      ],
+      "why": "call_census(Failed, 0)  (conf 1.000, prov [\"call_census_3\", \"snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Observed",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_4",
+        "snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6"
+      ],
+      "why": "call_census(Observed, 0)  (conf 1.000, prov [\"call_census_4\", \"snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Resolved",
+        "1"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_5",
+        "snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6"
+      ],
+      "why": "call_census(Resolved, 1)  (conf 1.000, prov [\"call_census_5\", \"snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "StandardLibrary",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_6",
+        "snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6"
+      ],
+      "why": "call_census(StandardLibrary, 0)  (conf 1.000, prov [\"call_census_6\", \"snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Unmapped",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_7",
+        "snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6"
+      ],
+      "why": "call_census(Unmapped, 0)  (conf 1.000, prov [\"call_census_7\", \"snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "calls",
+      "args": [
+        "php:function:src/demo.php#entry",
+        "php:function:src/demo.php#work"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "calls_0",
+        "src/demo.php:4"
+      ],
+      "why": "calls(php:function:src/demo.php#entry, php:function:src/demo.php#work)  (conf 1.000, prov [\"calls_0\", \"src/demo.php:4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "coverage_admitted",
+      "args": [
+        "policy:entry-point/php"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "coverage_input_0",
+        "policy:observed-call-coverage/v1"
+      ],
+      "why": "coverage_admitted(policy:entry-point/php)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n  ↳ via observed_coverage_is_admitted\n    coverage_input(policy:entry-point/php, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "coverage_input",
+      "args": [
+        "policy:entry-point/php",
+        "2",
+        "500",
+        "500",
+        "1",
+        "0",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "coverage_input_0",
+        "policy:observed-call-coverage/v1"
+      ],
+      "why": "coverage_input(policy:entry-point/php, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "php:function:src/demo.php#entry",
+        "src/demo.php"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "defines_0",
+        "src/demo.php:2"
+      ],
+      "why": "defines(php:function:src/demo.php#entry, src/demo.php)  (conf 1.000, prov [\"defines_0\", \"src/demo.php:2\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "php:function:src/demo.php#unused",
+        "src/demo.php"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "defines_1",
+        "src/demo.php:21"
+      ],
+      "why": "defines(php:function:src/demo.php#unused, src/demo.php)  (conf 1.000, prov [\"defines_1\", \"src/demo.php:21\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "php:function:src/demo.php#work",
+        "src/demo.php"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "defines_2",
+        "src/demo.php:11"
+      ],
+      "why": "defines(php:function:src/demo.php#work, src/demo.php)  (conf 1.000, prov [\"defines_2\", \"src/demo.php:11\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "entry_point",
+      "args": [
+        "php:function:src/demo.php#entry"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "entry_point_0"
+      ],
+      "why": "entry_point(php:function:src/demo.php#entry)  (conf 1.000, prov [\"entry_point_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live",
+      "args": [
+        "php:function:src/demo.php#entry"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "entry_point_0"
+      ],
+      "why": "live(php:function:src/demo.php#entry)  (conf 1.000, prov [\"entry_point_0\"])\n  ↳ via an_entry_point_is_live\n    entry_point(php:function:src/demo.php#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live",
+      "args": [
+        "php:function:src/demo.php#work"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "calls_0",
+        "entry_point_0",
+        "src/demo.php:4"
+      ],
+      "why": "live(php:function:src/demo.php#work)  (conf 1.000, prov [\"calls_0\", \"entry_point_0\", \"src/demo.php:4\"])\n  ↳ via a_call_from_live_code_is_live\n    live(php:function:src/demo.php#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ via an_entry_point_is_live\n        entry_point(php:function:src/demo.php#entry)  (conf 1.000, prov [\"entry_point_0\"])\n          ↳ asserted (base fact)\n    calls(php:function:src/demo.php#entry, php:function:src/demo.php#work)  (conf 1.000, prov [\"calls_0\", \"src/demo.php:4\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live_total",
+      "args": [
+        "2"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [],
+      "why": "live_total(2)  (conf 1.000, prov [])\n  ↳ via live_symbols_are_counted\n    __agg:live_total:3(php:function:src/demo.php#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ via live_symbols_are_counted\n        live(php:function:src/demo.php#entry)  (conf 1.000, prov [\"entry_point_0\"])\n          ↳ via an_entry_point_is_live\n            entry_point(php:function:src/demo.php#entry)  (conf 1.000, prov [\"entry_point_0\"])\n              ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "production_file",
+      "args": [
+        "src/demo.php"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "policy:file-layout/php",
+        "production_file_0"
+      ],
+      "why": "production_file(src/demo.php)  (conf 1.000, prov [\"policy:file-layout/php\", \"production_file_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "snapshot_identity",
+      "args": [
+        "3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6",
+        "https://example.test/synthetic-topology.git",
+        "synthetic-commit",
+        "synthetic-tree",
+        "policy:entry-point/php"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6",
+        "snapshot_identity_0"
+      ],
+      "why": "snapshot_identity(3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6, https://example.test/synthetic-topology.git, synthetic-commit, synthetic-tree, policy:entry-point/php)  (conf 1.000, prov [\"snapshot:3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6\", \"snapshot_identity_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "unused_production_symbol",
+      "args": [
+        "php:function:src/demo.php#unused",
+        "policy:entry-point/php"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "coverage_input_0",
+        "defines_1",
+        "policy:file-layout/php",
+        "policy:observed-call-coverage/v1",
+        "production_file_0",
+        "src/demo.php:21"
+      ],
+      "why": "unused_production_symbol(php:function:src/demo.php#unused, policy:entry-point/php)  (conf 1.000, prov [\"coverage_input_0\", \"defines_1\", \"policy:file-layout/php\", \"policy:observed-call-coverage/v1\", \"production_file_0\", \"src/demo.php:21\"])\n  ↳ via shipped_without_observed_reach\n    coverage_admitted(policy:entry-point/php)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n      ↳ via observed_coverage_is_admitted\n        coverage_input(policy:entry-point/php, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n          ↳ asserted (base fact)\n    defines(php:function:src/demo.php#unused, src/demo.php)  (conf 1.000, prov [\"defines_1\", \"src/demo.php:21\"])\n      ↳ asserted (base fact)\n    production_file(src/demo.php)  (conf 1.000, prov [\"policy:file-layout/php\", \"production_file_0\"])\n      ↳ asserted (base fact)\n"
+    }
+  ],
+  "expectations": [
+    {
+      "id": "coverage_is_admitted",
+      "query": "coverage_admitted(P)",
+      "expected_count": 1,
+      "actual_count": 1,
+      "satisfied": true,
+      "found": [
+        "P=policy:entry-point/php"
+      ]
+    },
+    {
+      "id": "no_observed_unreached_symbols",
+      "query": "unused_production_symbol(S, _)",
+      "expected_count": 0,
+      "actual_count": 1,
+      "satisfied": false,
+      "found": [
+        "S=php:function:src/demo.php#unused"
+      ]
+    }
+  ]
+}

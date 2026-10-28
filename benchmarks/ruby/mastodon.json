@@ -1,0 +1,62 @@
+{
+  "contract": "stele-ruby-public-corpus/v1",
+  "language": "ruby",
+  "repository": "https://github.com/mastodon/mastodon.git",
+  "release": "v4.7.3",
+  "commit": "8ff11c2bb7b9f0714e947b10fa3629c6542c7121",
+  "license": "AGPL-3.0-or-later",
+  "license_url": "https://github.com/mastodon/mastodon/blob/8ff11c2bb7b9f0714e947b10fa3629c6542c7121/LICENSE",
+  "minimum_files_exclusive": 1000,
+  "oracle": {
+    "path": "crates/codemap/tests/fixtures/ruby_calls/expected.json",
+    "sha256": "b4ce89efbd3ca40ad845a2b7bb52e5eb92479be26f6441d9cad30c1b88cf7ded",
+    "test_target": "ruby_semantic_calls",
+    "test_name": "ruby_semantic_mode_matches_the_labelled_call_oracle"
+  },
+  "application_oracle": {
+    "path": "benchmarks/ruby/mastodon-oracle.json",
+    "sha256": "b6a4384dc534322668cd3e4dae3523d74dff63e2e9b33ac743d60c4b67029313"
+  },
+  "tool_lock": {
+    "path": "toolchain/ruby/Gemfile.lock",
+    "sha256": "5ed337ecf9e83740c13b045e0da9e288989220fda1fed0c06fc94043e3cb0ee1"
+  },
+  "bundle_environment": "CODEMAP_RUBY_TOOL_BUNDLE",
+  "bundle_entrypoint": "Gemfile",
+  "semantic_fact_source": "RubyLsp",
+  "definition_workers": [
+    1,
+    3
+  ],
+  "thresholds": {
+    "missing_selected_edges": 0,
+    "extra_selected_edges": 0,
+    "syntax_calls": 0,
+    "byte_identical_independent_checkouts": true
+  },
+  "runtime_tests": [
+    {
+      "test_target": "code_ruby_bundle_unavailable",
+      "package": "stele",
+      "test_name": "ruby_calls_required_fails_when_the_tool_bundle_is_absent"
+    },
+    {
+      "package": "stele",
+      "test_target": "code_ruby_bundle_unavailable",
+      "test_name": "ruby_calls_required_fails_when_the_lockfile_drifts"
+    },
+    {
+      "test_target": "ruby_heritage",
+      "test_name": "inherited_r2_call_requires_the_qualified_superclass_edge"
+    },
+    {
+      "test_target": "ruby_absolute_classes",
+      "test_name": "ruby_lsp_0_26_10_omits_implicit_calls_in_nested_absolute_bodies"
+    }
+  ],
+  "tool_versions": {
+    "ruby_lsp": "0.26.10",
+    "ruby": "ruby 4.0.7 ",
+    "rbs": "rbs 4.1.2"
+  }
+}

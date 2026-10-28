@@ -1,0 +1,17 @@
+catalog agents {
+  // from README.md, Agents, and `stele intro`, Install the skill next to
+  // the project.
+  intent agents_get_matching_guidance {
+    text: "A coding agent working with Stele gets guidance that matches the installed binary."
+  }
+  // from crates/stele/tests/agent.rs
+  definition skill_matches_binary {
+    refines: agents_get_matching_guidance
+    realized_by: [
+      "plugins/stele/skills/stele/SKILL.md",
+      "rust:crates/stele/src/agent.rs#install_project_skill",
+      "rust:crates/stele/src/agent.rs#print_intro",
+    ]
+    text: "The skill an agent installs is the copy the binary was built with, and every command it names exists."
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "stele",
+  "version": "0.5.5",
+  "description": "Answer questions about code from deterministic facts, and check code and typed specifications.",
+  "author": {
+    "name": "Morten Lochmann",
+    "email": "45610088+MortenHusted@users.noreply.github.com",
+    "url": "https://github.com/MortenHusted"
+  },
+  "homepage": "https://github.com/MortenHusted/stele",
+  "repository": "https://github.com/MortenHusted/stele",
+  "license": "MIT",
+  "keywords": [
+    "code-facts",
+    "static-analysis",
+    "specification",
+    "mutation-testing",
+    "software-development"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Stele",
+    "shortDescription": "Check code and specifications from deterministic facts.",
+    "longDescription": "Use Stele to extract deterministic code facts, check code against shipped checkers, measure what a change made harder to maintain, and write typed specifications that are checked, mutation-tested and rendered.",
+    "developerName": "Morten Lochmann",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive"
+    ],
+    "websiteURL": "https://github.com/MortenHusted/stele",
+    "defaultPrompt": "Use Stele to answer this question about the code from its facts and check it."
+  }
+}

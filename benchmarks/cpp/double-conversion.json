@@ -1,0 +1,114 @@
+{
+  "contract": "stele-cpp-public-corpus/v1",
+  "language": "cpp",
+  "repository": "https://github.com/google/double-conversion.git",
+  "release": "v3.4.0",
+  "commit": "9dd6227ee3e29807183e56877f0282aeb40b8b1e",
+  "license": "BSD-3-Clause",
+  "license_url": "https://github.com/google/double-conversion/blob/9dd6227ee3e29807183e56877f0282aeb40b8b1e/LICENSE",
+  "application_oracle": {
+    "path": "benchmarks/cpp/double-conversion-oracle.json",
+    "sha256": "8f414a540fb8f845edde5da1a235c3a29d70b0072019d3f668b9fa25ed8f1506"
+  },
+  "source_anchors": {
+    "sha256": "56e1619db0ad8a9d24d176baf61219b7762e49b294fe9b4cd275f1bcb09cadc0",
+    "export_test": "cpp_benchmark_anchors::export_source_pinned_body_and_call_anchors"
+  },
+  "oracle": {
+    "path": "crates/codemap/tests/fixtures/cpp_calls/expected.json",
+    "sha256": "2713054128a2f5694eafd5a550e18170380f289bcf7ebe87d365530c53da7772"
+  },
+  "translation_units": [
+    "double-conversion/bignum.cc",
+    "double-conversion/bignum-dtoa.cc",
+    "double-conversion/double-to-string.cc",
+    "double-conversion/fast-dtoa.cc",
+    "double-conversion/fixed-dtoa.cc"
+  ],
+  "source_files": {
+    "double-conversion/bignum-dtoa.cc": "85a803ff5eaea5acc840182ab03dc1205b77519cb61d6615682314eb8aa90914",
+    "double-conversion/bignum-dtoa.h": "d11517ebb69107c515c5b45d820e1a2ff665ac64182f62fdd25bac804acf1d1f",
+    "double-conversion/bignum.cc": "cc33c3775d66d138aa49ea5a18e73ad6766ecca17009225811c33cea64bcd11b",
+    "double-conversion/bignum.h": "6b63faea13f36f6026b56855aa8d28329ba1a91c564b9abc94b21608ca42cbfb",
+    "double-conversion/cached-powers.cc": "f0cabcc74f54ca33072671cc6c2819e39e8cd9b55db508946f2bd5acc1b48367",
+    "double-conversion/cached-powers.h": "1da91324ffd4200b3cb41d1f0707277175cdd28fcbffa13104e14df431f00744",
+    "double-conversion/diy-fp.h": "f8f5d66be5684ac547f68b997d41fdc57e8dc2ca1ef2ef2e3b10c6a76c9c5b75",
+    "double-conversion/double-conversion.h": "2754e5e7ef1a158d00f529da03dcf943dd239ccc70e798a594f22e13e8dd0f94",
+    "double-conversion/double-to-string.cc": "98b001f0cdfe091af43201bdcb45ed6f68d38e4a823fe29879a894ab7932efc7",
+    "double-conversion/double-to-string.h": "cb0b7ec6c4d8896a9d24e737ae4c33e1a341e2e5c61022a9adc1c67f4be0073b",
+    "double-conversion/fast-dtoa.cc": "c2042b7bdd218435bcb4881a86a033bbd5dddbb6bd386a3a099247ca67882440",
+    "double-conversion/fast-dtoa.h": "523d778935995dea5d21e59f55629ba40eaf68dedfe99e82b71efd4ae75f4e40",
+    "double-conversion/fixed-dtoa.cc": "6cbef46bd0f6a482f4c79e34d14e49b448094d85bcefc25177957d84b62b2144",
+    "double-conversion/fixed-dtoa.h": "5c22077d3d333998b87c578aa1a015503d162895e20e5f2ee92721c834748ee1",
+    "double-conversion/ieee.h": "bc9a4adae492f692e19db9c279eac52d4933ddf872aff43056bceee42d65a8f5",
+    "double-conversion/string-to-double.cc": "9aafd7e77a23164ee94903cfd16bd1e84344a5d7a18b4ee430e35e76568b108d",
+    "double-conversion/string-to-double.h": "1976310fdd04e3bc350c5f8f4b443ba0287abb4004b318f048ac41611278e4c9",
+    "double-conversion/strtod.cc": "923f15ce6bff38b9aaa1f3bced157c468978ac9443fbb781f0826daeae5cd4ee",
+    "double-conversion/strtod.h": "08c3a8f9852b6e3399b694ead7511e0ecadc96a6a61431fc1f9df003f2ff41d8",
+    "double-conversion/utils.h": "ab745c4b74fdd27d967d8026d082bff3ef59ca2ca581c163dcf266bebd413795",
+    "test/cctest/cctest.cc": "d311def3833586fc4ec7184a0ce252ead2ea0b53578295196a2f80acea9ab0e6",
+    "test/cctest/cctest.h": "9232fab0f72ef2b7e824409b940d6f84d8bb85ec31c6462cfddc01a1a56efea9",
+    "test/cctest/checks.h": "51dee4ee6a798db3fb958b7dcfc5186d04fb8b2d619aebdd3a1da4b8a2fc99f8",
+    "test/cctest/gay-fixed.cc": "91844fee493ab175eafefaee377bce822d3c0c078364f40988ef72f4231752cb",
+    "test/cctest/gay-fixed.h": "6466793cc504f7097e1596485096f9f41361535da9580516f42e4ddba35d8753",
+    "test/cctest/gay-precision.cc": "3db681fe4a8456078ff5b5181e05386fbf26089323dc0ef249616f2311a10be7",
+    "test/cctest/gay-precision.h": "077e75b874e0ff5f534e74493746b76d262439fc9b7117113de35d5f309f92ba",
+    "test/cctest/gay-shortest-single.cc": "1a4e3369e2a20bcb159c044cc2038dacf6d43aca41de333a9b7d1bd54ce72013",
+    "test/cctest/gay-shortest-single.h": "c64b6b64aa53101bb219cc7ec4fcbc8c3adcc637c5bbd0c6cf61b07e5af54df5",
+    "test/cctest/gay-shortest.cc": "0e6777926eceb0221d6985bfd7405b99bf2423be2b248093f22fc25eecaaae59",
+    "test/cctest/gay-shortest.h": "45c5bd6572139942ae9fc38d2cddc29cebdd4dd72c8eacd9464ad5eede23df59",
+    "test/cctest/test-bignum-dtoa.cc": "b36afb11cb5b3dcf6db292ea2543a77f4ff9d971418869cd918d0941729b6554",
+    "test/cctest/test-bignum.cc": "e4ad67132651ae4cb0aab57a358b305bdf18542db7820685e59ccf560c53f87e",
+    "test/cctest/test-conversions.cc": "9ede04a0862e6534acfb2a6cb078bf35e1f4688f6acee032703cd3b5e2082210",
+    "test/cctest/test-diy-fp.cc": "6b5aaddbe9b5da9d4b2ccc61b18d99aab51568e510d59f71db024ab8f30b60e7",
+    "test/cctest/test-dtoa.cc": "d66d32627d559e54615f4ac8744515628368da57247c1c6abfec5106abaca760",
+    "test/cctest/test-fast-dtoa.cc": "4526a162e94667f26e9a3d184ae002c6f580f73f04214dc69afdd0d809844feb",
+    "test/cctest/test-fixed-dtoa.cc": "c030fb2a45516f322c4b11c43e9ded554c225dbc0794c60d8dee0f0a9594d803",
+    "test/cctest/test-ieee.cc": "3cd28a9bda824e686649181861dd4d6b75e04cc7c352dd9c6c28124783caa48f",
+    "test/cctest/test-strtod.cc": "3a0623b076cccec0663ae34ccb681f33e6249d82730f7d55296b6aaeca3e1962"
+  },
+  "standard": "c++11",
+  "target": "arm64-apple-macos27.0",
+  "tested_clangd": "23.1.4",
+  "query_lanes": [
+    1,
+    4
+  ],
+  "thresholds": {
+    "minimum_sites": 60,
+    "minimum_cross_module_queries": 10,
+    "false_positive_sites": 0,
+    "supported_recall_minimum": 0.9,
+    "known_target_recall_minimum": 0.5,
+    "byte_identical_independent_checkouts": true
+  },
+  "operator": {
+    "distribution": "Homebrew LLVM 23.1.4 arm64_golden_gate bottle, standard /opt/homebrew prefix",
+    "formula_url": "https://github.com/Homebrew/homebrew-core/blob/17cf0c9cd2f8fa82de37a17effc4e46cdb85461e/Formula/l/llvm.rb",
+    "bottle_url": "https://ghcr.io/v2/homebrew/core/llvm/blobs/sha256:4005890f2e921a5cacf6f3c0db9bdcfd73b44d8657660386811ae8e33639edfc",
+    "bottle_sha256": "4005890f2e921a5cacf6f3c0db9bdcfd73b44d8657660386811ae8e33639edfc",
+    "image_pins": {
+      "clangd": "3eac148b17b9ffb5dabc4976d99398ce0e1ea6905e44a9acc05e69dd0ca4aa07",
+      "library/libLLVM.23.1.dylib": "b6290859004ede784a9f5629f2b8fcbbe457006a645f073271e727cea26a779f",
+      "library/libclang-cpp.23.1.dylib": "0c29ea547be59e2435a1caf520f6d909cf33e26a7b0d23022c72d34827649f14",
+      "library/libz3.5.3.2.0.dylib": "b23fa1068a6ba8fd32536429316ae8be4cd1023d2113a921f1874318fc93f94e",
+      "library/libzstd.1.5.7.dylib": "e2847c4613b386683c234913ae3b7b04299254096caf7616e3b3cd9bb97a39ab"
+    },
+    "sdk_version": "27.0",
+    "sdk_canonical_name": "macosx27.0",
+    "runtime_dependencies": {
+      "z3": "5.3.2",
+      "zstd": "1.5.7_1"
+    },
+    "bottle_manifest_url": "https://ghcr.io/v2/homebrew/core/llvm/manifests/sha256:48382e5b2e78531259c6c742c1c2e5ee691ca6e24186a31dd2a4a55c5a8e3e48"
+  },
+  "consumer": {
+    "repository": "https://github.com/MortenHusted/lemmaspec",
+    "release": "v0.4.2",
+    "commit": "9d628406ce9933838d1c985a7431211875cbdbcf",
+    "version_output": "lemmaspec 0.4.2",
+    "archive_url": "https://github.com/MortenHusted/lemmaspec/releases/download/v0.4.2/lemmaspec-aarch64-apple-darwin.tar.xz",
+    "archive_sha256": "a7369555cb4f53d9a20df6fb3e6ed059b47b600fbfbd6e2afc8ba12c64bc12d4",
+    "binary_sha256": "08a587724ade8148ce1d15d17b31e2ff6c14efbe82de412a097c9d93309c4a07"
+  }
+}

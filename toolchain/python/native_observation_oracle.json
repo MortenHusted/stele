@@ -1,0 +1,672 @@
+{
+  "basis": "Original CPython AST call spans, unchanged independently labelled positive targets, and source-inspected negative contexts; frozen before observation output implementation.",
+  "cases": {
+    "application_must_not_execute": [
+      {
+        "callee_span": {
+          "end_byte": 62,
+          "end_line": 3,
+          "start_byte": 50,
+          "start_line": 3
+        },
+        "path": "sample.py",
+        "reason": "unsupported_evaluation_context",
+        "span": {
+          "end_byte": 86,
+          "end_line": 3,
+          "start_byte": 50,
+          "start_line": 3
+        },
+        "status": "withheld"
+      },
+      {
+        "callee_span": {
+          "end_byte": 125,
+          "end_line": 5,
+          "start_byte": 119,
+          "start_line": 5
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 128,
+          "end_line": 5,
+          "start_byte": 119,
+          "start_line": 5
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "async_caller_sync_target": [
+      {
+        "callee_span": {
+          "end_byte": 88,
+          "end_line": 4,
+          "start_byte": 82,
+          "start_line": 4
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 91,
+          "end_line": 4,
+          "start_byte": 82,
+          "start_line": 4
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "async_target": [
+      {
+        "callee_span": {
+          "end_byte": 133,
+          "end_line": 5,
+          "start_byte": 127,
+          "start_line": 5
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 135,
+          "end_line": 5,
+          "start_byte": 127,
+          "start_line": 5
+        },
+        "status": "withheld"
+      }
+    ],
+    "callback_noncall_decoy": [
+      {
+        "callee_span": {
+          "end_byte": 154,
+          "end_line": 5,
+          "start_byte": 146,
+          "start_line": 5
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 162,
+          "end_line": 5,
+          "start_byte": 146,
+          "start_line": 5
+        },
+        "status": "withheld"
+      }
+    ],
+    "callback_parameter": [
+      {
+        "callee_span": {
+          "end_byte": 94,
+          "end_line": 3,
+          "start_byte": 88,
+          "start_line": 3
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 97,
+          "end_line": 3,
+          "start_byte": 88,
+          "start_line": 3
+        },
+        "status": "withheld"
+      }
+    ],
+    "comprehension_ownership": [
+      {
+        "callee_span": {
+          "end_byte": 89,
+          "end_line": 4,
+          "start_byte": 83,
+          "start_line": 4
+        },
+        "path": "sample.py",
+        "reason": "unsupported_evaluation_context",
+        "span": {
+          "end_byte": 92,
+          "end_line": 4,
+          "start_byte": 83,
+          "start_line": 4
+        },
+        "status": "withheld"
+      },
+      {
+        "callee_span": {
+          "end_byte": 107,
+          "end_line": 4,
+          "start_byte": 102,
+          "start_line": 4
+        },
+        "path": "sample.py",
+        "reason": "unsupported_evaluation_context",
+        "span": {
+          "end_byte": 110,
+          "end_line": 4,
+          "start_byte": 102,
+          "start_line": 4
+        },
+        "status": "withheld"
+      }
+    ],
+    "declared_namespace_root": [
+      {
+        "callee_span": {
+          "end_byte": 88,
+          "end_line": 4,
+          "start_byte": 82,
+          "start_line": 4
+        },
+        "path": "src/pkg/sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 91,
+          "end_line": 4,
+          "start_byte": 82,
+          "start_line": 4
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "declared_ordered_roots": [
+      {
+        "callee_span": {
+          "end_byte": 63,
+          "end_line": 3,
+          "start_byte": 57,
+          "start_line": 3
+        },
+        "path": "src/sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 66,
+          "end_line": 3,
+          "start_byte": 57,
+          "start_line": 3
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "declared_regular_root": [
+      {
+        "callee_span": {
+          "end_byte": 88,
+          "end_line": 4,
+          "start_byte": 82,
+          "start_line": 4
+        },
+        "path": "src/pkg/sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 91,
+          "end_line": 4,
+          "start_byte": 82,
+          "start_line": 4
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "decorated_target": [
+      {
+        "callee_span": {
+          "end_byte": 194,
+          "end_line": 8,
+          "start_byte": 188,
+          "start_line": 8
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 197,
+          "end_line": 8,
+          "start_byte": 188,
+          "start_line": 8
+        },
+        "status": "withheld"
+      }
+    ],
+    "default_setup": [
+      {
+        "callee_span": {
+          "end_byte": 74,
+          "end_line": 3,
+          "start_byte": 68,
+          "start_line": 3
+        },
+        "path": "sample.py",
+        "reason": "unsupported_evaluation_context",
+        "span": {
+          "end_byte": 77,
+          "end_line": 3,
+          "start_byte": 68,
+          "start_line": 3
+        },
+        "status": "withheld"
+      }
+    ],
+    "deferred_target": [
+      {
+        "callee_span": {
+          "end_byte": 119,
+          "end_line": 5,
+          "start_byte": 113,
+          "start_line": 5
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 121,
+          "end_line": 5,
+          "start_byte": 113,
+          "start_line": 5
+        },
+        "status": "withheld"
+      }
+    ],
+    "external_stub": [
+      {
+        "callee_span": {
+          "end_byte": 64,
+          "end_line": 3,
+          "start_byte": 58,
+          "start_line": 3
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 67,
+          "end_line": 3,
+          "start_byte": 58,
+          "start_line": 3
+        },
+        "status": "withheld"
+      }
+    ],
+    "generator_caller_sync_target": [
+      {
+        "callee_span": {
+          "end_byte": 119,
+          "end_line": 5,
+          "start_byte": 113,
+          "start_line": 5
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 122,
+          "end_line": 5,
+          "start_byte": 113,
+          "start_line": 5
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "lambda_ownership": [
+      {
+        "callee_span": {
+          "end_byte": 94,
+          "end_line": 4,
+          "start_byte": 77,
+          "start_line": 4
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 97,
+          "end_line": 4,
+          "start_byte": 76,
+          "start_line": 4
+        },
+        "status": "withheld"
+      },
+      {
+        "callee_span": {
+          "end_byte": 91,
+          "end_line": 4,
+          "start_byte": 85,
+          "start_line": 4
+        },
+        "path": "sample.py",
+        "reason": "unsupported_evaluation_context",
+        "span": {
+          "end_byte": 94,
+          "end_line": 4,
+          "start_byte": 85,
+          "start_line": 4
+        },
+        "status": "withheld"
+      }
+    ],
+    "literal_default_target": [
+      {
+        "callee_span": {
+          "end_byte": 82,
+          "end_line": 4,
+          "start_byte": 76,
+          "start_line": 4
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 84,
+          "end_line": 4,
+          "start_byte": 76,
+          "start_line": 4
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "module_initializer": [
+      {
+        "callee_span": {
+          "end_byte": 58,
+          "end_line": 3,
+          "start_byte": 52,
+          "start_line": 3
+        },
+        "path": "sample.py",
+        "reason": "unsupported_evaluation_context",
+        "span": {
+          "end_byte": 61,
+          "end_line": 3,
+          "start_byte": 52,
+          "start_line": 3
+        },
+        "status": "withheld"
+      }
+    ],
+    "mutable_namespace_before_native_call": [
+      {
+        "callee_span": {
+          "end_byte": 76,
+          "end_line": 4,
+          "start_byte": 69,
+          "start_line": 4
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 78,
+          "end_line": 4,
+          "start_byte": 69,
+          "start_line": 4
+        },
+        "status": "withheld"
+      },
+      {
+        "callee_span": {
+          "end_byte": 121,
+          "end_line": 5,
+          "start_byte": 115,
+          "start_line": 5
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 124,
+          "end_line": 5,
+          "start_byte": 115,
+          "start_line": 5
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "nested_caller_sync_target": [
+      {
+        "callee_span": {
+          "end_byte": 110,
+          "end_line": 5,
+          "start_byte": 104,
+          "start_line": 5
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 113,
+          "end_line": 5,
+          "start_byte": 104,
+          "start_line": 5
+        },
+        "status": "eligible_candidate"
+      },
+      {
+        "callee_span": {
+          "end_byte": 131,
+          "end_line": 6,
+          "start_byte": 125,
+          "start_line": 6
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 133,
+          "end_line": 6,
+          "start_byte": 125,
+          "start_line": 6
+        },
+        "status": "withheld"
+      }
+    ],
+    "nested_calls_share_start": [
+      {
+        "callee_span": {
+          "end_byte": 155,
+          "end_line": 7,
+          "start_byte": 148,
+          "start_line": 7
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 157,
+          "end_line": 7,
+          "start_byte": 148,
+          "start_line": 7
+        },
+        "status": "eligible_candidate"
+      },
+      {
+        "callee_span": {
+          "end_byte": 157,
+          "end_line": 7,
+          "start_byte": 148,
+          "start_line": 7
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 159,
+          "end_line": 7,
+          "start_byte": 148,
+          "start_line": 7
+        },
+        "status": "withheld"
+      }
+    ],
+    "receiver_virtual": [
+      {
+        "callee_span": {
+          "end_byte": 113,
+          "end_line": 5,
+          "start_byte": 101,
+          "start_line": 5
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 115,
+          "end_line": 5,
+          "start_byte": 101,
+          "start_line": 5
+        },
+        "status": "withheld"
+      }
+    ],
+    "same_unit_direct": [
+      {
+        "callee_span": {
+          "end_byte": 88,
+          "end_line": 4,
+          "start_byte": 82,
+          "start_line": 4
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 91,
+          "end_line": 4,
+          "start_byte": 82,
+          "start_line": 4
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "same_unit_imported": [
+      {
+        "callee_span": {
+          "end_byte": 63,
+          "end_line": 3,
+          "start_byte": 57,
+          "start_line": 3
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 66,
+          "end_line": 3,
+          "start_byte": 57,
+          "start_line": 3
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "same_unit_qualified": [
+      {
+        "callee_span": {
+          "end_byte": 57,
+          "end_line": 3,
+          "start_byte": 45,
+          "start_line": 3
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 60,
+          "end_line": 3,
+          "start_byte": 45,
+          "start_line": 3
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "stub_setup_calls_are_declarations": [
+      {
+        "callee_span": {
+          "end_byte": 51,
+          "end_line": 2,
+          "start_byte": 45,
+          "start_line": 2
+        },
+        "path": "opaque.pyi",
+        "reason": "declaration_only_source",
+        "span": {
+          "end_byte": 53,
+          "end_line": 2,
+          "start_byte": 45,
+          "start_line": 2
+        },
+        "status": "withheld"
+      },
+      {
+        "callee_span": {
+          "end_byte": 64,
+          "end_line": 3,
+          "start_byte": 58,
+          "start_line": 3
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 66,
+          "end_line": 3,
+          "start_byte": 58,
+          "start_line": 3
+        },
+        "status": "withheld"
+      }
+    ],
+    "two_calls_same_line": [
+      {
+        "callee_span": {
+          "end_byte": 82,
+          "end_line": 4,
+          "start_byte": 76,
+          "start_line": 4
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 85,
+          "end_line": 4,
+          "start_byte": 76,
+          "start_line": 4
+        },
+        "status": "eligible_candidate"
+      },
+      {
+        "callee_span": {
+          "end_byte": 94,
+          "end_line": 4,
+          "start_byte": 88,
+          "start_line": 4
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 97,
+          "end_line": 4,
+          "start_byte": 88,
+          "start_line": 4
+        },
+        "status": "eligible_candidate"
+      }
+    ],
+    "unknown_effect_before_native_call": [
+      {
+        "callee_span": {
+          "end_byte": 129,
+          "end_line": 5,
+          "start_byte": 123,
+          "start_line": 5
+        },
+        "path": "sample.py",
+        "reason": "no_unique_supported_native_body",
+        "span": {
+          "end_byte": 131,
+          "end_line": 5,
+          "start_byte": 123,
+          "start_line": 5
+        },
+        "status": "withheld"
+      },
+      {
+        "callee_span": {
+          "end_byte": 149,
+          "end_line": 6,
+          "start_byte": 143,
+          "start_line": 6
+        },
+        "path": "sample.py",
+        "reason": "direct_native_ir_call",
+        "span": {
+          "end_byte": 152,
+          "end_line": 6,
+          "start_byte": 143,
+          "start_line": 6
+        },
+        "status": "eligible_candidate"
+      }
+    ]
+  },
+  "contract": "python-native-observation-oracle/1"
+}

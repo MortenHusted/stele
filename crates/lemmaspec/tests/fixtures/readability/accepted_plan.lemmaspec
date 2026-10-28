@@ -1,0 +1,9 @@
+// Does the plan have its required verification?
+spec accepted_plan {
+  relation verified { args: [symbol] }
+  relation accepted { args: [symbol] }
+  fact verification_complete { relation: verified args: [plan] }
+  rule accept_verified { derive: "accepted(Item)" when: ["verified(Item)"] }
+  expect plan_accepted { query: "accepted(plan)" count: 1 }
+  mutation verification_matters { operator: drop_fact relation: verified }
+}

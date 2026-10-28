@@ -1,0 +1,55 @@
+catalog plans {
+  // from README.md, Plans, and plans/stele-plans.stele.
+  intent plans_trace_to_intent {
+    text: "Every change in a plan traces to a statement of what the system is for, and every decision to a change that carries it out."
+  }
+  // from crates/stele/tests/plan.rs and crates/stele-plan/checker.stele
+  // (touched_code_exists, done_changes_built_what_they_add).
+  definition plan_checked_against_code {
+    refines: plans_trace_to_intent
+    realized_by: [
+      "rust:crates/stele-plan/src/evidence.rs#anchor_facts",
+      "rust:crates/stele/src/plan.rs#Code::read",
+    ]
+    text: "The code a plan says a change edits must exist, and so must the code a done change adds."
+  }
+  // from crates/stele/tests/plan.rs and `stele plan check --help`.
+  definition plan_shows_what_is_next {
+    refines: plans_trace_to_intent
+    realized_by: [
+      "rust:crates/stele-plan/src/evidence.rs#evidence",
+      "rust:crates/stele/src/plan.rs#print_order",
+    ]
+    text: "A plan shows which changes are ready to start and which wait on an unfinished one."
+  }
+  // from plans/stele-plans.stele, where done_backed_by_runs was proposed:
+  // a purpose of its own, apart from tracing plans to intent.
+  intent done_means_verified {
+    text: "A change marked done is backed by verified statements, not by a declaration alone."
+  }
+  // from crates/stele-plan/checker.stele (unverified_done) and
+  // crates/stele/tests/plan.rs.
+  definition done_backed_by_runs {
+    refines: done_means_verified
+    realized_by: [
+      "rust:crates/stele-plan/src/evidence.rs#standings_facts",
+      "rust:crates/stele-plan/src/report.rs#standings",
+    ]
+    text: "Once the catalog has approvals, stele plan check reports a done change that serves a statement not verified at HEAD: approved as it reads, with its examples seen failing and then passing."
+  }
+  // from plans/stele-plans.stele (show_change_impact): the map read
+  // backwards, from a change to what it is for.
+  intent changes_trace_to_intent {
+    text: "A code change shows which statements of what the system is for it touches."
+  }
+  // from crates/stele/tests/impact.rs and `stele intent impact --help`.
+  definition impact_lists_touched_statements {
+    refines: changes_trace_to_intent
+    realized_by: [
+      "crates/stele-plan/src/impact.rs",
+      "rust:crates/stele/src/intent.rs#show_impact",
+      "rust:crates/stele/src/intent.rs#git_diff",
+    ]
+    text: "stele intent impact lists each statement whose realized_by code a change touches, with its standing at HEAD's commit and its examples, then the changed code no statement maps and the examples whose test changed."
+  }
+}

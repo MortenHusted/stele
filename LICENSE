@@ -1,0 +1,76 @@
+Stele Source-Available License 1.0
+
+Licensor: Morten Lochmann
+Copyright (c) 2026 Morten Lochmann
+
+1. Scope
+
+This license covers Stele and LemmaSpec source code, binaries and documentation
+only to the extent the licensor is entitled to license them under these terms
+(the Software). Separately licensed material identified in NOTICE,
+THIRD_PARTY_NOTICES.md and component notices retains its own license. This
+license does not restrict rights those licenses grant in that material.
+
+2. Free permitted uses
+
+Subject to the conditions below, you may use, inspect, copy and modify the
+Software without charge for personal projects, education, research, public
+institutions and internal business operations.
+
+Internal business operations include paid consulting, client development,
+audits, reports and specifications. You may charge for that professional work
+and deliver its results to clients. Reports, specifications and ordinary
+software developed using the Software do not become subject to this license
+merely because the Software helped produce or check them.
+
+Employees and contractors may operate the Software on behalf of an organization
+for its permitted internal uses. A consultant may use the Software as an
+internal instrument when carrying out permitted professional work for clients.
+
+3. Sharing source and forks
+
+You may share unmodified or modified source and standalone binaries without
+charging for them, provided you retain this license and applicable notices,
+identify modifications, and pass on the same terms for the material this
+license covers. Public source forks are permitted on those conditions.
+
+4. Separate commercial permission
+
+You must obtain a separate written commercial license from the licensor before:
+
+(a) selling or licensing copies of the Software for payment;
+(b) embedding or bundling the Software, or modified versions of its covered
+    code, in products supplied to other people or organizations; or
+(c) providing other people or organizations hosted or managed access to the
+    Software's functionality, including through a service, API or application.
+
+The restrictions in (b) and (c) apply whether or not you charge for the product
+or access. Sharing standalone copies under section 3 is not embedding.
+Operating a deployment solely for a client's internal use as its contractor
+falls under section 2 when the client is not buying hosted access to the tools.
+
+5. Notices and existing rights
+
+Keep this license and applicable copyright, attribution and third-party notices
+with copies of the Software. Do not describe modified copies as the licensor's
+unmodified release. No trademark permission is granted by this license.
+
+These terms apply prospectively to copies supplied under this license. They
+do not revoke permissions previously granted for earlier copies, including
+earlier MIT-licensed copies, or replace inherited third-party grants.
+
+6. Warranty and liability
+
+The Software is supplied as is, without warranties, including warranties of
+merchantability, fitness for a particular purpose or non-infringement. To the
+extent permitted by applicable law, its licensors are not liable for damages
+or other liability arising from its use or distribution.
+
+7. Noncompliance
+
+Permission under this license ends if you violate its conditions. Permissions
+under separately applicable third-party licenses remain governed by those
+licenses. A separate written agreement may grant additional rights.
+
+For commercial permission, contact the licensor through
+https://github.com/MortenHusted/stele.

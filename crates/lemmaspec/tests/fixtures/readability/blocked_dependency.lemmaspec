@@ -1,0 +1,14 @@
+// Which work is blocked by an unfinished dependency?
+spec blocked_dependency {
+  relation depends_on { args: [symbol, symbol] roles: [item, dependency] reads: "{item} depends on {dependency}" }
+  relation unfinished { args: [symbol] }
+  relation blocked { args: [symbol] }
+
+  fact needs_review { relation: depends_on args: [publish, review] }
+  fact review_pending { relation: unfinished args: [review] }
+  rule dependency_blocks {
+    derive: "blocked(Item)"
+    when: ["depends_on(Item, Dependency)", "unfinished(Dependency)"]
+  }
+  expect ready { query: "blocked(publish)" count: 0 }
+}

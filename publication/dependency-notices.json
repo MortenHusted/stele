@@ -1,0 +1,29 @@
+{
+  "contract": "stele-dependency-notice-supplements/v1",
+  "packages": {
+    "tree-sitter-cpp": {
+      "version": "0.23.4",
+      "crate_sha256": "df2196ea9d47b4ab4a31b9297eaa5a5d19a0b121dceb9f118f6790ad0ab94743",
+      "commit": "f41e1a044c8a84ea9fa8577fdd2eab92ec96de02",
+      "url": "https://github.com/tree-sitter/tree-sitter-cpp/blob/f41e1a044c8a84ea9fa8577fdd2eab92ec96de02/LICENSE",
+      "path": "publication/third-party/tree-sitter-cpp.LICENSE",
+      "sha256": "2e0110e07abef7c2548b26ec9d6969775617ca539a0dc8dbeeb14d6452c711d1"
+    },
+    "tree-sitter-typescript": {
+      "version": "0.23.2",
+      "crate_sha256": "6c5f76ed8d947a75cc446d5fccd8b602ebf0cde64ccf2ffa434d873d7a575eff",
+      "commit": "f975a621f4e7f532fe322e13c4f79495e0a7b2e7",
+      "url": "https://github.com/tree-sitter/tree-sitter-typescript/blob/f975a621f4e7f532fe322e13c4f79495e0a7b2e7/LICENSE",
+      "path": "publication/third-party/tree-sitter-typescript.LICENSE",
+      "sha256": "49bf33cf78ef5897e4e161ce1517df7de1ae5042a65b6bcfd44401e0fc606559"
+    },
+    "tree-sitter": {
+      "version": "0.25.10",
+      "crate_sha256": "78f873475d258561b06f1c595d93308a7ed124d9977cb26b148c2084a4a3cc87",
+      "commit": "da6fe9beb4f7f67beb75914ca8e0d48ae48d6406",
+      "url": "https://github.com/tree-sitter/tree-sitter/blob/da6fe9beb4f7f67beb75914ca8e0d48ae48d6406/LICENSE",
+      "path": "publication/third-party/tree-sitter.LICENSE",
+      "sha256": "5f9cf9fb6acb1972b35ae29119ce563bb60ec097656bc4b69b9bac2d04c7a147"
+    }
+  }
+}

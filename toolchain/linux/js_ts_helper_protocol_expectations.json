@@ -1,0 +1,11 @@
+{
+  "contract": "linux-js-ts-independent-protocol/1",
+  "accept": ["complete", "fragmented"],
+  "reject": ["ready-eof", "ready-large", "extra-frame", "stderr-large", "result-eof", "extra-output", "failed-exit", "control-eof", "result-large"],
+  "deadline_reject": ["silent", "ready-partial", "result-partial", "closed-output-live"],
+  "semantic_reject": ["ready-version", "result-schema"],
+  "deadline_seconds": 180,
+  "ready_bytes": 4096,
+  "output_bytes": 134217728,
+  "stderr_bytes": 1048576
+}

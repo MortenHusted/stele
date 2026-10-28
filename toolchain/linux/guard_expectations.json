@@ -1,0 +1,21 @@
+{
+  "contract": "codemap-linux-guard-feasibility/v1",
+  "minimum_landlock_abi": 3,
+  "expected": {
+    "pinned_read_allowed": true,
+    "private_write_allowed": true,
+    "unowned_read_denied": true,
+    "pinned_write_denied": true,
+    "outside_write_denied": true,
+    "tcp_socket_denied": true,
+    "udp_socket_denied": true,
+    "unix_socket_denied": true,
+    "socketpair_denied": true,
+    "readonly_truncate_denied": true,
+    "outside_create_denied": true,
+    "outside_unlink_denied": true,
+    "outside_rename_denied": true,
+    "cross_hierarchy_link_denied": true,
+    "unowned_exec_denied": true
+  }
+}

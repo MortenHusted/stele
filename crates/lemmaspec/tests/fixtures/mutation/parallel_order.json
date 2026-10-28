@@ -1,0 +1,470 @@
+{
+  "spec": "parallel_order",
+  "status": "survived",
+  "baseline_status": "clean",
+  "summary": {
+    "total": 22,
+    "executed": 18,
+    "killed": 11,
+    "survived": 7,
+    "rejected": 2,
+    "excluded": 2
+  },
+  "policies": [
+    {
+      "id": "conditions_matter",
+      "operator": "drop_condition",
+      "status": "survived",
+      "summary": {
+        "total": 8,
+        "executed": 5,
+        "killed": 3,
+        "survived": 2,
+        "rejected": 2,
+        "excluded": 1
+      }
+    },
+    {
+      "id": "enrolment_drives_riders",
+      "operator": "drop_fact",
+      "status": "survived",
+      "summary": {
+        "total": 5,
+        "executed": 5,
+        "killed": 3,
+        "survived": 2,
+        "rejected": 0,
+        "excluded": 0
+      }
+    },
+    {
+      "id": "rules_matter",
+      "operator": "drop_rule",
+      "status": "survived",
+      "summary": {
+        "total": 4,
+        "executed": 3,
+        "killed": 2,
+        "survived": 1,
+        "rejected": 0,
+        "excluded": 1
+      }
+    },
+    {
+      "id": "seats_prevent_stranding",
+      "operator": "drop_fact",
+      "status": "survived",
+      "summary": {
+        "total": 5,
+        "executed": 5,
+        "killed": 3,
+        "survived": 2,
+        "rejected": 0,
+        "excluded": 0
+      }
+    }
+  ],
+  "mutations": [
+    {
+      "id": "conditions_matter:drop_condition:enrolled_children_ride:is_child",
+      "policy": "conditions_matter",
+      "operator": "drop_condition",
+      "target": {
+        "kind": "condition",
+        "rule": "enrolled_children_ride",
+        "condition": "is_child",
+        "index": 1,
+        "expression": "child(Child)"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "nobody_stranded",
+          "query": "stranded(Child)",
+          "expected_count": 0,
+          "actual_count": 1,
+          "satisfied": false,
+          "found": [
+            "Child=guest"
+          ]
+        },
+        {
+          "id": "three_riders",
+          "query": "rider(Child)",
+          "expected_count": 3,
+          "actual_count": 4,
+          "satisfied": false,
+          "found": [
+            "Child=ada",
+            "Child=bo",
+            "Child=cy",
+            "Child=guest"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conditions_matter:drop_condition:enrolled_children_ride:is_enrolled",
+      "policy": "conditions_matter",
+      "operator": "drop_condition",
+      "target": {
+        "kind": "condition",
+        "rule": "enrolled_children_ride",
+        "condition": "is_enrolled",
+        "index": 2,
+        "expression": "enrolled(Child)"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "three_riders",
+          "query": "rider(Child)",
+          "expected_count": 3,
+          "actual_count": 5,
+          "satisfied": false,
+          "found": [
+            "Child=ada",
+            "Child=bo",
+            "Child=cy",
+            "Child=ed",
+            "Child=fay"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "conditions_matter:drop_condition:enrolled_children_ride:is_present",
+      "policy": "conditions_matter",
+      "operator": "drop_condition",
+      "target": {
+        "kind": "condition",
+        "rule": "enrolled_children_ride",
+        "condition": "is_present",
+        "index": 3,
+        "expression": "!absent(Child)"
+      },
+      "status": "excluded"
+    },
+    {
+      "id": "conditions_matter:drop_condition:list_children:1",
+      "policy": "conditions_matter",
+      "operator": "drop_condition",
+      "target": {
+        "kind": "condition",
+        "rule": "list_children",
+        "index": 1,
+        "expression": "child(Child)"
+      },
+      "status": "rejected",
+      "diagnostic": "rule `list_children` must contain at least one condition"
+    },
+    {
+      "id": "conditions_matter:drop_condition:riders_with_seats_are_seated:1",
+      "policy": "conditions_matter",
+      "operator": "drop_condition",
+      "target": {
+        "kind": "condition",
+        "rule": "riders_with_seats_are_seated",
+        "index": 1,
+        "expression": "rider(Child)"
+      },
+      "status": "survived"
+    },
+    {
+      "id": "conditions_matter:drop_condition:riders_with_seats_are_seated:2",
+      "policy": "conditions_matter",
+      "operator": "drop_condition",
+      "target": {
+        "kind": "condition",
+        "rule": "riders_with_seats_are_seated",
+        "index": 2,
+        "expression": "seat(Child)"
+      },
+      "status": "survived"
+    },
+    {
+      "id": "conditions_matter:drop_condition:riders_without_seats_are_stranded:1",
+      "policy": "conditions_matter",
+      "operator": "drop_condition",
+      "target": {
+        "kind": "condition",
+        "rule": "riders_without_seats_are_stranded",
+        "index": 1,
+        "expression": "rider(Child)"
+      },
+      "status": "rejected",
+      "diagnostic": "install rule: unsafe rule \"riders_without_seats_are_stranded\": negation variables [\"Child\"] are unbound"
+    },
+    {
+      "id": "conditions_matter:drop_condition:riders_without_seats_are_stranded:2",
+      "policy": "conditions_matter",
+      "operator": "drop_condition",
+      "target": {
+        "kind": "condition",
+        "rule": "riders_without_seats_are_stranded",
+        "index": 2,
+        "expression": "!seat(Child)"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "nobody_stranded",
+          "query": "stranded(Child)",
+          "expected_count": 0,
+          "actual_count": 3,
+          "satisfied": false,
+          "found": [
+            "Child=ada",
+            "Child=bo",
+            "Child=cy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enrolment_drives_riders:drop_fact:enrolled_ada",
+      "policy": "enrolment_drives_riders",
+      "operator": "drop_fact",
+      "target": {
+        "kind": "fact",
+        "fact": "enrolled_ada",
+        "relation": "enrolled"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "three_riders",
+          "query": "rider(Child)",
+          "expected_count": 3,
+          "actual_count": 2,
+          "satisfied": false,
+          "found": [
+            "Child=bo",
+            "Child=cy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enrolment_drives_riders:drop_fact:enrolled_bo",
+      "policy": "enrolment_drives_riders",
+      "operator": "drop_fact",
+      "target": {
+        "kind": "fact",
+        "fact": "enrolled_bo",
+        "relation": "enrolled"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "three_riders",
+          "query": "rider(Child)",
+          "expected_count": 3,
+          "actual_count": 2,
+          "satisfied": false,
+          "found": [
+            "Child=ada",
+            "Child=cy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enrolment_drives_riders:drop_fact:enrolled_cy",
+      "policy": "enrolment_drives_riders",
+      "operator": "drop_fact",
+      "target": {
+        "kind": "fact",
+        "fact": "enrolled_cy",
+        "relation": "enrolled"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "three_riders",
+          "query": "rider(Child)",
+          "expected_count": 3,
+          "actual_count": 2,
+          "satisfied": false,
+          "found": [
+            "Child=ada",
+            "Child=bo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enrolment_drives_riders:drop_fact:enrolled_di",
+      "policy": "enrolment_drives_riders",
+      "operator": "drop_fact",
+      "target": {
+        "kind": "fact",
+        "fact": "enrolled_di",
+        "relation": "enrolled"
+      },
+      "status": "survived"
+    },
+    {
+      "id": "enrolment_drives_riders:drop_fact:enrolled_guest",
+      "policy": "enrolment_drives_riders",
+      "operator": "drop_fact",
+      "target": {
+        "kind": "fact",
+        "fact": "enrolled_guest",
+        "relation": "enrolled"
+      },
+      "status": "survived"
+    },
+    {
+      "id": "rules_matter:drop_rule:enrolled_children_ride",
+      "policy": "rules_matter",
+      "operator": "drop_rule",
+      "target": {
+        "kind": "rule",
+        "rule": "enrolled_children_ride"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "three_riders",
+          "query": "rider(Child)",
+          "expected_count": 3,
+          "actual_count": 0,
+          "satisfied": false,
+          "found": []
+        }
+      ]
+    },
+    {
+      "id": "rules_matter:drop_rule:list_children",
+      "policy": "rules_matter",
+      "operator": "drop_rule",
+      "target": {
+        "kind": "rule",
+        "rule": "list_children"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "every_child_listed",
+          "query": "listed(Child)",
+          "expected_count": 6,
+          "actual_count": 0,
+          "satisfied": false,
+          "found": []
+        }
+      ]
+    },
+    {
+      "id": "rules_matter:drop_rule:riders_with_seats_are_seated",
+      "policy": "rules_matter",
+      "operator": "drop_rule",
+      "target": {
+        "kind": "rule",
+        "rule": "riders_with_seats_are_seated"
+      },
+      "status": "survived"
+    },
+    {
+      "id": "rules_matter:drop_rule:riders_without_seats_are_stranded",
+      "policy": "rules_matter",
+      "operator": "drop_rule",
+      "target": {
+        "kind": "rule",
+        "rule": "riders_without_seats_are_stranded"
+      },
+      "status": "excluded"
+    },
+    {
+      "id": "seats_prevent_stranding:drop_fact:seat_ada",
+      "policy": "seats_prevent_stranding",
+      "operator": "drop_fact",
+      "target": {
+        "kind": "fact",
+        "fact": "seat_ada",
+        "relation": "seat"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "nobody_stranded",
+          "query": "stranded(Child)",
+          "expected_count": 0,
+          "actual_count": 1,
+          "satisfied": false,
+          "found": [
+            "Child=ada"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seats_prevent_stranding:drop_fact:seat_bo",
+      "policy": "seats_prevent_stranding",
+      "operator": "drop_fact",
+      "target": {
+        "kind": "fact",
+        "fact": "seat_bo",
+        "relation": "seat"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "nobody_stranded",
+          "query": "stranded(Child)",
+          "expected_count": 0,
+          "actual_count": 1,
+          "satisfied": false,
+          "found": [
+            "Child=bo"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seats_prevent_stranding:drop_fact:seat_cy",
+      "policy": "seats_prevent_stranding",
+      "operator": "drop_fact",
+      "target": {
+        "kind": "fact",
+        "fact": "seat_cy",
+        "relation": "seat"
+      },
+      "status": "killed",
+      "failed_expectations": [
+        {
+          "id": "nobody_stranded",
+          "query": "stranded(Child)",
+          "expected_count": 0,
+          "actual_count": 1,
+          "satisfied": false,
+          "found": [
+            "Child=cy"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seats_prevent_stranding:drop_fact:seat_ed",
+      "policy": "seats_prevent_stranding",
+      "operator": "drop_fact",
+      "target": {
+        "kind": "fact",
+        "fact": "seat_ed",
+        "relation": "seat"
+      },
+      "status": "survived"
+    },
+    {
+      "id": "seats_prevent_stranding:drop_fact:seat_fay",
+      "policy": "seats_prevent_stranding",
+      "operator": "drop_fact",
+      "target": {
+        "kind": "fact",
+        "fact": "seat_fay",
+        "relation": "seat"
+      },
+      "status": "survived"
+    }
+  ]
+}

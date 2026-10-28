@@ -1,0 +1,155 @@
+// Does any place execution starts sit above the complexity cutoff?
+//
+// An entry point is where a request, a job, or a command lands: a Rails
+// action, a job's perform, a binary's main. Complexity is what codemap
+// measured (`extract --measures`): one plus the decision points in the
+// callable's own body, under the language's counting policy. The cutoff,
+// 10, is Radon's high band and the value SlopCodeBench cuts erosion at; it
+// is the same constant codemap-slop erodes at (policy::HIGH_CC_CUTOFF),
+// and codemap-lemmaspec's tests hold the two equal.
+//
+// The claim is deliberately narrow. A complex helper deep in a model may
+// be the right shape; an action that dispatches on a dozen conditions is
+// domain logic in the request layer, and that is the finding a reviewer
+// acts on first. The evidence's `hotspot_entry_point_total` says how many.
+//
+// Applied to real code it is paired with evidence codemap-lemmaspec projects
+// from a measured codemap snapshot:
+//   stele code extract --path . --language ruby --measures --out snapshot.json
+//   stele code evidence --file snapshot.json --checker hotspots --out evidence.stele
+//   stele spec check hotspots.stele evidence.stele
+
+spec hotspots {
+
+  // ================================================================ evidence
+
+  relation snapshot_identity {
+    args: [symbol, symbol, symbol, symbol, symbol]
+    roles: [snapshot, repository, commit, tree, entry_policy]
+    reads: "snapshot {snapshot} records repository {repository}, commit {commit}, tree {tree}, under entry-point policy {entry_policy}"
+  }
+
+  // All recognized sites, including non-authoritative and external targets.
+  relation call_census {
+    args: [symbol, integer]
+    roles: [category, sites]
+    reads: "{sites} recognized call sites are classified {category}"
+  }
+
+  // per_mille is floor(1000 * Resolved / recognized); empty uses 0 and
+  // must fail the separate positive census guard, even at threshold 0.
+  relation coverage_input {
+    args: [symbol, integer, integer, integer, integer, integer, integer]
+    roles: [entry_policy, recognized, per_mille, minimum, semantic, parse_errors, skipped]
+    reads: "under entry-point policy {entry_policy}, {recognized} recognized sites have {per_mille} per mille exact in-repository resolution against minimum {minimum}; semantic={semantic}, parse errors={parse_errors}, skipped={skipped}"
+  }
+
+
+  // A symbol definition, and the file it was extracted from.
+  relation defines {
+    args: [symbol, symbol]
+    roles: [symbol, file]
+    reads: "{symbol} is defined in {file}"
+  }
+
+  // A file that ships rather than existing only to test.
+  relation production_file {
+    args: [symbol]
+    roles: [file]
+    reads: "{file} ships in the binary"
+  }
+
+  // A place execution starts, by the toolchain's convention or by review
+  // decision.
+  relation entry_point {
+    args: [symbol]
+    roles: [symbol]
+    reads: "{symbol} is an entry point"
+  }
+
+  // Cyclomatic complexity as codemap measured it.
+  relation complexity {
+    args: [symbol, integer]
+    roles: [symbol, cc]
+    reads: "{symbol} has cyclomatic complexity {cc}"
+  }
+
+  // ============================================================== judgement
+
+  // An entry point in shipped code above the cutoff.
+  relation hotspot_entry_point {
+    args: [symbol]
+    roles: [symbol]
+    reads: "{symbol} is an entry point above the complexity cutoff"
+  }
+
+  // How many: so a passing run proves the closure was evaluated, not empty.
+  relation hotspot_entry_point_total {
+    args: [integer]
+    roles: [symbols]
+    reads: "{symbols} entry points sit above the cutoff"
+  }
+
+  // ================================================================= rules
+
+  rule an_entry_point_over_the_cutoff_is_a_hotspot {
+    derive: "hotspot_entry_point(Symbol)"
+    when: {
+      is_entry: "entry_point(Symbol)"
+      is_defined: "defines(Symbol, File)"
+      ships: "production_file(File)"
+      is_measured: "complexity(Symbol, Cc)"
+      is_over: "Cc > 10"
+    }
+  }
+
+  rule hotspot_entry_points_are_counted {
+    derive: "hotspot_entry_point_total(count(Symbol))"
+    when: ["hotspot_entry_point(Symbol)"]
+  }
+
+  // ================================================================= fixture
+  //
+  // A miniature Rails app: two actions in a shipped controller, one over
+  // the cutoff and one under; a tangled model method over the cutoff that
+  // is not an entry point; and a test-only action far over the cutoff in a
+  // file that does not ship. Every condition has a fact to exclude.
+
+  fact fx_defines_index { relation: defines args: [index_action, "app/controllers/cards_controller.rb"] }
+  fact fx_defines_show { relation: defines args: [show_action, "app/controllers/cards_controller.rb"] }
+  fact fx_defines_tangled { relation: defines args: [tangled_helper, "app/models/card.rb"] }
+  fact fx_defines_probe { relation: defines args: [probe_action, "test/controllers/probe_controller_test.rb"] }
+
+  fact fx_ships_controller { relation: production_file args: ["app/controllers/cards_controller.rb"] }
+  fact fx_ships_model { relation: production_file args: ["app/models/card.rb"] }
+
+  fact fx_entry_index { relation: entry_point args: [index_action] }
+  fact fx_entry_show { relation: entry_point args: [show_action] }
+  fact fx_entry_probe { relation: entry_point args: [probe_action] }
+
+  fact fx_cc_index { relation: complexity args: [index_action, 12] }
+  fact fx_cc_show { relation: complexity args: [show_action, 9] }
+  fact fx_cc_tangled { relation: complexity args: [tangled_helper, 30] }
+  fact fx_cc_probe { relation: complexity args: [probe_action, 40] }
+
+  // ---- the checker's self-test ----
+
+  expect fx_exactly_one_hotspot_entry_point {
+    query: "hotspot_entry_point(S)"
+    count: 1
+  }
+  expect fx_the_index_action_is_it {
+    query: "hotspot_entry_point(index_action)"
+    count: 1
+  }
+  expect fx_the_total_is_one {
+    query: "hotspot_entry_point_total(1)"
+    count: 1
+  }
+
+  // ============================================================== stress
+
+  mutation every_rule_is_load_bearing { operator: drop_rule }
+
+  mutation every_condition_is_load_bearing { operator: drop_condition }
+}

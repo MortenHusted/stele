@@ -1,0 +1,1380 @@
+<!doctype html>
+<html lang="en" data-status="incomplete">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Persistence adapter readiness · LemmaSpec</title>
+<style>
+  :root {
+    --bg:#0d1418; --panel:#131f25; --panel2:#18262d; --line:#283a43; --hover:#0f1b20;
+    --ink:#e5eff2; --dim:#9cb4bc; --faint:#6a818a;
+    --stable:#3fb950; --stable-bg:#0f2a17; --stable-br:#1d4427;
+    --additive:#58a6ff; --additive-bg:#0f1f33; --additive-br:#1d3a5c;
+    --attention:#d29922; --attention-bg:#2a2210; --attention-br:#4a3c14;
+    --critical:#f85149; --critical-bg:#2a1316; --critical-br:#5c1d1f;
+    --neutral:#8b949e; --neutral-bg:#1a1f26; --neutral-br:#333b44;
+    --accent:#74b6dc;
+    --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:"Inter","Noto Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    --journey:420px;
+  }
+  * { box-sizing:border-box }
+  html, body { height:100% }
+  body { margin:0; overflow:hidden; background:var(--bg); color:var(--ink); font:14px/1.5 var(--sans); -webkit-font-smoothing:antialiased }
+  code, pre { font-family:var(--mono) }
+  a { color:var(--accent) }
+
+  /* ------------------------------------------------------------ top bar */
+  .top { display:flex; align-items:center; gap:18px; height:52px; padding:0 18px; border-bottom:1px solid var(--line); background:var(--panel) }
+  .top h1 { margin:0; font-size:16px; font-weight:650; letter-spacing:-.2px; white-space:nowrap }
+  .top h1 span { margin-left:8px; color:var(--faint); font:11px var(--mono) }
+  .verdict { display:flex; align-items:center; gap:8px; color:var(--dim); font-size:12px; white-space:nowrap }
+  .verdict .status { border:1px solid; border-radius:999px; padding:2px 9px; font:11px var(--mono) }
+  html[data-status="clean"] .status { color:var(--stable); background:var(--stable-bg); border-color:var(--stable-br) }
+  html[data-status="incomplete"] .status { color:var(--critical); background:var(--critical-bg); border-color:var(--critical-br) }
+  .stepper { display:flex; align-items:center; gap:2px; margin-left:auto; overflow:auto }
+  .stepper button { display:flex; align-items:center; gap:7px; padding:6px 10px; border:0; border-radius:8px; background:none; color:var(--faint); font:12px var(--sans); cursor:pointer; white-space:nowrap }
+  .stepper button::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--line); transition:background .15s }
+  .stepper button:hover { color:var(--dim) }
+  .stepper button[aria-current="step"] { color:var(--ink); background:var(--panel2) }
+  .stepper button[aria-current="step"]::before { background:var(--accent) }
+  .stepper button[data-tone="critical"]::before { background:var(--critical) }
+  .stepper button[data-tone="attention"]::before { background:var(--attention) }
+  .stepper button .n { color:var(--faint); font:10px var(--mono) }
+
+  /* ------------------------------------------------------------ stage */
+  .stage { display:grid; grid-template-columns:minmax(0,1fr) var(--journey); height:calc(100% - 52px) }
+  .graph-viewport { position:relative; overflow:hidden; background-image:radial-gradient(var(--line) 1px,transparent 1px); background-size:22px 22px; cursor:grab; touch-action:none }
+  .graph-viewport.panning { cursor:grabbing }
+  #graph { display:block; width:100%; height:100% }
+  .overlay { position:absolute; top:12px; left:12px; display:flex; align-items:center; gap:6px; z-index:2 }
+  .overlay input[type=search] { width:190px; padding:6px 10px; border:1px solid var(--line); border-radius:8px; background:rgba(19,31,37,.92); color:var(--ink); font:12px var(--mono) }
+  .overlay input[type=search]:focus { outline:none; border-color:var(--accent) }
+  .overlay button { padding:6px 10px; border:1px solid var(--line); border-radius:8px; background:rgba(19,31,37,.92); color:var(--dim); font:12px var(--sans); cursor:pointer }
+  .overlay button:hover:not(:disabled) { color:var(--ink); border-color:var(--faint) }
+  .overlay button:disabled { opacity:.4; cursor:default }
+  .overlay button[aria-pressed="true"] { color:var(--accent); border-color:var(--accent) }
+  .filters { position:absolute; top:48px; left:12px; z-index:3; width:300px; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:rgba(19,31,37,.97); box-shadow:0 12px 30px rgba(0,0,0,.35) }
+  .filters h4 { margin:0 0 6px; color:var(--faint); font-size:10px; letter-spacing:.9px; text-transform:uppercase }
+  .filters .group { display:flex; flex-wrap:wrap; gap:5px 12px; margin-bottom:12px }
+  .filters label { display:inline-flex; align-items:center; gap:5px; color:var(--dim); font-size:12px; cursor:pointer; white-space:nowrap }
+  .filters label input { margin:0 }
+  .swatch { display:inline-block; width:14px; height:0; border-top:2px solid var(--faint) }
+  .swatch[data-rel="depends_on"] { border-color:var(--additive) }
+  .swatch[data-rel="derives"] { border-color:var(--attention) }
+  .swatch[data-rel="proves"] { border-color:var(--stable) }
+  .swatch[data-rel="matches"] { border-color:var(--critical) }
+  .swatch[data-rel="expects"] { border-color:var(--accent) }
+  .swatch[data-rel="targets"] { border-color:var(--critical) }
+  .swatch[data-rel="asserts"] { border-top-style:dotted }
+  .legend { display:grid; grid-template-columns:1fr 1fr; gap:4px 12px; color:var(--dim); font-size:11px }
+  .legend span::before { content:""; display:inline-block; width:8px; height:8px; margin-right:6px; border-radius:50%; background:var(--neutral) }
+  .legend .l-stable::before { background:var(--stable) } .legend .l-additive::before { background:var(--additive) }
+  .legend .l-attention::before { background:var(--attention) } .legend .l-critical::before { background:var(--critical) }
+  .weights { margin-top:10px; color:var(--faint); font-size:11px; line-height:1.6 }
+  .help { position:absolute; right:14px; bottom:10px; color:var(--faint); font-size:11px; pointer-events:none }
+  .tip { position:absolute; z-index:4; max-width:340px; padding:9px 11px; border:1px solid var(--line); border-radius:8px; background:rgba(19,31,37,.97); box-shadow:0 10px 24px rgba(0,0,0,.4); pointer-events:none; font-size:12px; color:var(--dim) }
+  .tip .kind { color:var(--faint); font:10px var(--mono); letter-spacing:.6px; text-transform:uppercase }
+  .tip .what { margin:2px 0 4px; color:var(--ink); font-size:13px }
+  .tip .more { margin:2px 0 0 }
+  .tip .more li { margin:1px 0 }
+  .tip ul { margin:2px 0 0; padding-left:16px }
+  .tip .foot { margin-top:6px; color:var(--faint); font-size:10px }
+  .stage-note { position:absolute; left:14px; bottom:10px; max-width:45%; color:var(--faint); font-size:11px; pointer-events:none }
+
+  /* ------------------------------------------------------------ graph */
+  .hull { fill-opacity:.06; stroke-opacity:.14; stroke-width:26; stroke-linejoin:round; stroke-linecap:round; pointer-events:none }
+  .hull-label { fill:var(--faint); font:10px var(--sans); font-size:calc(10px * var(--ls)); letter-spacing:1px; text-transform:uppercase; pointer-events:none }
+  .edge { fill:none; stroke:var(--faint); opacity:.5; cursor:pointer; marker-end:url(#arrow); transition:opacity .15s }
+  .edge[data-rel="references_symbol"] { opacity:.28; marker-end:none }
+  .edge[data-rel="asserts"] { opacity:.22; stroke-dasharray:2 4; marker-end:none }
+  .edge[data-rel="depends_on"] { stroke:var(--additive) }
+  .edge[data-rel="derives"] { stroke:var(--attention) }
+  .edge[data-rel="proves"] { stroke:var(--stable) }
+  .edge[data-rel="matches"] { stroke:var(--critical) }
+  .edge[data-rel="expects"] { stroke:var(--accent) }
+  .edge[data-rel="targets"] { stroke:var(--critical) }
+  .edge[data-negated="true"] { stroke-dasharray:5 4 }
+  .edge:hover, .edge.selected, .edge.lit { opacity:1 }
+  .edge.selected { stroke:var(--ink) }
+  .node { cursor:pointer; outline:none; transition:opacity .15s }
+  .node circle { fill:var(--neutral-bg); stroke:var(--neutral-br); stroke-width:1.6; transition:r .2s }
+  .node[data-tone="stable"] circle { fill:var(--stable-bg); stroke:var(--stable) }
+  .node[data-tone="additive"] circle { fill:var(--additive-bg); stroke:var(--additive) }
+  .node[data-tone="attention"] circle { fill:var(--attention-bg); stroke:var(--attention) }
+  .node[data-tone="critical"] circle { fill:var(--critical-bg); stroke:var(--critical); stroke-width:2.6 }
+  .node[data-type="relation"] circle { fill:var(--panel); stroke:var(--dim); stroke-width:2.4 }
+  .node[data-type="symbol"] circle { fill:var(--bg); stroke:var(--faint); stroke-width:1.2 }
+  .node[data-type="symbol"].lit circle, .node[data-type="symbol"].selected circle { fill:var(--additive-bg); stroke:var(--accent); stroke-width:2.6 }
+  .node.cyclic circle { stroke-dasharray:1 3; stroke-width:3 }
+  .node:hover circle, .node.selected circle, .node:focus-visible circle { stroke:var(--ink); stroke-width:2.8 }
+  .scene { --ls:1 }
+  .node text { fill:var(--ink); pointer-events:none; font:11px var(--mono); font-size:calc(11px * var(--ls)); paint-order:stroke; stroke:var(--panel); stroke-width:calc(3px * var(--ls)); stroke-linejoin:round }
+  .node[data-type="relation"] text { font:600 12px var(--sans); font-size:calc(12px * var(--ls)); fill:var(--ink) }
+  .node[data-type="symbol"] text { fill:var(--dim); font-size:calc(10px * var(--ls)) }
+  .node[data-type="symbol"].lit text, .node[data-type="symbol"].selected text { fill:var(--accent); font:600 12px var(--sans); font-size:calc(12px * var(--ls)) }
+  .selection .mentions { margin:6px 0 0; padding-left:16px; color:var(--dim); font-size:12px }
+  .selection .mentions li { margin:2px 0 }
+  .node.nolabel:not(.selected):not(:hover) text { display:none }
+  .scene.dimmed .node:not(.lit) { opacity:.16 }
+  .scene.dimmed .edge:not(.lit) { opacity:.05 }
+  .scene.dimmed .hull { opacity:.3 }
+
+  /* ------------------------------------------------------------ journey */
+  .journey { display:flex; flex-direction:column; min-height:0; border-left:1px solid var(--line); background:var(--panel2) }
+  .journey-body { flex:1; min-height:0; overflow:auto; padding:18px 20px 24px }
+  .journey-nav { display:flex; align-items:center; gap:10px; padding:10px 20px; border-top:1px solid var(--line); background:var(--panel) }
+  .journey-nav button { padding:6px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--dim); font:12px var(--sans); cursor:pointer }
+  .journey-nav button:hover:not(:disabled) { color:var(--ink); border-color:var(--faint) }
+  .journey-nav button:disabled { opacity:.35; cursor:default }
+  .journey-nav .where { margin:0 auto; color:var(--faint); font:11px var(--mono) }
+  .step-head h2 { margin:0 0 6px; font-size:17px; letter-spacing:-.2px }
+  .step-head .intro { margin:0 0 16px; color:var(--dim); font-size:13px }
+  .step h3 { margin:22px 0 8px; color:var(--faint); font-size:10px; letter-spacing:1px; text-transform:uppercase }
+  .empty { margin:12px 0; padding:12px 14px; border:1px dashed var(--line); border-radius:8px; color:var(--faint); font-size:13px }
+  .question p { margin:0 0 10px; font-size:15px; color:var(--ink) }
+  .thesis { margin:0 0 14px; padding:12px 14px; border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:8px; background:var(--panel); font-size:14px }
+  html[data-status="incomplete"] .thesis { border-left-color:var(--critical) }
+  .thesis small { display:block; margin-top:4px; color:var(--dim); font-size:12px }
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:14px 0 6px }
+  .stat { padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--panel) }
+  .stat strong { display:block; font:16px var(--mono) }
+  .stat span { color:var(--faint); font-size:10px; text-transform:uppercase; letter-spacing:.6px }
+  .howto { margin:18px 0 0; padding:0 0 0 18px; color:var(--dim); font-size:12px }
+  .howto li { margin:3px 0 }
+
+  .card { margin:0 0 6px; border:1px solid var(--line); border-left:3px solid var(--neutral-br); border-radius:8px; background:var(--panel); transition:border-color .15s }
+  .card[data-standing="observation"] { border-left-color:var(--stable) }
+  .card[data-standing="assumption"] { border-left-color:var(--attention) }
+  .card[data-standing="conclusion"] { border-left-color:var(--additive) }
+  .card.rule, .card.policy { border-left-color:var(--attention) }
+  .card.claim[data-status="passed"] { border-left-color:var(--stable) }
+  .card.claim[data-status="failed"] { border-left-color:var(--critical) }
+  .card.concept { border-left-color:var(--dim) }
+  .card.open, .card.lit { border-color:var(--faint) }
+  .card.open { background:var(--hover) }
+  .card-summary { display:flex; align-items:baseline; gap:8px; width:100%; padding:9px 12px; border:0; background:none; color:var(--ink); font:13px var(--sans); text-align:left; cursor:pointer }
+  .card-summary:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; border-radius:8px }
+  .card-summary .sentence { flex:1; min-width:0 }
+  .card-summary .hint { color:var(--faint); font:11px var(--mono); white-space:nowrap }
+  .card-detail { padding:0 12px 12px 12px; font-size:13px }
+  .sentence code, .lead code { font-size:12px }
+  .sentence i, .lead i, .meta i, .vocab i { color:var(--faint); font-style:normal; font-size:10px; letter-spacing:.5px; text-transform:uppercase; margin-right:2px }
+  .chip { display:inline-flex; flex:none; padding:1px 6px; border:1px solid; border-radius:5px; font:10px var(--mono) }
+  .c-stable { color:var(--stable); border-color:var(--stable-br); background:var(--stable-bg) }
+  .c-additive { color:var(--additive); border-color:var(--additive-br); background:var(--additive-bg) }
+  .c-attention { color:var(--attention); border-color:var(--attention-br); background:var(--attention-bg) }
+  .c-critical { color:var(--critical); border-color:var(--critical-br); background:var(--critical-bg) }
+  .c-neutral { color:var(--dim); border-color:var(--neutral-br); background:var(--neutral-bg) }
+  .meta { color:var(--faint); font-size:12px }
+  .meta code { font-size:11px }
+  .doc { margin-top:8px; color:var(--dim); font-size:13px }
+  .doc p { margin:0 0 6px }
+  .reads { margin-top:6px; color:var(--dim); font-size:12px; font-style:italic }
+  .lead { margin:4px 0 0; color:var(--ink) }
+  .verdict-line { margin:6px 0 0; color:var(--dim); font-size:12px }
+  .card.claim[data-status="failed"] .verdict-line, .card.claim[data-status="failed"] .verdict { color:var(--critical) }
+  .verdict { margin:6px 0 0; color:var(--dim); font-size:12px }
+  .conditions { margin:6px 0 0; padding-left:20px; color:var(--dim) }
+  .conditions li { margin:3px 0 }
+  .cond { display:inline-block; margin-right:8px; color:var(--faint); font:10px var(--mono) }
+  .not { color:var(--critical); font:600 10px var(--sans); letter-spacing:.6px; text-transform:uppercase; margin-right:4px }
+  .radius { margin-top:8px; color:var(--attention); font-size:12px }
+  .radius.quiet { color:var(--faint) }
+  .why { margin-top:8px; font-size:12px }
+  .why-label { color:var(--faint); font-size:10px; letter-spacing:.6px; text-transform:uppercase }
+  .because { margin:4px 0 0; padding-left:16px; color:var(--dim) }
+  .because li { margin:3px 0 }
+  .because .via { color:var(--faint); font-size:11px }
+  .because details { display:inline-block; margin-left:6px }
+  .because summary { cursor:pointer; color:var(--accent); font-size:11px }
+  .because .more { color:var(--faint); list-style:none }
+  .ref { color:var(--ink); text-decoration:none; border-bottom:1px dotted var(--faint) }
+  .ref:hover { color:var(--accent); border-bottom-color:var(--accent) }
+  .group { margin:0 0 10px; border:0; background:none }
+  .group > summary { padding:6px 0; color:var(--ink); font-size:13px; cursor:pointer }
+  .group > summary .count, .vocab summary .count { margin-left:8px; color:var(--faint); font:11px var(--mono) }
+  .group-doc { margin:0 0 8px; color:var(--dim); font-size:12px }
+  .vocab { margin:0 0 6px; border:1px solid var(--line); border-radius:8px; background:var(--panel) }
+  .vocab summary { padding:8px 12px; cursor:pointer }
+  .vocab ul { margin:0; padding:0 12px 10px 12px; list-style:none; font-size:12px }
+  .vocab li { display:flex; justify-content:space-between; gap:10px; padding:2px 0 }
+  .vocab li .count { color:var(--faint); font-size:11px; white-space:nowrap }
+  .selection { position:sticky; top:0; z-index:2; margin:0 0 14px; padding:10px 12px; border:1px solid var(--accent); border-radius:8px; background:var(--panel); box-shadow:0 8px 20px rgba(0,0,0,.35); font-size:13px }
+  .selection .kind { color:var(--faint); font:10px var(--mono); letter-spacing:.6px; text-transform:uppercase }
+  .selection pre { overflow:auto; max-height:220px; margin:8px 0 0; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--dim); font-size:10px; white-space:pre-wrap }
+  .raw { margin-top:8px }
+  .raw summary { color:var(--faint); font-size:11px; cursor:pointer }
+  .raw pre { overflow:auto; max-height:240px; margin:6px 0 0; padding:8px; border:1px solid var(--line); border-radius:6px; background:var(--bg); color:var(--dim); font-size:10px; white-space:pre-wrap }
+  table { width:100%; border-collapse:collapse; font-size:12px }
+  th { padding:6px 8px; border-bottom:1px solid var(--line); color:var(--faint); font-size:10px; letter-spacing:.6px; text-align:left; text-transform:uppercase }
+  td { padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top }
+  .table-scroll { overflow:auto }
+  .source { margin-top:14px; border:1px solid var(--line); border-radius:8px; background:var(--panel) }
+  .source summary { cursor:pointer; padding:9px 12px; color:var(--dim); font-size:12px }
+  .source pre { overflow:auto; max-height:480px; margin:0; padding:12px; border-top:1px solid var(--line); color:var(--dim); font-size:11px; white-space:pre }
+  footer { margin-top:18px; color:var(--faint); font-size:11px }
+
+
+  /* ------------------------------------------------------------ help */
+  .help-button { padding:3px 9px; border:1px solid var(--line); border-radius:999px; background:none; color:var(--dim); font:12px var(--mono); cursor:pointer }
+  .help-button:hover { color:var(--ink); border-color:var(--faint) }
+  .help-backdrop[hidden] { display:none }
+  .help-backdrop { position:fixed; inset:0; z-index:20; display:flex; align-items:center; justify-content:center; padding:24px; background:rgba(6,10,12,.72) }
+  .help-panel { width:min(720px,100%); max-height:100%; display:flex; flex-direction:column; border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 24px 60px rgba(0,0,0,.5) }
+  .help-panel header { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid var(--line) }
+  .help-panel h2 { margin:0; font-size:16px }
+  #help-close { border:0; background:none; color:var(--faint); font-size:22px; line-height:1; cursor:pointer }
+  #help-close:hover { color:var(--ink) }
+  .help-body { overflow:auto; padding:6px 20px 20px; font-size:13px; color:var(--dim) }
+  .help-lead { margin:12px 0 4px; font-size:14px; color:var(--ink) }
+  .help-body h3 { margin:20px 0 8px; color:var(--faint); font-size:10px; letter-spacing:1px; text-transform:uppercase }
+  .help-steps { display:grid; grid-template-columns:max-content 1fr; gap:6px 14px; margin:0 }
+  .help-steps dt { color:var(--ink); font-weight:600 }
+  .help-steps dd { margin:0 }
+  .help-list { margin:0; padding-left:18px }
+  .help-list li { margin:4px 0 }
+  .help-body .l-stable { color:var(--stable) } .help-body .l-additive { color:var(--additive) }
+  .help-body .l-attention { color:var(--attention) } .help-body .l-critical { color:var(--critical) }
+  .help-keys kbd { display:inline-block; padding:0 6px; border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; background:var(--bg); color:var(--ink); font:11px var(--mono) }
+  .howto a { color:var(--accent) }
+  @media(max-width:1500px) { .top h1 span { display:none } .stepper button { padding:6px 8px } }
+  @media(max-width:1000px) {
+    body { overflow:auto }
+    .top { height:auto; flex-wrap:wrap; padding:10px 14px }
+    .stepper { margin-left:0; width:100% }
+    .freshness { background:var(--critical); color:var(--bg); padding:12px 20px; font-weight:600 }
+  .stage { grid-template-columns:1fr; grid-template-rows:60vh auto; height:auto }
+    .journey { border-left:0; border-top:1px solid var(--line) }
+    .journey-body { overflow:visible }
+  }
+  .stage { grid-template-columns:minmax(380px, 55%) minmax(0, 1fr) }
+  .journey { order:-1; border-left:0; border-right:1px solid var(--line) }
+  .answer { padding:18px 0; border-top:1px solid var(--line); overflow-wrap:anywhere }
+  .answer-select { display:block; width:100%; text-align:left; border:0; border-left:3px solid transparent; padding:8px 10px; background:none; color:var(--ink); font:600 17px/1.5 var(--sans); cursor:pointer }
+  .answer-select[aria-pressed="true"] { border-color:var(--accent); background:var(--panel) }
+  .answer details { margin:14px 0; color:var(--dim) }
+  .answer li { margin:9px 0 }
+  .answer summary { cursor:pointer; color:var(--ink) }
+  .citations { font-size:12px }
+  .brief h2 { font-size:22px; margin:0 0 12px }
+  #walkthrough, .stepper, .journey-nav { display:none }
+  body.walkthrough #brief { display:none }
+  body.walkthrough #walkthrough { display:block }
+  body.walkthrough .stepper, body.walkthrough .journey-nav { display:flex }
+  #mode-toggle { background:var(--panel); color:var(--ink); border:1px solid var(--line); border-radius:6px; padding:6px 10px; cursor:pointer }
+  @media(max-width:900px) {
+    .stage { display:flex; flex-direction:column; height:auto }
+    .journey { order:-1; border-right:0 }
+    .journey-body { overflow:visible }
+    .graph-viewport { height:440px; min-height:440px }
+    .overlay { flex-wrap:wrap }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Persistence adapter readiness<span>persistence_adapter_readiness</span></h1>
+  <div class="verdict"><span class="status">incomplete</span><button type="button" class="help-button" id="help-open" title="How to read this page (?)">? guide</button></div>
+  <button type="button" id="mode-toggle" aria-pressed="false">Full walkthrough</button>
+  <nav class="stepper" id="stepper" aria-label="Journey"></nav>
+</header>
+
+<main class="stage">
+  <div class="graph-viewport" id="graph-viewport">
+    <svg id="graph" role="img" aria-label="LemmaSpec dependency graph"></svg>
+    <div class="overlay">
+      <input type="search" id="graph-search" placeholder="find…" aria-label="Find node">
+      <button type="button" id="full-graph" aria-pressed="false">Full graph</button>
+      <button type="button" id="filters-toggle" aria-pressed="false" aria-controls="filters">filters</button>
+      <button type="button" id="labels" title="Labels: auto keeps them from overlapping, all shows every one, none shows only what is lit">labels: auto</button>
+      <button type="button" id="cycles" aria-pressed="false" title="Highlight facts that depend on each other through recursive rules">cycles</button>
+      <button type="button" id="clear-focus" hidden>clear focus</button>
+      <button type="button" id="fit">fit</button>
+    </div>
+    <div class="filters" id="filters" hidden>
+      <h4>Show</h4><div class="group" id="type-filters"></div>
+      <h4>Edges</h4><div class="group" id="rel-filters"></div>
+      <h4>Legend</h4>
+      <div class="legend"><span class="l-stable">observation · confirmed claim</span><span class="l-additive">conclusion</span><span class="l-attention">rule · stress test · assumption</span><span class="l-critical">open claim</span><span>relation · vocabulary symbol</span></div>
+      <div class="weights">Node size follows connections. Fill opacity follows confidence. Edge width follows evidence; dashed edges are negated; dotted rings sit in a cycle.</div>
+    </div>
+    <div class="stage-note" id="stage-note"></div>
+    <div class="tip" id="tip" hidden></div>
+    <div class="help">drag · wheel to zoom · double-click to focus · ← → journey</div>
+  </div>
+
+  <aside class="journey">
+    <div class="journey-body" id="journey">
+      <div class="selection" id="selection" hidden></div>
+      <section class="brief" id="brief"><header><h2>Answers</h2></header><div class="question"><p>Models the boundary between LemmaSpec&#39;s deterministic projection and a hypothetical durable-store adapter. The candidate is intentionally missing datastore-owned semantics, so its expectation remains unsatisfied.</p></div><article class="answer" data-answer="lemmaspec:persistence_adapter_readiness:expectation:candidate_is_ready_for_durable_persistence" data-status="failed"><button type="button" class="answer-select" aria-pressed="true"><span class="chip c-critical">failed</span> No matching result: persistence ready: lemmaspec_projection (unlabelled), store_adapter (unlabelled).</button><p class="meta">Expected 1; found 0. <span>Acceptance criterion: reviewer-declared.</span></p><details class="witness" open><summary>Why this answer holds</summary><p>No matching witness was produced in this evaluated artifact. A zero result describes this model only.</p></details><details class="premises"><summary>Observations and assumptions</summary><ul></ul></details></article></section>
+      <div id="walkthrough">
+
+      <section class="step" data-step="question" hidden>
+        <header class="step-head"><h2>The question</h2></header>
+        <div class="step-body">
+          <div class="question"><p>Models the boundary between LemmaSpec&#39;s deterministic projection and a hypothetical durable-store adapter. The candidate is intentionally missing datastore-owned semantics, so its expectation remains unsatisfied.</p></div>
+          <div class="thesis">1 expectation needs attention<small>0 of 1 executable constraints matched; failed expectations remain visible as unresolved work.</small></div>
+          <div class="stats"><div class="stat"><strong>3</strong><span>relations</span></div><div class="stat"><strong>4</strong><span>asserted</span></div><div class="stat"><strong>0</strong><span>derived</span></div><div class="stat"><strong>1</strong><span>rules</span></div><div class="stat"><strong>1</strong><span>expectations</span></div><div class="stat"><strong>1</strong><span>failed</span></div><div class="stat"><strong>20</strong><span>nodes</span></div><div class="stat"><strong>32</strong><span>edges</span></div></div>
+          <ol class="howto">
+            <li>Move along the journey with the steps above, the arrows, or the buttons below.</li>
+            <li>Each step lights the part of the graph it is about.</li>
+            <li>Select a card or a node to follow one thread through the argument.</li>
+            <li><a href="#" id="help-link">How to read this page</a>, or press <code>?</code> at any time.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="step" data-step="observations" hidden><header class="step-head"><h2>Observations</h2><p class="intro">Facts with an explicitly declared observed standing.</p></header><div class="step-body"><p class="empty">No typed observations are declared. Freeform provenance alone does not establish an observation.</p></div></section>
+      <section class="step" data-step="assumptions" hidden><header class="step-head"><h2>Assumptions</h2><p class="intro">Reviewer-declared facts. Citations identify their sources but do not verify the declarations.</p></header><div class="step-body"><article class="card fact" id="n-lemmaspec-persistence_adapter_readiness-fact-0e9b1e2c1841d3bdfe43ccc7ae1b8e5ff020d38e7a6a31cbb05dbf36c3281e49" data-node="lemmaspec:persistence_adapter_readiness:fact:0e9b1e2c1841d3bdfe43ccc7ae1b8e5ff020d38e7a6a31cbb05dbf36c3281e49" data-standing="reviewer-declared"><button type="button" class="card-summary"><span class="chip c-attention">reviewer-declared</span><span class="sentence">projection capability: lemmaspec_projection (unlabelled), stable_ids (unlabelled)</span></button><div class="card-detail" hidden><div class="meta"><code>projection_capability</code> · evidence: README.md, src/projection.rs</div><div class="radius quiet">Nothing derived rests on this yet.</div></div></article><article class="card fact" id="n-lemmaspec-persistence_adapter_readiness-fact-a4e5dd8cce57d882b05b4852d8fef2294f5e5136bb21f3738411ffa076e269d2" data-node="lemmaspec:persistence_adapter_readiness:fact:a4e5dd8cce57d882b05b4852d8fef2294f5e5136bb21f3738411ffa076e269d2" data-standing="reviewer-declared"><button type="button" class="card-summary"><span class="chip c-attention">reviewer-declared</span><span class="sentence">adapter provides: store_adapter (unlabelled), projection_validation (unlabelled)</span></button><div class="card-detail" hidden><div class="meta"><code>adapter_provides</code></div><div class="radius quiet">Nothing derived rests on this yet.</div></div></article><article class="card fact" id="n-lemmaspec-persistence_adapter_readiness-fact-ed671d260b0c4b96a3c4cb27066e745bf891f7bb9d505d0df2456bc85420e1d2" data-node="lemmaspec:persistence_adapter_readiness:fact:ed671d260b0c4b96a3c4cb27066e745bf891f7bb9d505d0df2456bc85420e1d2" data-standing="reviewer-declared"><button type="button" class="card-summary"><span class="chip c-attention">reviewer-declared</span><span class="sentence">projection capability: lemmaspec_projection (unlabelled), internally_closed (unlabelled)</span></button><div class="card-detail" hidden><div class="meta"><code>projection_capability</code> · evidence: README.md, src/projection.rs</div><div class="radius quiet">Nothing derived rests on this yet.</div></div></article><article class="card fact" id="n-lemmaspec-persistence_adapter_readiness-fact-fa0c84f949fe8447bff07b27340b830a727b39ab5b63bcc63f3acc12e0bced05" data-node="lemmaspec:persistence_adapter_readiness:fact:fa0c84f949fe8447bff07b27340b830a727b39ab5b63bcc63f3acc12e0bced05" data-standing="reviewer-declared"><button type="button" class="card-summary"><span class="chip c-attention">reviewer-declared</span><span class="sentence">projection capability: lemmaspec_projection (unlabelled), deterministic (unlabelled)</span></button><div class="card-detail" hidden><div class="meta"><code>projection_capability</code> · evidence: README.md</div><div class="radius quiet">Nothing derived rests on this yet.</div></div></article></div></section>
+      <section class="step" data-step="reasoning" hidden><header class="step-head"><h2>Reasoning</h2><p class="intro">The rules that turn observations and assumptions into conclusions. Read each as: this follows whenever all of these hold.</p></header><div class="step-body"><article class="card rule" id="n-lemmaspec-persistence_adapter_readiness-rule-ready_only_when_adapter_owns_persistence_semantics" data-node="lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics"><button type="button" class="card-summary"><span class="chip c-attention">rule</span><span class="sentence">ready_only_when_adapter_owns_persistence_semantics</span><span class="hint">nothing yet</span></button><div class="card-detail" hidden><p class="lead">Concludes <span class="sentence"><code>persistence_ready(Projection, Adapter)</code></span> when</p><ol class="conditions"><li><span class="cond">projection_is_deterministic</span><code>projection_capability(Projection, deterministic (unlabelled))</code></li><li><span class="cond">projection_is_closed</span><code>projection_capability(Projection, internally_closed (unlabelled))</code></li><li><span class="cond">projection_ids_are_stable</span><code>projection_capability(Projection, stable_ids (unlabelled))</code></li><li><span class="cond">adapter_validates_projection</span><code>adapter_provides(Adapter, projection_validation (unlabelled))</code></li><li><span class="cond">adapter_adds_ingest_envelope</span><code>adapter_provides(Adapter, ingest_envelope (unlabelled))</code></li><li><span class="cond">adapter_defines_event_time</span><code>adapter_provides(Adapter, event_time_policy (unlabelled))</code></li><li><span class="cond">adapter_defines_revision_identity</span><code>adapter_provides(Adapter, revision_identity (unlabelled))</code></li><li><span class="cond">adapter_maps_entity_identity</span><code>adapter_provides(Adapter, entity_identity_mapping (unlabelled))</code></li></ol></div></article></div></section>
+      <section class="step" data-step="conclusions" hidden><header class="step-head"><h2>Conclusions</h2><p class="intro">What follows. Select one to see the rule and the facts that produced it, back to the observations.</p></header><div class="step-body"><p class="empty">Nothing is derived. The rules found no matching facts.</p></div></section>
+      <section class="step" data-step="claims" hidden><header class="step-head"><h2>Claims</h2><p class="intro">The acceptance criteria this spec commits to, checked against the walk. Open claims come first.</p></header><div class="step-body"><article class="card claim" id="n-lemmaspec-persistence_adapter_readiness-expectation-candidate_is_ready_for_durable_persistence" data-node="lemmaspec:persistence_adapter_readiness:expectation:candidate_is_ready_for_durable_persistence" data-status="failed"><button type="button" class="card-summary"><span class="chip c-critical">open</span><span class="sentence">candidate_is_ready_for_durable_persistence</span><span class="hint">0 of 1</span></button><div class="card-detail" hidden><p class="lead">There must be exactly 1 result where <span class="sentence"><code>persistence_ready(lemmaspec_projection (unlabelled), store_adapter (unlabelled))</code></span>.</p><p class="verdict">Found 0. This claim is open until the facts or the claim change.</p></div></article></div></section>
+      <section class="step" data-step="stress-tests" hidden><header class="step-head"><h2>Stress tests</h2><p class="intro">Mutation policies: which parts of the reasoning must be load-bearing. Run lemmaspec mutate to see which mutants survive.</p></header><div class="step-body"><p class="empty">No mutation policies. Nothing checks that the reasoning is load-bearing.</p></div></section>
+
+      <section class="step" data-step="reference" hidden>
+        <header class="step-head"><h2>Reference</h2><p class="intro">The vocabulary, the raw tables, and the source this page was generated from.</p></header>
+        <div class="step-body">
+          <h3>Concepts</h3><article class="card concept" id="n-lemmaspec-persistence_adapter_readiness-relation-adapter_provides" data-node="lemmaspec:persistence_adapter_readiness:relation:adapter_provides"><button type="button" class="card-summary"><span class="chip c-neutral">concept</span><span class="sentence">adapter_provides</span><span class="hint">1 asserted</span></button><div class="card-detail" hidden><div class="meta">2 arguments · asserted directly</div></div></article><article class="card concept" id="n-lemmaspec-persistence_adapter_readiness-relation-persistence_ready" data-node="lemmaspec:persistence_adapter_readiness:relation:persistence_ready"><button type="button" class="card-summary"><span class="chip c-neutral">concept</span><span class="sentence">persistence_ready</span></button><div class="card-detail" hidden><div class="meta">2 arguments · concluded by <a class="ref" href="#n-lemmaspec-persistence_adapter_readiness-rule-ready_only_when_adapter_owns_persistence_semantics">ready_only_when_adapter_owns_persistence_semantics</a></div></div></article><article class="card concept" id="n-lemmaspec-persistence_adapter_readiness-relation-projection_capability" data-node="lemmaspec:persistence_adapter_readiness:relation:projection_capability"><button type="button" class="card-summary"><span class="chip c-neutral">concept</span><span class="sentence">projection_capability</span><span class="hint">3 asserted</span></button><div class="card-detail" hidden><div class="meta">2 arguments · asserted directly</div></div></article><h3>Vocabulary</h3><details class="vocab" open><summary><i>adapter_provides · argument 1</i><span class="count">1 value</span></summary><ul><li><a class="ref" href="#" data-node="lemmaspec:persistence_adapter_readiness:symbol:5edb7c139c4cd6721bf1fd1274f376ec87829040421e4ae8f7df3e060d947403"><code>store_adapter (unlabelled)</code></a><span class="count">1 use</span></li></ul></details><details class="vocab" open><summary><i>adapter_provides · argument 2</i><span class="count">1 value</span></summary><ul><li><a class="ref" href="#" data-node="lemmaspec:persistence_adapter_readiness:symbol:6b59c2fc1368ffc389c07fd989dc067ef1c4203e7441c41a286f237c17a3310f"><code>projection_validation (unlabelled)</code></a><span class="count">1 use</span></li></ul></details><details class="vocab" open><summary><i>projection_capability · argument 1</i><span class="count">1 value</span></summary><ul><li><a class="ref" href="#" data-node="lemmaspec:persistence_adapter_readiness:symbol:c76d348b7df5129442e1b3cb5c04c1910711cd911861573e7ebb86645273729e"><code>lemmaspec_projection (unlabelled)</code></a><span class="count">3 uses</span></li></ul></details><details class="vocab" open><summary><i>projection_capability · argument 2</i><span class="count">3 values</span></summary><ul><li><a class="ref" href="#" data-node="lemmaspec:persistence_adapter_readiness:symbol:e8b699dad88d4b53794d7b8646c859096ba03063af759954be71c896fada71d0"><code>deterministic (unlabelled)</code></a><span class="count">1 use</span></li><li><a class="ref" href="#" data-node="lemmaspec:persistence_adapter_readiness:symbol:1b99a42aa95af4c552b07659ac8d309ad82602dee0a5dc6623d915bc7190bcc6"><code>internally_closed (unlabelled)</code></a><span class="count">1 use</span></li><li><a class="ref" href="#" data-node="lemmaspec:persistence_adapter_readiness:symbol:5a23bfa813534802cdd99d4008ec7faee950a8d204328390665c7baf329cc799"><code>stable_ids (unlabelled)</code></a><span class="count">1 use</span></li></ul></details>
+          <h3>Relations</h3>
+          <table><thead><tr><th>Relation</th><th>Argument types</th></tr></thead><tbody><tr><td><code>adapter_provides</code></td><td><code>(symbol, symbol)</code></td></tr><tr><td><code>persistence_ready</code></td><td><code>(symbol, symbol)</code></td></tr><tr><td><code>projection_capability</code></td><td><code>(symbol, symbol)</code></td></tr></tbody></table>
+          <h3>Materialized facts</h3>
+          <div class="table-scroll"><table><thead><tr><th>Origin</th><th>Fact</th><th>Confidence</th><th>Provenance</th><th>Declarations</th></tr></thead><tbody><tr><td><span class="chip c-stable">asserted</span></td><td><span>projection capability: lemmaspec_projection (unlabelled), stable_ids (unlabelled)</span></td><td>100%</td><td>README.md, projection_has_stable_ids, src/projection.rs</td><td>projection_has_stable_ids</td></tr><tr><td><span class="chip c-stable">asserted</span></td><td><span>adapter provides: store_adapter (unlabelled), projection_validation (unlabelled)</span></td><td>100%</td><td>candidate_validates_projection</td><td>candidate_validates_projection</td></tr><tr><td><span class="chip c-stable">asserted</span></td><td><span>projection capability: lemmaspec_projection (unlabelled), internally_closed (unlabelled)</span></td><td>100%</td><td>README.md, projection_is_closed, src/projection.rs</td><td>projection_is_closed</td></tr><tr><td><span class="chip c-stable">asserted</span></td><td><span>projection capability: lemmaspec_projection (unlabelled), deterministic (unlabelled)</span></td><td>100%</td><td>README.md, projection_is_deterministic</td><td>projection_is_deterministic</td></tr></tbody></table></div>
+          <details class="source"><summary>Original .lemmaspec source</summary><pre id="artifact-source">// Models the boundary between LemmaSpec&#39;s deterministic projection and a
+// hypothetical durable-store adapter. The candidate is intentionally missing
+// datastore-owned semantics, so its expectation remains unsatisfied.
+
+spec persistence_adapter_readiness {
+  relation projection_capability {
+    args: [symbol, symbol]
+  }
+
+  relation adapter_provides {
+    args: [symbol, symbol]
+  }
+
+  relation persistence_ready {
+    args: [symbol, symbol]
+  }
+
+  fact projection_is_deterministic {
+    relation: projection_capability
+    args: [lemmaspec_projection, deterministic]
+    provenance: [&quot;README.md&quot;]
+  }
+
+  fact projection_is_closed {
+    relation: projection_capability
+    args: [lemmaspec_projection, internally_closed]
+    provenance: [&quot;README.md&quot;, &quot;src/projection.rs&quot;]
+  }
+
+  fact projection_has_stable_ids {
+    relation: projection_capability
+    args: [lemmaspec_projection, stable_ids]
+    provenance: [&quot;README.md&quot;, &quot;src/projection.rs&quot;]
+  }
+
+  fact candidate_validates_projection {
+    relation: adapter_provides
+    args: [store_adapter, projection_validation]
+  }
+
+  rule ready_only_when_adapter_owns_persistence_semantics {
+    derive: &quot;persistence_ready(Projection, Adapter)&quot;
+    when: {
+      projection_is_deterministic: &quot;projection_capability(Projection, deterministic)&quot;
+      projection_is_closed: &quot;projection_capability(Projection, internally_closed)&quot;
+      projection_ids_are_stable: &quot;projection_capability(Projection, stable_ids)&quot;
+      adapter_validates_projection: &quot;adapter_provides(Adapter, projection_validation)&quot;
+      adapter_adds_ingest_envelope: &quot;adapter_provides(Adapter, ingest_envelope)&quot;
+      adapter_defines_event_time: &quot;adapter_provides(Adapter, event_time_policy)&quot;
+      adapter_defines_revision_identity: &quot;adapter_provides(Adapter, revision_identity)&quot;
+      adapter_maps_entity_identity: &quot;adapter_provides(Adapter, entity_identity_mapping)&quot;
+    }
+  }
+
+  expect candidate_is_ready_for_durable_persistence {
+    query: &quot;persistence_ready(lemmaspec_projection, store_adapter)&quot;
+    count: 1
+  }
+}
+</pre></details>
+          <footer>Self-contained: no network, no build step. Generated deterministically from <code>persistence_adapter_readiness</code>.</footer>
+        </div>
+      </section>
+    </div>
+    </div>
+    <div class="journey-nav">
+      <button type="button" id="prev">← back</button>
+      <span class="where" id="where"></span>
+      <button type="button" id="next">next →</button>
+    </div>
+  </aside>
+</main>
+
+
+<div class="help-backdrop" id="help" hidden>
+  <div class="help-panel" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <header><h2 id="help-title">How to read this page</h2><button type="button" id="help-close" aria-label="Close">×</button></header>
+    <div class="help-body">
+      <p class="help-lead">One specification, evaluated deterministically. The graph and the journey beside it are two views of the same argument: every card is a node, every node has a story.</p>
+
+      <h3>The journey</h3>
+      <dl class="help-steps">
+        <dt>Question</dt><dd>What the author set out to determine, in their own words, and the verdict the engine reached.</dd>
+        <dt>Observations</dt><dd>Facts with a declared snapshot, policy, or observed basis. A declared producer is not authenticated by this report.</dd>
+        <dt>Assumptions</dt><dd>Reviewer-declared facts. A citation alone does not establish an observation. Each fact says how many conclusions and claims depend on it.</dd>
+        <dt>Reasoning</dt><dd>The rules. Read each as: this follows whenever all of these hold. Named conditions are the handles for mutation tests.</dd>
+        <dt>Conclusions</dt><dd>What the rules derived. Select one to unfold why: the rule, then the facts it needed, back to the observations.</dd>
+        <dt>Claims</dt><dd>What the specification commits to, checked against the walk. Open claims come first and show what was found instead of the expected count.</dd>
+        <dt>Stress tests</dt><dd>Mutation policies: which parts of the reasoning must be load-bearing. Run <code>lemmaspec mutate</code> to see which mutants survive.</dd>
+        <dt>Reference</dt><dd>Concepts, the shared vocabulary grouped by role, the raw tables, and the source this page was generated from.</dd>
+      </dl>
+
+      <h3>The graph</h3>
+      <ul class="help-list">
+        <li>Nodes cluster around the relation they describe; the hollow ring in each cluster is the relation itself.</li>
+        <li><span class="l-stable">green</span> is an observation or a confirmed claim, <span class="l-additive">blue</span> a conclusion, <span class="l-attention">amber</span> a rule, stress test, or assumption, <span class="l-critical">red</span> an open claim.</li>
+        <li>Node size follows connections; on the Assumptions step it follows how much rests on the node. Fill opacity follows confidence.</li>
+        <li>Edges are coloured by what they mean: blue depends on, amber derives, green proves, red matches an open claim or targets a rule. Dashed edges are negated conditions; dotted rings sit in a recursive cycle.</li>
+        <li>Symbols, the spec node, and the spec-to-fact links start hidden because they connect to almost everything. The filters button switches them on; selecting a symbol from the vocabulary reveals just that one.</li>
+      </ul>
+
+      <h3>Following a thread</h3>
+      <ul class="help-list">
+        <li><strong>Hover</strong> a card or a node to preview its thread. <strong>Click</strong> to hold it: the card opens, the node centres, everything unrelated dims.</li>
+        <li>A conclusion lights what it rests on. An assumption lights what rests on it. A claim lights the facts that prove it, or the ones found instead. A rule lights what it reads and writes.</li>
+        <li><strong>Double-click</strong> a node to keep only its neighbourhood; Escape or the clear button brings the rest back.</li>
+        <li>Labels are placed so they never overlap; zoom in to see more, or set labels to all.</li>
+      </ul>
+
+      <h3>Typical questions</h3>
+      <dl class="help-steps">
+        <dt>Is this claim right?</dt><dd>Claims, select it, read what supports it or what was found instead.</dd>
+        <dt>What breaks if this is wrong?</dt><dd>Assumptions, hover it, watch the graph.</dd>
+        <dt>Why is this true?</dt><dd>Conclusions, select it, unfold because.</dd>
+        <dt>What is this thing?</dt><dd>Reference, find it in the vocabulary, select it to see every fact it appears in.</dd>
+      </dl>
+
+      <h3>Keys</h3>
+      <p class="help-keys"><kbd>←</kbd> <kbd>→</kbd> move along the journey · <kbd>Esc</kbd> clear the selection or focus · <kbd>?</kbd> this guide · <kbd>Enter</kbd> on a focused node selects it</p>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="lemmaspec-graph">{"spec":"persistence_adapter_readiness","status":"incomplete","nodes":[{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:expectation:candidate_is_ready_for_durable_persistence","spec":"persistence_adapter_readiness","type":"expectation","name":"candidate_is_ready_for_durable_persistence","query":"persistence_ready(lemmaspec_projection, store_adapter)","expected_count":1,"actual_count":0,"satisfied":false},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:fact:0e9b1e2c1841d3bdfe43ccc7ae1b8e5ff020d38e7a6a31cbb05dbf36c3281e49","spec":"persistence_adapter_readiness","type":"fact","relation":"projection_capability","args":["lemmaspec_projection","stable_ids"],"origin":"asserted","confidence":1.0,"provenance":["README.md","projection_has_stable_ids","src/projection.rs"],"declarations":["projection_has_stable_ids"]},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:fact:a4e5dd8cce57d882b05b4852d8fef2294f5e5136bb21f3738411ffa076e269d2","spec":"persistence_adapter_readiness","type":"fact","relation":"adapter_provides","args":["store_adapter","projection_validation"],"origin":"asserted","confidence":1.0,"provenance":["candidate_validates_projection"],"declarations":["candidate_validates_projection"]},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:fact:ed671d260b0c4b96a3c4cb27066e745bf891f7bb9d505d0df2456bc85420e1d2","spec":"persistence_adapter_readiness","type":"fact","relation":"projection_capability","args":["lemmaspec_projection","internally_closed"],"origin":"asserted","confidence":1.0,"provenance":["README.md","projection_is_closed","src/projection.rs"],"declarations":["projection_is_closed"]},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:fact:fa0c84f949fe8447bff07b27340b830a727b39ab5b63bcc63f3acc12e0bced05","spec":"persistence_adapter_readiness","type":"fact","relation":"projection_capability","args":["lemmaspec_projection","deterministic"],"origin":"asserted","confidence":1.0,"provenance":["README.md","projection_is_deterministic"],"declarations":["projection_is_deterministic"]},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:relation:adapter_provides","spec":"persistence_adapter_readiness","type":"relation","name":"adapter_provides","args":["symbol","symbol"]},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:relation:persistence_ready","spec":"persistence_adapter_readiness","type":"relation","name":"persistence_ready","args":["symbol","symbol"]},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:relation:projection_capability","spec":"persistence_adapter_readiness","type":"relation","name":"projection_capability","args":["symbol","symbol"]},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","spec":"persistence_adapter_readiness","type":"rule","name":"ready_only_when_adapter_owns_persistence_semantics","derive":"persistence_ready(Projection, Adapter)","when":["projection_capability(Projection, deterministic)","projection_capability(Projection, internally_closed)","projection_capability(Projection, stable_ids)","adapter_provides(Adapter, projection_validation)","adapter_provides(Adapter, ingest_envelope)","adapter_provides(Adapter, event_time_policy)","adapter_provides(Adapter, revision_identity)","adapter_provides(Adapter, entity_identity_mapping)"],"condition_ids":["projection_is_deterministic","projection_is_closed","projection_ids_are_stable","adapter_validates_projection","adapter_adds_ingest_envelope","adapter_defines_event_time","adapter_defines_revision_identity","adapter_maps_entity_identity"]},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:spec:persistence_adapter_readiness","spec":"persistence_adapter_readiness","type":"spec","name":"persistence_adapter_readiness","status":"incomplete","doc":"Models the boundary between LemmaSpec's deterministic projection and a\nhypothetical durable-store adapter. The candidate is intentionally missing\ndatastore-owned semantics, so its expectation remains unsatisfied."},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:symbol:1b99a42aa95af4c552b07659ac8d309ad82602dee0a5dc6623d915bc7190bcc6","spec":"persistence_adapter_readiness","type":"symbol","value":"internally_closed"},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:symbol:29f02190331e4e5ff28f079179e186dd86ef3ce31e55275478f483417e17ade6","spec":"persistence_adapter_readiness","type":"symbol","value":"ingest_envelope"},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:symbol:4d39cba5aaffdc7d30bd5ef62755b6947d386127387209c1b8571f4219b8536f","spec":"persistence_adapter_readiness","type":"symbol","value":"revision_identity"},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:symbol:5a23bfa813534802cdd99d4008ec7faee950a8d204328390665c7baf329cc799","spec":"persistence_adapter_readiness","type":"symbol","value":"stable_ids"},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:symbol:5edb7c139c4cd6721bf1fd1274f376ec87829040421e4ae8f7df3e060d947403","spec":"persistence_adapter_readiness","type":"symbol","value":"store_adapter"},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:symbol:6b59c2fc1368ffc389c07fd989dc067ef1c4203e7441c41a286f237c17a3310f","spec":"persistence_adapter_readiness","type":"symbol","value":"projection_validation"},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:symbol:bfa476ff0cfef8820f5d8cca4f16392957bed20c0ae9d567a2e78c1fda080d02","spec":"persistence_adapter_readiness","type":"symbol","value":"event_time_policy"},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:symbol:c76d348b7df5129442e1b3cb5c04c1910711cd911861573e7ebb86645273729e","spec":"persistence_adapter_readiness","type":"symbol","value":"lemmaspec_projection"},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:symbol:e8b699dad88d4b53794d7b8646c859096ba03063af759954be71c896fada71d0","spec":"persistence_adapter_readiness","type":"symbol","value":"deterministic"},{"kind":"node","id":"lemmaspec:persistence_adapter_readiness:symbol:fea681292b0a64e0880814e4f9636b3713324a5f8b3380f7ce284453ea740d9e","spec":"persistence_adapter_readiness","type":"symbol","value":"entity_identity_mapping"}],"edges":[{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:001e9a200352d4e458312202376e8b0a8355a0a8916c82a57cd447f6c7435da4","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:relation:adapter_provides","rel":"depends_on","basis":"rule_body","position":6,"negated":false},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:090d00ff7110b9cc9e8f73bdec677e274dc11da41f9f456a2edafaeb7574f328","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:spec:persistence_adapter_readiness","to":"lemmaspec:persistence_adapter_readiness:fact:0e9b1e2c1841d3bdfe43ccc7ae1b8e5ff020d38e7a6a31cbb05dbf36c3281e49","rel":"asserts","basis":"declaration","evidence":["projection_has_stable_ids"]},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:1086f1198b718d046b47a735da50bfa28104ae233ff45ab9fed5c2d22c5ab0ef","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:symbol:4d39cba5aaffdc7d30bd5ef62755b6947d386127387209c1b8571f4219b8536f","rel":"references_symbol","basis":"rule_body","position":15},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:1956791d4b1911c17afd3a3801ae9b93ad8303bc2220f193fffca2ea54ea5d52","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:fact:fa0c84f949fe8447bff07b27340b830a727b39ab5b63bcc63f3acc12e0bced05","to":"lemmaspec:persistence_adapter_readiness:symbol:e8b699dad88d4b53794d7b8646c859096ba03063af759954be71c896fada71d0","rel":"references_symbol","basis":"fact_argument","position":1},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:1cb94891c0a49f778f08ab64a3881804c23d1dc3bb01e703a3c33de8710bd908","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:relation:adapter_provides","rel":"depends_on","basis":"rule_body","position":4,"negated":false},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:1d73a163910fc59a2db7b665a0dd0ad0e6b69d01c3bb61b349f75d3cee7b425d","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:expectation:candidate_is_ready_for_durable_persistence","to":"lemmaspec:persistence_adapter_readiness:symbol:5edb7c139c4cd6721bf1fd1274f376ec87829040421e4ae8f7df3e060d947403","rel":"references_symbol","basis":"expectation_query","position":1},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:29fe28cf09d1e03c34101f2060c24aaf7caf2f860e805651dcb4679a3a86c9f3","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:fact:0e9b1e2c1841d3bdfe43ccc7ae1b8e5ff020d38e7a6a31cbb05dbf36c3281e49","to":"lemmaspec:persistence_adapter_readiness:symbol:5a23bfa813534802cdd99d4008ec7faee950a8d204328390665c7baf329cc799","rel":"references_symbol","basis":"fact_argument","position":1},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:2f9485442516c8a0fbce60074fdb8663f17a4ee164424352dcb39d7998848de8","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:fact:fa0c84f949fe8447bff07b27340b830a727b39ab5b63bcc63f3acc12e0bced05","to":"lemmaspec:persistence_adapter_readiness:symbol:c76d348b7df5129442e1b3cb5c04c1910711cd911861573e7ebb86645273729e","rel":"references_symbol","basis":"fact_argument","position":0},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:59eadf0cfd9f309904ec3e3882ff4db214c55a0d718dad7bbb14c40ac447caad","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:relation:persistence_ready","rel":"derives","basis":"declaration"},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:613ca7d33ef30d6b65fbe1b09468a4aa9db051795b612646bc2aadf64d10eff1","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:symbol:e8b699dad88d4b53794d7b8646c859096ba03063af759954be71c896fada71d0","rel":"references_symbol","basis":"rule_body","position":3},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:667e92729df659d250d4e83c6a6f85bee1b0d5bf58f6a2113ceb0443d4918e44","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:spec:persistence_adapter_readiness","to":"lemmaspec:persistence_adapter_readiness:fact:ed671d260b0c4b96a3c4cb27066e745bf891f7bb9d505d0df2456bc85420e1d2","rel":"asserts","basis":"declaration","evidence":["projection_is_closed"]},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:72c2141d0f20ae203f80116170c6cf68bf37cf7c12dc170dc9aaba01e43ca473","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:fact:ed671d260b0c4b96a3c4cb27066e745bf891f7bb9d505d0df2456bc85420e1d2","to":"lemmaspec:persistence_adapter_readiness:symbol:1b99a42aa95af4c552b07659ac8d309ad82602dee0a5dc6623d915bc7190bcc6","rel":"references_symbol","basis":"fact_argument","position":1},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:7a7c777652976159b7d85cbc5965127a187fa0607f6d73149131cfc13ae4993f","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:expectation:candidate_is_ready_for_durable_persistence","to":"lemmaspec:persistence_adapter_readiness:relation:persistence_ready","rel":"expects","basis":"query"},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:7ac41ef464029ffb6ea7a906467ba8ec21b88bc3dd1e92cb6730fa7aca3ac264","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:symbol:fea681292b0a64e0880814e4f9636b3713324a5f8b3380f7ce284453ea740d9e","rel":"references_symbol","basis":"rule_body","position":17},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:822b95e18bb802180ad464c5df1baeef974c845f51656b21c7a6678053509271","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:fact:a4e5dd8cce57d882b05b4852d8fef2294f5e5136bb21f3738411ffa076e269d2","to":"lemmaspec:persistence_adapter_readiness:symbol:5edb7c139c4cd6721bf1fd1274f376ec87829040421e4ae8f7df3e060d947403","rel":"references_symbol","basis":"fact_argument","position":0},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:833c6bcacfd80676523748d936c4439b38bd0b6b2b867cea2f0b4a201f7bce1f","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:fact:0e9b1e2c1841d3bdfe43ccc7ae1b8e5ff020d38e7a6a31cbb05dbf36c3281e49","to":"lemmaspec:persistence_adapter_readiness:symbol:c76d348b7df5129442e1b3cb5c04c1910711cd911861573e7ebb86645273729e","rel":"references_symbol","basis":"fact_argument","position":0},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:8dd6e06745951be7628bb8efcc9feae580f6241e27e31fbbeab072320323b521","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:symbol:bfa476ff0cfef8820f5d8cca4f16392957bed20c0ae9d567a2e78c1fda080d02","rel":"references_symbol","basis":"rule_body","position":13},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:903891a8cfed51ba5ceaaae2f4888e30e09b812bbbc635750e6906f948871bf5","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:relation:adapter_provides","rel":"depends_on","basis":"rule_body","position":7,"negated":false},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:91929e03b192a674f8eb037dad92198e21a3f70648e55b6a565b21593e94626b","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:symbol:29f02190331e4e5ff28f079179e186dd86ef3ce31e55275478f483417e17ade6","rel":"references_symbol","basis":"rule_body","position":11},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:94ae21829815e62f7bb47c8560cb181e07b94110d599b41f00065cfcf4792adf","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:symbol:5a23bfa813534802cdd99d4008ec7faee950a8d204328390665c7baf329cc799","rel":"references_symbol","basis":"rule_body","position":7},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:a30bb45b15579e11d36a1fbab9022eb0fb39f18baa401ee89fbccb6b37fe9b94","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:spec:persistence_adapter_readiness","to":"lemmaspec:persistence_adapter_readiness:fact:fa0c84f949fe8447bff07b27340b830a727b39ab5b63bcc63f3acc12e0bced05","rel":"asserts","basis":"declaration","evidence":["projection_is_deterministic"]},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:a6530ef43b1bc0182bc0e95f8803dce7d2c44ce8d3569ab5816de0a684df03f6","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:fact:ed671d260b0c4b96a3c4cb27066e745bf891f7bb9d505d0df2456bc85420e1d2","to":"lemmaspec:persistence_adapter_readiness:symbol:c76d348b7df5129442e1b3cb5c04c1910711cd911861573e7ebb86645273729e","rel":"references_symbol","basis":"fact_argument","position":0},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:b04f67f231a6e5a7f44985a86031eeaa384002d3797e88a3d28068a162da7f4c","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:relation:projection_capability","rel":"depends_on","basis":"rule_body","position":2,"negated":false},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:b23a447662ced0dda1a81083a12004ecbd23b626ce5e5542330b1e228dda39c1","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:symbol:1b99a42aa95af4c552b07659ac8d309ad82602dee0a5dc6623d915bc7190bcc6","rel":"references_symbol","basis":"rule_body","position":5},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:c6a02bf9bd874f76586d5d851adb7c7f0b2837555f6f904152120afac60b0457","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:relation:adapter_provides","rel":"depends_on","basis":"rule_body","position":5,"negated":false},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:c74a4ebcbb2a1040cba5eca6bc0bb8f0b57b5b816d6f80463e6943ec6f98dc4c","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:fact:a4e5dd8cce57d882b05b4852d8fef2294f5e5136bb21f3738411ffa076e269d2","to":"lemmaspec:persistence_adapter_readiness:symbol:6b59c2fc1368ffc389c07fd989dc067ef1c4203e7441c41a286f237c17a3310f","rel":"references_symbol","basis":"fact_argument","position":1},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:c791ec48a2af5839e8cb472fa73eba70d4f7f7179c9341c8e52658c5d82bf968","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:relation:projection_capability","rel":"depends_on","basis":"rule_body","position":0,"negated":false},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:cde9ae0744121c8a841fbbca29aafcdedcd7a40b3c30f24db34d7b3fac037248","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:spec:persistence_adapter_readiness","to":"lemmaspec:persistence_adapter_readiness:fact:a4e5dd8cce57d882b05b4852d8fef2294f5e5136bb21f3738411ffa076e269d2","rel":"asserts","basis":"declaration","evidence":["candidate_validates_projection"]},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:de18a43902061b2e5fb96614b74489ad048425b5d1c0f5f8800745dfad5de6bc","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:relation:adapter_provides","rel":"depends_on","basis":"rule_body","position":3,"negated":false},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:dff123323329b70ba8bc9b3820f6af1dba4dcf4fa13b20c482766cdb4a9c8881","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:expectation:candidate_is_ready_for_durable_persistence","to":"lemmaspec:persistence_adapter_readiness:symbol:c76d348b7df5129442e1b3cb5c04c1910711cd911861573e7ebb86645273729e","rel":"references_symbol","basis":"expectation_query","position":0},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:e66e39700b31f9ce603cc8267d5ab5f0575a263fe192e6a7069b0eb18e486cf7","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:symbol:6b59c2fc1368ffc389c07fd989dc067ef1c4203e7441c41a286f237c17a3310f","rel":"references_symbol","basis":"rule_body","position":9},{"kind":"edge","id":"lemmaspec:persistence_adapter_readiness:edge:e797a84eaf63991c468ebf8e185e0a7bdffaa3f1a6442bb8161476d6cb3a9084","spec":"persistence_adapter_readiness","from":"lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics","to":"lemmaspec:persistence_adapter_readiness:relation:projection_capability","rel":"depends_on","basis":"rule_body","position":1,"negated":false}]}</script>
+<script>
+(function () {
+  "use strict";
+  const data = JSON.parse(document.getElementById("lemmaspec-graph").textContent);
+  const svg = document.getElementById("graph");
+  const viewport = document.getElementById("graph-viewport");
+  const journey = document.getElementById("journey");
+  const selectionBox = document.getElementById("selection");
+  const stageNote = document.getElementById("stage-note");
+  const ns = "http://www.w3.org/2000/svg";
+
+  // ------------------------------------------------------------ indexes
+  const nodeById = new Map(data.nodes.map(node => [node.id, node]));
+  const edgeById = new Map(data.edges.map(edge => [edge.id, edge]));
+  const neighbours = new Map(data.nodes.map(node => [node.id, new Set()]));
+  const incident = new Map(data.nodes.map(node => [node.id, []]));
+  const out = new Map(data.nodes.map(node => [node.id, []]));
+  const into = new Map(data.nodes.map(node => [node.id, []]));
+  data.edges.forEach(edge => {
+    if (!nodeById.has(edge.from) || !nodeById.has(edge.to)) return;
+    neighbours.get(edge.from).add(edge.to);
+    neighbours.get(edge.to).add(edge.from);
+    incident.get(edge.from).push(edge);
+    incident.get(edge.to).push(edge);
+    out.get(edge.from).push(edge);
+    into.get(edge.to).push(edge);
+  });
+  const degree = id => incident.get(id).length;
+
+  // Every node belongs to the relation it describes, derives, or queries.
+  // Symbols belong to nobody: they are the shared vocabulary between clusters.
+  const clusterOf = new Map();
+  data.nodes.forEach(node => {
+    if (node.type === "relation") clusterOf.set(node.id, node.id);
+    if (node.type === "fact") clusterOf.set(node.id, `lemmaspec:${data.spec}:relation:${node.relation}`);
+  });
+  data.edges.forEach(edge => {
+    const target = nodeById.get(edge.to);
+    if ((edge.rel === "derives" || edge.rel === "expects") && target && target.type === "relation") clusterOf.set(edge.from, edge.to);
+  });
+  data.edges.forEach(edge => {
+    if (edge.rel === "targets" && clusterOf.has(edge.to)) clusterOf.set(edge.from, clusterOf.get(edge.to));
+  });
+
+  const displayLabels = {"lemmaspec:persistence_adapter_readiness:expectation:candidate_is_ready_for_durable_persistence":"candidate_is_ready_for_durable_persistence","lemmaspec:persistence_adapter_readiness:fact:0e9b1e2c1841d3bdfe43ccc7ae1b8e5ff020d38e7a6a31cbb05dbf36c3281e49":"projection capability: lemmaspec_projection (unlabelled), stable_ids (unlabelled)","lemmaspec:persistence_adapter_readiness:fact:a4e5dd8cce57d882b05b4852d8fef2294f5e5136bb21f3738411ffa076e269d2":"adapter provides: store_adapter (unlabelled), projection_validation (unlabelled)","lemmaspec:persistence_adapter_readiness:fact:ed671d260b0c4b96a3c4cb27066e745bf891f7bb9d505d0df2456bc85420e1d2":"projection capability: lemmaspec_projection (unlabelled), internally_closed (unlabelled)","lemmaspec:persistence_adapter_readiness:fact:fa0c84f949fe8447bff07b27340b830a727b39ab5b63bcc63f3acc12e0bced05":"projection capability: lemmaspec_projection (unlabelled), deterministic (unlabelled)","lemmaspec:persistence_adapter_readiness:relation:adapter_provides":"adapter_provides","lemmaspec:persistence_adapter_readiness:relation:persistence_ready":"persistence_ready","lemmaspec:persistence_adapter_readiness:relation:projection_capability":"projection_capability","lemmaspec:persistence_adapter_readiness:rule:ready_only_when_adapter_owns_persistence_semantics":"ready_only_when_adapter_owns_persistence_semantics","lemmaspec:persistence_adapter_readiness:spec:persistence_adapter_readiness":"persistence_adapter_readiness","lemmaspec:persistence_adapter_readiness:symbol:1b99a42aa95af4c552b07659ac8d309ad82602dee0a5dc6623d915bc7190bcc6":"internally_closed (unlabelled)","lemmaspec:persistence_adapter_readiness:symbol:29f02190331e4e5ff28f079179e186dd86ef3ce31e55275478f483417e17ade6":"ingest_envelope (unlabelled)","lemmaspec:persistence_adapter_readiness:symbol:4d39cba5aaffdc7d30bd5ef62755b6947d386127387209c1b8571f4219b8536f":"revision_identity (unlabelled)","lemmaspec:persistence_adapter_readiness:symbol:5a23bfa813534802cdd99d4008ec7faee950a8d204328390665c7baf329cc799":"stable_ids (unlabelled)","lemmaspec:persistence_adapter_readiness:symbol:5edb7c139c4cd6721bf1fd1274f376ec87829040421e4ae8f7df3e060d947403":"store_adapter (unlabelled)","lemmaspec:persistence_adapter_readiness:symbol:6b59c2fc1368ffc389c07fd989dc067ef1c4203e7441c41a286f237c17a3310f":"projection_validation (unlabelled)","lemmaspec:persistence_adapter_readiness:symbol:bfa476ff0cfef8820f5d8cca4f16392957bed20c0ae9d567a2e78c1fda080d02":"event_time_policy (unlabelled)","lemmaspec:persistence_adapter_readiness:symbol:c76d348b7df5129442e1b3cb5c04c1910711cd911861573e7ebb86645273729e":"lemmaspec_projection (unlabelled)","lemmaspec:persistence_adapter_readiness:symbol:e8b699dad88d4b53794d7b8646c859096ba03063af759954be71c896fada71d0":"deterministic (unlabelled)","lemmaspec:persistence_adapter_readiness:symbol:fea681292b0a64e0880814e4f9636b3713324a5f8b3380f7ce284453ea740d9e":"entity_identity_mapping (unlabelled)"};
+  const answerClosures = {"lemmaspec:persistence_adapter_readiness:expectation:candidate_is_ready_for_durable_persistence":["lemmaspec:persistence_adapter_readiness:expectation:candidate_is_ready_for_durable_persistence","lemmaspec:persistence_adapter_readiness:relation:persistence_ready"]};
+  let selectedAnswer = document.querySelector("[data-answer]")?.dataset.answer || null;
+  let fullGraph = false;
+  function label(node) { return displayLabels[node.id] || node.name || node.type; }
+  document.getElementById("full-graph").addEventListener("click", event => {
+    fullGraph = !fullGraph;
+    event.currentTarget.setAttribute("aria-pressed", String(fullGraph));
+    event.currentTarget.textContent = fullGraph ? "Witness graph" : "Full graph";
+    redraw(180); fit();
+  });
+  document.getElementById("mode-toggle").addEventListener("click", event => {
+    const walking = document.body.classList.toggle("walkthrough");
+    event.currentTarget.setAttribute("aria-pressed", String(walking));
+    event.currentTarget.textContent = walking ? "Answer brief" : "Full walkthrough";
+    clearSelection(); fit();
+  });
+  document.querySelectorAll(".answer-select").forEach(button => button.addEventListener("click", () => {
+    selectedAnswer = button.closest("[data-answer]").dataset.answer;
+    document.querySelectorAll(".answer-select").forEach(other => other.setAttribute("aria-pressed", String(other === button)));
+    focus = null; clearSelection(); redraw(180); fit();
+  }));
+  function tone(node) {
+    if (node.type === "expectation") return node.satisfied ? "stable" : "critical";
+    if (node.type === "fact") return node.origin !== "asserted" ? "additive" : (node.bases?.length && node.bases.every(basis => basis.kind !== "reviewer_declared") ? "stable" : "attention");
+    if (node.type === "rule" || node.type === "mutation") return "attention";
+    return "neutral";
+  }
+  const boost = new Map();
+  const revealed = new Set();
+  function radius(node) {
+    const base = node.type === "relation" ? 9 : node.type === "symbol" ? (revealed.has(node.id) ? 7 : 4) : 6;
+    return Math.min(26, base + 1.8 * Math.sqrt(degree(node.id)) + (boost.get(node.id) || 0));
+  }
+
+  // The thread one node pulls on: what it rests on, or what rests on it.
+  function walk(start, step) {
+    const seen = new Set([start]);
+    const queue = [start];
+    while (queue.length) {
+      const current = queue.shift();
+      step(current).forEach(next => { if (!seen.has(next)) { seen.add(next); queue.push(next); } });
+    }
+    return seen;
+  }
+  const upstream = id => walk(id, current => out.get(current).filter(e => e.rel === "depends_on" && e.basis === "proof_witness").map(e => e.to));
+  const downstream = id => walk(id, current => into.get(current).filter(e => e.rel === "depends_on" && e.basis === "proof_witness").map(e => e.from));
+  function story(id) {
+    const node = nodeById.get(id);
+    const lit = new Set([id]);
+    if (!node) return lit;
+    if (node.type === "fact" && node.origin === "derived") {
+      upstream(id).forEach(fact => {
+        lit.add(fact);
+        into.get(fact).filter(e => e.rel === "derives" && e.basis === "proof_witness").forEach(e => lit.add(e.from));
+      });
+    } else if (node.type === "fact") {
+      downstream(id).forEach(fact => {
+        lit.add(fact);
+        out.get(fact).filter(e => e.rel === "proves").forEach(e => lit.add(e.to));
+      });
+    } else if (node.type === "expectation") {
+      (answerClosures[id] || []).forEach(item => lit.add(item));
+      out.get(id).filter(e => e.rel === "expects").forEach(e => lit.add(e.to));
+    } else if (node.type === "relation") {
+      data.nodes.forEach(other => { if (clusterOf.get(other.id) === id) lit.add(other.id); });
+      into.get(id).forEach(e => lit.add(e.from));
+    } else {
+      neighbours.get(id).forEach(other => lit.add(other));
+    }
+    return lit;
+  }
+
+  // ------------------------------------------------------------ cycles
+  const cyclic = new Set();
+  (function findCycles() {
+    let index = 0;
+    const disc = new Map(), low = new Map(), onStack = new Set(), stack = [];
+    data.nodes.forEach(root => {
+      if (disc.has(root.id)) return;
+      const call = [[root.id, 0]];
+      while (call.length) {
+        const [v, start] = call.pop();
+        if (start === 0) { disc.set(v, ++index); low.set(v, index); stack.push(v); onStack.add(v); }
+        const targets = out.get(v).map(e => e.to);
+        let descended = false;
+        for (let i = start; i < targets.length; i++) {
+          const w = targets[i];
+          if (!disc.has(w)) { call.push([v, i + 1]); call.push([w, 0]); descended = true; break; }
+          if (onStack.has(w)) low.set(v, Math.min(low.get(v), disc.get(w)));
+        }
+        if (descended) continue;
+        if (low.get(v) === disc.get(v)) {
+          const component = [];
+          let w;
+          do { w = stack.pop(); onStack.delete(w); component.push(w); } while (w !== v);
+          if (component.length > 1 || targets.includes(v)) component.forEach(id => cyclic.add(id));
+        }
+        if (call.length) {
+          const parent = call[call.length - 1][0];
+          low.set(parent, Math.min(low.get(parent), low.get(v)));
+        }
+      }
+    });
+  })();
+
+  // ------------------------------------------------------------ layout
+  function seededRandom(seed) {
+    let state = seed >>> 0;
+    return function () {
+      state = (state + 0x6d2b79f5) >>> 0;
+      let t = state;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  let seed = 2166136261;
+  for (const character of data.spec) seed = Math.imul(seed ^ character.charCodeAt(0), 16777619);
+  const random = seededRandom(seed);
+  const position = new Map();
+  const pinned = new Set();
+
+  function layout(nodes, edges, iterations) {
+    const ids = nodes.map(node => node.id);
+    const clusters = [...new Set(ids.map(id => clusterOf.get(id)).filter(Boolean))];
+    const anchor = new Map();
+    const ring = 80 + 14 * clusters.length;
+    clusters.forEach((cluster, index) => {
+      const angle = (index / clusters.length) * Math.PI * 2;
+      anchor.set(cluster, { x: Math.cos(angle) * ring, y: Math.sin(angle) * ring });
+    });
+    ids.forEach(id => {
+      if (position.has(id)) return;
+      const home = anchor.get(clusterOf.get(id)) || { x: 0, y: 0 };
+      position.set(id, { x: home.x + (random() - 0.5) * 120, y: home.y + (random() - 0.5) * 120 });
+    });
+    const points = ids.map(id => position.get(id));
+    const rest = edges.map(edge => (edge.rel === "references_symbol" ? 80 : 55));
+    const index = new Map(ids.map((id, i) => [id, i]));
+    const springs = edges.map(edge => [index.get(edge.from), index.get(edge.to)]);
+    const clusterIndex = ids.map(id => clusterOf.get(id));
+    const force = points.map(() => ({ x: 0, y: 0 }));
+    for (let step = 0; step < iterations; step++) {
+      const heat = 1 - step / iterations;
+      const maxMove = 2 + 26 * heat;
+      force.forEach(f => { f.x = 0; f.y = 0; });
+      for (let i = 0; i < points.length; i++) {
+        for (let j = i + 1; j < points.length; j++) {
+          let dx = points[i].x - points[j].x, dy = points[i].y - points[j].y;
+          let d2 = dx * dx + dy * dy;
+          if (d2 < 1) { dx = random() - 0.5; dy = random() - 0.5; d2 = 1; }
+          const push = 4800 / (d2 * Math.sqrt(d2));
+          force[i].x += dx * push; force[i].y += dy * push;
+          force[j].x -= dx * push; force[j].y -= dy * push;
+        }
+      }
+      springs.forEach(([a, b], k) => {
+        const dx = points[b].x - points[a].x, dy = points[b].y - points[a].y;
+        const d = Math.max(1, Math.hypot(dx, dy));
+        const pull = (d - rest[k]) * 0.07 / d;
+        force[a].x += dx * pull; force[a].y += dy * pull;
+        force[b].x -= dx * pull; force[b].y -= dy * pull;
+      });
+      const centroid = new Map();
+      points.forEach((p, i) => {
+        const cluster = clusterIndex[i];
+        if (!cluster) return;
+        const c = centroid.get(cluster) || { x: 0, y: 0, n: 0 };
+        c.x += p.x; c.y += p.y; c.n += 1;
+        centroid.set(cluster, c);
+      });
+      points.forEach((p, i) => {
+        const c = centroid.get(clusterIndex[i]);
+        if (c && c.n > 1) {
+          force[i].x += (c.x / c.n - p.x) * 0.14;
+          force[i].y += (c.y / c.n - p.y) * 0.14;
+        }
+        force[i].x -= p.x * 0.006;
+        force[i].y -= p.y * 0.006;
+      });
+      points.forEach((p, i) => {
+        if (pinned.has(ids[i])) return;
+        const magnitude = Math.hypot(force[i].x, force[i].y);
+        const scale = magnitude > maxMove ? maxMove / magnitude : 1;
+        p.x += force[i].x * scale;
+        p.y += force[i].y * scale;
+      });
+    }
+  }
+
+  // ------------------------------------------------------------ state
+  const typesPresent = [...new Set(data.nodes.map(node => node.type))];
+  const relsPresent = [...new Set(data.edges.map(edge => edge.rel))];
+  const shownTypes = new Set(typesPresent.filter(type => type !== "symbol" && type !== "spec"));
+  const shownRels = new Set(relsPresent.filter(rel => rel !== "asserts"));
+  let focus = null;
+  let selected = null;
+  let hovered = null;
+  let query = "";
+  let showCycles = false;
+  let stepSet = null;
+  let labelMode = "auto";
+  const view = { x: 0, y: 0, k: 1 };
+
+  function visibleNodes() {
+    let nodes = data.nodes.filter(node => shownTypes.has(node.type) || revealed.has(node.id));
+    if (!fullGraph) {
+      const closure = new Set(answerClosures[selectedAnswer] || []);
+      nodes = nodes.filter(node => closure.has(node.id));
+    }
+    if (focus) {
+      const keep = new Set([focus]);
+      neighbours.get(focus).forEach(a => { keep.add(a); neighbours.get(a).forEach(b => keep.add(b)); });
+      nodes = nodes.filter(node => keep.has(node.id));
+    }
+    return nodes;
+  }
+  function visibleEdges(nodes) {
+    const ids = new Set(nodes.map(node => node.id));
+    return data.edges.filter(edge => shownRels.has(edge.rel) && ids.has(edge.from) && ids.has(edge.to));
+  }
+
+  // ------------------------------------------------------------ filters
+  const typeInputs = new Map();
+  function checkbox(container, name, checked, onChange, swatchRel) {
+    const item = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = checked;
+    input.addEventListener("change", () => onChange(input.checked));
+    item.appendChild(input);
+    if (swatchRel) {
+      const swatch = document.createElement("span");
+      swatch.className = "swatch";
+      swatch.dataset.rel = swatchRel;
+      item.appendChild(swatch);
+    }
+    item.appendChild(document.createTextNode(name));
+    container.appendChild(item);
+    return input;
+  }
+  typesPresent.forEach(type => typeInputs.set(type, checkbox(document.getElementById("type-filters"), type, shownTypes.has(type), on => {
+    if (on) shownTypes.add(type); else shownTypes.delete(type);
+    redraw(140);
+  })));
+  relsPresent.forEach(rel => checkbox(document.getElementById("rel-filters"), rel.replace(/_/g, " "), shownRels.has(rel), on => {
+    if (on) shownRels.add(rel); else shownRels.delete(rel);
+    redraw(140);
+  }, rel));
+  const filters = document.getElementById("filters");
+  const filtersToggle = document.getElementById("filters-toggle");
+  filtersToggle.addEventListener("click", () => {
+    filters.hidden = !filters.hidden;
+    filtersToggle.setAttribute("aria-pressed", String(!filters.hidden));
+  });
+  const search = document.getElementById("graph-search");
+  search.addEventListener("input", () => { query = search.value.trim().toLowerCase(); applyEmphasis(); });
+  const cyclesButton = document.getElementById("cycles");
+  cyclesButton.textContent = `cycles (${cyclic.size})`;
+  cyclesButton.disabled = cyclic.size === 0;
+  cyclesButton.addEventListener("click", () => {
+    showCycles = !showCycles;
+    cyclesButton.setAttribute("aria-pressed", String(showCycles));
+    applyEmphasis();
+  });
+  const labelsButton = document.getElementById("labels");
+  labelsButton.addEventListener("click", () => {
+    labelMode = labelMode === "auto" ? "all" : labelMode === "all" ? "none" : "auto";
+    labelsButton.textContent = `labels: ${labelMode}`;
+    placeLabels();
+  });
+  const clearFocus = document.getElementById("clear-focus");
+  clearFocus.addEventListener("click", () => setFocus(null));
+  document.getElementById("fit").addEventListener("click", fit);
+  function setFocus(id) {
+    focus = id;
+    clearFocus.hidden = !focus;
+    redraw(140);
+    fit();
+  }
+
+  // ------------------------------------------------------------ drawing
+  function element(name, attrs) {
+    const value = document.createElementNS(ns, name);
+    Object.entries(attrs || {}).forEach(([key, item]) => value.setAttribute(key, item));
+    return value;
+  }
+  const defs = element("defs");
+  const marker = element("marker", { id: "arrow", markerWidth: "7", markerHeight: "7", refX: "6", refY: "3", orient: "auto", markerUnits: "userSpaceOnUse", viewBox: "0 0 7 7" });
+  marker.appendChild(element("path", { d: "M0,0.5 L0,5.5 L6,3 z", fill: "var(--dim)" }));
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+  const scene = element("g", { class: "scene" });
+  svg.appendChild(scene);
+  const hullLayer = element("g"), edgeLayer = element("g"), nodeLayer = element("g");
+  scene.append(hullLayer, edgeLayer, nodeLayer);
+  const nodeElements = new Map();
+  const edgeElements = new Map();
+  let drawnNodes = [], drawnEdges = [];
+
+  function hull(points) {
+    if (points.length < 3) return points;
+    points = points.slice().sort((a, b) => a.x - b.x || a.y - b.y);
+    const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+    const lower = [], upper = [];
+    for (const p of points) { while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop(); lower.push(p); }
+    for (const p of points.slice().reverse()) { while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop(); upper.push(p); }
+    return lower.slice(0, -1).concat(upper.slice(0, -1));
+  }
+  function edgePath(edge) {
+    const a = position.get(edge.from), b = position.get(edge.to);
+    const ra = radius(nodeById.get(edge.from)), rb = radius(nodeById.get(edge.to)) + 4;
+    const dx = b.x - a.x, dy = b.y - a.y;
+    const d = Math.max(1, Math.hypot(dx, dy));
+    const ux = dx / d, uy = dy / d;
+    const sx = a.x + ux * ra, sy = a.y + uy * ra, ex = b.x - ux * rb, ey = b.y - uy * rb;
+    const bend = Math.min(18, d * 0.12);
+    const mx = (sx + ex) / 2 - uy * bend, my = (sy + ey) / 2 + ux * bend;
+    return `M${sx.toFixed(1)},${sy.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${ex.toFixed(1)},${ey.toFixed(1)}`;
+  }
+
+  function redraw(iterations) {
+    drawnNodes = visibleNodes();
+    drawnEdges = visibleEdges(drawnNodes);
+    layout(drawnNodes, drawnEdges, iterations);
+    hullLayer.replaceChildren();
+    edgeLayer.replaceChildren();
+    nodeLayer.replaceChildren();
+    nodeElements.clear();
+    edgeElements.clear();
+
+    const members = new Map();
+    drawnNodes.forEach(node => {
+      const cluster = clusterOf.get(node.id);
+      if (!cluster) return;
+      if (!members.has(cluster)) members.set(cluster, []);
+      members.get(cluster).push(node);
+    });
+    members.forEach((nodes, cluster) => {
+      if (nodes.length < 2) return;
+      const outline = hull(nodes.map(node => position.get(node.id)));
+      const path = outline.map((p, i) => `${i ? "L" : "M"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ") + " Z";
+      const relation = nodeById.get(cluster);
+      const failed = nodes.some(node => node.type === "expectation" && !node.satisfied);
+      const colour = failed ? "var(--critical)" : "var(--accent)";
+      hullLayer.appendChild(element("path", { d: path, class: "hull", fill: colour, stroke: colour }));
+      const top = outline.reduce((best, p) => (p.y < best.y ? p : best), outline[0]);
+      const text = element("text", { x: top.x, y: top.y - 26, class: "hull-label", "text-anchor": "middle" });
+      text.textContent = relation ? relation.name : cluster;
+      hullLayer.appendChild(text);
+    });
+
+    drawnEdges.forEach(edge => {
+      const width = 1 + 0.9 * (edge.evidence ? edge.evidence.length : 0);
+      const line = element("path", { d: edgePath(edge), class: "edge", "data-rel": edge.rel, "stroke-width": width, tabindex: "0", role: "button" });
+      if (edge.negated) line.setAttribute("data-negated", "true");
+      line.dataset.id = edge.id;
+      const title = element("title");
+      title.textContent = `${edge.rel}${edge.negated ? " (negated)" : ""}\n${label(nodeById.get(edge.from))}\n→ ${label(nodeById.get(edge.to))}`;
+      line.appendChild(title);
+      edgeLayer.appendChild(line);
+      edgeElements.set(edge.id, line);
+    });
+
+    drawnNodes.forEach(node => {
+      const p = position.get(node.id);
+      const r = radius(node);
+      const group = element("g", { class: "node" + (cyclic.has(node.id) ? " cyclic" : ""), transform: `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`, tabindex: "0", role: "button", "data-tone": tone(node), "data-type": node.type });
+      group.dataset.id = node.id;
+      const circle = element("circle", { r });
+      if (node.type === "fact") circle.setAttribute("fill-opacity", (0.35 + 0.65 * node.confidence).toFixed(2));
+      group.appendChild(circle);
+      const full = label(node);
+      const text = element("text", { x: r + 5, y: 4 });
+      text.textContent = full.length > 34 ? full.slice(0, 33) + "…" : full;
+      group.appendChild(text);
+      nodeLayer.appendChild(group);
+      nodeElements.set(node.id, group);
+    });
+
+    if (selected && !nodeElements.has(selected) && !edgeElements.has(selected)) selected = null;
+    applyEmphasis();
+  }
+
+  function moveNode(id) {
+    const p = position.get(id);
+    nodeElements.get(id).setAttribute("transform", `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`);
+    incident.get(id).forEach(edge => {
+      const line = edgeElements.get(edge.id);
+      if (line) line.setAttribute("d", edgePath(edge));
+    });
+  }
+  function resize() {
+    nodeElements.forEach((group, id) => group.querySelector("circle").setAttribute("r", radius(nodeById.get(id))));
+    edgeElements.forEach((line, id) => line.setAttribute("d", edgePath(edgeById.get(id))));
+  }
+
+  // ------------------------------------------------------------ emphasis
+  // Hover previews a thread, selection holds one, otherwise the step decides.
+  function applyEmphasis() {
+    let lit = null;
+    const thread = hovered || selected;
+    if (thread && nodeById.has(thread)) lit = story(thread);
+    else if (stepSet) lit = new Set(stepSet);
+    if (query) {
+      lit = lit || new Set();
+      drawnNodes.forEach(node => { if (label(node).toLowerCase().includes(query)) lit.add(node.id); });
+    }
+    if (showCycles) {
+      lit = lit || new Set();
+      cyclic.forEach(id => lit.add(id));
+    }
+    scene.classList.toggle("dimmed", lit !== null);
+    nodeElements.forEach((group, id) => group.classList.toggle("lit", lit !== null && lit.has(id)));
+    edgeElements.forEach((line, id) => {
+      const edge = edgeById.get(id);
+      line.classList.toggle("lit", lit !== null && lit.has(edge.from) && lit.has(edge.to));
+    });
+    journey.querySelectorAll(".card.lit").forEach(card => card.classList.remove("lit"));
+    if (thread && lit) {
+      lit.forEach(id => { const card = cardFor(id); if (card && id !== thread) card.classList.add("lit"); });
+    }
+    placeLabels();
+  }
+
+  // ------------------------------------------------------------ labels
+  // Lit and selected nodes always keep their label. Otherwise labels are
+  // placed by importance and dropped when they would sit on another label,
+  // so zooming in reveals more instead of turning the picture into text.
+  const CHAR = { relation: 7.4, other: 6.7 };
+  function labelBox(node) {
+    const p = position.get(node.id);
+    const r = radius(node);
+    const text = label(node);
+    const chars = Math.min(34, text.length);
+    const per = (node.type === "relation" ? CHAR.relation : CHAR.other) / view.k;
+    return { x: p.x + r + 5, y: p.y - 7 / view.k, w: chars * per, h: 14 / view.k };
+  }
+  function overlaps(a, b) {
+    return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+  }
+  function placeLabels() {
+    const dimmed = scene.classList.contains("dimmed");
+    const isLit = id => { const group = nodeElements.get(id); return !!group && group.classList.contains("lit"); };
+    // A small thread keeps every label; a large one is culled like the rest.
+    const litCount = drawnNodes.filter(node => isLit(node.id)).length;
+    const forced = id => id === selected || id === hovered || (isLit(id) && litCount <= 12);
+    const rank = node => (isLit(node.id) ? 100000 : 0) + (node.type === "relation" ? 3 : node.type === "symbol" ? 0 : node.type === "fact" ? 1 : 2) * 1000 + degree(node.id);
+    const ordered = drawnNodes.slice().sort((a, b) => rank(b) - rank(a));
+    const placed = ordered.filter(node => forced(node.id)).map(labelBox);
+    const bodies = drawnNodes.filter(node => !dimmed || isLit(node.id)).map(node => {
+      const p = position.get(node.id), r = radius(node) + 2;
+      return { id: node.id, x: p.x - r, y: p.y - r, w: 2 * r, h: 2 * r };
+    });
+    ordered.forEach(node => {
+      const group = nodeElements.get(node.id);
+      if (!group) return;
+      let show = false;
+      if (forced(node.id)) show = true;
+      else if (dimmed && !isLit(node.id)) show = false;
+      else if (labelMode === "none" && !isLit(node.id)) show = false;
+      else if (node.type === "symbol" && !isLit(node.id)) show = false;
+      else if (labelMode === "all") show = true;
+      else {
+        const box = labelBox(node);
+        show = !placed.some(other => overlaps(box, other))
+          && !bodies.some(body => body.id !== node.id && overlaps(box, body));
+        if (show) placed.push(box);
+      }
+      group.classList.toggle("nolabel", !show);
+    });
+  }
+  let labelTimer = null;
+  function scheduleLabels() {
+    clearTimeout(labelTimer);
+    labelTimer = setTimeout(placeLabels, 120);
+  }
+
+  // ------------------------------------------------------------ journey
+  const steps = [...journey.querySelectorAll(".step")];
+  const stepper = document.getElementById("stepper");
+  const where = document.getElementById("where");
+  const prev = document.getElementById("prev");
+  const next = document.getElementById("next");
+  const stepButtons = new Map();
+  let current = 0;
+  const notes = {
+    question: "",
+    observations: "evidence-backed facts are lit",
+    assumptions: "assumptions are lit, sized by what rests on them",
+    reasoning: "rules are lit",
+    conclusions: "derived facts are lit",
+    claims: "claims are lit",
+    "stress-tests": "stress tests and the rules they target are lit",
+    reference: ""
+  };
+  steps.forEach((section, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    const cards = section.querySelectorAll(".card").length;
+    const title = section.querySelector("h2").textContent.replace(/^The /, "").replace(/^\w/, c => c.toUpperCase());
+    button.textContent = title;
+    if (cards) {
+      const count = document.createElement("span");
+      count.className = "n";
+      count.textContent = cards;
+      button.append(" ", count);
+    }
+    if (section.dataset.step === "claims" && section.querySelector('.card[data-status="failed"]')) button.dataset.tone = "critical";
+    if (section.dataset.step === "assumptions" && cards) button.dataset.tone = "attention";
+    button.addEventListener("click", () => setStep(index));
+    stepper.appendChild(button);
+    stepButtons.set(section, button);
+  });
+  prev.addEventListener("click", () => setStep(current - 1));
+  next.addEventListener("click", () => setStep(current + 1));
+
+  function cardFor(id) {
+    return journey.querySelector(`.card[data-node="${CSS.escape(id)}"]`);
+  }
+  function stepOf(card) {
+    return steps.indexOf(card.closest(".step"));
+  }
+
+  function setStep(index, options) {
+    index = Math.max(0, Math.min(steps.length - 1, index));
+    current = index;
+    steps.forEach((section, i) => {
+      section.hidden = i !== index;
+      stepButtons.get(section).toggleAttribute("aria-current", i === index);
+      if (i === index) stepButtons.get(section).setAttribute("aria-current", "step");
+    });
+    prev.disabled = index === 0;
+    next.disabled = index === steps.length - 1;
+    where.textContent = `${index + 1} / ${steps.length}`;
+    const section = steps[index];
+    const key = section.dataset.step;
+    stageNote.textContent = notes[key] || "";
+    const ids = [...section.querySelectorAll(".card[data-node]")].map(card => card.dataset.node).filter(id => nodeById.has(id));
+    stepSet = ids.length && key !== "reference" ? new Set(ids) : null;
+    if (key === "stress-tests") {
+      ids.forEach(id => out.get(id).filter(e => e.rel === "targets").forEach(e => stepSet.add(e.to)));
+    }
+    boost.clear();
+    if (key === "assumptions") {
+      ids.forEach(id => { const n = downstream(id).size - 1; if (n > 0) boost.set(id, 3 * Math.log2(n + 1)); });
+    }
+    let needsRedraw = false;
+    if (stepSet) stepSet.forEach(id => {
+      const type = nodeById.get(id).type;
+      if (!shownTypes.has(type)) { shownTypes.add(type); typeInputs.get(type).checked = true; needsRedraw = true; }
+    });
+    if (needsRedraw) redraw(140); else resize();
+    if (!(options && options.keepSelection)) {
+      if (selected) { const card = cardFor(selected); if (card && stepOf(card) !== index) clearSelection(); }
+    }
+    if (!(options && options.keepScroll)) journey.scrollTop = 0;
+    applyEmphasis();
+  }
+
+  function clearSelection() {
+    if (selected) {
+      const element = nodeElements.get(selected) || edgeElements.get(selected);
+      if (element) element.classList.remove("selected");
+      const card = cardFor(selected);
+      if (card) { card.classList.remove("open"); card.querySelector(".card-detail").hidden = true; }
+    }
+    selected = null;
+    selectionBox.hidden = true;
+    if (revealed.size) { revealed.clear(); redraw(140); }
+    applyEmphasis();
+  }
+
+  function centreOn(id) {
+    const p = position.get(id);
+    if (!p) return;
+    const box = svg.getBoundingClientRect();
+    view.k = Math.max(view.k, 1.0);
+    view.x = box.width / 2 - p.x * view.k;
+    view.y = box.height / 2 - p.y * view.k;
+    applyView();
+  }
+
+  // One selection model: a card and its node are the same thing.
+  function select(id, options) {
+    if (!nodeById.has(id)) return;
+    if (selected === id && !(options && options.reopen)) return;
+    clearSelection();
+    selected = id;
+    const node = nodeById.get(id);
+    if (!shownTypes.has(node.type) && !revealed.has(node.id)) { revealed.add(node.id); redraw(140); }
+    if (focus && !nodeElements.has(id)) setFocus(null);
+    const group = nodeElements.get(id);
+    if (group) group.classList.add("selected");
+    if (options && options.centre) centreOn(id);
+    const card = cardFor(id);
+    if (card && document.body.classList.contains("walkthrough")) {
+      const index = stepOf(card);
+      if (index !== current) setStep(index, { keepSelection: true, keepScroll: true });
+      let ancestor = card.parentElement;
+      while (ancestor && ancestor !== journey) { if (ancestor.tagName === "DETAILS") ancestor.open = true; ancestor = ancestor.parentElement; }
+      card.classList.add("open");
+      card.querySelector(".card-detail").hidden = false;
+      selectionBox.hidden = true;
+      card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    } else {
+      showLoose(node);
+    }
+    applyEmphasis();
+  }
+
+  // Nodes without a card (symbols, the spec itself) get a small notice.
+  function showLoose(node) {
+    selectionBox.replaceChildren();
+    const kind = document.createElement("div"); kind.className = "kind"; kind.textContent = node.type;
+    const text = document.createElement("div"); text.textContent = label(node);
+    selectionBox.append(kind, text);
+    if (node.type === "symbol") {
+      const roles = new Set();
+      const mentions = [];
+      into.get(node.id).forEach(edge => {
+        const source = nodeById.get(edge.from);
+        if (!source) return;
+        if (source.type === "fact" && edge.position !== undefined) {
+          const relation = nodeById.get(`lemmaspec:${data.spec}:relation:${source.relation}`);
+          const role = relation && relation.roles && relation.roles[edge.position];
+          roles.add(role ? role : `${source.relation} · argument ${edge.position + 1}`);
+        }
+        mentions.push(source);
+      });
+      if (roles.size) { kind.textContent = [...roles].join(" · "); }
+      const note = document.createElement("div"); note.className = "meta";
+      note.textContent = mentions.length ? `appears in ${mentions.length} place${mentions.length === 1 ? "" : "s"}` : "appears nowhere";
+      selectionBox.appendChild(note);
+      if (mentions.length) {
+        const list = document.createElement("ul"); list.className = "mentions";
+        mentions.slice(0, 12).forEach(source => {
+          const item = document.createElement("li");
+          const link = document.createElement("a"); link.className = "ref"; link.href = "#"; link.dataset.node = source.id; link.textContent = label(source);
+          item.appendChild(link);
+          list.appendChild(item);
+        });
+        if (mentions.length > 12) { const more = document.createElement("li"); more.textContent = `and ${mentions.length - 12} more`; list.appendChild(more); }
+        selectionBox.appendChild(list);
+      }
+    }
+    const raw = document.createElement("details"); raw.className = "raw";
+    const summary = document.createElement("summary"); summary.textContent = "projected fields";
+    const pre = document.createElement("pre"); pre.textContent = JSON.stringify(node, null, 2);
+    raw.append(summary, pre);
+    selectionBox.appendChild(raw);
+    selectionBox.hidden = false;
+  }
+
+  journey.addEventListener("click", event => {
+    const noticeLink = event.target.closest("#selection a[data-node]");
+    if (noticeLink) { event.preventDefault(); select(noticeLink.dataset.node, { centre: true }); return; }
+    const summary = event.target.closest(".card-summary");
+    if (summary) {
+      const card = summary.closest(".card");
+      if (selected === card.dataset.node) clearSelection(); else select(card.dataset.node, { centre: true });
+      return;
+    }
+    const link = event.target.closest("a[data-node], a.ref[href^='#n-']");
+    if (!link) return;
+    event.preventDefault();
+    let id = link.dataset.node;
+    if (!id) {
+      const target = document.getElementById(link.getAttribute("href").slice(1));
+      id = target && target.dataset.node;
+    }
+    if (id) select(id, { centre: true });
+  });
+  journey.addEventListener("pointerover", event => {
+    const card = event.target.closest(".card");
+    const id = card ? card.dataset.node : null;
+    if (id !== hovered) { hovered = id; applyEmphasis(); }
+  });
+  journey.addEventListener("pointerleave", () => { if (hovered) { hovered = null; applyEmphasis(); } });
+
+  // Node has the card-detail with raw JSON too, for the machine-minded.
+  journey.querySelectorAll(".card[data-node]").forEach(card => {
+    const node = nodeById.get(card.dataset.node);
+    if (!node) return;
+    const raw = document.createElement("details"); raw.className = "raw";
+    const summary = document.createElement("summary"); summary.textContent = "projected fields";
+    const pre = document.createElement("pre"); pre.textContent = JSON.stringify(node, null, 2);
+    raw.append(summary, pre);
+    card.querySelector(".card-detail").appendChild(raw);
+  });
+
+  const help = document.getElementById("help");
+  function showHelp(on) { help.hidden = !on; if (on) document.getElementById("help-close").focus(); }
+  document.getElementById("help-open").addEventListener("click", () => showHelp(true));
+  document.getElementById("help-close").addEventListener("click", () => showHelp(false));
+  document.getElementById("help-link").addEventListener("click", event => { event.preventDefault(); showHelp(true); });
+  help.addEventListener("click", event => { if (event.target === help) showHelp(false); });
+
+  document.addEventListener("keydown", event => {
+    const tag = (event.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea") return;
+    if (event.key === "?") { showHelp(help.hidden); return; }
+    if (!help.hidden) { if (event.key === "Escape") showHelp(false); return; }
+    if (event.key === "ArrowRight") setStep(current + 1);
+    if (event.key === "ArrowLeft") setStep(current - 1);
+    if (event.key === "Escape") { if (focus) setFocus(null); else clearSelection(); }
+  });
+
+  // ------------------------------------------------------------ pointer
+  let lastK = 0;
+  function applyView() {
+    scene.setAttribute("transform", `translate(${view.x} ${view.y}) scale(${view.k})`);
+    scene.style.setProperty("--ls", (1 / view.k).toFixed(3));
+    if (view.k !== lastK) { lastK = view.k; scheduleLabels(); }
+  }
+  function fit() {
+    if (!drawnNodes.length) return;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    drawnNodes.forEach(node => {
+      const p = position.get(node.id);
+      minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
+      minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
+    });
+    const box = svg.getBoundingClientRect();
+    const pad = 90;
+    view.k = Math.min(1.6, Math.max(0.15, Math.min(box.width / (maxX - minX + pad * 2), box.height / (maxY - minY + pad * 2))));
+    view.x = box.width / 2 - ((minX + maxX) / 2) * view.k;
+    view.y = box.height / 2 - ((minY + maxY) / 2) * view.k;
+    applyView();
+  }
+
+  let drag = null;
+  svg.addEventListener("pointerdown", event => {
+    if (event.button !== 0) return;
+    const node = event.target.closest(".node");
+    drag = { id: node ? node.dataset.id : null, x: event.clientX, y: event.clientY, moved: false };
+    if (!node) viewport.classList.add("panning");
+    svg.setPointerCapture(event.pointerId);
+  });
+  svg.addEventListener("pointermove", event => {
+    if (!drag) return;
+    const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
+    drag.x = event.clientX; drag.y = event.clientY;
+    if (Math.abs(dx) + Math.abs(dy) > 0) drag.moved = true;
+    if (drag.id) {
+      const p = position.get(drag.id);
+      p.x += dx / view.k; p.y += dy / view.k;
+      pinned.add(drag.id);
+      moveNode(drag.id);
+    } else {
+      view.x += dx; view.y += dy;
+      applyView();
+    }
+  });
+  svg.addEventListener("pointerup", event => {
+    if (!drag) return;
+    viewport.classList.remove("panning");
+    if (drag.moved && drag.id) scheduleLabels();
+    if (!drag.moved) {
+      const node = event.target.closest(".node");
+      const edge = event.target.closest(".edge");
+      if (node) { if (selected === node.dataset.id) clearSelection(); else select(node.dataset.id); }
+      else if (edge) showEdge(edgeById.get(edge.dataset.id));
+      else clearSelection();
+    }
+    drag = null;
+  });
+  function showEdge(edge) {
+    clearSelection();
+    selectionBox.replaceChildren();
+    const kind = document.createElement("div"); kind.className = "kind"; kind.textContent = `edge · ${edge.rel.replace(/_/g, " ")}${edge.negated ? " (negated)" : ""}`;
+    const text = document.createElement("div"); text.textContent = `${label(nodeById.get(edge.from))} → ${label(nodeById.get(edge.to))}`;
+    selectionBox.append(kind, text);
+    if (edge.witness) { const w = document.createElement("div"); w.className = "meta"; w.textContent = `via rule ${edge.witness}`; selectionBox.appendChild(w); }
+    const raw = document.createElement("details"); raw.className = "raw";
+    const summary = document.createElement("summary"); summary.textContent = "projected fields";
+    const pre = document.createElement("pre"); pre.textContent = JSON.stringify(edge, null, 2);
+    raw.append(summary, pre);
+    selectionBox.appendChild(raw);
+    selectionBox.hidden = false;
+  }
+  svg.addEventListener("dblclick", event => {
+    const node = event.target.closest(".node");
+    if (node) setFocus(node.dataset.id);
+  });
+  svg.addEventListener("wheel", event => {
+    event.preventDefault();
+    const box = svg.getBoundingClientRect();
+    const px = event.clientX - box.left, py = event.clientY - box.top;
+    const factor = Math.exp(-event.deltaY * 0.0015);
+    const k = Math.min(4, Math.max(0.1, view.k * factor));
+    view.x = px - (px - view.x) * (k / view.k);
+    view.y = py - (py - view.y) * (k / view.k);
+    view.k = k;
+    applyView();
+  }, { passive: false });
+  // ------------------------------------------------------------ tooltip
+  // The tooltip is a preview of the node's card: what it is, in words.
+  const tip = document.getElementById("tip");
+  const KIND = { relation: "concept", fact: "fact", rule: "rule", expectation: "claim", mutation: "stress test", symbol: "vocabulary", spec: "specification" };
+  function clip(text, max) { text = text.replace(/\s+/g, " ").trim(); return text.length > max ? text.slice(0, max - 1) + "…" : text; }
+  function tipFor(node) {
+    tip.replaceChildren();
+    const kind = document.createElement("div"); kind.className = "kind";
+    const what = document.createElement("div"); what.className = "what";
+    const more = document.createElement("div"); more.className = "more";
+    const card = cardFor(node.id);
+    if (card) {
+      const chip = card.querySelector(".chip");
+      kind.textContent = chip ? chip.textContent : KIND[node.type] || node.type;
+      what.textContent = clip(card.querySelector(".sentence").textContent, 140);
+      const lines = [];
+      card.querySelectorAll(".card-detail > .lead, .card-detail > .verdict, .card-detail > .radius, .card-detail > .reads, .card-detail > .meta, .card-detail > .doc p").forEach(el => {
+        if (lines.length < 3) lines.push(clip(el.textContent, 160));
+      });
+      lines.forEach(text => { const p = document.createElement("div"); p.textContent = text; more.appendChild(p); });
+      const conditions = card.querySelectorAll(".conditions li");
+      if (conditions.length) {
+        const list = document.createElement("ul");
+        [...conditions].slice(0, 5).forEach(li => { const item = document.createElement("li"); item.textContent = clip(li.textContent, 110); list.appendChild(item); });
+        if (conditions.length > 5) { const item = document.createElement("li"); item.textContent = `and ${conditions.length - 5} more`; list.appendChild(item); }
+        more.appendChild(list);
+      }
+    } else {
+      kind.textContent = KIND[node.type] || node.type;
+      what.textContent = clip(label(node), 140);
+      if (node.type === "symbol") {
+        const uses = into.get(node.id).length;
+        const p = document.createElement("div"); p.textContent = `appears in ${uses} place${uses === 1 ? "" : "s"}`; more.appendChild(p);
+      }
+    }
+    const foot = document.createElement("div"); foot.className = "foot";
+    foot.textContent = card ? "click to follow this thread · double-click to focus" : "click to see where it appears";
+    tip.append(kind, what, more, foot);
+  }
+  function placeTip(event) {
+    const box = viewport.getBoundingClientRect();
+    let x = event.clientX - box.left + 16, y = event.clientY - box.top + 16;
+    tip.hidden = false;
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    if (x + w > box.width - 8) x = Math.max(8, event.clientX - box.left - w - 12);
+    if (y + h > box.height - 8) y = Math.max(8, event.clientY - box.top - h - 12);
+    tip.style.left = `${x}px`; tip.style.top = `${y}px`;
+  }
+  svg.addEventListener("pointerover", event => {
+    const node = event.target.closest(".node");
+    const id = node ? node.dataset.id : null;
+    if (id !== hovered) { hovered = id; applyEmphasis(); }
+    if (id) { tipFor(nodeById.get(id)); placeTip(event); } else tip.hidden = true;
+  });
+  svg.addEventListener("pointermove", event => { if (!tip.hidden && !drag) placeTip(event); });
+  svg.addEventListener("pointerdown", () => { tip.hidden = true; });
+  svg.addEventListener("pointerleave", () => { tip.hidden = true; if (hovered) { hovered = null; applyEmphasis(); } });
+  svg.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      const node = event.target.closest(".node");
+      if (node) { event.preventDefault(); select(node.dataset.id); }
+    }
+  });
+  window.addEventListener("resize", () => { if (!drag) fit(); });
+
+  redraw(320);
+  fit();
+  setStep(0);
+})();
+</script>
+</body>
+</html>

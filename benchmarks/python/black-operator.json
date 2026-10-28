@@ -1,0 +1,61 @@
+{
+  "compiler": {
+    "commit": "d642c4478e9e3acbe9233edbe17ffc569a1a778c",
+    "repository": "https://github.com/python/mypy.git",
+    "version": "2.3.1"
+  },
+  "contract": "stele-black-operator-preparation/v1",
+  "host_tools": {
+    "guard/sandbox-exec": {
+      "path": "/usr/bin/sandbox-exec",
+      "role": "sandbox"
+    },
+    "inspector/dwarfdump": {
+      "path": "/usr/bin/dwarfdump",
+      "role": "inspector"
+    },
+    "inspector/sample": {
+      "path": "/usr/bin/sample",
+      "role": "inspector"
+    },
+    "inspector/vmmap": {
+      "path": "/usr/bin/vmmap",
+      "role": "inspector"
+    }
+  },
+  "platform": "darwin-arm64",
+  "python_archive": {
+    "interpreter_sha256": "ab15cbe78b02b5fc939765827e0b1c2dc3668def22c6952f06a369bfbde01163",
+    "name": "cpython-3.14.7+20260807-aarch64-apple-darwin-install_only_stripped.tar.gz",
+    "sha256": "532645be202d3df8510ab318ca5faed92060a694c8327144e14fa81f31af0f6d",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260807/cpython-3.14.7%2B20260807-aarch64-apple-darwin-install_only_stripped.tar.gz"
+  },
+  "python_version": "3.14.7",
+  "wheels": [
+    {
+      "name": "ast_serialize-0.11.2-cp39-abi3-macosx_11_0_arm64.whl",
+      "sha256": "1844ed9a487fb3de7325c52ddb33f2918b66b65cd54d3f8d83d23785ffe99fa4",
+      "url": "https://files.pythonhosted.org/packages/9a/7e/8f2ab68bddbe58a66fbbaad87beeae3e7d7edddb17263d1fc423936cf34d/ast_serialize-0.11.2-cp39-abi3-macosx_11_0_arm64.whl"
+    },
+    {
+      "name": "librt-0.16.0-cp314-cp314-macosx_11_0_arm64.whl",
+      "sha256": "1bc17e54e5305f8d40b7ca203671ff5a9e59c1d0f8ea0f625dcca53a3984de11",
+      "url": "https://files.pythonhosted.org/packages/8f/26/8a90d2a8f2b2e471bb486b7aec117b8ae622715ed6c39853aec48ea20073/librt-0.16.0-cp314-cp314-macosx_11_0_arm64.whl"
+    },
+    {
+      "name": "mypy_extensions-1.1.0-py3-none-any.whl",
+      "sha256": "1be4cccdb0f2482337c4743e60421de3a356cd97508abadd57d47403e94f5505",
+      "url": "https://files.pythonhosted.org/packages/79/7b/2c79738432f5c924bef5071f933bcc9efd0473bac3b4aa584a6f7c1c8df8/mypy_extensions-1.1.0-py3-none-any.whl"
+    },
+    {
+      "name": "pathspec-1.1.1-py3-none-any.whl",
+      "sha256": "a00ce642f577bf7f473932318056212bc4f8bfdf53128c78bbd5af0b9b20b189",
+      "url": "https://files.pythonhosted.org/packages/f1/d9/7fb5aa316bc299258e68c73ba3bddbc499654a07f151cba08f6153988714/pathspec-1.1.1-py3-none-any.whl"
+    },
+    {
+      "name": "typing_extensions-4.16.0-py3-none-any.whl",
+      "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+      "url": "https://files.pythonhosted.org/packages/49/d3/b8441a820a491ddfc024b0b0cf0393375b75ea13866d9c66727e54c2fc80/typing_extensions-4.16.0-py3-none-any.whl"
+    }
+  ]
+}

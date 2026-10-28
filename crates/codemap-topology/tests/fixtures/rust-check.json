@@ -1,0 +1,326 @@
+{
+  "spec": "https___example_test_synthetic_topology_git",
+  "status": "incomplete",
+  "asserted": 16,
+  "derived": 5,
+  "facts": [
+    {
+      "relation": "call_census",
+      "args": [
+        "Ambiguous",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_0",
+        "snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4"
+      ],
+      "why": "call_census(Ambiguous, 0)  (conf 1.000, prov [\"call_census_0\", \"snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Candidate",
+        "1"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_1",
+        "snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4"
+      ],
+      "why": "call_census(Candidate, 1)  (conf 1.000, prov [\"call_census_1\", \"snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "ExternalCrate",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_2",
+        "snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4"
+      ],
+      "why": "call_census(ExternalCrate, 0)  (conf 1.000, prov [\"call_census_2\", \"snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Failed",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_3",
+        "snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4"
+      ],
+      "why": "call_census(Failed, 0)  (conf 1.000, prov [\"call_census_3\", \"snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Observed",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_4",
+        "snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4"
+      ],
+      "why": "call_census(Observed, 0)  (conf 1.000, prov [\"call_census_4\", \"snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Resolved",
+        "1"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_5",
+        "snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4"
+      ],
+      "why": "call_census(Resolved, 1)  (conf 1.000, prov [\"call_census_5\", \"snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "StandardLibrary",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_6",
+        "snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4"
+      ],
+      "why": "call_census(StandardLibrary, 0)  (conf 1.000, prov [\"call_census_6\", \"snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Unmapped",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_7",
+        "snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4"
+      ],
+      "why": "call_census(Unmapped, 0)  (conf 1.000, prov [\"call_census_7\", \"snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "calls",
+      "args": [
+        "rust:function:src/main.rs#entry",
+        "rust:function:src/main.rs#work"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "calls_0",
+        "src/main.rs:4"
+      ],
+      "why": "calls(rust:function:src/main.rs#entry, rust:function:src/main.rs#work)  (conf 1.000, prov [\"calls_0\", \"src/main.rs:4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "coverage_admitted",
+      "args": [
+        "policy:entry-point/rust"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "coverage_input_0",
+        "policy:observed-call-coverage/v1"
+      ],
+      "why": "coverage_admitted(policy:entry-point/rust)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n  ↳ via observed_coverage_is_admitted\n    coverage_input(policy:entry-point/rust, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "coverage_input",
+      "args": [
+        "policy:entry-point/rust",
+        "2",
+        "500",
+        "500",
+        "1",
+        "0",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "coverage_input_0",
+        "policy:observed-call-coverage/v1"
+      ],
+      "why": "coverage_input(policy:entry-point/rust, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "rust:function:src/main.rs#entry",
+        "src/main.rs"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "defines_0",
+        "src/main.rs:2"
+      ],
+      "why": "defines(rust:function:src/main.rs#entry, src/main.rs)  (conf 1.000, prov [\"defines_0\", \"src/main.rs:2\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "rust:function:src/main.rs#unused",
+        "src/main.rs"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "defines_1",
+        "src/main.rs:21"
+      ],
+      "why": "defines(rust:function:src/main.rs#unused, src/main.rs)  (conf 1.000, prov [\"defines_1\", \"src/main.rs:21\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "rust:function:src/main.rs#work",
+        "src/main.rs"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "defines_2",
+        "src/main.rs:11"
+      ],
+      "why": "defines(rust:function:src/main.rs#work, src/main.rs)  (conf 1.000, prov [\"defines_2\", \"src/main.rs:11\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "entry_point",
+      "args": [
+        "rust:function:src/main.rs#entry"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "entry_point_0"
+      ],
+      "why": "entry_point(rust:function:src/main.rs#entry)  (conf 1.000, prov [\"entry_point_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live",
+      "args": [
+        "rust:function:src/main.rs#entry"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "entry_point_0"
+      ],
+      "why": "live(rust:function:src/main.rs#entry)  (conf 1.000, prov [\"entry_point_0\"])\n  ↳ via an_entry_point_is_live\n    entry_point(rust:function:src/main.rs#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live",
+      "args": [
+        "rust:function:src/main.rs#work"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "calls_0",
+        "entry_point_0",
+        "src/main.rs:4"
+      ],
+      "why": "live(rust:function:src/main.rs#work)  (conf 1.000, prov [\"calls_0\", \"entry_point_0\", \"src/main.rs:4\"])\n  ↳ via a_call_from_live_code_is_live\n    live(rust:function:src/main.rs#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ via an_entry_point_is_live\n        entry_point(rust:function:src/main.rs#entry)  (conf 1.000, prov [\"entry_point_0\"])\n          ↳ asserted (base fact)\n    calls(rust:function:src/main.rs#entry, rust:function:src/main.rs#work)  (conf 1.000, prov [\"calls_0\", \"src/main.rs:4\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live_total",
+      "args": [
+        "2"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [],
+      "why": "live_total(2)  (conf 1.000, prov [])\n  ↳ via live_symbols_are_counted\n    __agg:live_total:3(rust:function:src/main.rs#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ via live_symbols_are_counted\n        live(rust:function:src/main.rs#entry)  (conf 1.000, prov [\"entry_point_0\"])\n          ↳ via an_entry_point_is_live\n            entry_point(rust:function:src/main.rs#entry)  (conf 1.000, prov [\"entry_point_0\"])\n              ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "production_file",
+      "args": [
+        "src/main.rs"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "policy:file-layout/rust",
+        "production_file_0"
+      ],
+      "why": "production_file(src/main.rs)  (conf 1.000, prov [\"policy:file-layout/rust\", \"production_file_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "snapshot_identity",
+      "args": [
+        "dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4",
+        "https://example.test/synthetic-topology.git",
+        "synthetic-commit",
+        "synthetic-tree",
+        "policy:entry-point/rust"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4",
+        "snapshot_identity_0"
+      ],
+      "why": "snapshot_identity(dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4, https://example.test/synthetic-topology.git, synthetic-commit, synthetic-tree, policy:entry-point/rust)  (conf 1.000, prov [\"snapshot:dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4\", \"snapshot_identity_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "unused_production_symbol",
+      "args": [
+        "rust:function:src/main.rs#unused",
+        "policy:entry-point/rust"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "coverage_input_0",
+        "defines_1",
+        "policy:file-layout/rust",
+        "policy:observed-call-coverage/v1",
+        "production_file_0",
+        "src/main.rs:21"
+      ],
+      "why": "unused_production_symbol(rust:function:src/main.rs#unused, policy:entry-point/rust)  (conf 1.000, prov [\"coverage_input_0\", \"defines_1\", \"policy:file-layout/rust\", \"policy:observed-call-coverage/v1\", \"production_file_0\", \"src/main.rs:21\"])\n  ↳ via shipped_without_observed_reach\n    coverage_admitted(policy:entry-point/rust)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n      ↳ via observed_coverage_is_admitted\n        coverage_input(policy:entry-point/rust, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n          ↳ asserted (base fact)\n    defines(rust:function:src/main.rs#unused, src/main.rs)  (conf 1.000, prov [\"defines_1\", \"src/main.rs:21\"])\n      ↳ asserted (base fact)\n    production_file(src/main.rs)  (conf 1.000, prov [\"policy:file-layout/rust\", \"production_file_0\"])\n      ↳ asserted (base fact)\n"
+    }
+  ],
+  "expectations": [
+    {
+      "id": "coverage_is_admitted",
+      "query": "coverage_admitted(P)",
+      "expected_count": 1,
+      "actual_count": 1,
+      "satisfied": true,
+      "found": [
+        "P=policy:entry-point/rust"
+      ]
+    },
+    {
+      "id": "no_observed_unreached_symbols",
+      "query": "unused_production_symbol(S, _)",
+      "expected_count": 0,
+      "actual_count": 1,
+      "satisfied": false,
+      "found": [
+        "S=rust:function:src/main.rs#unused"
+      ]
+    }
+  ]
+}

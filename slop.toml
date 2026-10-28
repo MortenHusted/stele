@@ -1,0 +1,49 @@
+# stele slop budget for Stele itself: what one change may do, and the
+# shape the crates are held to. Every ceiling below is seeded from this
+# repository's own measured snapshot on 2026-09-16 (cc-sloc-clones-form/rust/1,
+# test directories left out), so the file describes where the code is and
+# what a change may not make worse, not a truth about Rust.
+#
+# The gate breaches only on what a change added or made worse
+# (target-ratchet); everything already over a ceiling prints as the
+# backlog.
+
+# advisory limits per change
+max_new_high_cc_callables = 0
+max_erosion_delta = 0.005
+max_loc_delta = 2000
+
+# test code and fixtures, kept out of the figures (the all-files line still prints)
+exclude = "crates/codemap/tests/"
+exclude = "crates/codemap-slop/tests/"
+exclude = "crates/codemap-lemmaspec/tests/"
+
+[target.callable_cc]         # the erosion cutoff; 2026-09-16: 45 callables over
+prefix = "crates/"
+measure = "cc"
+stat = "each"
+max = 10
+
+[target.callable_sloc_p90]   # 2026-09-16: 41
+prefix = "crates/"
+measure = "sloc"
+stat = "p90"
+max = 41
+
+[target.params]              # Sandi Metz's rule 3; 2026-09-16: 43 callables over, run_* and resolve_calls_semantic_* first
+prefix = "crates/"
+measure = "params"
+stat = "each"
+max = 4
+
+[target.nesting]             # Sonar's default ceiling; 2026-09-16: 26 callables over
+prefix = "crates/"
+measure = "nesting"
+stat = "each"
+max = 3
+
+[target.chain_p90]           # message chains; 2026-09-16: 4
+prefix = "crates/"
+measure = "chain"
+stat = "p90"
+max = 4

@@ -1,0 +1,45 @@
+{
+  "contract": "js-ts-linux-runtime-controls/1",
+  "frozen_before_production_integration": true,
+  "profile": {
+    "legacy_darwin_json_preserved": true,
+    "explicit_native_linux_profile": true,
+    "wrong_architecture_rejected": true,
+    "unsupported_host_rejected_before_capture": true,
+    "anonymous_execution_allow_rejected": true,
+    "non_node_selected_tool_rejected": true,
+    "missing_or_changed_loader_rejected": true,
+    "runtime_inside_source_rejected": true,
+    "missing_empty_openssl_pin_rejected": true,
+    "nonempty_openssl_configuration_rejected": true,
+    "wrong_openssl_pin_role_rejected": true,
+    "relocated_runtime_identity_equal": true,
+    "runtime_kernel_guard_flags_and_limits_bound": true
+  },
+  "helper": {
+    "actual_pinned_compiler_ready_result_exit": true,
+    "original_canonical_oracle_and_census_unchanged": true,
+    "application_source_never_executed": true,
+    "captured_data_only_reads": true,
+    "host_config_addons_and_plugins_unavailable": true,
+    "missing_or_drifted_helper_compiler_request_rejected": true,
+    "ready_and_result_identity_mismatch_rejected": true,
+    "partial_missing_extra_or_oversized_output_rejected": true,
+    "stderr_over_budget_rejected": true,
+    "original_absolute_session_deadline_enforced": true,
+    "control_eof_and_failed_exit_rejected": true,
+    "owned_group_cleanup_bounded": true,
+    "complete_images_before_and_after": true,
+    "changed_file_or_executable_mapping_witness_rejected": true,
+    "repeat_dirty_and_independent_checkout_oracles_preserved": true,
+    "original_darwin_runtime_and_semantic_identity_preserved": true
+  },
+  "throughput_candidate": {
+    "flag": "--max-semi-space-size=64",
+    "max_young_generation_mib": 192,
+    "original_deadline_and_output_budgets_unchanged": true,
+    "original_application_oracle_and_census_unchanged": true,
+    "existing_total_memory_ceiling_unchanged": true,
+    "keep_only_after_both_native_gates": true
+  }
+}

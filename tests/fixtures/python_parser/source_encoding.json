@@ -1,0 +1,61 @@
+{
+  "contract": "python-source-encoding-oracle/1",
+  "description": "Original byte labels frozen independently of the producer and Python AST.",
+  "files": [
+    {
+      "path": "utf8-lf.py",
+      "source_base64": "Y2xhc3MgQ2Fmw6k6CiAgICBhc3luYyBkZWYgbcOpdGhvZGUoc2VsZik6CiAgICAgICAgcmV0dXJuIMOpY2hvKCkK",
+      "method_name": "méthode",
+      "method_start_byte": 17,
+      "method_end_byte": 65,
+      "start_line": 2,
+      "start_col": 4,
+      "end_line": 3,
+      "end_col": 22
+    },
+    {
+      "path": "utf8-crlf.py",
+      "source_base64": "Y2xhc3MgQ2Fmw6k6DQogICAgYXN5bmMgZGVmIG3DqXRob2RlKHNlbGYpOg0KICAgICAgICByZXR1cm4gw6ljaG8oKQ0K",
+      "method_name": "méthode",
+      "method_start_byte": 18,
+      "method_end_byte": 67,
+      "start_line": 2,
+      "start_col": 4,
+      "end_line": 3,
+      "end_col": 22
+    },
+    {
+      "path": "utf8-bom.py",
+      "source_base64": "77u/Y2xhc3MgQ2Fmw6k6CiAgICBhc3luYyBkZWYgbcOpdGhvZGUoc2VsZik6CiAgICAgICAgcmV0dXJuIMOpY2hvKCkK",
+      "method_name": "méthode",
+      "method_start_byte": 20,
+      "method_end_byte": 68,
+      "start_line": 2,
+      "start_col": 4,
+      "end_line": 3,
+      "end_col": 22
+    },
+    {
+      "path": "latin1-lf.py",
+      "source_base64": "IyBjb2Rpbmc6IGxhdGluLTEKY2xhc3MgQ2Fm6ToKICAgIGFzeW5jIGRlZiBt6XRob2RlKHNlbGYpOgogICAgICAgIHJldHVybiDpY2hvKCkK",
+      "method_name": "méthode",
+      "method_start_byte": 34,
+      "method_end_byte": 80,
+      "start_line": 3,
+      "start_col": 4,
+      "end_line": 4,
+      "end_col": 21
+    },
+    {
+      "path": "latin1-crlf.py",
+      "source_base64": "IyBjb2Rpbmc6IGxhdGluLTENCmNsYXNzIENhZuk6DQogICAgYXN5bmMgZGVmIG3pdGhvZGUoc2VsZik6DQogICAgICAgIHJldHVybiDpY2hvKCkNCg==",
+      "method_name": "méthode",
+      "method_start_byte": 36,
+      "method_end_byte": 83,
+      "start_line": 3,
+      "start_col": 4,
+      "end_line": 4,
+      "end_col": 21
+    }
+  ]
+}

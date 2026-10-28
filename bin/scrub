@@ -1,0 +1,93 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'rbconfig'
+def setup_error(message)
+  warn message
+  exit 2
+end
+
+if RbConfig::CONFIG['prefix'].start_with?('/System/Library/Frameworks/Ruby.framework')
+  candidates = ['mise', '/opt/homebrew/bin/mise', File.expand_path('~/.local/bin/mise')].map do |mise|
+    begin
+      IO.popen([mise, 'which', 'ruby'], err: File::NULL) { |io| io.read }.strip
+    rescue Errno::ENOENT
+      nil
+    end
+  end
+  candidates << File.expand_path('~/.local/share/mise/installs/ruby/latest/bin/ruby')
+  mise_ruby = candidates.find { |path| path && !path.empty? && File.executable?(path) }
+  setup_error 'scrub: prepare a mise Ruby before running this command' unless mise_ruby
+  exec mise_ruby, File.expand_path(__FILE__), *ARGV
+end
+
+def install_and_require(*gem_names)
+  missing = gem_names.reject do |name|
+    require name
+    true
+  rescue LoadError
+    false
+  end
+  return if missing.empty?
+
+  setup_error "Missing gems: #{missing.join(', ')}; prepare dependencies before scripted use" unless ARGV.empty? && $stdin.tty?
+  puts "Missing gems: #{missing.join(', ')}. Would you like to install them? (y/n)"
+  setup_error "#{missing.join(', ')} required for this script. Exiting." unless $stdin.gets.to_s.chomp.downcase == "y"
+  system("gem", "install", *missing) or setup_error('gem install failed')
+  Gem.clear_paths
+  missing.each { |name| require name }
+end
+
+install_and_require "tty-option", "tty-prompt", "tty-command"
+
+require_relative 'scrub.d/scan'
+
+class ScrubCommand
+  include TTY::Option
+  usage do
+    program 'scrub'
+    no_command
+    desc 'Scan whole case-sensitive ASCII tokens [A-Za-z0-9_]+ in an export and its local Git objects. Punctuation and non-ASCII bytes delimit tokens; no substring matching or normalization. JSON stdout contains counts and input identities, never matching entries.'
+    example 'bin/scrub --repo EXPORT --deny-list /private/deny.txt'
+    example 'bin/scrub --repo EXPORT --deny-list /private/deny.txt --report /private/new-report.json /private/unpacked-artifacts'
+  end
+  option(:repo) { long '--repo PATH'; desc 'Git export to scan, including untracked non-ignored files and all local Git objects' }
+  option(:deny_list) { long '--deny-list PATH'; desc 'Nonempty local list, one ASCII token per line, outside every Git repository and scanned input' }
+  option(:report) { long '--report PATH'; desc 'New file outside Git and scanned inputs for private entries and locations (mode 0600)' }
+  argument(:artifacts) { arity zero_or_more; desc 'Additional unpacked artifact directories; compressed archives are refused' }
+  flag(:help) { short '-h'; long '--help'; desc 'Show help; exits: 0 clean, 1 matches, 2 invalid or incomplete scan' }
+end
+
+command = ScrubCommand.new
+command.parse
+unless command.params.valid?
+  warn 'scrub: invalid arguments; see --help'
+  exit 2
+end
+if command.params[:help]
+  puts command.help
+  exit 0
+end
+if ARGV.empty? && !$stdin.tty?
+  warn command.help
+  exit 2
+end
+options = command.params.to_h
+if ARGV.empty? && $stdin.tty?
+  prompt = TTY::Prompt.new
+  options[:repo] = prompt.ask('Git export path:', required: true)
+  options[:deny_list] = prompt.ask('Local deny-list path:', required: true)
+end
+begin
+  %i[repo deny_list].each { |key| raise ArgumentError, "--#{key.to_s.tr('_', '-')} is required" unless options[key] }
+  result = IdentifierScrub.new(repo: options[:repo], deny_list: options[:deny_list],
+                             artifacts: Array(options[:artifacts]), report: options[:report]).run
+  puts JSON.generate(IdentifierScrub.summary(result))
+  exit(result['matches'].empty? ? 0 : 1)
+rescue ArgumentError => error
+  warn "scrub: #{error.message}"
+  exit 2
+rescue StandardError => error
+  warn "scrub: scan failed (#{error.class}); no clean result can be reported"
+  exit 2
+end

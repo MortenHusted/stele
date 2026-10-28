@@ -1,0 +1,19 @@
+{
+  "required": [
+    ["positive::Item", "positive::Marker"],
+    ["positive::Item", "decoy::Write"],
+    ["aliased::Thing", "positive::Marker"],
+    ["shapes_b::Square", "shapes_b::Shape"]
+  ],
+  "forbidden": [
+    ["actual::Sink", "decoy::Write"],
+    ["decoy::External", "actual::LocalTrait"],
+    ["shapes_b::Square", "shapes_a::Shape"]
+  ],
+  "noncanonical_implementations": ["actual::Sink", "actual::LocalTrait for std::io::Empty", "globbed::Z"],
+  "unsupported": [
+    "actual::Sink implements standard-library std::io::Write",
+    "standard-library std::io::Empty implements actual::LocalTrait",
+    "glob imports: globbed::Z implements decoy::Write but requires an observation, never a canonical edge"
+  ]
+}

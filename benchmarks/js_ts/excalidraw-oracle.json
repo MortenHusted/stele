@@ -1,0 +1,1292 @@
+{
+  "format": "codemap.js_ts.source-oracle/v1",
+  "status": "frozen before compiler queries; independently reviewed source labels",
+  "commit": "f39ac4a653335efaaaf9834bf28e9ffc1452cb59",
+  "selection_policy": "Complete call-expression and constructor census of nine independently selected math, utility and application files; target definitions labelled from source, not resolver output. JSX tags are separate non-call decoys.",
+  "files": {
+    "packages/math/src/point.ts": {
+      "sha256": "86c25ef1e27497765346eb91b19601b69a459bf753882dbea71c04fcc904eaab"
+    },
+    "packages/math/src/vector.ts": {
+      "sha256": "782f79f8c9d2b23b31d5dcbb6397466229d31cc982570ad1a51565f7c46d2499"
+    },
+    "packages/utils/src/bbox.ts": {
+      "sha256": "87917d73dd715ddd8b4c53b1221af20809b5bb1c574edcd178dadc6b9270ed74"
+    },
+    "packages/math/src/angle.ts": {
+      "sha256": "fad5a8e86381be41aae536fadf548ab3fac993a23de6908170d03dc7c0a52bc9"
+    },
+    "packages/math/src/rectangle.ts": {
+      "sha256": "298c4d21a14b499d53870ccde52821f9d7ae0864679331038f58cd5441fac3ee"
+    },
+    "packages/math/src/segment.ts": {
+      "sha256": "36bfb71fcb414e9e3bcc5582290cefdb0316cf16b3c063cf37fca1dcada6be1e"
+    },
+    "packages/math/src/triangle.ts": {
+      "sha256": "b15b458cd3b781eac3c1e2a00f1dd5df292bcf1a5f8b3a466f430e1e9a497aa1"
+    },
+    "excalidraw-app/data/Locker.ts": {
+      "sha256": "d5badf62cc0fbbcdd448d1357e806f049f3a2884423f5fb5c9a09a6698fbe75c"
+    },
+    "excalidraw-app/components/DebugCanvas.tsx": {
+      "sha256": "28ec195281005baa0ab65235cfb327280456c8144d9b6d0a833051dbbfa621ba"
+    },
+    "packages/math/src/line.ts": {
+      "sha256": "11a7498a8a6bbd8ae4e3ad4628ab2b24b3aad93e88f9eaa0deb858e600e0e63e"
+    },
+    "excalidraw-app/data/tabSync.ts": {
+      "sha256": "8130dc293e17a3b002a88f377e13d9d5802afe5f3244b0e46b5e2aa252fc8928"
+    },
+    "excalidraw-app/components/AppFooter.tsx": {
+      "sha256": "8af9c68c75de399dd3129a3331e61f7f65856e1eb5e3afc97126d5526cfc637e"
+    }
+  },
+  "targets": {
+    "packages/math/src/point.ts:pointFrom": {
+      "path": "packages/math/src/point.ts",
+      "symbol": "pointFrom",
+      "definition_line": 20
+    },
+    "packages/math/src/point.ts:pointRotateRads": {
+      "path": "packages/math/src/point.ts",
+      "symbol": "pointRotateRads",
+      "definition_line": 108
+    },
+    "packages/math/src/point.ts:pointTranslate": {
+      "path": "packages/math/src/point.ts",
+      "symbol": "pointTranslate",
+      "definition_line": 148
+    },
+    "packages/math/src/vector.ts:vector": {
+      "path": "packages/math/src/vector.ts",
+      "symbol": "vector",
+      "definition_line": 10
+    },
+    "packages/math/src/vector.ts:vectorFromPoint": {
+      "path": "packages/math/src/vector.ts",
+      "symbol": "vectorFromPoint",
+      "definition_line": 28
+    },
+    "packages/math/src/vector.ts:vectorCross": {
+      "path": "packages/math/src/vector.ts",
+      "symbol": "vectorCross",
+      "definition_line": 51
+    },
+    "packages/math/src/vector.ts:vectorScale": {
+      "path": "packages/math/src/vector.ts",
+      "symbol": "vectorScale",
+      "definition_line": 116
+    },
+    "packages/math/src/vector.ts:vectorMagnitudeSq": {
+      "path": "packages/math/src/vector.ts",
+      "symbol": "vectorMagnitudeSq",
+      "definition_line": 127
+    },
+    "packages/math/src/vector.ts:vectorMagnitude": {
+      "path": "packages/math/src/vector.ts",
+      "symbol": "vectorMagnitude",
+      "definition_line": 137
+    },
+    "packages/utils/src/bbox.ts:getBBox": {
+      "path": "packages/utils/src/bbox.ts",
+      "symbol": "getBBox",
+      "definition_line": 12
+    },
+    "packages/utils/src/bbox.ts:doBBoxesIntersect": {
+      "path": "packages/utils/src/bbox.ts",
+      "symbol": "doBBoxesIntersect",
+      "definition_line": 23
+    },
+    "packages/utils/src/bbox.ts:isPointOnLine": {
+      "path": "packages/utils/src/bbox.ts",
+      "symbol": "isPointOnLine",
+      "definition_line": 29
+    },
+    "packages/utils/src/bbox.ts:isPointRightOfLine": {
+      "path": "packages/utils/src/bbox.ts",
+      "symbol": "isPointRightOfLine",
+      "definition_line": 41
+    },
+    "packages/utils/src/bbox.ts:isLineSegmentTouchingOrCrossingLine": {
+      "path": "packages/utils/src/bbox.ts",
+      "symbol": "isLineSegmentTouchingOrCrossingLine",
+      "definition_line": 51
+    },
+    "packages/math/src/angle.ts:degreesToRadians": {
+      "path": "packages/math/src/angle.ts",
+      "symbol": "degreesToRadians",
+      "definition_line": 29
+    },
+    "packages/math/src/rectangle.ts:rectangle": {
+      "path": "packages/math/src/rectangle.ts",
+      "symbol": "rectangle",
+      "definition_line": 6
+    },
+    "packages/math/src/segment.ts:lineSegment": {
+      "path": "packages/math/src/segment.ts",
+      "symbol": "lineSegment",
+      "definition_line": 25
+    },
+    "packages/math/src/segment.ts:lineSegmentIntersectionPoints": {
+      "path": "packages/math/src/segment.ts",
+      "symbol": "lineSegmentIntersectionPoints",
+      "definition_line": 161
+    },
+    "packages/math/src/triangle.ts:triangleSign": {
+      "path": "packages/math/src/triangle.ts",
+      "symbol": "triangleSign",
+      "definition_line": 18
+    },
+    "excalidraw-app/data/Locker.ts:isLocked": {
+      "path": "excalidraw-app/data/Locker.ts",
+      "symbol": "isLocked",
+      "definition_line": 15
+    },
+    "excalidraw-app/components/DebugCanvas.tsx:isVisualDebuggerEnabled": {
+      "path": "excalidraw-app/components/DebugCanvas.tsx",
+      "symbol": "isVisualDebuggerEnabled",
+      "definition_line": 436
+    }
+  },
+  "sites": [
+    {
+      "id": "site-001",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointFromArray",
+      "line": 37,
+      "byte_offset": 894,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-002",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointFromVector",
+      "line": 61,
+      "byte_offset": 1472,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "unsupported_default_argument",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-003",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointFromVector",
+      "line": 63,
+      "byte_offset": 1505,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-004",
+      "path": "packages/math/src/point.ts",
+      "caller": "isPoint",
+      "line": 74,
+      "byte_offset": 1840,
+      "spelling": "Array.isArray",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-005",
+      "path": "packages/math/src/point.ts",
+      "caller": "isPoint",
+      "line": 77,
+      "byte_offset": 1919,
+      "spelling": "isNaN",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-006",
+      "path": "packages/math/src/point.ts",
+      "caller": "isPoint",
+      "line": 79,
+      "byte_offset": 1971,
+      "spelling": "isNaN",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-007",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointsEqual",
+      "line": 97,
+      "byte_offset": 2446,
+      "spelling": "abs(",
+      "classification": "external",
+      "regime": "indirect_external"
+    },
+    {
+      "id": "site-008",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointsEqual",
+      "line": 97,
+      "byte_offset": 2478,
+      "spelling": "abs(",
+      "classification": "external",
+      "regime": "indirect_external"
+    },
+    {
+      "id": "site-009",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointRotateRads",
+      "line": 113,
+      "byte_offset": 2886,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-010",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointRotateRads",
+      "line": 114,
+      "byte_offset": 2912,
+      "spelling": "Math.cos",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-011",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointRotateRads",
+      "line": 114,
+      "byte_offset": 2941,
+      "spelling": "Math.sin",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-012",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointRotateRads",
+      "line": 115,
+      "byte_offset": 2978,
+      "spelling": "Math.sin",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-013",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointRotateRads",
+      "line": 115,
+      "byte_offset": 3007,
+      "spelling": "Math.cos",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-014",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointRotateDegs",
+      "line": 132,
+      "byte_offset": 3407,
+      "spelling": "pointRotateRads",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointRotateRads"
+    },
+    {
+      "id": "site-015",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointRotateDegs",
+      "line": 132,
+      "byte_offset": 3438,
+      "spelling": "degreesToRadians",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/angle.ts:degreesToRadians"
+    },
+    {
+      "id": "site-016",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointTranslate",
+      "line": 152,
+      "byte_offset": 4103,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-017",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointCenter",
+      "line": 163,
+      "byte_offset": 4454,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-018",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointDistance",
+      "line": 177,
+      "byte_offset": 4775,
+      "spelling": "Math.hypot",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-019",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointScaleFromOrigin",
+      "line": 211,
+      "byte_offset": 5572,
+      "spelling": "pointTranslate",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointTranslate"
+    },
+    {
+      "id": "site-020",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointScaleFromOrigin",
+      "line": 211,
+      "byte_offset": 5592,
+      "spelling": "vectorScale",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorScale"
+    },
+    {
+      "id": "site-021",
+      "path": "packages/math/src/point.ts",
+      "caller": "pointScaleFromOrigin",
+      "line": 211,
+      "byte_offset": 5604,
+      "spelling": "vectorFromPoint",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorFromPoint"
+    },
+    {
+      "id": "site-022",
+      "path": "packages/math/src/point.ts",
+      "caller": "isPointWithinBounds",
+      "line": 228,
+      "byte_offset": 6148,
+      "spelling": "Math.max",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-023",
+      "path": "packages/math/src/point.ts",
+      "caller": "isPointWithinBounds",
+      "line": 229,
+      "byte_offset": 6184,
+      "spelling": "Math.min",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-024",
+      "path": "packages/math/src/point.ts",
+      "caller": "isPointWithinBounds",
+      "line": 230,
+      "byte_offset": 6220,
+      "spelling": "Math.max",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-025",
+      "path": "packages/math/src/point.ts",
+      "caller": "isPointWithinBounds",
+      "line": 231,
+      "byte_offset": 6256,
+      "spelling": "Math.min",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-026",
+      "path": "packages/math/src/vector.ts",
+      "caller": "vectorFromPoint",
+      "line": 34,
+      "byte_offset": 1040,
+      "spelling": "vector(",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vector"
+    },
+    {
+      "id": "site-027",
+      "path": "packages/math/src/vector.ts",
+      "caller": "vectorFromPoint",
+      "line": 36,
+      "byte_offset": 1104,
+      "spelling": "vectorMagnitudeSq",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorMagnitudeSq"
+    },
+    {
+      "id": "site-028",
+      "path": "packages/math/src/vector.ts",
+      "caller": "isVector",
+      "line": 75,
+      "byte_offset": 2249,
+      "spelling": "Array.isArray",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-029",
+      "path": "packages/math/src/vector.ts",
+      "caller": "isVector",
+      "line": 78,
+      "byte_offset": 2328,
+      "spelling": "isNaN",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-030",
+      "path": "packages/math/src/vector.ts",
+      "caller": "isVector",
+      "line": 80,
+      "byte_offset": 2380,
+      "spelling": "isNaN",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-031",
+      "path": "packages/math/src/vector.ts",
+      "caller": "vectorScale",
+      "line": 117,
+      "byte_offset": 3315,
+      "spelling": "vector(",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vector"
+    },
+    {
+      "id": "site-032",
+      "path": "packages/math/src/vector.ts",
+      "caller": "vectorMagnitude",
+      "line": 138,
+      "byte_offset": 3839,
+      "spelling": "Math.sqrt",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-033",
+      "path": "packages/math/src/vector.ts",
+      "caller": "vectorMagnitude",
+      "line": 138,
+      "byte_offset": 3849,
+      "spelling": "vectorMagnitudeSq",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorMagnitudeSq"
+    },
+    {
+      "id": "site-034",
+      "path": "packages/math/src/vector.ts",
+      "caller": "vectorNormalize",
+      "line": 148,
+      "byte_offset": 4093,
+      "spelling": "vectorMagnitude",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorMagnitude"
+    },
+    {
+      "id": "site-035",
+      "path": "packages/math/src/vector.ts",
+      "caller": "vectorNormalize",
+      "line": 151,
+      "byte_offset": 4142,
+      "spelling": "vector(",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vector"
+    },
+    {
+      "id": "site-036",
+      "path": "packages/math/src/vector.ts",
+      "caller": "vectorNormalize",
+      "line": 154,
+      "byte_offset": 4170,
+      "spelling": "vector(",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vector"
+    },
+    {
+      "id": "site-037",
+      "path": "packages/math/src/vector.ts",
+      "caller": "vectorNormal",
+      "line": 160,
+      "byte_offset": 4311,
+      "spelling": "vector(",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vector"
+    },
+    {
+      "id": "site-038",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "getBBox",
+      "line": 16,
+      "byte_offset": 344,
+      "spelling": "Math.min",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-039",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "getBBox",
+      "line": 17,
+      "byte_offset": 382,
+      "spelling": "Math.min",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-040",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "getBBox",
+      "line": 18,
+      "byte_offset": 420,
+      "spelling": "Math.max",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-041",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "getBBox",
+      "line": 19,
+      "byte_offset": 458,
+      "spelling": "Math.max",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-042",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isPointOnLine",
+      "line": 33,
+      "byte_offset": 772,
+      "spelling": "vectorFromPoint",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorFromPoint"
+    },
+    {
+      "id": "site-043",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isPointOnLine",
+      "line": 34,
+      "byte_offset": 814,
+      "spelling": "vectorFromPoint",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorFromPoint"
+    },
+    {
+      "id": "site-044",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isPointOnLine",
+      "line": 36,
+      "byte_offset": 853,
+      "spelling": "vectorCross",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorCross"
+    },
+    {
+      "id": "site-045",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isPointOnLine",
+      "line": 38,
+      "byte_offset": 884,
+      "spelling": "Math.abs",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-046",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isPointRightOfLine",
+      "line": 45,
+      "byte_offset": 1028,
+      "spelling": "vectorFromPoint",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorFromPoint"
+    },
+    {
+      "id": "site-047",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isPointRightOfLine",
+      "line": 46,
+      "byte_offset": 1070,
+      "spelling": "vectorFromPoint",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorFromPoint"
+    },
+    {
+      "id": "site-048",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isPointRightOfLine",
+      "line": 48,
+      "byte_offset": 1106,
+      "spelling": "vectorCross",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/vector.ts:vectorCross"
+    },
+    {
+      "id": "site-049",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isLineSegmentTouchingOrCrossingLine",
+      "line": 55,
+      "byte_offset": 1282,
+      "spelling": "isPointOnLine",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/utils/src/bbox.ts:isPointOnLine"
+    },
+    {
+      "id": "site-050",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isLineSegmentTouchingOrCrossingLine",
+      "line": 56,
+      "byte_offset": 1312,
+      "spelling": "isPointOnLine",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/utils/src/bbox.ts:isPointOnLine"
+    },
+    {
+      "id": "site-051",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isLineSegmentTouchingOrCrossingLine",
+      "line": 57,
+      "byte_offset": 1343,
+      "spelling": "isPointRightOfLine",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/utils/src/bbox.ts:isPointRightOfLine"
+    },
+    {
+      "id": "site-052",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isLineSegmentTouchingOrCrossingLine",
+      "line": 58,
+      "byte_offset": 1380,
+      "spelling": "isPointRightOfLine",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/utils/src/bbox.ts:isPointRightOfLine"
+    },
+    {
+      "id": "site-053",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "isLineSegmentTouchingOrCrossingLine",
+      "line": 59,
+      "byte_offset": 1416,
+      "spelling": "isPointRightOfLine",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/utils/src/bbox.ts:isPointRightOfLine"
+    },
+    {
+      "id": "site-054",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "doLineSegmentsIntersect",
+      "line": 69,
+      "byte_offset": 1664,
+      "spelling": "doBBoxesIntersect",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/utils/src/bbox.ts:doBBoxesIntersect"
+    },
+    {
+      "id": "site-055",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "doLineSegmentsIntersect",
+      "line": 69,
+      "byte_offset": 1682,
+      "spelling": "getBBox",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/utils/src/bbox.ts:getBBox"
+    },
+    {
+      "id": "site-056",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "doLineSegmentsIntersect",
+      "line": 69,
+      "byte_offset": 1694,
+      "spelling": "getBBox",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/utils/src/bbox.ts:getBBox"
+    },
+    {
+      "id": "site-057",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "doLineSegmentsIntersect",
+      "line": 70,
+      "byte_offset": 1713,
+      "spelling": "isLineSegmentTouchingOrCrossingLine",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/utils/src/bbox.ts:isLineSegmentTouchingOrCrossingLine"
+    },
+    {
+      "id": "site-058",
+      "path": "packages/utils/src/bbox.ts",
+      "caller": "doLineSegmentsIntersect",
+      "line": 71,
+      "byte_offset": 1762,
+      "spelling": "isLineSegmentTouchingOrCrossingLine",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/utils/src/bbox.ts:isLineSegmentTouchingOrCrossingLine"
+    },
+    {
+      "id": "site-059",
+      "path": "packages/math/src/line.ts",
+      "caller": "linesIntersectAt",
+      "line": 35,
+      "byte_offset": 887,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-060",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleFromNumberSequence",
+      "line": 16,
+      "byte_offset": 512,
+      "spelling": "rectangle(",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/rectangle.ts:rectangle"
+    },
+    {
+      "id": "site-061",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleFromNumberSequence",
+      "line": 16,
+      "byte_offset": 522,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-062",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleFromNumberSequence",
+      "line": 16,
+      "byte_offset": 552,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-063",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "line": 23,
+      "byte_offset": 747,
+      "spelling": "lineSegment(",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/segment.ts:lineSegment"
+    },
+    {
+      "id": "site-064",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "line": 23,
+      "byte_offset": 765,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-065",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "line": 24,
+      "byte_offset": 799,
+      "spelling": "lineSegment(",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/segment.ts:lineSegment"
+    },
+    {
+      "id": "site-066",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "line": 24,
+      "byte_offset": 811,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-067",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "line": 25,
+      "byte_offset": 851,
+      "spelling": "lineSegment(",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/segment.ts:lineSegment"
+    },
+    {
+      "id": "site-068",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "line": 25,
+      "byte_offset": 869,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-069",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "line": 26,
+      "byte_offset": 903,
+      "spelling": "lineSegment(",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/segment.ts:lineSegment"
+    },
+    {
+      "id": "site-070",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "line": 26,
+      "byte_offset": 915,
+      "spelling": "pointFrom",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "id": "site-071",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "line": 28,
+      "byte_offset": 959,
+      "spelling": ".map(",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-072",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "anonymous@28",
+      "line": 28,
+      "byte_offset": 971,
+      "spelling": "lineSegmentIntersectionPoints",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/segment.ts:lineSegmentIntersectionPoints"
+    },
+    {
+      "id": "site-073",
+      "path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "line": 29,
+      "byte_offset": 1012,
+      "spelling": ".filter(",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-074",
+      "path": "packages/math/src/triangle.ts",
+      "caller": "triangleIncludesPoint",
+      "line": 20,
+      "byte_offset": 651,
+      "spelling": "triangleSign",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/triangle.ts:triangleSign"
+    },
+    {
+      "id": "site-075",
+      "path": "packages/math/src/triangle.ts",
+      "caller": "triangleIncludesPoint",
+      "line": 21,
+      "byte_offset": 687,
+      "spelling": "triangleSign",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/triangle.ts:triangleSign"
+    },
+    {
+      "id": "site-076",
+      "path": "packages/math/src/triangle.ts",
+      "caller": "triangleIncludesPoint",
+      "line": 22,
+      "byte_offset": 723,
+      "spelling": "triangleSign",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "packages/math/src/triangle.ts:triangleSign"
+    },
+    {
+      "id": "site-077",
+      "path": "excalidraw-app/data/Locker.ts",
+      "caller": "lock",
+      "line": 5,
+      "byte_offset": 121,
+      "spelling": ".set(",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-078",
+      "path": "excalidraw-app/data/Locker.ts",
+      "caller": "unlock",
+      "line": 10,
+      "byte_offset": 238,
+      "spelling": ".delete(",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-079",
+      "path": "excalidraw-app/data/Locker.ts",
+      "caller": "unlock",
+      "line": 11,
+      "byte_offset": 274,
+      "spelling": "isLocked(",
+      "classification": "known_in_repository",
+      "regime": "unsupported_receiver",
+      "target": "excalidraw-app/data/Locker.ts:isLocked"
+    },
+    {
+      "id": "site-080",
+      "path": "excalidraw-app/data/Locker.ts",
+      "caller": "isLocked",
+      "line": 16,
+      "byte_offset": 414,
+      "spelling": ".has(",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-081",
+      "path": "excalidraw-app/data/tabSync.ts",
+      "caller": "isBrowserStorageStateNewer",
+      "line": 13,
+      "byte_offset": 465,
+      "spelling": "JSON.parse",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-082",
+      "path": "excalidraw-app/data/tabSync.ts",
+      "caller": "isBrowserStorageStateNewer",
+      "line": 13,
+      "byte_offset": 476,
+      "spelling": "localStorage.getItem",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-083",
+      "path": "excalidraw-app/data/tabSync.ts",
+      "caller": "updateBrowserStateVersion",
+      "line": 18,
+      "byte_offset": 665,
+      "spelling": "Date.now",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-084",
+      "path": "excalidraw-app/data/tabSync.ts",
+      "caller": "updateBrowserStateVersion",
+      "line": 20,
+      "byte_offset": 689,
+      "spelling": "localStorage.setItem",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-085",
+      "path": "excalidraw-app/data/tabSync.ts",
+      "caller": "updateBrowserStateVersion",
+      "line": 20,
+      "byte_offset": 716,
+      "spelling": "JSON.stringify",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-086",
+      "path": "excalidraw-app/data/tabSync.ts",
+      "caller": "updateBrowserStateVersion",
+      "line": 23,
+      "byte_offset": 812,
+      "spelling": "console.error",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-087",
+      "path": "excalidraw-app/data/tabSync.ts",
+      "caller": "resetBrowserStateVersions",
+      "line": 29,
+      "byte_offset": 967,
+      "spelling": "Object.keys",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-088",
+      "path": "excalidraw-app/data/tabSync.ts",
+      "caller": "resetBrowserStateVersions",
+      "line": 33,
+      "byte_offset": 1074,
+      "spelling": "localStorage.setItem",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-089",
+      "path": "excalidraw-app/data/tabSync.ts",
+      "caller": "resetBrowserStateVersions",
+      "line": 33,
+      "byte_offset": 1100,
+      "spelling": "JSON.stringify",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-090",
+      "path": "excalidraw-app/data/tabSync.ts",
+      "caller": "resetBrowserStateVersions",
+      "line": 37,
+      "byte_offset": 1203,
+      "spelling": "console.error",
+      "classification": "external",
+      "regime": "external"
+    },
+    {
+      "id": "site-091",
+      "path": "excalidraw-app/components/AppFooter.tsx",
+      "caller": "module",
+      "line": 9,
+      "byte_offset": 292,
+      "spelling": "React.memo",
+      "classification": "external",
+      "regime": "module_initializer"
+    },
+    {
+      "id": "site-092",
+      "path": "excalidraw-app/components/AppFooter.tsx",
+      "caller": "anonymous@10",
+      "line": 20,
+      "byte_offset": 535,
+      "spelling": "isVisualDebuggerEnabled",
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "excalidraw-app/components/DebugCanvas.tsx:isVisualDebuggerEnabled"
+    },
+    {
+      "id": "site-093",
+      "path": "excalidraw-app/data/Locker.ts",
+      "caller": "class_field_initializer",
+      "line": 2,
+      "byte_offset": 62,
+      "spelling": "Map",
+      "classification": "external",
+      "regime": "constructor"
+    }
+  ],
+  "cross_module_queries": [
+    {
+      "site_id": "site-015",
+      "caller_path": "packages/math/src/point.ts",
+      "caller": "pointRotateDegs",
+      "target": "packages/math/src/angle.ts:degreesToRadians"
+    },
+    {
+      "site_id": "site-020",
+      "caller_path": "packages/math/src/point.ts",
+      "caller": "pointScaleFromOrigin",
+      "target": "packages/math/src/vector.ts:vectorScale"
+    },
+    {
+      "site_id": "site-021",
+      "caller_path": "packages/math/src/point.ts",
+      "caller": "pointScaleFromOrigin",
+      "target": "packages/math/src/vector.ts:vectorFromPoint"
+    },
+    {
+      "site_id": "site-042",
+      "caller_path": "packages/utils/src/bbox.ts",
+      "caller": "isPointOnLine",
+      "target": "packages/math/src/vector.ts:vectorFromPoint"
+    },
+    {
+      "site_id": "site-043",
+      "caller_path": "packages/utils/src/bbox.ts",
+      "caller": "isPointOnLine",
+      "target": "packages/math/src/vector.ts:vectorFromPoint"
+    },
+    {
+      "site_id": "site-044",
+      "caller_path": "packages/utils/src/bbox.ts",
+      "caller": "isPointOnLine",
+      "target": "packages/math/src/vector.ts:vectorCross"
+    },
+    {
+      "site_id": "site-046",
+      "caller_path": "packages/utils/src/bbox.ts",
+      "caller": "isPointRightOfLine",
+      "target": "packages/math/src/vector.ts:vectorFromPoint"
+    },
+    {
+      "site_id": "site-047",
+      "caller_path": "packages/utils/src/bbox.ts",
+      "caller": "isPointRightOfLine",
+      "target": "packages/math/src/vector.ts:vectorFromPoint"
+    },
+    {
+      "site_id": "site-048",
+      "caller_path": "packages/utils/src/bbox.ts",
+      "caller": "isPointRightOfLine",
+      "target": "packages/math/src/vector.ts:vectorCross"
+    },
+    {
+      "site_id": "site-059",
+      "caller_path": "packages/math/src/line.ts",
+      "caller": "linesIntersectAt",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "site_id": "site-061",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleFromNumberSequence",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "site_id": "site-062",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleFromNumberSequence",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "site_id": "site-063",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "target": "packages/math/src/segment.ts:lineSegment"
+    },
+    {
+      "site_id": "site-064",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "site_id": "site-065",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "target": "packages/math/src/segment.ts:lineSegment"
+    },
+    {
+      "site_id": "site-066",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "site_id": "site-067",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "target": "packages/math/src/segment.ts:lineSegment"
+    },
+    {
+      "site_id": "site-068",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "site_id": "site-069",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "target": "packages/math/src/segment.ts:lineSegment"
+    },
+    {
+      "site_id": "site-070",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "rectangleIntersectLineSegment",
+      "target": "packages/math/src/point.ts:pointFrom"
+    },
+    {
+      "site_id": "site-072",
+      "caller_path": "packages/math/src/rectangle.ts",
+      "caller": "anonymous@28",
+      "target": "packages/math/src/segment.ts:lineSegmentIntersectionPoints"
+    },
+    {
+      "site_id": "site-092",
+      "caller_path": "excalidraw-app/components/AppFooter.tsx",
+      "caller": "anonymous@10",
+      "target": "excalidraw-app/components/DebugCanvas.tsx:isVisualDebuggerEnabled"
+    }
+  ],
+  "non_call_decoys": [
+    {
+      "path": "excalidraw-app/components/AppFooter.tsx",
+      "line": 12,
+      "spelling": "<Footer>",
+      "kind": "jsx"
+    },
+    {
+      "path": "excalidraw-app/components/AppFooter.tsx",
+      "line": 20,
+      "spelling": "<DebugFooter",
+      "kind": "jsx_callback_registration"
+    },
+    {
+      "path": "excalidraw-app/components/AppFooter.tsx",
+      "line": 21,
+      "spelling": "<EncryptedIcon",
+      "kind": "jsx"
+    }
+  ],
+  "supersedes": "oracle-v1.json",
+  "correction": "Constructor remains an external invocation observation; it is not a JSX/framework non-call decoy. Existing known-target labels and denominators are unchanged. Correction based on previously reviewed source, not compiler targets."
+}

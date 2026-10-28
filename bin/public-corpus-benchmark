@@ -1,0 +1,92 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'rbconfig'
+def setup_error(message)
+  warn message
+  exit 2
+end
+
+if RbConfig::CONFIG['prefix'].start_with?('/System/Library/Frameworks/Ruby.framework')
+  candidates = ['mise', '/opt/homebrew/bin/mise', File.expand_path('~/.local/bin/mise')].map do |mise|
+    begin
+      IO.popen([mise, 'which', 'ruby'], err: File::NULL) { |io| io.read }.strip
+    rescue Errno::ENOENT
+      nil
+    end
+  end
+  candidates << File.expand_path('~/.local/share/mise/installs/ruby/latest/bin/ruby')
+  mise_ruby = candidates.find { |path| path && !path.empty? && File.executable?(path) }
+  setup_error 'public-corpus-benchmark: prepare a mise Ruby before running this command' unless mise_ruby
+  exec mise_ruby, File.expand_path(__FILE__), *ARGV
+end
+
+def install_and_require(*gem_names)
+  missing = gem_names.reject do |name|
+    require name
+    true
+  rescue LoadError
+    false
+  end
+  return if missing.empty?
+
+  setup_error "Missing gems: #{missing.join(', ')}; prepare dependencies before scripted use" unless ARGV.empty? && $stdin.tty?
+  puts "Missing gems: #{missing.join(', ')}. Would you like to install them? (y/n)"
+  setup_error "#{missing.join(', ')} required for this script. Exiting." unless $stdin.gets.to_s.chomp.downcase == "y"
+  system("gem", "install", *missing) or setup_error('gem install failed')
+  Gem.clear_paths
+  missing.each { |name| require name }
+end
+
+install_and_require "tty-option", "tty-prompt", "tty-command"
+
+require_relative 'public-corpus-benchmark.d/gate'
+
+class PublicCorpusBenchmarkCommand
+  include TTY::Option
+  usage do
+    program 'public-corpus-benchmark'
+    no_command
+    desc 'Run the labelled fixture and pinned public application gates for PHP, Go, Rust or Ruby. Preparation is explicit; source applications are never executed.'
+    example 'bin/public-corpus-benchmark --language go --repo /local/lazygit --out /local/new-results'
+    example 'bin/public-corpus-benchmark --language php --repo /local/monica --bundle /local/phpactor-bundle --out /local/new-results'
+    example 'bin/public-corpus-benchmark --language ruby --repo /local/mastodon --bundle /local/ruby-operator --out /local/new-results'
+    example 'bin/public-corpus-benchmark --language rust --repo /local/ripgrep --cargo-home /local/operator/.cargo --out /local/new-results'
+  end
+  option(:language) { long '--language NAME'; desc 'php, go, rust or ruby; selects the declared public corpus' }
+  option(:repo) { long '--repo PATH'; desc 'Clean checkout at the exact declared public commit' }
+  option(:out) { long '--out PATH'; desc 'New directory outside Git for snapshots, logs and result.json' }
+  option(:bundle) { long '--bundle PATH'; desc 'Prepared operator bundle; defaults to the declared toolchain directory' }
+  option(:cargo_home) { long '--cargo-home PATH'; desc 'Rust only: explicitly prepared isolated .cargo directory; all gate operations are offline' }
+  flag(:help) { short '-h'; long '--help'; desc 'Show help' }
+end
+
+command = PublicCorpusBenchmarkCommand.new
+command.parse
+unless command.params.valid?
+  warn 'public-corpus-benchmark: invalid arguments; see --help'
+  exit 2
+end
+if command.params[:help]
+  puts command.help
+  exit 0
+end
+if ARGV.empty? && !$stdin.tty?
+  warn command.help
+  exit 2
+end
+options = command.params.to_h
+if ARGV.empty? && $stdin.tty?
+  prompt = TTY::Prompt.new
+  options[:language] = prompt.select('Language:', %w[php go rust ruby])
+  %i[repo out].each { |key| options[key] = prompt.ask("#{key}:", required: true) }
+  options[:cargo_home] = prompt.ask('Prepared isolated .cargo directory:', required: true) if options[:language] == 'rust'
+end
+begin
+  %i[language repo out].each { |key| raise ArgumentError, "--#{key} is required" unless options[key] }
+  result = PublicCorpusGate.new(language: options[:language]).run(repo: options[:repo], out: options[:out], bundle: options[:bundle], cargo_home: options[:cargo_home])
+  puts JSON.generate(result)
+rescue StandardError => error
+  warn "public-corpus-benchmark: #{error.message}"
+  exit 2
+end

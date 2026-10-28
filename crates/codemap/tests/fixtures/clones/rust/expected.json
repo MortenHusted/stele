@@ -1,0 +1,36 @@
+{
+  "policy": "cc-sloc-clones-form/rust/1",
+  "notes": [
+    "Hand-derived before the detector ran. A group's occurrences are the item's own lines because every twin sits between different neighbours in the two files, so no token run reaches past the item.",
+    "summarise: verbatim in both files (Type-1). 17 lines each; one comment-only line and one blank line inside, so 15 source lines.",
+    "tally / count_up: same shape, every identifier and literal changed (Type-2). 15 lines, all source.",
+    "near_tokens_a / near_tokens_b: 28 shared tokens before the first difference (`)` against a string literal), then differing bodies: under the 50-token threshold, no group.",
+    "wide: verbatim in both files and over 50 tokens (thirty literals and their commas), but four lines: under the 5-line threshold, no group."
+  ],
+  "groups": [
+    {
+      "name": "summarise",
+      "occurrences": [
+        { "rel_path": "src/a.rs", "start_line": 8, "end_line": 24, "sloc": 15 },
+        { "rel_path": "src/b.rs", "start_line": 9, "end_line": 25, "sloc": 15 }
+      ],
+      "lines": 17
+    },
+    {
+      "name": "tally",
+      "occurrences": [
+        { "rel_path": "src/a.rs", "start_line": 35, "end_line": 49, "sloc": 15 },
+        { "rel_path": "src/b.rs", "start_line": 36, "end_line": 50, "sloc": 15 }
+      ],
+      "lines": 15
+    }
+  ],
+  "file_clone_sloc": {
+    "src/a.rs": 30,
+    "src/b.rs": 30
+  },
+  "callable_groups": {
+    "src/a.rs": { "summarise": "summarise", "tally": "tally", "other_a": null, "wide": null, "near_tokens_a": null },
+    "src/b.rs": { "summarise": "summarise", "count_up": "tally", "lead": null, "wide": null, "near_tokens_b": null }
+  }
+}

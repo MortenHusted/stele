@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The run ledger names the PR tree, not GitHub's merge tree.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Install the repository toolchain
+        run: rustup show active-toolchain
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Prepare the Rust semantic test operator
+        run: |
+          rustup component add rust-analyzer rust-src
+          cargo fetch --locked --manifest-path crates/codemap/tests/fixtures/calls_cargo/Cargo.toml
+      - name: Check lints
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Run workspace tests
+        run: cargo test --workspace --locked
+      - name: Run and witness the native Rust semantic tests
+        run: |
+          set -euo pipefail
+          RUSTUP_TOOLCHAIN="$(rustup show active-toolchain | cut -d ' ' -f 1)"
+          export RUSTUP_TOOLCHAIN
+          export CARGO_NET_OFFLINE=true
+          cargo test --locked -p codemap --test semantic_calls --test rust_callable_targets --test rust_no_exec --test rust_implements -- --ignored --color never | tee "$RUNNER_TEMP/rust-native.log"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          output = (Path(os.environ["RUNNER_TEMP"]) / "rust-native.log").read_text()
+          for name in [
+              "semantic_mode_matches_the_labelled_call_oracle",
+              "only_exact_callable_declarations_are_canonical_targets",
+              "semantic_extraction_does_not_execute_build_scripts_or_proc_macros",
+              "semantic_implements_matches_the_source_reviewed_bindings",
+          ]:
+              assert f"test {name} ... ok" in output, f"missing passing witness: {name}"
+          assert output.count("test result: ok. 1 passed; 0 failed; 0 ignored;") == 4
+          PY
+      - name: Check the plan
+        run: cargo run --locked -p stele -- plan check plans/stele-plans.stele
+      - name: Report catalog standings
+        run: cargo run --locked -p stele -- intent report
+
+  scrub:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          ruby-version: '4.0.7'
+      - name: Install scrub test dependencies
+        run: gem install --no-document tty-option:0.3.0 tty-prompt:0.23.1 tty-command:0.10.1 minitest:6.0.6 rubyzip:3.7.0
+      - name: Test identifier scrub with synthetic inputs
+        run: ruby bin/scrub.d/test/scan_test.rb
+      - name: Test public corpus gate contracts
+        run: ruby bin/public-corpus-benchmark.d/test/gate_test.rb
+      - name: Test public corpus command boundaries
+        run: ruby bin/public-corpus-benchmark.d/test/command_test.rb
+      - name: Test Rust and Ruby selected-caller oracle refusals
+        run: ruby bin/public-corpus-benchmark.d/test/selected_caller_oracle_test.rb
+      - name: Test Black preparation refusals and frozen labels
+        run: ruby bin/prepare-black.d/test/preparation_test.rb
+      - name: Test Excalidraw preparation refusals and frozen labels
+        run: ruby bin/prepare-js-ts.d/test/preparation_test.rb
+      - name: Test public Black operator preparation boundaries
+        run: ruby bin/prepare-black-operator.d/test/preparation_test.rb
+      - name: C++ frozen oracle scoring controls
+        run: ruby bin/cpp-benchmark.d/test/score_test.rb
+      - name: C++ public preparation controls
+        run: ruby bin/prepare-cpp-benchmark.d/test/preparation_test.rb
+      - name: Prepare pinned secret scanner test archive
+        run: |
+          python3 - <<'PYTHON'
+          import hashlib, json, os, pathlib, platform, urllib.request
+          contract = json.loads(pathlib.Path("toolchain/security/gitleaks.json").read_text())
+          arch = {"x86_64": "linux_x64", "aarch64": "linux_arm64"}[platform.machine()]
+          asset = contract["assets"][arch]
+          archive = pathlib.Path(os.environ["RUNNER_TEMP"]) / "stele-gitleaks-test.tar.gz"
+          urllib.request.urlretrieve(asset["url"], archive)
+          assert hashlib.file_digest(archive.open("rb"), "sha256").hexdigest() == asset["archive_sha256"]
+          with open(os.environ["GITHUB_ENV"], "a") as env:
+              env.write("STELE_GITLEAKS_ARCHIVE=" + str(archive) + "\n")
+          PYTHON
+      - name: Test export inventory and native scanner refusal controls
+        run: ruby bin/export-review.d/test/review_test.rb
+      - name: Test release dependency notice and packaging boundaries
+        run: ruby bin/package-release.d/test/notices_test.rb
+      - name: Test curated root export and native review boundaries
+        run: ruby bin/prepare-public-export.d/test/export_test.rb
+      - name: Test fresh-root evidence replay boundaries and intended mutations
+        run: ruby bin/replay-intent-evidence.d/test/replay_test.rb

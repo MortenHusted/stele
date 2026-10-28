@@ -1,0 +1,34 @@
+{
+  "bundle": {
+    "collect_candidates.mjs": "c5dea7fc0eead687b0bdb4f1edc734687506dbbc196a78aaa7f7ae11134ec43e",
+    "manifest.json": "9cfdcaf1c23531faf6fe4c77c152b7c9472d906b2dbc4beb535196b88d07ec66",
+    "node_modules/typescript/lib/typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675",
+    "package-lock.json": "89b582777bfed9f43fc3e4f26b27d773bfec907eaa55182256c13db8ef475c6f",
+    "package.json": "358fceed942750f458990739198b1a5b35b3bd5450a929fa963a8cca0d57599d",
+    "probe.mjs": "691b0e2a2eaed18c455cd4510b89203a2c54769bf4111f962af87fc102d04802",
+    "resolve.mjs": "f8b40b4c9c9a1dccee115c4ba70bbbb2b679de9a696f7929d45810203b6d6a76"
+  },
+  "commit": "f39ac4a653335efaaaf9834bf28e9ffc1452cb59",
+  "contract": "stele-js-ts-source-preparation/v1",
+  "inputs": {
+    "anchors": {
+      "path": "benchmarks/js_ts/excalidraw-anchors.json",
+      "sha256": "e88b4356eb5dad1c394264875e4bf45680c04447fc261f61392ecfdd1948d768"
+    },
+    "inputs": {
+      "path": "benchmarks/js_ts/excalidraw-inputs.json",
+      "sha256": "9b4fbb3a40a055ed0d02d6177db37316ba14beef45a4e7ce08a71cebae8588e3"
+    },
+    "oracle": {
+      "path": "benchmarks/js_ts/excalidraw-oracle.json",
+      "sha256": "b5f8589576c2f4fcb8af4631d2cc83ed51d98310fa8942cb1cca85b0984a7e3a"
+    }
+  },
+  "license": "MIT",
+  "license_url": "https://github.com/excalidraw/excalidraw/blob/f39ac4a653335efaaaf9834bf28e9ffc1452cb59/LICENSE",
+  "node_version": "22.22.2",
+  "project": "tsconfig.json",
+  "repository": "https://github.com/excalidraw/excalidraw.git",
+  "typescript_version": "5.9.3",
+  "yarn_version": "1.22.22"
+}

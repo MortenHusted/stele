@@ -1,0 +1,2495 @@
+{
+  "calls": [
+    {
+      "callee": "assert_equivalent",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 36990,
+        "end_line": 1154,
+        "start_byte": 36973,
+        "start_line": 1154
+      },
+      "caller": "check_stability_and_equivalence",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "assert_equivalent",
+        "span": {
+          "end_byte": 58615,
+          "end_line": 1778,
+          "start_byte": 57206,
+          "start_line": 1748
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 37018,
+        "end_line": 1154,
+        "start_byte": 36973,
+        "start_line": 1154
+      }
+    },
+    {
+      "callee": "_target_versions_exceed_runtime",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 37134,
+        "end_line": 1158,
+        "start_byte": 37103,
+        "start_line": 1158
+      },
+      "caller": "check_stability_and_equivalence",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "_target_versions_exceed_runtime",
+        "span": {
+          "end_byte": 6864,
+          "end_line": 228,
+          "start_byte": 6368,
+          "start_line": 216
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 37156,
+        "end_line": 1158,
+        "start_byte": 37103,
+        "start_line": 1158
+      }
+    },
+    {
+      "callee": "ASTSafetyError",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 37190,
+        "end_line": 1159,
+        "start_byte": 37176,
+        "start_line": 1159
+      },
+      "caller": "check_stability_and_equivalence",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 37347,
+        "end_line": 1162,
+        "start_byte": 37176,
+        "start_line": 1159
+      }
+    },
+    {
+      "callee": "_version_mismatch_message",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 37309,
+        "end_line": 1161,
+        "start_byte": 37284,
+        "start_line": 1161
+      },
+      "caller": "check_stability_and_equivalence",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "_version_mismatch_message",
+        "span": {
+          "end_byte": 7355,
+          "end_line": 240,
+          "start_byte": 6867,
+          "start_line": 231
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 37331,
+        "end_line": 1161,
+        "start_byte": 37284,
+        "start_line": 1161
+      }
+    },
+    {
+      "callee": "assert_stable",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 37389,
+        "end_line": 1164,
+        "start_byte": 37376,
+        "start_line": 1164
+      },
+      "caller": "check_stability_and_equivalence",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "assert_stable",
+        "span": {
+          "end_byte": 59924,
+          "end_line": 1806,
+          "start_byte": 58618,
+          "start_line": 1781
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 37441,
+        "end_line": 1164,
+        "start_byte": 37376,
+        "start_line": 1164
+      }
+    },
+    {
+      "callee": "format_ipynb_string",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 37926,
+        "end_line": 1181,
+        "start_byte": 37907,
+        "start_line": 1181
+      },
+      "caller": "format_file_contents",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "format_ipynb_string",
+        "span": {
+          "end_byte": 41183,
+          "end_line": 1273,
+          "start_byte": 40123,
+          "start_line": 1244
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 37962,
+        "end_line": 1181,
+        "start_byte": 37907,
+        "start_line": 1181
+      }
+    },
+    {
+      "callee": "format_str",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 38006,
+        "end_line": 1183,
+        "start_byte": 37996,
+        "start_line": 1183
+      },
+      "caller": "format_file_contents",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "format_str",
+        "span": {
+          "end_byte": 43825,
+          "end_line": 1348,
+          "start_byte": 41186,
+          "start_line": 1276
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 38044,
+        "end_line": 1183,
+        "start_byte": 37996,
+        "start_line": 1183
+      }
+    },
+    {
+      "callee": "check_stability_and_equivalence",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 38256,
+        "end_line": 1189,
+        "start_byte": 38225,
+        "start_line": 1189
+      },
+      "caller": "format_file_contents",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "check_stability_and_equivalence",
+        "span": {
+          "end_byte": 37441,
+          "end_line": 1164,
+          "start_byte": 36573,
+          "start_line": 1140
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 38330,
+        "end_line": 1191,
+        "start_byte": 38225,
+        "start_line": 1189
+      }
+    },
+    {
+      "callee": "sanitized_lines",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 42054,
+        "end_line": 1309,
+        "start_byte": 42039,
+        "start_line": 1309
+      },
+      "caller": "format_str",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/ranges.py",
+        "qualified_name": "sanitized_lines",
+        "span": {
+          "end_byte": 2537,
+          "end_line": 83,
+          "start_byte": 1665,
+          "start_line": 58
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 42075,
+        "end_line": 1309,
+        "start_byte": 42039,
+        "start_line": 1309
+      }
+    },
+    {
+      "callee": "_format_str_once",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 42186,
+        "end_line": 1312,
+        "start_byte": 42170,
+        "start_line": 1312
+      },
+      "caller": "format_str",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "_format_str_once",
+        "span": {
+          "end_byte": 46732,
+          "end_line": 1433,
+          "start_byte": 44579,
+          "start_line": 1373
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 42224,
+        "end_line": 1312,
+        "start_byte": 42170,
+        "start_line": 1312
+      }
+    },
+    {
+      "callee": "adjusted_lines",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 42504,
+        "end_line": 1318,
+        "start_byte": 42490,
+        "start_line": 1318
+      },
+      "caller": "format_str",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/ranges.py",
+        "qualified_name": "adjusted_lines",
+        "span": {
+          "end_byte": 5318,
+          "end_line": 163,
+          "start_byte": 2540,
+          "start_line": 86
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 42539,
+        "end_line": 1318,
+        "start_byte": 42490,
+        "start_line": 1318
+      }
+    },
+    {
+      "callee": "_format_str_once",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 42596,
+        "end_line": 1320,
+        "start_byte": 42580,
+        "start_line": 1320
+      },
+      "caller": "format_str",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "_format_str_once",
+        "span": {
+          "end_byte": 46732,
+          "end_line": 1433,
+          "start_byte": 44579,
+          "start_line": 1373
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 42634,
+        "end_line": 1320,
+        "start_byte": 42580,
+        "start_line": 1320
+      }
+    },
+    {
+      "callee": "dump_to_file",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 43012,
+        "end_line": 1326,
+        "start_byte": 43000,
+        "start_line": 1326
+      },
+      "caller": "format_str",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 43026,
+        "end_line": 1326,
+        "start_byte": 43000,
+        "start_line": 1326
+      }
+    },
+    {
+      "callee": "_black_info",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 43101,
+        "end_line": 1328,
+        "start_byte": 43090,
+        "start_line": 1328
+      },
+      "caller": "format_str",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "_black_info",
+        "span": {
+          "end_byte": 57203,
+          "end_line": 1745,
+          "start_byte": 57041,
+          "start_line": 1741
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 43103,
+        "end_line": 1328,
+        "start_byte": 43090,
+        "start_line": 1328
+      }
+    },
+    {
+      "callee": "_restore_unselected_trailing_blank_lines",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 43744,
+        "end_line": 1345,
+        "start_byte": 43704,
+        "start_line": 1345
+      },
+      "caller": "format_str",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "_restore_unselected_trailing_blank_lines",
+        "span": {
+          "end_byte": 44576,
+          "end_line": 1370,
+          "start_byte": 43828,
+          "start_line": 1351
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 43801,
+        "end_line": 1347,
+        "start_byte": 43704,
+        "start_line": 1345
+      }
+    },
+    {
+      "callee": "decode_bytes",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 44864,
+        "end_line": 1378,
+        "start_byte": 44852,
+        "start_line": 1378
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "decode_bytes",
+        "span": {
+          "end_byte": 48032,
+          "end_line": 1476,
+          "start_byte": 46735,
+          "start_line": 1436
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 44942,
+        "end_line": 1380,
+        "start_byte": 44852,
+        "start_line": 1378
+      }
+    },
+    {
+      "callee": "src_contents.encode",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 44893,
+        "end_line": 1379,
+        "start_byte": 44874,
+        "start_line": 1379
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 44902,
+        "end_line": 1379,
+        "start_byte": 44874,
+        "start_line": 1379
+      }
+    },
+    {
+      "callee": "lib2to3_parse",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 44972,
+        "end_line": 1382,
+        "start_byte": 44959,
+        "start_line": 1382
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/parsing.py",
+        "qualified_name": "lib2to3_parse",
+        "span": {
+          "end_byte": 4708,
+          "end_line": 144,
+          "start_byte": 2397,
+          "start_line": 77
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 45054,
+        "end_line": 1384,
+        "start_byte": 44959,
+        "start_line": 1382
+      }
+    },
+    {
+      "callee": "normalized_contents.lstrip",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 45008,
+        "end_line": 1383,
+        "start_byte": 44982,
+        "start_line": 1383
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 45010,
+        "end_line": 1383,
+        "start_byte": 44982,
+        "start_line": 1383
+      }
+    },
+    {
+      "callee": "get_future_imports",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 45216,
+        "end_line": 1390,
+        "start_byte": 45198,
+        "start_line": 1390
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "get_future_imports",
+        "span": {
+          "end_byte": 57038,
+          "end_line": 1738,
+          "start_byte": 55239,
+          "start_line": 1688
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 45226,
+        "end_line": 1390,
+        "start_byte": 45198,
+        "start_line": 1390
+      }
+    },
+    {
+      "callee": "detect_target_versions",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 45268,
+        "end_line": 1391,
+        "start_byte": 45246,
+        "start_line": 1391
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/__init__.py",
+        "qualified_name": "detect_target_versions",
+        "span": {
+          "end_byte": 55236,
+          "end_line": 1685,
+          "start_byte": 54884,
+          "start_line": 1678
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 45309,
+        "end_line": 1391,
+        "start_byte": 45246,
+        "start_line": 1391
+      }
+    },
+    {
+      "callee": "supports_feature",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 45555,
+        "end_line": 1400,
+        "start_byte": 45539,
+        "start_line": 1400
+      },
+      "caller": null,
+      "evaluation_context": "comprehension",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 45574,
+        "end_line": 1400,
+        "start_byte": 45539,
+        "start_line": 1400
+      }
+    },
+    {
+      "callee": "normalize_fmt_off",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 45602,
+        "end_line": 1402,
+        "start_byte": 45585,
+        "start_line": 1402
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/comments.py",
+        "qualified_name": "normalize_fmt_off",
+        "span": {
+          "end_byte": 8494,
+          "end_line": 230,
+          "start_byte": 7592,
+          "start_line": 214
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 45625,
+        "end_line": 1402,
+        "start_byte": 45585,
+        "start_line": 1402
+      }
+    },
+    {
+      "callee": "convert_unchanged_lines",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 45728,
+        "end_line": 1405,
+        "start_byte": 45705,
+        "start_line": 1405
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/ranges.py",
+        "qualified_name": "convert_unchanged_lines",
+        "span": {
+          "end_byte": 7046,
+          "end_line": 197,
+          "start_byte": 5321,
+          "start_line": 166
+        }
+      },
+      "path": "src/black/__init__.py",
+      "span": {
+        "end_byte": 45745,
+        "end_line": 1405,
+        "start_byte": 45705,
+        "start_line": 1405
+      }
+    },
+    {
+      "callee": "LineGenerator",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 45781,
+        "end_line": 1407,
+        "start_byte": 45768,
+        "start_line": 1407
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 45827,
+        "end_line": 1407,
+        "start_byte": 45768,
+        "start_line": 1407
+      }
+    },
+    {
+      "callee": "EmptyLineTracker",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 45854,
+        "end_line": 1408,
+        "start_byte": 45838,
+        "start_line": 1408
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 45865,
+        "end_line": 1408,
+        "start_byte": 45838,
+        "start_line": 1408
+      }
+    },
+    {
+      "callee": "supports_feature",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 46059,
+        "end_line": 1415,
+        "start_byte": 46043,
+        "start_line": 1415
+      },
+      "caller": null,
+      "evaluation_context": "comprehension",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46078,
+        "end_line": 1415,
+        "start_byte": 46043,
+        "start_line": 1415
+      }
+    },
+    {
+      "callee": "line_generator.visit",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 46165,
+        "end_line": 1418,
+        "start_byte": 46145,
+        "start_line": 1418
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46175,
+        "end_line": 1418,
+        "start_byte": 46145,
+        "start_line": 1418
+      }
+    },
+    {
+      "callee": "elt.maybe_empty_lines",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 46214,
+        "end_line": 1419,
+        "start_byte": 46193,
+        "start_line": 1419
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46228,
+        "end_line": 1419,
+        "start_byte": 46193,
+        "start_line": 1419
+      }
+    },
+    {
+      "callee": "dst_blocks.append",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 46254,
+        "end_line": 1420,
+        "start_byte": 46237,
+        "start_line": 1420
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46261,
+        "end_line": 1420,
+        "start_byte": 46237,
+        "start_line": 1420
+      }
+    },
+    {
+      "callee": "transform_line",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 46296,
+        "end_line": 1421,
+        "start_byte": 46282,
+        "start_line": 1421
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46373,
+        "end_line": 1423,
+        "start_byte": 46282,
+        "start_line": 1421
+      }
+    },
+    {
+      "callee": "block.content_lines.append",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 46413,
+        "end_line": 1424,
+        "start_byte": 46387,
+        "start_line": 1424
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46424,
+        "end_line": 1424,
+        "start_byte": 46387,
+        "start_line": 1424
+      }
+    },
+    {
+      "callee": "str",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 46417,
+        "end_line": 1424,
+        "start_byte": 46414,
+        "start_line": 1424
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46423,
+        "end_line": 1424,
+        "start_byte": 46414,
+        "start_line": 1424
+      }
+    },
+    {
+      "callee": "dst_contents.extend",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 46555,
+        "end_line": 1429,
+        "start_byte": 46536,
+        "start_line": 1429
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46574,
+        "end_line": 1429,
+        "start_byte": 46536,
+        "start_line": 1429
+      }
+    },
+    {
+      "callee": "block.all_lines",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 46571,
+        "end_line": 1429,
+        "start_byte": 46556,
+        "start_line": 1429
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46573,
+        "end_line": 1429,
+        "start_byte": 46556,
+        "start_line": 1429
+      }
+    },
+    {
+      "callee": "\"\".join(dst_contents).replace",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 46712,
+        "end_line": 1433,
+        "start_byte": 46683,
+        "start_line": 1433
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46732,
+        "end_line": 1433,
+        "start_byte": 46683,
+        "start_line": 1433
+      }
+    },
+    {
+      "callee": "\"\".join",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 46690,
+        "end_line": 1433,
+        "start_byte": 46683,
+        "start_line": 1433
+      },
+      "caller": "_format_str_once",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 46704,
+        "end_line": 1433,
+        "start_byte": 46683,
+        "start_line": 1433
+      }
+    },
+    {
+      "callee": "set",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 55372,
+        "end_line": 1690,
+        "start_byte": 55369,
+        "start_line": 1690
+      },
+      "caller": "get_future_imports",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 55374,
+        "end_line": 1690,
+        "start_byte": 55369,
+        "start_line": 1690
+      }
+    },
+    {
+      "callee": "isinstance",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 55517,
+        "end_line": 1694,
+        "start_byte": 55507,
+        "start_line": 1694
+      },
+      "caller": "get_future_imports.get_imports_from_children",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 55530,
+        "end_line": 1694,
+        "start_byte": 55507,
+        "start_line": 1694
+      }
+    },
+    {
+      "callee": "isinstance",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 55747,
+        "end_line": 1700,
+        "start_byte": 55737,
+        "start_line": 1700
+      },
+      "caller": "get_future_imports.get_imports_from_children",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 55764,
+        "end_line": 1700,
+        "start_byte": 55737,
+        "start_line": 1700
+      }
+    },
+    {
+      "callee": "get_imports_from_children",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 56029,
+        "end_line": 1705,
+        "start_byte": 56004,
+        "start_line": 1705
+      },
+      "caller": "get_future_imports.get_imports_from_children",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 56045,
+        "end_line": 1705,
+        "start_byte": 56004,
+        "start_line": 1705
+      }
+    },
+    {
+      "callee": "AssertionError",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 56101,
+        "end_line": 1708,
+        "start_byte": 56087,
+        "start_line": 1708
+      },
+      "caller": "get_future_imports.get_imports_from_children",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 56135,
+        "end_line": 1708,
+        "start_byte": 56087,
+        "start_line": 1708
+      }
+    },
+    {
+      "callee": "isinstance",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 56292,
+        "end_line": 1715,
+        "start_byte": 56282,
+        "start_line": 1715
+      },
+      "caller": "get_future_imports",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 56311,
+        "end_line": 1715,
+        "start_byte": 56282,
+        "start_line": 1715
+      }
+    },
+    {
+      "callee": "len",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 56419,
+        "end_line": 1718,
+        "start_byte": 56416,
+        "start_line": 1718
+      },
+      "caller": "get_future_imports",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 56435,
+        "end_line": 1718,
+        "start_byte": 56416,
+        "start_line": 1718
+      }
+    },
+    {
+      "callee": "isinstance",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 56826,
+        "end_line": 1731,
+        "start_byte": 56816,
+        "start_line": 1731
+      },
+      "caller": "get_future_imports",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 56845,
+        "end_line": 1731,
+        "start_byte": 56816,
+        "start_line": 1731
+      }
+    },
+    {
+      "callee": "set",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 56933,
+        "end_line": 1734,
+        "start_byte": 56930,
+        "start_line": 1734
+      },
+      "caller": "get_future_imports",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 56986,
+        "end_line": 1734,
+        "start_byte": 56930,
+        "start_line": 1734
+      }
+    },
+    {
+      "callee": "get_imports_from_children",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 56959,
+        "end_line": 1734,
+        "start_byte": 56934,
+        "start_line": 1734
+      },
+      "caller": "get_future_imports",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/__init__.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 56985,
+        "end_line": 1734,
+        "start_byte": 56934,
+        "start_line": 1734
+      }
+    },
+    {
+      "callee": "line_to_string",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 30876,
+        "end_line": 789,
+        "start_byte": 30862,
+        "start_line": 789
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/lines.py",
+        "qualified_name": "line_to_string",
+        "span": {
+          "end_byte": 70680,
+          "end_line": 1770,
+          "start_byte": 70489,
+          "start_line": 1765
+        }
+      },
+      "path": "src/black/linegen.py",
+      "span": {
+        "end_byte": 30882,
+        "end_line": 789,
+        "start_byte": 30862,
+        "start_line": 789
+      }
+    },
+    {
+      "callee": "_hugging_power_ops_line_to_string",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 31276,
+        "end_line": 798,
+        "start_byte": 31243,
+        "start_line": 798
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/linegen.py",
+        "qualified_name": "_hugging_power_ops_line_to_string",
+        "span": {
+          "end_byte": 30454,
+          "end_line": 773,
+          "start_byte": 30203,
+          "start_line": 765
+        }
+      },
+      "path": "src/black/linegen.py",
+      "span": {
+        "end_byte": 31298,
+        "end_line": 798,
+        "start_byte": 31243,
+        "start_line": 798
+      }
+    },
+    {
+      "callee": "StringMerger",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 31414,
+        "end_line": 803,
+        "start_byte": 31402,
+        "start_line": 803
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 31422,
+        "end_line": 803,
+        "start_byte": 31402,
+        "start_line": 803
+      }
+    },
+    {
+      "callee": "StringParenStripper",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 31467,
+        "end_line": 804,
+        "start_byte": 31448,
+        "start_line": 804
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 31475,
+        "end_line": 804,
+        "start_byte": 31448,
+        "start_line": 804
+      }
+    },
+    {
+      "callee": "StringSplitter",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 31509,
+        "end_line": 805,
+        "start_byte": 31495,
+        "start_line": 805
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 31517,
+        "end_line": 805,
+        "start_byte": 31495,
+        "start_line": 805
+      }
+    },
+    {
+      "callee": "StringParenWrapper",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 31560,
+        "end_line": 806,
+        "start_byte": 31542,
+        "start_line": 806
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 31568,
+        "end_line": 806,
+        "start_byte": 31542,
+        "start_line": 806
+      }
+    },
+    {
+      "callee": "line.contains_uncollapsable_type_comments",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 31668,
+        "end_line": 810,
+        "start_byte": 31627,
+        "start_line": 810
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 31670,
+        "end_line": 810,
+        "start_byte": 31627,
+        "start_line": 810
+      }
+    },
+    {
+      "callee": "is_line_short_enough",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 31797,
+        "end_line": 814,
+        "start_byte": 31777,
+        "start_line": 814
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/lines.py",
+        "qualified_name": "is_line_short_enough",
+        "span": {
+          "end_byte": 59306,
+          "end_line": 1480,
+          "start_byte": 54558,
+          "start_line": 1381
+        }
+      },
+      "path": "src/black/linegen.py",
+      "span": {
+        "end_byte": 31851,
+        "end_line": 814,
+        "start_byte": 31777,
+        "start_line": 814
+      }
+    },
+    {
+      "callee": "line.contains_unsplittable_type_ignore",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 31905,
+        "end_line": 815,
+        "start_byte": 31867,
+        "start_line": 815
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 31907,
+        "end_line": 815,
+        "start_byte": 31867,
+        "start_line": 815
+      }
+    },
+    {
+      "callee": "line.contains_standalone_comments",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 31993,
+        "end_line": 817,
+        "start_byte": 31960,
+        "start_line": 817
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 31995,
+        "end_line": 817,
+        "start_byte": 31960,
+        "start_line": 817
+      }
+    },
+    {
+      "callee": "line.contains_implicit_multiline_string_with_comments",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 32066,
+        "end_line": 818,
+        "start_byte": 32013,
+        "start_line": 818
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 32068,
+        "end_line": 818,
+        "start_byte": 32013,
+        "start_line": 818
+      }
+    },
+    {
+      "callee": "should_split_funcdef_with_rhs",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 32372,
+        "end_line": 825,
+        "start_byte": 32343,
+        "start_line": 825
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/linegen.py",
+        "qualified_name": "should_split_funcdef_with_rhs",
+        "span": {
+          "end_byte": 35805,
+          "end_line": 920,
+          "start_byte": 34531,
+          "start_line": 887
+        }
+      },
+      "path": "src/black/linegen.py",
+      "span": {
+        "end_byte": 32384,
+        "end_line": 825,
+        "start_byte": 32343,
+        "start_line": 825
+      }
+    },
+    {
+      "callee": "transformers.append",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 33727,
+        "end_line": 863,
+        "start_byte": 33708,
+        "start_line": 863
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 33741,
+        "end_line": 863,
+        "start_byte": 33708,
+        "start_line": 863
+      }
+    },
+    {
+      "callee": "run_transformer",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 34016,
+        "end_line": 870,
+        "start_byte": 34001,
+        "start_line": 870
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/linegen.py",
+        "qualified_name": "run_transformer",
+        "span": {
+          "end_byte": 99252,
+          "end_line": 2539,
+          "start_byte": 97019,
+          "start_line": 2490
+        }
+      },
+      "path": "src/black/linegen.py",
+      "span": {
+        "end_byte": 34068,
+        "end_line": 870,
+        "start_byte": 34001,
+        "start_line": 870
+      }
+    },
+    {
+      "callee": "line.contains_standalone_comments",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 34427,
+        "end_line": 881,
+        "start_byte": 34394,
+        "start_line": 881
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 34429,
+        "end_line": 881,
+        "start_byte": 34394,
+        "start_line": 881
+      }
+    },
+    {
+      "callee": "_force_standalone_comment_split",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 34485,
+        "end_line": 882,
+        "start_byte": 34454,
+        "start_line": 882
+      },
+      "caller": "transform_line",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 34491,
+        "end_line": 882,
+        "start_byte": 34454,
+        "start_line": 882
+      }
+    },
+    {
+      "callee": "return_type_leaves.append",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 34977,
+        "end_line": 898,
+        "start_byte": 34952,
+        "start_line": 898
+      },
+      "caller": "should_split_funcdef_with_rhs",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 34983,
+        "end_line": 898,
+        "start_byte": 34952,
+        "start_line": 898
+      }
+    },
+    {
+      "callee": "Line",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 35186,
+        "end_line": 904,
+        "start_byte": 35182,
+        "start_line": 904
+      },
+      "caller": "should_split_funcdef_with_rhs",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 35220,
+        "end_line": 904,
+        "start_byte": 35182,
+        "start_line": 904
+      }
+    },
+    {
+      "callee": "get_leaves_inside_matching_brackets",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 35278,
+        "end_line": 905,
+        "start_byte": 35243,
+        "start_line": 905
+      },
+      "caller": "should_split_funcdef_with_rhs",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/brackets.py",
+        "qualified_name": "get_leaves_inside_matching_brackets",
+        "span": {
+          "end_byte": 14583,
+          "end_line": 429,
+          "start_byte": 12894,
+          "start_line": 394
+        }
+      },
+      "path": "src/black/linegen.py",
+      "span": {
+        "end_byte": 35298,
+        "end_line": 905,
+        "start_byte": 35243,
+        "start_line": 905
+      }
+    },
+    {
+      "callee": "result.append",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 35356,
+        "end_line": 907,
+        "start_byte": 35343,
+        "start_line": 907
+      },
+      "caller": "should_split_funcdef_with_rhs",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 35471,
+        "end_line": 911,
+        "start_byte": 35343,
+        "start_line": 907
+      }
+    },
+    {
+      "callee": "id",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 35435,
+        "end_line": 910,
+        "start_byte": 35433,
+        "start_line": 910
+      },
+      "caller": "should_split_funcdef_with_rhs",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 35441,
+        "end_line": 910,
+        "start_byte": 35433,
+        "start_line": 910
+      }
+    },
+    {
+      "callee": "next",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 35509,
+        "end_line": 913,
+        "start_byte": 35505,
+        "start_line": 913
+      },
+      "caller": "should_split_funcdef_with_rhs",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/black/linegen.py",
+      "reason": "outside_initial_native_direct_function_policy",
+      "span": {
+        "end_byte": 35582,
+        "end_line": 915,
+        "start_byte": 35505,
+        "start_line": 913
+      }
+    },
+    {
+      "callee": "is_line_short_enough",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 35780,
+        "end_line": 919,
+        "start_byte": 35760,
+        "start_line": 919
+      },
+      "caller": "should_split_funcdef_with_rhs",
+      "evaluation_context": "body",
+      "expected_supported": true,
+      "expected_target": {
+        "path": "src/black/lines.py",
+        "qualified_name": "is_line_short_enough",
+        "span": {
+          "end_byte": 59306,
+          "end_line": 1480,
+          "start_byte": 54558,
+          "start_line": 1381
+        }
+      },
+      "path": "src/black/linegen.py",
+      "span": {
+        "end_byte": 35799,
+        "end_line": 919,
+        "start_byte": 35760,
+        "start_line": 919
+      }
+    },
+    {
+      "callee": "web.Application",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 3454,
+        "end_line": 131,
+        "start_byte": 3439,
+        "start_line": 131
+      },
+      "caller": "make_app",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 3746,
+        "end_line": 140,
+        "start_byte": 3439,
+        "start_line": 131
+      }
+    },
+    {
+      "callee": "cors",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 3533,
+        "end_line": 134,
+        "start_byte": 3529,
+        "start_line": 134
+      },
+      "caller": "make_app",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 3729,
+        "end_line": 138,
+        "start_byte": 3529,
+        "start_line": 134
+      }
+    },
+    {
+      "callee": "frozenset",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 3638,
+        "end_line": 136,
+        "start_byte": 3629,
+        "start_line": 136
+      },
+      "caller": "make_app",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 3658,
+        "end_line": 136,
+        "start_byte": 3629,
+        "start_line": 136
+      }
+    },
+    {
+      "callee": "app.add_routes",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 3765,
+        "end_line": 141,
+        "start_byte": 3751,
+        "start_line": 141
+      },
+      "caller": "make_app",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 3994,
+        "end_line": 150,
+        "start_byte": 3751,
+        "start_line": 141
+      }
+    },
+    {
+      "callee": "web.post",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 3784,
+        "end_line": 142,
+        "start_byte": 3776,
+        "start_line": 142
+      },
+      "caller": "make_app",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 3987,
+        "end_line": 149,
+        "start_byte": 3776,
+        "start_line": 142
+      }
+    },
+    {
+      "callee": "partial",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 3822,
+        "end_line": 144,
+        "start_byte": 3815,
+        "start_line": 144
+      },
+      "caller": "make_app",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 3976,
+        "end_line": 148,
+        "start_byte": 3815,
+        "start_line": 144
+      }
+    },
+    {
+      "callee": "executor",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 3881,
+        "end_line": 146,
+        "start_byte": 3873,
+        "start_line": 146
+      },
+      "caller": "make_app",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 3883,
+        "end_line": 146,
+        "start_byte": 3873,
+        "start_line": 146
+      }
+    },
+    {
+      "callee": "asyncio.BoundedSemaphore",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 3944,
+        "end_line": 147,
+        "start_byte": 3920,
+        "start_line": 147
+      },
+      "caller": "make_app",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 3961,
+        "end_line": 147,
+        "start_byte": 3920,
+        "start_line": 147
+      }
+    },
+    {
+      "callee": "request.headers.get",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 4238,
+        "end_line": 161,
+        "start_byte": 4219,
+        "start_line": 161
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 4268,
+        "end_line": 161,
+        "start_byte": 4219,
+        "start_line": 161
+      }
+    },
+    {
+      "callee": "web.Response",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 4308,
+        "end_line": 162,
+        "start_byte": 4296,
+        "start_line": 162
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 4403,
+        "end_line": 164,
+        "start_byte": 4296,
+        "start_line": 162
+      }
+    },
+    {
+      "callee": "request.headers.get",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 4456,
+        "end_line": 167,
+        "start_byte": 4437,
+        "start_line": 167
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 4485,
+        "end_line": 167,
+        "start_byte": 4437,
+        "start_line": 167
+      }
+    },
+    {
+      "callee": "parse_mode",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 4563,
+        "end_line": 170,
+        "start_byte": 4553,
+        "start_line": 170
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 4580,
+        "end_line": 170,
+        "start_byte": 4553,
+        "start_line": 170
+      }
+    },
+    {
+      "callee": "web.Response",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 4645,
+        "end_line": 172,
+        "start_byte": 4633,
+        "start_line": 172
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 4673,
+        "end_line": 172,
+        "start_byte": 4633,
+        "start_line": 172
+      }
+    },
+    {
+      "callee": "request.read",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 4712,
+        "end_line": 173,
+        "start_byte": 4700,
+        "start_line": 173
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 4714,
+        "end_line": 173,
+        "start_byte": 4700,
+        "start_line": 173
+      }
+    },
+    {
+      "callee": "req_bytes.decode",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 4826,
+        "end_line": 175,
+        "start_byte": 4810,
+        "start_line": 175
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 4835,
+        "end_line": 175,
+        "start_byte": 4810,
+        "start_line": 175
+      }
+    },
+    {
+      "callee": "datetime.now",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 4863,
+        "end_line": 176,
+        "start_byte": 4851,
+        "start_line": 176
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 4877,
+        "end_line": 176,
+        "start_byte": 4851,
+        "start_line": 176
+      }
+    },
+    {
+      "callee": "req_str.find",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 4993,
+        "end_line": 180,
+        "start_byte": 4981,
+        "start_line": 180
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 4999,
+        "end_line": 180,
+        "start_byte": 4981,
+        "start_line": 180
+      }
+    },
+    {
+      "callee": "bool",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 5138,
+        "end_line": 184,
+        "start_byte": 5134,
+        "start_line": 184
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 5179,
+        "end_line": 184,
+        "start_byte": 5134,
+        "start_line": 184
+      }
+    },
+    {
+      "callee": "request.headers.get",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 5158,
+        "end_line": 184,
+        "start_byte": 5139,
+        "start_line": 184
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 5178,
+        "end_line": 184,
+        "start_byte": 5139,
+        "start_line": 184
+      }
+    },
+    {
+      "callee": "format_code",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 5221,
+        "end_line": 185,
+        "start_byte": 5210,
+        "start_line": 185
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 5445,
+        "end_line": 193,
+        "start_byte": 5210,
+        "start_line": 185
+      }
+    },
+    {
+      "callee": "web.Response",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 5598,
+        "end_line": 199,
+        "start_byte": 5586,
+        "start_line": 199
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 5746,
+        "end_line": 204,
+        "start_byte": 5586,
+        "start_line": 199
+      }
+    },
+    {
+      "callee": "web.Response",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 5807,
+        "end_line": 206,
+        "start_byte": 5795,
+        "start_line": 206
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 5836,
+        "end_line": 206,
+        "start_byte": 5795,
+        "start_line": 206
+      }
+    },
+    {
+      "callee": "web.Response",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 5900,
+        "end_line": 208,
+        "start_byte": 5888,
+        "start_line": 208
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 5942,
+        "end_line": 208,
+        "start_byte": 5888,
+        "start_line": 208
+      }
+    },
+    {
+      "callee": "str",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 5938,
+        "end_line": 208,
+        "start_byte": 5935,
+        "start_line": 208
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 5941,
+        "end_line": 208,
+        "start_byte": 5935,
+        "start_line": 208
+      }
+    },
+    {
+      "callee": "web.Response",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 6013,
+        "end_line": 210,
+        "start_byte": 6001,
+        "start_line": 210
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 6055,
+        "end_line": 210,
+        "start_byte": 6001,
+        "start_line": 210
+      }
+    },
+    {
+      "callee": "str",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 6051,
+        "end_line": 210,
+        "start_byte": 6048,
+        "start_line": 210
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 6054,
+        "end_line": 210,
+        "start_byte": 6048,
+        "start_line": 210
+      }
+    },
+    {
+      "callee": "logging.exception",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 6152,
+        "end_line": 214,
+        "start_byte": 6135,
+        "start_line": 214
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 6191,
+        "end_line": 214,
+        "start_byte": 6135,
+        "start_line": 214
+      }
+    },
+    {
+      "callee": "web.Response",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 6219,
+        "end_line": 215,
+        "start_byte": 6207,
+        "start_line": 215
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 6261,
+        "end_line": 215,
+        "start_byte": 6207,
+        "start_line": 215
+      }
+    },
+    {
+      "callee": "str",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 6257,
+        "end_line": 215,
+        "start_byte": 6254,
+        "start_line": 215
+      },
+      "caller": "handle",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 6260,
+        "end_line": 215,
+        "start_byte": 6254,
+        "start_line": 215
+      }
+    },
+    {
+      "callee": "asyncio.get_event_loop",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 6551,
+        "end_line": 229,
+        "start_byte": 6529,
+        "start_line": 229
+      },
+      "caller": "format_code",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 6553,
+        "end_line": 229,
+        "start_byte": 6529,
+        "start_line": 229
+      }
+    },
+    {
+      "callee": "loop.run_in_executor",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 6604,
+        "end_line": 230,
+        "start_byte": 6584,
+        "start_line": 230
+      },
+      "caller": "format_code",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 6704,
+        "end_line": 232,
+        "start_byte": 6584,
+        "start_line": 230
+      }
+    },
+    {
+      "callee": "partial",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 6635,
+        "end_line": 231,
+        "start_byte": 6628,
+        "start_line": 231
+      },
+      "caller": "format_code",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 6694,
+        "end_line": 231,
+        "start_byte": 6628,
+        "start_line": 231
+      }
+    },
+    {
+      "callee": "datetime.now",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 6792,
+        "end_line": 237,
+        "start_byte": 6780,
+        "start_line": 237
+      },
+      "caller": "format_code",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 6806,
+        "end_line": 237,
+        "start_byte": 6780,
+        "start_line": 237
+      }
+    },
+    {
+      "callee": "loop.run_in_executor",
+      "callee_kind": "Attribute",
+      "callee_span": {
+        "end_byte": 6914,
+        "end_line": 240,
+        "start_byte": 6894,
+        "start_line": 240
+      },
+      "caller": "format_code",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 7024,
+        "end_line": 243,
+        "start_byte": 6894,
+        "start_line": 240
+      }
+    },
+    {
+      "callee": "partial",
+      "callee_kind": "Name",
+      "callee_span": {
+        "end_byte": 6957,
+        "end_line": 242,
+        "start_byte": 6950,
+        "start_line": 242
+      },
+      "caller": "format_code",
+      "evaluation_context": "body",
+      "expected_supported": false,
+      "path": "src/blackd/__init__.py",
+      "reason": "uncompiled_execution",
+      "span": {
+        "end_byte": 7013,
+        "end_line": 242,
+        "start_byte": 6950,
+        "start_line": 242
+      }
+    }
+  ],
+  "contract": "codemap-python-native-manual-oracle/v1",
+  "execution_profile": "mypyc-native/single-unit/2.3.1",
+  "non_call_decoys": [
+    {
+      "path": "src/blackd/__init__.py",
+      "role": "partial callback argument",
+      "spelling": "handle"
+    },
+    {
+      "path": "src/blackd/__init__.py",
+      "role": "partial callback argument",
+      "spelling": "black.format_file_contents"
+    },
+    {
+      "path": "src/blackd/__init__.py",
+      "role": "partial callback argument",
+      "spelling": "black.diff"
+    }
+  ],
+  "selected_areas": [
+    "formatting_pipeline",
+    "line_transformations",
+    "http_daemon"
+  ],
+  "selected_complete_functions": {
+    "src/black/__init__.py": [
+      "check_stability_and_equivalence",
+      "format_file_contents",
+      "format_str",
+      "_format_str_once",
+      "get_future_imports",
+      "get_future_imports.get_imports_from_children"
+    ],
+    "src/black/linegen.py": [
+      "transform_line",
+      "should_split_funcdef_with_rhs"
+    ],
+    "src/blackd/__init__.py": [
+      "make_app",
+      "handle",
+      "format_code"
+    ]
+  },
+  "source_commit": "994ef7eeb18172178552daa1f36f001d156ad583",
+  "status": "Expectations frozen before native semantic application query or admission algorithm",
+  "thresholds": {
+    "false_positives": 0,
+    "minimum_areas": 3,
+    "minimum_census": 50,
+    "minimum_supported_recall": 0.9,
+    "minimum_supported_share": 0.2
+  }
+}

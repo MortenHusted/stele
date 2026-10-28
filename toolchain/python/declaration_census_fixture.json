@@ -1,0 +1,307 @@
+[
+  {
+    "calls": [
+      {
+        "callee": "helper",
+        "callee_kind": "Name",
+        "callee_span": {
+          "end_byte": 51,
+          "end_line": 2,
+          "start_byte": 45,
+          "start_line": 2
+        },
+        "caller": null,
+        "evaluation_context": "definition_setup",
+        "owner": 1,
+        "span": {
+          "end_byte": 53,
+          "end_line": 2,
+          "start_byte": 45,
+          "start_line": 2
+        }
+      }
+    ],
+    "definitions": [
+      {
+        "ambiguous": false,
+        "bases": [],
+        "declaration_only": true,
+        "decorators": [],
+        "kind": "FunctionDef",
+        "name": "helper",
+        "ordinal": 0,
+        "owner": null,
+        "qualified_name": "helper",
+        "span": {
+          "end_byte": 24,
+          "end_line": 1,
+          "start_byte": 0,
+          "start_line": 1
+        }
+      },
+      {
+        "ambiguous": false,
+        "bases": [],
+        "declaration_only": true,
+        "decorators": [],
+        "kind": "FunctionDef",
+        "name": "target",
+        "ordinal": 0,
+        "owner": null,
+        "qualified_name": "target",
+        "span": {
+          "end_byte": 66,
+          "end_line": 2,
+          "start_byte": 25,
+          "start_line": 2
+        }
+      }
+    ],
+    "encoding": "utf-8",
+    "imports": [],
+    "path": "opaque.pyi",
+    "scopes": {
+      "children": [
+        {
+          "children": [],
+          "kind": "annotation",
+          "line": 1,
+          "name": "__annotate__",
+          "symbols": [
+            {
+              "assigned": false,
+              "free": false,
+              "global": false,
+              "imported": false,
+              "local": true,
+              "name": ".format",
+              "nonlocal": false,
+              "parameter": true
+            },
+            {
+              "assigned": false,
+              "free": false,
+              "global": true,
+              "imported": false,
+              "local": false,
+              "name": "int",
+              "nonlocal": false,
+              "parameter": false
+            }
+          ]
+        },
+        {
+          "children": [],
+          "kind": "function",
+          "line": 1,
+          "name": "helper",
+          "symbols": []
+        },
+        {
+          "children": [],
+          "kind": "annotation",
+          "line": 2,
+          "name": "__annotate__",
+          "symbols": [
+            {
+              "assigned": false,
+              "free": false,
+              "global": false,
+              "imported": false,
+              "local": true,
+              "name": ".format",
+              "nonlocal": false,
+              "parameter": true
+            },
+            {
+              "assigned": false,
+              "free": false,
+              "global": true,
+              "imported": false,
+              "local": false,
+              "name": "int",
+              "nonlocal": false,
+              "parameter": false
+            }
+          ]
+        },
+        {
+          "children": [],
+          "kind": "function",
+          "line": 2,
+          "name": "target",
+          "symbols": [
+            {
+              "assigned": false,
+              "free": false,
+              "global": false,
+              "imported": false,
+              "local": true,
+              "name": "x",
+              "nonlocal": false,
+              "parameter": true
+            }
+          ]
+        }
+      ],
+      "kind": "module",
+      "line": 0,
+      "name": "top",
+      "symbols": [
+        {
+          "assigned": true,
+          "free": false,
+          "global": true,
+          "imported": false,
+          "local": true,
+          "name": "helper",
+          "nonlocal": false,
+          "parameter": false
+        },
+        {
+          "assigned": true,
+          "free": false,
+          "global": true,
+          "imported": false,
+          "local": true,
+          "name": "target",
+          "nonlocal": false,
+          "parameter": false
+        }
+      ]
+    },
+    "sha256": "a1549f0f008d47b12b61c13fc5daef99080e12f54e5a40952a2f1d072e998eb3"
+  },
+  {
+    "calls": [
+      {
+        "callee": "target",
+        "callee_kind": "Name",
+        "callee_span": {
+          "end_byte": 64,
+          "end_line": 3,
+          "start_byte": 58,
+          "start_line": 3
+        },
+        "caller": "caller",
+        "evaluation_context": "body",
+        "owner": 0,
+        "span": {
+          "end_byte": 66,
+          "end_line": 3,
+          "start_byte": 58,
+          "start_line": 3
+        }
+      }
+    ],
+    "definitions": [
+      {
+        "ambiguous": false,
+        "bases": [],
+        "declaration_only": false,
+        "decorators": [],
+        "kind": "FunctionDef",
+        "name": "caller",
+        "ordinal": 0,
+        "owner": null,
+        "qualified_name": "caller",
+        "span": {
+          "end_byte": 66,
+          "end_line": 3,
+          "start_byte": 26,
+          "start_line": 2
+        }
+      }
+    ],
+    "encoding": "utf-8",
+    "imports": [
+      {
+        "owner": null,
+        "span": {
+          "end_byte": 25,
+          "end_line": 1,
+          "start_byte": 0,
+          "start_line": 1
+        },
+        "spelling": "from opaque import target"
+      }
+    ],
+    "path": "sample.py",
+    "scopes": {
+      "children": [
+        {
+          "children": [],
+          "kind": "annotation",
+          "line": 2,
+          "name": "__annotate__",
+          "symbols": [
+            {
+              "assigned": false,
+              "free": false,
+              "global": false,
+              "imported": false,
+              "local": true,
+              "name": ".format",
+              "nonlocal": false,
+              "parameter": true
+            },
+            {
+              "assigned": false,
+              "free": false,
+              "global": true,
+              "imported": false,
+              "local": false,
+              "name": "int",
+              "nonlocal": false,
+              "parameter": false
+            }
+          ]
+        },
+        {
+          "children": [],
+          "kind": "function",
+          "line": 2,
+          "name": "caller",
+          "symbols": [
+            {
+              "assigned": false,
+              "free": false,
+              "global": true,
+              "imported": false,
+              "local": false,
+              "name": "target",
+              "nonlocal": false,
+              "parameter": false
+            }
+          ]
+        }
+      ],
+      "kind": "module",
+      "line": 0,
+      "name": "top",
+      "symbols": [
+        {
+          "assigned": true,
+          "free": false,
+          "global": true,
+          "imported": false,
+          "local": true,
+          "name": "caller",
+          "nonlocal": false,
+          "parameter": false
+        },
+        {
+          "assigned": false,
+          "free": false,
+          "global": true,
+          "imported": true,
+          "local": true,
+          "name": "target",
+          "nonlocal": false,
+          "parameter": false
+        }
+      ]
+    },
+    "sha256": "00fd8a09e1fa436a69016042bdb0221928352b97fb5cd941ab1d8039aaac5cda"
+  }
+]

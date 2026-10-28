@@ -1,0 +1,166 @@
+{
+  "supported_calls": {
+    "js-import": [
+      "bridge.ts",
+      "forward",
+      "leaf.js",
+      "jsLeaf"
+    ],
+    "lexical-function": [
+      "entry.tsx",
+      "run",
+      "entry.tsx",
+      "local"
+    ],
+    "const-arrow": [
+      "entry.tsx",
+      "run",
+      "entry.tsx",
+      "arrow"
+    ],
+    "alias-barrel": [
+      "entry.tsx",
+      "run",
+      "bridge.ts",
+      "forward"
+    ],
+    "js-arrow-import": [
+      "entry.tsx",
+      "run",
+      "leaf.js",
+      "jsArrow"
+    ],
+    "overload-body": [
+      "entry.tsx",
+      "run",
+      "bridge.ts",
+      "overload"
+    ],
+    "jsx-to-ts": [
+      "component.jsx",
+      "jsxCaller",
+      "bridge.ts",
+      "forward"
+    ],
+    "mjs-local": [
+      "esm.mjs",
+      "moduleCaller",
+      "esm.mjs",
+      "moduleLeaf"
+    ],
+    "mts-local": [
+      "esm-types.mts",
+      "moduleCaller",
+      "esm-types.mts",
+      "moduleArrow"
+    ],
+    "cjs-local": [
+      "common.cjs",
+      "cjsCaller",
+      "common.cjs",
+      "cjsLeaf"
+    ],
+    "cts-local": [
+      "common-types.cts",
+      "ctsCaller",
+      "common-types.cts",
+      "ctsLeaf"
+    ],
+    "unicode-byte-span": [
+      "unicode.ts",
+      "unicodeCaller",
+      "unicode.ts",
+      "\u03c0"
+    ],
+    "tagged-template": [
+      "invocation.ts",
+      "taggedCaller",
+      "invocation.ts",
+      "tag"
+    ]
+  },
+  "noncanonical_sites": [
+    "reassigned-function",
+    "mutable-binding",
+    "parameter",
+    "any",
+    "shadowed-name",
+    "eval",
+    "eval-affected",
+    "receiver",
+    "computed",
+    "error-recovery",
+    "declaration-only",
+    "shadowed-require",
+    "script-global-write",
+    "constructor",
+    "target-throw",
+    "destructured-property-write",
+    "destructured-shorthand-write",
+    "iteration-write",
+    "update-write",
+    "default-argument",
+    "class-field",
+    "redeclaration-initializer",
+    "namespace-mutation",
+    "for-var-redeclaration",
+    "for-destructured-var-redeclaration",
+    "var-redeclaration-assignment",
+    "cjs-inter-module"
+  ],
+  "non_call_decoys": [
+    "jsx-callback",
+    "jsx-component"
+  ],
+  "intent": "Independent source labels precede compiler queries. Supported calls still require immutable binding, exact body and caller evidence; negative files deliberately contain type errors.",
+  "target_bodies": {
+    "leaf.js::jsLeaf": [
+      59,
+      80
+    ],
+    "leaf.js::jsArrow": [
+      144,
+      153
+    ],
+    "bridge.ts::forward": [
+      62,
+      83
+    ],
+    "bridge.ts::overload": [
+      249,
+      266
+    ],
+    "entry.tsx::local": [
+      93,
+      106
+    ],
+    "entry.tsx::arrow": [
+      127,
+      128
+    ],
+    "esm.mjs::moduleLeaf": [
+      29,
+      42
+    ],
+    "esm-types.mts::moduleArrow": [
+      33,
+      34
+    ],
+    "common.cjs::cjsLeaf": [
+      19,
+      32
+    ],
+    "common-types.cts::ctsLeaf": [
+      19,
+      32
+    ],
+    "unicode.ts::\u03c0": [
+      14,
+      27
+    ],
+    "invocation.ts::tag": [
+      42,
+      62
+    ]
+  }
+}

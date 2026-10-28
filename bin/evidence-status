@@ -1,0 +1,84 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Scaffolded from ruby-cli-scaffold's single-command template.
+# Dependency installation is explicit: observation never starts a network install.
+%w[tty-option tty-prompt tty-command].each do |name|
+  require name
+rescue LoadError
+  abort "Missing #{name}. Install dependencies first: gem install tty-option tty-prompt tty-command"
+end
+require_relative 'evidence-status.d/status'
+
+class StatusCommand
+  include TTY::Option
+  usage do
+    program 'evidence-status'
+    no_command
+    desc 'Observe declared probes against source content, plan and tool identities.'
+    example 'bin/evidence-status --repo . --plan plan.md --config probes.json --out /tmp/status.lemmaspec'
+    example 'bin/evidence-status --repo . --plan plan.md --config probes.json --identity'
+    example 'bin/evidence-status --repo . --plan plan.md --config probes.json --execute --out /tmp/status.lemmaspec'
+  end
+  option(:repo) { long '--repo PATH'; desc 'Repository to observe (required)' }
+  option(:plan) { long '--plan PATH'; desc 'Plan whose bytes bind these observations (required)' }
+  option(:config) { long '--config PATH'; desc 'Local JSON probe declarations (required)' }
+  option(:out) { long '--out PATH'; desc 'Write status evidence here; omit for stdout' }
+  option(:report) { long '--report PATH'; desc 'Write a local JSON record of probe results' }
+  flag(:execute) { long '--execute'; desc 'Execute declared gates; absent means attestation/observation only' }
+  flag(:identity) { long '--identity'; desc 'Print current target identity without running probes' }
+  flag(:help) { short '-h'; long '--help'; desc 'Show help' }
+end
+
+command = StatusCommand.new
+command.parse
+if command.params[:help]
+  puts command.help
+  exit 0
+end
+if ARGV.empty? && !$stdin.tty?
+  warn command.help
+  exit 2
+end
+options = command.params.to_h
+if ARGV.empty? && $stdin.tty?
+  prompt = TTY::Prompt.new
+  %i[repo plan config].each { |name| options[name] = prompt.ask("#{name.to_s.capitalize} path:", required: true) }
+end
+begin
+  %i[repo plan config].each { |name| raise ArgumentError, "--#{name} is required" unless options[name] }
+  status = EvidenceStatus.new(repo: options[:repo], plan: options[:plan], config: options[:config], execute: !!options[:execute])
+  if options[:identity]
+    puts status.identity
+    exit 0
+  end
+  # Check all output destinations before writing either record.
+  paths = %i[out report].filter_map do |key|
+    next unless options[key]
+    path = File.expand_path(options[key])
+    options[key] = File.join(File.realpath(File.dirname(path)), File.basename(path))
+  end
+  inputs = [options[:plan], options[:config]].map { |path| File.realpath(path) }
+  raise ArgumentError, 'output paths must differ' unless paths.uniq.length == paths.length
+  repo = File.realpath(options[:repo])
+  paths.each do |absolute|
+    raise ArgumentError, 'output must not overwrite an input' if inputs.include?(absolute)
+    if absolute == repo || absolute.start_with?("#{repo}/")
+      relative = Pathname.new(absolute).relative_path_from(Pathname.new(repo)).to_s
+      ignored = TTY::Command.new(printer: :null).run!('git', '-C', repo, 'check-ignore', '--quiet', '--', relative).success?
+      raise ArgumentError, 'outputs inside the repository must be git-ignored; private evidence must stay local' unless ignored
+    end
+    raise ArgumentError, 'output must not follow a symlink' if File.symlink?(absolute)
+  end
+  result = status.run
+  if options[:out]
+    File.write(options[:out], result['evidence'])
+  else
+    puts result['evidence']
+  end
+  File.write(options[:report], JSON.pretty_generate(result) + "\n") if options[:report]
+  exit(result['probes'].all? { |probe| probe['passed'] } ? 0 : 1)
+rescue StandardError => error
+  warn "evidence-status: #{error.message}"
+  exit 2
+end

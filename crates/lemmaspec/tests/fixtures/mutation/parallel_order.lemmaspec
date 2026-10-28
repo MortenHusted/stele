@@ -1,0 +1,78 @@
+// Mutation fixture with many mutants across several policies, covering every
+// mutant status. parallel_order.json is its report from the sequential
+// evaluator in lemmaspec 0.4.0; parallel evaluation must reproduce it exactly.
+
+spec parallel_order {
+  relation child { args: [symbol] }
+  relation enrolled { args: [symbol] }
+  relation absent { args: [symbol] }
+  relation seat { args: [symbol] }
+  relation listed { args: [symbol] }
+  relation rider { args: [symbol] }
+  relation seated { args: [symbol] }
+  relation stranded { args: [symbol] }
+
+  fact child_ada { relation: child args: [ada] }
+  fact child_bo { relation: child args: [bo] }
+  fact child_cy { relation: child args: [cy] }
+  fact child_di { relation: child args: [di] }
+  fact child_ed { relation: child args: [ed] }
+  fact child_fay { relation: child args: [fay] }
+
+  fact enrolled_ada { relation: enrolled args: [ada] }
+  fact enrolled_bo { relation: enrolled args: [bo] }
+  fact enrolled_cy { relation: enrolled args: [cy] }
+  fact enrolled_di { relation: enrolled args: [di] }
+  fact enrolled_guest { relation: enrolled args: [guest] }
+
+  fact absent_di { relation: absent args: [di] }
+
+  fact seat_ada { relation: seat args: [ada] }
+  fact seat_bo { relation: seat args: [bo] }
+  fact seat_cy { relation: seat args: [cy] }
+  fact seat_ed { relation: seat args: [ed] }
+  fact seat_fay { relation: seat args: [fay] }
+
+  rule list_children {
+    derive: "listed(Child)"
+    when: ["child(Child)"]
+  }
+  rule enrolled_children_ride {
+    derive: "rider(Child)"
+    when: {
+      is_child: "child(Child)"
+      is_enrolled: "enrolled(Child)"
+      is_present: "!absent(Child)"
+    }
+  }
+  rule riders_with_seats_are_seated {
+    derive: "seated(Child)"
+    when: ["rider(Child)", "seat(Child)"]
+  }
+  rule riders_without_seats_are_stranded {
+    derive: "stranded(Child)"
+    when: ["rider(Child)", "!seat(Child)"]
+  }
+
+  expect every_child_listed { query: "listed(Child)" count: 6 }
+  expect three_riders { query: "rider(Child)" count: 3 }
+  expect nobody_stranded { query: "stranded(Child)" count: 0 }
+
+  mutation rules_matter {
+    operator: drop_rule
+    except: [riders_without_seats_are_stranded]
+  }
+  mutation conditions_matter {
+    operator: drop_condition
+    except: ["enrolled_children_ride.is_present"]
+  }
+  mutation seats_prevent_stranding {
+    operator: drop_fact
+    relation: seat
+    must_fail: nobody_stranded
+  }
+  mutation enrolment_drives_riders {
+    operator: drop_fact
+    relation: enrolled
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "contract": "codemap-linux-live-memory-controls/v1",
+  "expected": {
+    "owned_unprivileged_stopped_process": "accept",
+    "same_kernel_vdso_bytes": "accept",
+    "wrong_kernel_vdso_digest": "reject",
+    "wrong_kernel_vdso_size": "reject",
+    "fake_kernel_mapping_label": "reject",
+    "backing_file_unchanged_private_text_modified": "reject",
+    "file_backed_writable_executable_mapping": "reject",
+    "anonymous_execute_under_deny_policy": "reject",
+    "executable_mapping_outside_pinned_elf_loads": "reject",
+    "memory_report_short_read": "reject",
+    "memory_report_unreadable": "reject",
+    "process_exited_before_capture": "reject",
+    "process_replaced_between_queries": "reject",
+    "wrong_parent_process": "reject",
+    "thread_not_kernel_confirmed_stopped": "reject",
+    "mapping_drift_while_inspecting": "reject",
+    "failure_resumes_or_reaps_owned_process": "accept",
+    "unsupported_host_or_kernel_witness": "reject"
+  }
+}

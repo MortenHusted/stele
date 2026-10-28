@@ -1,0 +1,8 @@
+
+running 1 test
+test ignored ... ignored
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running tests/probe.rs (target/debug/deps/probe-fd9b57a38729d9ee)

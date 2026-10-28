@@ -1,0 +1,20 @@
+{
+  "canonical_edges": [
+    ["php:lib/callee.php#Demo::Service::run", "php:lib/callee.php#Demo::Base::work"],
+    ["php:lib/callee.php#Demo::Service::viaTrait", "php:lib/callee.php#Demo::Taggable::tag"],
+    ["php:lib/callee.php#Demo::Service::viaParent", "php:lib/callee.php#Demo::Base::work"],
+    ["php:lib/callee.php#Demo::Service::viaConstSelf", "php:lib/callee.php#Demo::Base::spawn"],
+    ["php:lib/callee.php#Demo::Recursive::descend", "php:lib/callee.php#Demo::Recursive::descend"],
+    ["php:lib/caller.php#Demo::run", "php:lib/callee.php#Demo::Helper::make"],
+    ["php:lib/caller.php#Demo::run", "php:lib/other.php#Other::Helper::make"],
+    ["php:lib/typed.php#Demo::Typed::__construct", "php:lib/callee.php#Demo::Helper::make"],
+    ["php:lib/typed.php#Demo::Typed::viaProperty", "php:lib/callee.php#Demo::Helper::assist"],
+    ["php:lib/typed.php#Demo::Typed::viaPromoted", "php:lib/typed.php#Demo::Renderer::render"],
+    ["php:lib/typed.php#Demo::Typed::viaParameter", "php:lib/callee.php#Demo::Helper::assist"],
+    ["php:lib/typed.php#Demo::Typed::viaNullable", "php:lib/callee.php#Demo::Helper::assist"]
+  ],
+  "external_observations": ["call_user_func", "file_put_contents"],
+  "standard_library_observations": [],
+  "candidate_observations": ["new self()", "new static()", "new Recursive()", "$h->assist()", "Helper::assist()", "$h->$m()", "$this->either->assist()", "$h->descend(1)"],
+  "unmapped_observations": ["$x->assist()"]
+}

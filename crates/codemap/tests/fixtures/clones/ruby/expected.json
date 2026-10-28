@@ -1,0 +1,36 @@
+{
+  "policy": "cc-sloc-clones-form/ruby/1",
+  "notes": [
+    "Hand-derived before the detector ran, from the normalisation in crates/codemap/src/ruby_lex.rs: names are $id, literals are $lit (a string is one token: its opening quote), keywords and punctuation stay, comments and newlines leave no token. A group's occurrences are the method's own lines because every twin sits between different neighbours in the two files, so no token run reaches past the method: before `def summarise` a.rb has `$lit` (\"set\") and b.rb `end`; after its `end` a.rb has `def` and b.rb `$id` (Marker); before `def tally` a.rb has `end` and b.rb `$lit` (3); after its `end` a.rb has `$id` (NEAR) and b.rb `def`.",
+    "summarise: verbatim in both files (Type-1). 17 lines each; one comment-only line and one blank line inside, so 15 source lines; 56 tokens.",
+    "tally / count_up: same shape, every identifier and literal changed (Type-2). 16 lines, all source; 58 tokens (the raise line adds eight so the run is not at the threshold).",
+    "near_tokens_a / near_tokens_b: `def $id ( $id` then `)` against `,`; the shared `$id = $lit $id . $id do | $id |` inside is nine tokens: under the 50-token threshold, no group.",
+    "wide: verbatim in both files and over 50 tokens (thirty literals and their commas), but four lines: under the 5-line threshold, no group. Its neighbours differ (`end` against `)` before, `def` against `$id` after) so no run carries it to five."
+  ],
+  "groups": [
+    {
+      "name": "summarise",
+      "occurrences": [
+        { "rel_path": "lib/a.rb", "start_line": 8, "end_line": 24, "sloc": 15 },
+        { "rel_path": "lib/b.rb", "start_line": 9, "end_line": 25, "sloc": 15 }
+      ],
+      "lines": 17
+    },
+    {
+      "name": "tally",
+      "occurrences": [
+        { "rel_path": "lib/a.rb", "start_line": 35, "end_line": 50, "sloc": 16 },
+        { "rel_path": "lib/b.rb", "start_line": 36, "end_line": 51, "sloc": 16 }
+      ],
+      "lines": 16
+    }
+  ],
+  "file_clone_sloc": {
+    "lib/a.rb": 31,
+    "lib/b.rb": 31
+  },
+  "callable_groups": {
+    "lib/a.rb": { "summarise": "summarise", "other_a": null, "wide": null, "tally": "tally", "near_tokens_a": null },
+    "lib/b.rb": { "lead": null, "summarise": "summarise", "wide": null, "count_up": "tally", "near_tokens_b": null }
+  }
+}

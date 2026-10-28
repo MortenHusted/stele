@@ -1,0 +1,17 @@
+{
+  "canonical_edges": [
+    ["go:cmd/app/main.go#main::main", "go:internal/svc/svc.go#svc::New"],
+    ["go:cmd/app/main.go#main::main", "go:internal/svc/svc.go#svc::Drive"],
+    ["go:internal/svc/svc.go#svc::New", "go:pkg/model/model.go#model::Build"],
+    ["go:internal/svc/svc.go#svc::Service::Run", "go:internal/svc/svc.go#svc::Base::Name"],
+    ["go:internal/svc/svc.go#svc::Service::Run", "go:pkg/model/model.go#model::Entity::Key"],
+    ["go:internal/svc/svc.go#svc::Service::Run", "go:internal/svc/svc.go#svc::Service::descend"],
+    ["go:internal/svc/svc.go#svc::Service::descend", "go:internal/svc/svc.go#svc::Service::descend"],
+    ["go:internal/svc/svc.go#svc::Drive", "go:internal/svc/svc.go#svc::Runner::Run"]
+  ],
+  "external_observations": ["dep.Do"],
+  "standard_library_observations": ["fmt.Println", "len", "os.Exit"],
+  "candidate_observations": ["New"],
+  "ambiguous_observations": [],
+  "unmapped_observations": ["ID", "f", "model.ID", "s.helper"]
+}

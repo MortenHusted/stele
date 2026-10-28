@@ -1,0 +1,129 @@
+// Stele plans: a typed plan puts the intents and decisions beside an
+// ordered set of changes, checked against the catalog and the code.
+// `stele plan check plans/stele-plans.stele` checks it and says what is next.
+plan stele_plans {
+  use "../intent/catalog.stele" as intent
+
+  decision typed_plans_not_markdown {
+    governs: [intent.plans_trace_to_intent]
+    text: "A plan is a typed, linked spec, not a Markdown document."
+    rejected: "Projecting Markdown plans into evidence: requirements stay bare labels with no intents or decisions, and the projector rejected every recent real plan it was given."
+  }
+  decision catalog_and_plans {
+    governs: [intent.plans_trace_to_intent]
+    text: "Intents, definitions, exceptions and channels live in the project's catalog; each plan imports it and holds its own decisions and changes."
+    rejected: "Intents inside each plan: nothing would link an intent across plans."
+  }
+  decision declared_done {
+    governs: [intent.plan_shows_what_is_next]
+    text: "A change is done when its state says so, recorded as reviewer-declared, until examples and runs back it."
+    rejected: "Order only: a plan could not say which changes are ready."
+  }
+  decision working_tree_anchors {
+    governs: [intent.plan_checked_against_code]
+    text: "Anchors are checked against the working tree, uncommitted changes included, because a plan is written beside its change."
+    rejected: "Committed code only: a plan could not be checked while its change is in progress."
+  }
+  decision impact_ends_at_the_working_tree {
+    governs: [intent.impact_lists_touched_statements]
+    text: "The change stele intent impact reads ends at the working tree, uncommitted changes included, unless a second commit is named."
+    rejected: "Commits only: a change could not be traced to its statements while it is being written."
+  }
+  decision impact_standings_at_head {
+    governs: [intent.impact_lists_touched_statements]
+    text: "stele intent impact shows each statement's standing at HEAD's commit, as stele plan check takes it."
+    rejected: "The working tree's standings: any uncommitted edit shows every mapped statement unverified, because its runs were recorded at another source."
+  }
+  decision standings_at_head {
+    governs: [intent.done_backed_by_runs]
+    text: "A plan takes the catalog's standings at HEAD's commit, because a done change is committed work."
+    rejected: "The working tree: plans are edited in dirty trees, so committed green runs would stop counting while the next change is in progress."
+  }
+
+  change read_catalogs_and_plans {
+    follows: [typed_plans_not_markdown, catalog_and_plans]
+    serves: [intent.plans_trace_to_intent]
+    creates: ["crates/stele-plan/src/load.rs", "crates/stele-plan/src/syntax.rs"]
+    state: done
+    text: "Read catalogs and plans and check every link, porting the parser and loader of the intent prototype."
+  }
+  change state_plans_as_evidence {
+    after: [read_catalogs_and_plans]
+    follows: [declared_done]
+    serves: [intent.plan_checked_against_code, intent.plan_shows_what_is_next]
+    creates: ["crates/stele-plan/src/evidence.rs"]
+    state: done
+    text: "State a plan as evidence for a shipped checker that finds broken links and missing code and answers which changes are ready."
+  }
+  change add_plan_command {
+    after: [state_plans_as_evidence]
+    follows: [working_tree_anchors]
+    serves: [intent.plan_checked_against_code, intent.exit_status_contract]
+    touches: ["rust:crates/stele/src/main.rs#main"]
+    creates: ["crates/stele/src/plan.rs"]
+    state: done
+    text: "Add stele plan check, evidence and checker."
+  }
+  change plan_stele_in_stele {
+    after: [add_plan_command]
+    serves: [intent.plans_trace_to_intent, intent.skill_matches_binary]
+    touches: [
+      "plugins/stele/skills/stele/references/plans.md",
+      "rust:crates/stele/src/agent.rs#print_intro",
+    ]
+    state: done
+    text: "Write the catalog of what Stele is for and this plan, and teach the skill and the intro to plan."
+  }
+  change back_done_with_runs {
+    after: [plan_stele_in_stele]
+    follows: [standings_at_head]
+    serves: [intent.done_backed_by_runs]
+    touches: ["rust:crates/stele-plan/src/evidence.rs#evidence", "rust:crates/stele/src/plan.rs#evidence"]
+    creates: ["rust:crates/stele-plan/src/evidence.rs#standings_facts", "rust:crates/stele-plan/src/report.rs#standings"]
+    state: done
+    text: "Bring tagged examples, the red and green run ledger and approvals over from the intent prototype."
+  }
+  change show_change_impact {
+    after: [back_done_with_runs]
+    follows: [impact_ends_at_the_working_tree, impact_standings_at_head]
+    serves: [intent.impact_lists_touched_statements, intent.skill_matches_binary]
+    touches: ["rust:crates/stele/src/intent.rs#run", "rust:crates/stele/src/intent.rs#IntentCommand", "rust:crates/stele-plan/src/report.rs#standings"]
+    creates: ["crates/stele-plan/src/impact.rs", "rust:crates/stele/src/intent.rs#show_impact"]
+    state: done
+    text: "Add stele intent impact: the statements a code change touches, read from the map, and teach it to the skill and the intro."
+  }
+  change anchor_any_file {
+    after: [plan_stele_in_stele]
+    follows: [working_tree_anchors]
+    serves: [intent.plan_checked_against_code]
+    touches: [
+      "plugins/stele/skills/stele/references/catalog.md",
+      "plugins/stele/skills/stele/references/plans.md",
+      "rust:crates/stele-plan/src/evidence.rs#anchor_facts",
+      "rust:crates/stele-plan/src/project.rs#map_facts",
+    ]
+    creates: [
+      "crates/stele-plan/tests/anchors.rs",
+      "rust:crates/stele-plan/src/evidence.rs#Code::find",
+      "rust:crates/stele-plan/src/identity.rs#Repo::working_tree",
+    ]
+    state: done
+    text: "Check anchors to files that are not source code, such as documentation and manifests."
+  }
+  change anchor_several_languages {
+    after: [plan_stele_in_stele]
+    serves: [intent.plan_checked_against_code]
+    touches: [
+      "rust:crates/stele-plan/src/impact.rs#impact",
+      "rust:crates/stele/src/intent.rs#show_impact",
+      "rust:crates/stele/src/plan.rs#Code::read",
+    ]
+    creates: [
+      "crates/stele/tests/anchors.rs",
+      "rust:crates/stele-plan/src/evidence.rs#languages",
+      "rust:crates/stele/src/plan.rs#languages",
+    ]
+    state: done
+    text: "Check the anchors of a plan whose code spans more than one language."
+  }
+}

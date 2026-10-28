@@ -1,0 +1,73 @@
+// Do the rule-card citations locate declarations, and which claims remain unverified?
+// A location is structural evidence only. No executable or semantic check is made.
+
+spec citations {
+  relation snapshot_identity {
+    args: [symbol, symbol, symbol, symbol, symbol]
+    roles: [snapshot, repository, commit, tree, policy]
+    reads: "snapshot {snapshot} pins repository {repository}, commit {commit}, tree {tree}, under {policy}"
+  }
+  relation rule_card {
+    args: [symbol, symbol, symbol]
+    roles: [rule, claim, citation]
+    reads: "{rule} declares {claim} and cites {citation}"
+  }
+  relation location_status {
+    args: [symbol, integer, symbol]
+    roles: [rule, valid, reason]
+    reads: "{rule} has declaration-containment status {valid}: {reason}"
+  }
+  relation located {
+    args: [symbol, symbol]
+    roles: [rule, definition]
+    reads: "{rule} cites lines contained by recorded declaration {definition}"
+  }
+  relation location_valid {
+    args: [symbol, integer]
+    roles: [rule, valid]
+    reads: "{rule}: location_valid={valid}; declaration containment only"
+  }
+  relation invalid_location {
+    args: [symbol]
+    roles: [rule]
+    reads: "{rule} does not locate a recorded declaration"
+  }
+  relation semantic_support_unverified {
+    args: [symbol]
+    roles: [rule]
+    reads: "{rule}: semantic_support_unverified; executable classification unsupported"
+  }
+
+  rule record_each_location_result {
+    derive: "location_valid(Rule, Valid)"
+    when: ["rule_card(Rule, _, _)", "location_status(Rule, Valid, _)"]
+  }
+  rule report_invalid_locations {
+    derive: "invalid_location(Rule)"
+    when: ["location_valid(Rule, 0)"]
+  }
+  rule every_claim_remains_unverified {
+    derive: "semantic_support_unverified(Rule)"
+    when: ["rule_card(Rule, _, _)"]
+  }
+
+  fact fx_card { relation: rule_card args: [valid_card, "The cap is 20", "src/sample.rs:3"] }
+  fact fx_comment { relation: rule_card args: [comment_card, "A comment proves a cap", "src/sample.rs:2"] }
+  fact fx_bad { relation: rule_card args: [invalid_card, "The cap is 5", "absent.rs:1"] }
+  fact fx_missing { relation: rule_card args: [missing_status, "No status was supplied", "src/sample.rs:1"] }
+  fact fx_valid { relation: location_status args: [valid_card, 1, contained] }
+  fact fx_comment_status { relation: location_status args: [comment_card, 1, contained] }
+  fact fx_invalid { relation: location_status args: [invalid_card, 0, no_definition] }
+  fact fx_orphan { relation: location_status args: [orphan, 0, no_definition] }
+  fact fx_located { relation: located args: [valid_card, sample_function] }
+
+  expect fx_all_claims_unverified { query: "semantic_support_unverified(R)" count: 4 }
+  expect fx_location_results { query: "location_valid(R, V)" count: 3 }
+  expect fx_valid { query: "location_valid(valid_card, 1)" count: 1 }
+  expect fx_comment_only_locates { query: "location_valid(comment_card, 1)" count: 1 }
+  expect fx_invalid { query: "invalid_location(invalid_card)" count: 1 }
+  expect fx_only_one_invalid { query: "invalid_location(R)" count: 1 }
+
+  mutation every_rule_is_load_bearing { operator: drop_rule }
+  mutation every_condition_is_load_bearing { operator: drop_condition }
+}

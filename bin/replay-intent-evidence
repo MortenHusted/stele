@@ -1,0 +1,92 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'rbconfig'
+def setup_error(message)
+  warn message
+  exit 2
+end
+
+if RbConfig::CONFIG['prefix'].start_with?('/System/Library/Frameworks/Ruby.framework')
+  candidates = ['mise', '/opt/homebrew/bin/mise', File.expand_path('~/.local/bin/mise')].map do |mise|
+    begin
+      IO.popen([mise, 'which', 'ruby'], err: File::NULL) { |io| io.read }.strip
+    rescue Errno::ENOENT
+      nil
+    end
+  end
+  candidates << File.expand_path('~/.local/share/mise/installs/ruby/latest/bin/ruby')
+  mise_ruby = candidates.find { |path| path && !path.empty? && File.executable?(path) }
+  setup_error 'replay-intent-evidence: prepare a mise Ruby before running this command' unless mise_ruby
+  exec mise_ruby, File.expand_path(__FILE__), *ARGV
+end
+
+def install_and_require(*gem_names)
+  missing = gem_names.reject do |name|
+    require name
+    true
+  rescue LoadError
+    false
+  end
+  return if missing.empty?
+
+  setup_error "Missing gems: #{missing.join(', ')}; prepare dependencies before scripted use" unless ARGV.empty? && $stdin.tty?
+  puts "Missing gems: #{missing.join(', ')}. Would you like to install them? (y/n)"
+  setup_error "#{missing.join(', ')} required for this script. Exiting." unless $stdin.gets.to_s.chomp.downcase == "y"
+  system("gem", "install", *missing) or setup_error('gem install failed')
+  Gem.clear_paths
+  missing.each { |name| require name }
+end
+
+install_and_require "tty-option", "tty-prompt", "tty-command"
+
+require_relative 'replay-intent-evidence.d/replay'
+
+class IntentReplayCommand
+  include TTY::Option
+  usage do
+    program 'replay-intent-evidence'
+    no_command
+    desc 'Rebuild a recorder from a fresh curated root, execute owned Cargo tests under deliberate temporary mutations, and commit self-contained evidence. Never publishes or approves terms.'
+    example 'bin/replay-intent-evidence --repo /local/fresh-candidate --out /private/new-replay --deny-list /private/identifiers.txt --scanner-archive /local/gitleaks.tar.gz /local/unpacked-release'
+  end
+  %i[repo out deny_list scanner_archive].each do |key|
+    option(key) { long "--#{key.to_s.tr('_', '-')} PATH"; desc "#{key.to_s.tr('_', ' ').capitalize} (required)" }
+  end
+  argument(:artifacts) { arity zero_or_more; desc 'Additional explicit unpacked release payloads; rebuilt recorder payload is always reviewed' }
+  flag(:single_commit) { long '--single-commit'; desc 'Record explicit source baselines and replace the temporary root with one self-contained public commit' }
+  flag(:help) { short '-h'; long '--help'; desc 'Show help; exits 0 verified and scans clean, 1 findings, 2 incomplete' }
+end
+
+command = IntentReplayCommand.new
+command.parse
+unless command.params.valid?
+  warn command.help
+  exit 2
+end
+if command.params[:help]
+  puts command.help
+  exit 0
+end
+if ARGV.empty? && !$stdin.tty?
+  warn command.help
+  exit 2
+end
+options = command.params.to_h
+keys = %i[repo out deny_list scanner_archive]
+if ARGV.empty? && $stdin.tty?
+  prompt = TTY::Prompt.new
+  keys.each { |key| options[key] = prompt.ask("#{key}:", required: true) }
+end
+begin
+  keys.each { |key| raise ArgumentError, "--#{key.to_s.tr('_', '-')} is required" unless options[key] }
+  result = IntentReplay.new.run(**options.slice(*keys), artifacts: Array(options[:artifacts]), single_commit: !!options[:single_commit])
+  puts JSON.generate(result)
+  exit(result.fetch('scans_clean') ? 0 : 1)
+rescue ArgumentError => error
+  warn "replay-intent-evidence: #{error.message}"
+  exit 2
+rescue StandardError => error
+  warn "replay-intent-evidence: incomplete replay (#{error.class}); no approved evidence"
+  exit 2
+end

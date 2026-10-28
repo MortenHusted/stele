@@ -1,0 +1,137 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'rbconfig'
+if RbConfig::CONFIG['prefix'].start_with?('/System/Library/Frameworks/Ruby.framework')
+  candidates = ['mise', '/opt/homebrew/bin/mise', File.expand_path('~/.local/bin/mise')].map do |mise|
+    begin
+      IO.popen([mise, 'which', 'ruby'], err: File::NULL) { |io| io.read }.strip
+    rescue Errno::ENOENT
+      nil
+    end
+  end
+  candidates << File.expand_path('~/.local/share/mise/installs/ruby/latest/bin/ruby')
+  mise_ruby = candidates.find { |path| path && !path.empty? && File.executable?(path) }
+  abort 'python-benchmark: prepare a mise Ruby before running this command' unless mise_ruby
+  exec mise_ruby, File.expand_path(__FILE__), *ARGV
+end
+
+def install_and_require(*gem_names)
+  missing = gem_names.reject do |name|
+    require name
+    true
+  rescue LoadError
+    false
+  end
+  return if missing.empty?
+
+  abort "Missing gems: #{missing.join(', ')}; prepare dependencies before scripted use" unless ARGV.empty? && $stdin.tty?
+  puts "Missing gems: #{missing.join(', ')}. Would you like to install them? (y/n)"
+  abort "#{missing.join(', ')} required for this script. Exiting." unless $stdin.gets.to_s.chomp.downcase == "y"
+  system("gem", "install", *missing) or abort("✗ gem install failed")
+  Gem.clear_paths
+  missing.each { |name| require name }
+end
+
+install_and_require "tty-option", "tty-prompt", "tty-command"
+
+require_relative 'python-benchmark.d/score'
+require_relative 'python-benchmark.d/bridge'
+require_relative 'python-benchmark.d/runner'
+
+class PythonBenchmarkCommand
+  include TTY::Option
+  usage do
+    program 'python-benchmark'
+    no_command
+    desc 'Verify a prepared Python corpus bridge, extract repeat/clone snapshots and score frozen source labels.'
+    example 'bin/python-benchmark --original REPO --repo PREPARED --clone CLONE --config CONFIG --stele BIN --oracle ORACLE --oracle-sha256 SHA --anchors ANCHORS --anchors-sha256 SHA --bridge MANIFEST --bridge-sha256 SHA --query QUERY --query-sha256 SHA --out-dir NEW_DIR'
+  end
+  %i[original repo clone config stele oracle oracle_sha256 anchors anchors_sha256 bridge bridge_sha256 query query_sha256 out_dir].each do |name|
+    option(name) { long "--#{name.to_s.tr('_', '-')} VALUE"; desc name.to_s.tr('_', ' ').capitalize }
+  end
+  flag(:help) { short '-h'; long '--help'; desc 'Show help' }
+end
+
+command = PythonBenchmarkCommand.new
+command.parse
+if command.params[:help]
+  puts command.help
+  exit 0
+end
+if ARGV.empty? && !$stdin.tty?
+  warn command.help
+  exit 2
+end
+options = command.params.to_h
+required = %i[original repo clone config stele oracle oracle_sha256 anchors anchors_sha256 bridge bridge_sha256 query query_sha256 out_dir]
+if ARGV.empty? && $stdin.tty?
+  prompt = TTY::Prompt.new
+  required.each { |key| options[key] = prompt.ask("#{key}:", required: true) }
+end
+begin
+  required.each { |key| raise ArgumentError, "--#{key.to_s.tr('_', '-')} is required" unless options[key] }
+  roots = %i[original repo clone].to_h { |key| [key, File.realpath(options[key])] }
+  output = File.expand_path(options[:out_dir])
+  output = File.join(File.realpath(File.dirname(output)), File.basename(output))
+  raise ArgumentError, 'output must stay outside every analyzed repository' if roots.values.any? { |repo| output == repo || output.start_with?("#{repo}/") }
+  runner = PythonBenchmarkRunner.new(File.dirname(output))
+  input_keys = %i[config oracle anchors bridge query]
+  inputs = input_keys.to_h { |key| [key, [File.realpath(options[key]), File.binread(options[key])]] }
+  query_bytes = inputs.fetch(:query).last
+  raise ArgumentError, 'native query digest mismatch' unless /\A[0-9a-f]{64}\z/.match?(options[:query_sha256]) && Digest::SHA256.hexdigest(query_bytes) == options[:query_sha256]
+  query = JSON.parse(query_bytes)
+  config = JSON.parse(inputs.fetch(:config).last)
+  raise ArgumentError, 'native sources/declarations/package profile differ from frozen query' unless config.fetch('native_sources') == query.fetch('files').map { |file| file.fetch('path') }.select { |path| path.end_with?('.py') }.sort && config.fetch('declarations') == query.fetch('files').map { |file| file.fetch('path') }.select { |path| path.end_with?('.pyi') }.sort && config.fetch('package_profile') == query.fetch('package_profile')
+  scorer = PythonBenchmarkScore.new(oracle: inputs[:oracle].first, oracle_sha256: options[:oracle_sha256], anchors: inputs[:anchors].first, anchors_sha256: options[:anchors_sha256])
+  bridge = PythonBenchmarkBridge.new(path: inputs[:bridge].first, sha256: options[:bridge_sha256], runner: runner)
+  bridge.verify(original: roots[:original], prepared: roots[:repo], clone: roots[:clone], scorer: scorer, query: query)
+  binary = File.realpath(options[:stele])
+  raise ArgumentError, 'stele must be executable' unless File.executable?(binary)
+  binary_pin = Digest::SHA256.file(binary).hexdigest
+  Dir.mkdir(output)
+  # Refusal is a required proof, not a successful partial snapshot.
+  rejected = false
+  begin
+    runner.run(binary, 'code', 'extract', '--path', roots[:original], '--language', 'python', '--calls', 'required', '--python-native', inputs[:config].first, '--out', File.join(output, 'original-must-refuse.json'))
+  rescue TTY::Command::ExitError
+    rejected = true
+  end
+  raise ArgumentError, 'original malformed source tree must refuse extraction' unless rejected && !File.exist?(File.join(output, 'original-must-refuse.json'))
+  snapshots = [roots[:repo], roots[:repo], roots[:clone]].each_with_index.map do |repo, index|
+    path = File.join(output, "snapshot-#{index}.json")
+    runner.run(binary, 'code', 'extract', '--path', repo, '--language', 'python', '--calls', 'required', '--python-native', inputs[:config].first, '--out', path)
+    bytes = File.binread(path)
+    runner.run(binary, 'code', 'validate', '--file', path)
+    raise ArgumentError, 'snapshot changed during validation' unless File.binread(path) == bytes
+    scorer.score(JSON.parse(bytes), bridge: bridge.manifest)
+    bytes
+  end
+  raise ArgumentError, 'repeat or equivalent-checkout bytes differ' unless snapshots.uniq.length == 1
+  changed = JSON.parse(inputs[:config].last)
+  hashes = changed.fetch('parser').fetch('inputs').fetch('files')
+  raise ArgumentError, 'parser configuration must declare pinned files for drift proof' if hashes.empty?
+  hashes[hashes.keys.sort.first] = '0' * 64
+  changed_path = File.join(output, 'changed-config.json')
+  File.open(changed_path, File::WRONLY | File::CREAT | File::EXCL) { |file| file.write(JSON.generate(changed)) }
+  rejected = false
+  begin
+    runner.run(binary, 'code', 'extract', '--path', roots[:repo], '--language', 'python', '--calls', 'required', '--python-native', changed_path, '--out', File.join(output, 'drift-must-refuse.json'))
+  rescue TTY::Command::ExitError
+    rejected = true
+  end
+  raise ArgumentError, 'changed declared parser input must refuse extraction' unless rejected && !File.exist?(File.join(output, 'drift-must-refuse.json'))
+  bridge.verify(original: roots[:original], prepared: roots[:repo], clone: roots[:clone], scorer: scorer, query: query)
+  raise ArgumentError, 'benchmark inputs changed during extraction' unless inputs.all? { |_key, (path, bytes)| File.binread(path) == bytes }
+  raise ArgumentError, 'extractor executable changed during benchmark' unless Digest::SHA256.file(binary).hexdigest == binary_pin
+  report = scorer.score(JSON.parse(snapshots.first), bridge: bridge.manifest)
+  report.merge!('snapshot_sha256' => Digest::SHA256.hexdigest(snapshots.first), 'codemap_sha256' => binary_pin,
+                'byte_identical_repeat_and_clone' => true, 'original_tree_refused' => true, 'declared_input_drift_refused' => true)
+  File.open(File.join(output, 'report.json'), File::WRONLY | File::CREAT | File::EXCL) { |file| file.write(JSON.pretty_generate(report) + "\n") }
+  puts "Frozen canonical Python oracle gates: #{report['passed'] ? 'PASS' : 'FAIL'}"
+  exit(report['passed'] ? 0 : 1)
+rescue StandardError => error
+  runner.record_failure(error) if runner && !error.is_a?(TTY::Command::ExitError)
+  warn "python-benchmark: #{error.class}; benchmark refused"
+  exit 2
+end

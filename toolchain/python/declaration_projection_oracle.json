@@ -1,0 +1,20 @@
+{
+  "contract": "codemap-python-declaration-projection-oracle/1",
+  "source_case": "stub_setup_calls_are_declarations",
+  "declarations": ["opaque.pyi"],
+  "expected_declaration_names": ["helper", "target"],
+  "expected_node_kinds": ["file", "module"],
+  "expected_call_sites": [
+    {
+      "path": "opaque.pyi",
+      "span": {"start_byte": 45, "end_byte": 53, "start_line": 2, "end_line": 2},
+      "callee_span": {"start_byte": 45, "end_byte": 51, "start_line": 2, "end_line": 2},
+      "owner": 1,
+      "caller": null,
+      "evaluation_context": "definition_setup",
+      "category": "Unsupported"
+    }
+  ],
+  "expected_call_edges": [],
+  "source_only_accepts_declarations": false
+}

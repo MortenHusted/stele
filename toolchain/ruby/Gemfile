@@ -1,0 +1,2 @@
+source "https://rubygems.org"
+gem "ruby-lsp", "0.26.10"

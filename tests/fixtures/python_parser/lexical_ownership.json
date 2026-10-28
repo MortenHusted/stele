@@ -1,0 +1,17 @@
+{
+  "contract": "independent-python-lexical-fixture/v1",
+  "source": "@decorate()\nclass Outer(Base, metaclass=Meta):\n    import pkg\n    @method_decorate()\n    async def method(self, value=default()):\n        def duplicate():\n            pass\n        async def duplicate():\n            pass\n        class duplicate:\n            pass\n        def nest():\n            def duplicate():\n                pass\n            return duplicate()\n        return target()\ndef Outer():\n    pass\n",
+  "definitions": [
+    {"name": "Outer", "kind": "ClassDef", "owner": null, "ordinal": 0, "ambiguous": true, "decorators": ["decorate()"], "bases": ["Base"]},
+    {"name": "method", "kind": "AsyncFunctionDef", "owner": 0, "ordinal": 0, "ambiguous": false, "decorators": ["method_decorate()"], "bases": []},
+    {"name": "duplicate", "kind": "FunctionDef", "owner": 1, "ordinal": 0, "ambiguous": true, "decorators": [], "bases": []},
+    {"name": "duplicate", "kind": "AsyncFunctionDef", "owner": 1, "ordinal": 1, "ambiguous": true, "decorators": [], "bases": []},
+    {"name": "duplicate", "kind": "ClassDef", "owner": 1, "ordinal": 2, "ambiguous": true, "decorators": [], "bases": []},
+    {"name": "nest", "kind": "FunctionDef", "owner": 1, "ordinal": 0, "ambiguous": false, "decorators": [], "bases": []},
+    {"name": "duplicate", "kind": "FunctionDef", "owner": 5, "ordinal": 0, "ambiguous": false, "decorators": [], "bases": []},
+    {"name": "Outer", "kind": "FunctionDef", "owner": null, "ordinal": 1, "ambiguous": true, "decorators": [], "bases": []}
+  ],
+  "call_owners": {"decorate": 0, "method_decorate": 1, "default": 1, "duplicate": 5, "target": 1},
+  "import_owners": {"import pkg": 0},
+  "policy": "Lexical owners describe AST containment; existing evaluation caller/context remains separate. Repeated binding names are counted by actual owner across definition kinds. Unrelated leading comments must preserve these records and stable named keys. Expected spans are selected from original fixture substrings independently of parser output."
+}

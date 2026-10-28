@@ -1,0 +1,8 @@
+catalog channels {
+  // from README.md, Usage and Agents: people and coding agents both use the
+  // stele command; the crates are not published (publish = false in
+  // Cargo.toml), so they are not a channel of their own.
+  channel cli {
+    text: "The stele command, as people and coding agents run it."
+  }
+}

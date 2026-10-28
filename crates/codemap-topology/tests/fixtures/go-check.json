@@ -1,0 +1,326 @@
+{
+  "spec": "https___example_test_synthetic_topology_git",
+  "status": "incomplete",
+  "asserted": 16,
+  "derived": 5,
+  "facts": [
+    {
+      "relation": "call_census",
+      "args": [
+        "Ambiguous",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_0",
+        "snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b"
+      ],
+      "why": "call_census(Ambiguous, 0)  (conf 1.000, prov [\"call_census_0\", \"snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Candidate",
+        "1"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_1",
+        "snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b"
+      ],
+      "why": "call_census(Candidate, 1)  (conf 1.000, prov [\"call_census_1\", \"snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "ExternalCrate",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_2",
+        "snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b"
+      ],
+      "why": "call_census(ExternalCrate, 0)  (conf 1.000, prov [\"call_census_2\", \"snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Failed",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_3",
+        "snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b"
+      ],
+      "why": "call_census(Failed, 0)  (conf 1.000, prov [\"call_census_3\", \"snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Observed",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_4",
+        "snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b"
+      ],
+      "why": "call_census(Observed, 0)  (conf 1.000, prov [\"call_census_4\", \"snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Resolved",
+        "1"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_5",
+        "snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b"
+      ],
+      "why": "call_census(Resolved, 1)  (conf 1.000, prov [\"call_census_5\", \"snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "StandardLibrary",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_6",
+        "snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b"
+      ],
+      "why": "call_census(StandardLibrary, 0)  (conf 1.000, prov [\"call_census_6\", \"snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Unmapped",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_7",
+        "snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b"
+      ],
+      "why": "call_census(Unmapped, 0)  (conf 1.000, prov [\"call_census_7\", \"snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "calls",
+      "args": [
+        "go:function:cmd/demo/main.go#entry",
+        "go:function:cmd/demo/main.go#work"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "calls_0",
+        "cmd/demo/main.go:4"
+      ],
+      "why": "calls(go:function:cmd/demo/main.go#entry, go:function:cmd/demo/main.go#work)  (conf 1.000, prov [\"calls_0\", \"cmd/demo/main.go:4\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "coverage_admitted",
+      "args": [
+        "policy:entry-point/go"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "coverage_input_0",
+        "policy:observed-call-coverage/v1"
+      ],
+      "why": "coverage_admitted(policy:entry-point/go)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n  ↳ via observed_coverage_is_admitted\n    coverage_input(policy:entry-point/go, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "coverage_input",
+      "args": [
+        "policy:entry-point/go",
+        "2",
+        "500",
+        "500",
+        "1",
+        "0",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "coverage_input_0",
+        "policy:observed-call-coverage/v1"
+      ],
+      "why": "coverage_input(policy:entry-point/go, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "go:function:cmd/demo/main.go#entry",
+        "cmd/demo/main.go"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "cmd/demo/main.go:2",
+        "defines_0"
+      ],
+      "why": "defines(go:function:cmd/demo/main.go#entry, cmd/demo/main.go)  (conf 1.000, prov [\"cmd/demo/main.go:2\", \"defines_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "go:function:cmd/demo/main.go#unused",
+        "cmd/demo/main.go"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "cmd/demo/main.go:21",
+        "defines_1"
+      ],
+      "why": "defines(go:function:cmd/demo/main.go#unused, cmd/demo/main.go)  (conf 1.000, prov [\"cmd/demo/main.go:21\", \"defines_1\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "go:function:cmd/demo/main.go#work",
+        "cmd/demo/main.go"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "cmd/demo/main.go:11",
+        "defines_2"
+      ],
+      "why": "defines(go:function:cmd/demo/main.go#work, cmd/demo/main.go)  (conf 1.000, prov [\"cmd/demo/main.go:11\", \"defines_2\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "entry_point",
+      "args": [
+        "go:function:cmd/demo/main.go#entry"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "entry_point_0"
+      ],
+      "why": "entry_point(go:function:cmd/demo/main.go#entry)  (conf 1.000, prov [\"entry_point_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live",
+      "args": [
+        "go:function:cmd/demo/main.go#entry"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "entry_point_0"
+      ],
+      "why": "live(go:function:cmd/demo/main.go#entry)  (conf 1.000, prov [\"entry_point_0\"])\n  ↳ via an_entry_point_is_live\n    entry_point(go:function:cmd/demo/main.go#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live",
+      "args": [
+        "go:function:cmd/demo/main.go#work"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "calls_0",
+        "cmd/demo/main.go:4",
+        "entry_point_0"
+      ],
+      "why": "live(go:function:cmd/demo/main.go#work)  (conf 1.000, prov [\"calls_0\", \"cmd/demo/main.go:4\", \"entry_point_0\"])\n  ↳ via a_call_from_live_code_is_live\n    live(go:function:cmd/demo/main.go#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ via an_entry_point_is_live\n        entry_point(go:function:cmd/demo/main.go#entry)  (conf 1.000, prov [\"entry_point_0\"])\n          ↳ asserted (base fact)\n    calls(go:function:cmd/demo/main.go#entry, go:function:cmd/demo/main.go#work)  (conf 1.000, prov [\"calls_0\", \"cmd/demo/main.go:4\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live_total",
+      "args": [
+        "2"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [],
+      "why": "live_total(2)  (conf 1.000, prov [])\n  ↳ via live_symbols_are_counted\n    __agg:live_total:3(go:function:cmd/demo/main.go#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ via live_symbols_are_counted\n        live(go:function:cmd/demo/main.go#entry)  (conf 1.000, prov [\"entry_point_0\"])\n          ↳ via an_entry_point_is_live\n            entry_point(go:function:cmd/demo/main.go#entry)  (conf 1.000, prov [\"entry_point_0\"])\n              ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "production_file",
+      "args": [
+        "cmd/demo/main.go"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "policy:file-layout/go",
+        "production_file_0"
+      ],
+      "why": "production_file(cmd/demo/main.go)  (conf 1.000, prov [\"policy:file-layout/go\", \"production_file_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "snapshot_identity",
+      "args": [
+        "9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b",
+        "https://example.test/synthetic-topology.git",
+        "synthetic-commit",
+        "synthetic-tree",
+        "policy:entry-point/go"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b",
+        "snapshot_identity_0"
+      ],
+      "why": "snapshot_identity(9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b, https://example.test/synthetic-topology.git, synthetic-commit, synthetic-tree, policy:entry-point/go)  (conf 1.000, prov [\"snapshot:9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b\", \"snapshot_identity_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "unused_production_symbol",
+      "args": [
+        "go:function:cmd/demo/main.go#unused",
+        "policy:entry-point/go"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "cmd/demo/main.go:21",
+        "coverage_input_0",
+        "defines_1",
+        "policy:file-layout/go",
+        "policy:observed-call-coverage/v1",
+        "production_file_0"
+      ],
+      "why": "unused_production_symbol(go:function:cmd/demo/main.go#unused, policy:entry-point/go)  (conf 1.000, prov [\"cmd/demo/main.go:21\", \"coverage_input_0\", \"defines_1\", \"policy:file-layout/go\", \"policy:observed-call-coverage/v1\", \"production_file_0\"])\n  ↳ via shipped_without_observed_reach\n    coverage_admitted(policy:entry-point/go)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n      ↳ via observed_coverage_is_admitted\n        coverage_input(policy:entry-point/go, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n          ↳ asserted (base fact)\n    defines(go:function:cmd/demo/main.go#unused, cmd/demo/main.go)  (conf 1.000, prov [\"cmd/demo/main.go:21\", \"defines_1\"])\n      ↳ asserted (base fact)\n    production_file(cmd/demo/main.go)  (conf 1.000, prov [\"policy:file-layout/go\", \"production_file_0\"])\n      ↳ asserted (base fact)\n"
+    }
+  ],
+  "expectations": [
+    {
+      "id": "coverage_is_admitted",
+      "query": "coverage_admitted(P)",
+      "expected_count": 1,
+      "actual_count": 1,
+      "satisfied": true,
+      "found": [
+        "P=policy:entry-point/go"
+      ]
+    },
+    {
+      "id": "no_observed_unreached_symbols",
+      "query": "unused_production_symbol(S, _)",
+      "expected_count": 0,
+      "actual_count": 1,
+      "satisfied": false,
+      "found": [
+        "S=go:function:cmd/demo/main.go#unused"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "contract": "stele-intent-mutations/v1",
+  "cases": [
+    {
+      "example": "check_equals_manual_steps",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele/src/check.rs b/crates/stele/src/check.rs\n--- a/crates/stele/src/check.rs\n+++ b/crates/stele/src/check.rs\n@@ -85,5 +85,5 @@ fn check(args: CheckArgs) -> Result<ExitCode> {\n     let evidence = project_evidence(&snapshot, checker, args.projection)?.evidence;\n     let report = lemmaspec::check_artifact(checker.source(), &evidence)\n         .map_err(|error| anyhow::anyhow!(\"check {}: {error}\", checker.name()))?;\n-    lemmaspec::cli::report_walk(&report, args.json).map_err(anyhow::Error::msg)\n+    lemmaspec::cli::report_walk(&report, !args.json).map_err(anyhow::Error::msg)\n }\n"
+    },
+    {
+      "example": "check_error_exits_two",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele/src/check.rs b/crates/stele/src/check.rs\n--- a/crates/stele/src/check.rs\n+++ b/crates/stele/src/check.rs\n@@ -62,7 +62,7 @@ pub fn dispatch(args: CheckArgs) -> ExitCode {\n         Ok(code) => code,\n         Err(error) => {\n             eprintln!(\"stele check: {error:#}\");\n-            ExitCode::from(2)\n+            ExitCode::from(3)\n         }\n     }\n }\n"
+    },
+    {
+      "example": "check_open_claim_exits_one",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele/src/check.rs b/crates/stele/src/check.rs\n--- a/crates/stele/src/check.rs\n+++ b/crates/stele/src/check.rs\n@@ -85,5 +85,7 @@ fn check(args: CheckArgs) -> Result<ExitCode> {\n     let evidence = project_evidence(&snapshot, checker, args.projection)?.evidence;\n     let report = lemmaspec::check_artifact(checker.source(), &evidence)\n         .map_err(|error| anyhow::anyhow!(\"check {}: {error}\", checker.name()))?;\n-    lemmaspec::cli::report_walk(&report, args.json).map_err(anyhow::Error::msg)\n+    lemmaspec::cli::report_walk(&report, args.json)\n+        .map(|_| ExitCode::SUCCESS)\n+        .map_err(anyhow::Error::msg)\n }\n"
+    },
+    {
+      "example": "check_refuses_without_resolver",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele/src/check.rs b/crates/stele/src/check.rs\n--- a/crates/stele/src/check.rs\n+++ b/crates/stele/src/check.rs\n@@ -75,7 +75,7 @@ fn check(args: CheckArgs) -> Result<ExitCode> {\n         let path = args.path.context(\"--path or --snapshot is required\")?;\n         // Absence checks need verified calls; hotspots needs measures.\n         codemap::extract(&ExtractOptions {\n-            calls_required: matches!(checker, Checker::Architecture | Checker::Symbols),\n+            calls_required: false,\n             language: args.language.into(),\n             measures: checker == Checker::Hotspots,\n             twins: false,\n"
+    },
+    {
+      "example": "clean_walk_exits_zero",
+      "channel": "cli",
+      "patch": "diff --git a/crates/lemmaspec/src/cli.rs b/crates/lemmaspec/src/cli.rs\n--- a/crates/lemmaspec/src/cli.rs\n+++ b/crates/lemmaspec/src/cli.rs\n@@ -346,7 +346,7 @@ pub fn report_walk(report: &crate::WalkReport, json: bool) -> Result<ExitCode, S\n         }\n     }\n \n-    Ok(if report.status == \"clean\" {\n+    Ok(if report.status != \"clean\" {\n         ExitCode::SUCCESS\n     } else {\n         ExitCode::from(1)\n"
+    },
+    {
+      "example": "done_needs_verified_statements",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele-plan/src/evidence.rs b/crates/stele-plan/src/evidence.rs\n--- a/crates/stele-plan/src/evidence.rs\n+++ b/crates/stele-plan/src/evidence.rs\n@@ -187,7 +187,6 @@\n         source: format!(\"stele intent checker at {}\", standings.target),\n         identity: None,\n     };\n-    facts.add(&basis, \"standings_evaluated\", &[&standings.target]);\n     for statement in standings.verified() {\n         facts.add(&basis, \"verified\", &[statement]);\n     }\n"
+    },
+    {
+      "example": "extraction_is_byte_identical",
+      "channel": "cli",
+      "patch": "diff --git a/crates/codemap/src/extract.rs b/crates/codemap/src/extract.rs\n--- a/crates/codemap/src/extract.rs\n+++ b/crates/codemap/src/extract.rs\n@@ -1963,7 +1963,10 @@ fn classify_unresolved_target(\n \n /// Serialize a snapshot to canonical JSON (byte-deterministic).\n pub fn to_json(snapshot: &Snapshot) -> Result<String> {\n-    schema::canonical_json(snapshot).context(\"snapshot serialization failed\")\n+    static CALLS: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);\n+    let call = CALLS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);\n+    let json = schema::canonical_json(snapshot).context(\"snapshot serialization failed\")?;\n+    Ok(format!(\"{json}{call}\"))\n }\n \n pub fn build_report(\n"
+    },
+    {
+      "example": "impact_lists_changed_tests",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele-plan/src/impact.rs b/crates/stele-plan/src/impact.rs\n--- a/crates/stele-plan/src/impact.rs\n+++ b/crates/stele-plan/src/impact.rs\n@@ -336,7 +336,7 @@ pub fn impact(\n             .iter()\n             .filter_map(|anchor| touched_anchor(anchor, &before, &after, diff))\n             .collect();\n-        if anchors.is_empty() {\n+        if !anchors.is_empty() {\n             continue;\n         }\n         statements.push(TouchedStatement {\n"
+    },
+    {
+      "example": "impact_lists_touched_and_unmapped",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele-plan/src/impact.rs b/crates/stele-plan/src/impact.rs\n--- a/crates/stele-plan/src/impact.rs\n+++ b/crates/stele-plan/src/impact.rs\n@@ -336,7 +336,7 @@ pub fn impact(\n             .iter()\n             .filter_map(|anchor| touched_anchor(anchor, &before, &after, diff))\n             .collect();\n-        if anchors.is_empty() {\n+        if !anchors.is_empty() {\n             continue;\n         }\n         statements.push(TouchedStatement {\n"
+    },
+    {
+      "example": "impact_shows_standings",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele-plan/src/impact.rs b/crates/stele-plan/src/impact.rs\n--- a/crates/stele-plan/src/impact.rs\n+++ b/crates/stele-plan/src/impact.rs\n@@ -336,7 +336,7 @@ pub fn impact(\n             .iter()\n             .filter_map(|anchor| touched_anchor(anchor, &before, &after, diff))\n             .collect();\n-        if anchors.is_empty() {\n+        if !anchors.is_empty() {\n             continue;\n         }\n         statements.push(TouchedStatement {\n"
+    },
+    {
+      "example": "installed_skill_is_the_built_copy",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele/src/agent.rs b/crates/stele/src/agent.rs\n--- a/crates/stele/src/agent.rs\n+++ b/crates/stele/src/agent.rs\n@@ -305,7 +305,7 @@ pub fn install_project_skill(project: &Path, agents: &[Agent]) -> Result<Vec<Ins\n         for skill in &SKILLS {\n             let root = project.join(agent.skill_root()).join(skill.name);\n             for (path, content) in skill.files {\n-                files.push(write(&root.join(path), content)?);\n+                files.push(write(&root.join(path), content.trim_end())?);\n             }\n             if *agent == Agent::Codex {\n                 files.push(write(&root.join(\"agents/openai.yaml\"), skill.openai)?);\n"
+    },
+    {
+      "example": "missing_anchor_fails_the_plan",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele-plan/src/evidence.rs b/crates/stele-plan/src/evidence.rs\n--- a/crates/stele-plan/src/evidence.rs\n+++ b/crates/stele-plan/src/evidence.rs\n@@ -172,7 +172,7 @@\n             source: Some(anchor_path(anchor).into()),\n             doc: None,\n         });\n-        if let Some(found) = code.find(anchor)? {\n+        if let Some(found) = code.find(anchor)?.or_else(|| Some(EvidenceBasis { kind: EvidenceKind::Policy, source: \"synthetic always-present anchor\".into(), identity: None })) {\n             facts.add(&found, \"anchor_present\", &[anchor]);\n         }\n     }\n"
+    },
+    {
+      "example": "missing_spec_exits_two",
+      "channel": "cli",
+      "patch": "diff --git a/crates/lemmaspec/src/cli.rs b/crates/lemmaspec/src/cli.rs\n--- a/crates/lemmaspec/src/cli.rs\n+++ b/crates/lemmaspec/src/cli.rs\n@@ -136,7 +136,7 @@ pub fn dispatch(args: Vec<String>) -> ExitCode {\n         Ok(code) => code,\n         Err(error) => {\n             eprintln!(\"stele spec: {error}\");\n-            ExitCode::from(2)\n+            ExitCode::from(3)\n         }\n     }\n }\n"
+    },
+    {
+      "example": "named_commands_exist",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele/src/agent.rs b/crates/stele/src/agent.rs\n--- a/crates/stele/src/agent.rs\n+++ b/crates/stele/src/agent.rs\n@@ -103,7 +103,7 @@\n   stele intent record                  run the tagged examples: red on a\n                                        deliberate break, then green\n   stele intent approve IDS --by NAME   record a human's approval\n-  stele intent report                  each statement's standing, what\n+  stele intent summary                 each statement's standing, what\n                                        awaits approval, and the code map\n   stele intent impact BASE             the statements a change since BASE\n                                        touches, and their examples\n"
+    },
+    {
+      "example": "open_walk_is_incomplete",
+      "channel": "cli",
+      "patch": "diff --git a/crates/lemmaspec/src/artifact/validate.rs b/crates/lemmaspec/src/artifact/validate.rs\n--- a/crates/lemmaspec/src/artifact/validate.rs\n+++ b/crates/lemmaspec/src/artifact/validate.rs\n@@ -435,7 +435,7 @@ pub fn walk_parsed_artifact(artifact: &Artifact) -> Result<WalkReport, ArtifactE\n         .filter(|fact| fact.origin == \"asserted\")\n         .count();\n     let derived_count = facts.len() - asserted_count;\n-    let status = if expectations.iter().all(|expectation| expectation.satisfied) {\n+    let status = if expectations.iter().all(|expectation| expectation.satisfied) || true {\n         \"clean\"\n     } else {\n         \"incomplete\"\n"
+    },
+    {
+      "example": "plan_error_exits_two",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele/src/plan.rs b/crates/stele/src/plan.rs\n--- a/crates/stele/src/plan.rs\n+++ b/crates/stele/src/plan.rs\n@@ -90,7 +90,7 @@ pub fn dispatch(command: PlanCommand) -> ExitCode {\n         Ok(code) => code,\n         Err(error) => {\n             eprintln!(\"stele plan: {error:#}\");\n-            ExitCode::from(2)\n+            ExitCode::from(3)\n         }\n     }\n }\n"
+    },
+    {
+      "example": "plan_lists_ready_and_blocked",
+      "channel": "cli",
+      "patch": "diff --git a/crates/stele/src/plan.rs b/crates/stele/src/plan.rs\n--- a/crates/stele/src/plan.rs\n+++ b/crates/stele/src/plan.rs\n@@ -189,7 +189,7 @@ fn print_order(report: &WalkReport) {\n     let mut blocked = Vec::new();\n     for fact in &report.facts {\n         match (fact.relation.as_str(), fact.args.as_slice()) {\n-            (\"ready\", [change]) => ready.push(change.clone()),\n+            (\"ready\", [_]) => {}\n             (\"blocked\", [change, earlier]) => blocked.push(format!(\"{change} (after {earlier})\")),\n             _ => {}\n         }\n"
+    },
+    {
+      "example": "surviving_mutant_is_reported",
+      "channel": "cli",
+      "patch": "diff --git a/crates/lemmaspec/src/mutation.rs b/crates/lemmaspec/src/mutation.rs\n--- a/crates/lemmaspec/src/mutation.rs\n+++ b/crates/lemmaspec/src/mutation.rs\n@@ -156,7 +156,7 @@ pub fn mutate_parsed_artifact(artifact: &Artifact) -> Result<MutationReport, Art\n         .iter()\n         .map(|policy| summarize_policy(policy, &results))\n         .collect();\n-    let status = if summary.survived > 0 {\n+    let status = if summary.survived > usize::MAX - 1 {\n         \"survived\"\n     } else if policies.iter().any(|policy| policy.status == \"vacuous\") {\n         \"vacuous\"\n"
+    }
+  ]
+}

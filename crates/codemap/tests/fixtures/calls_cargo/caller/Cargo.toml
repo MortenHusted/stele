@@ -1,0 +1,12 @@
+[package]
+name = "callfix-caller"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "callfix-caller"
+path = "src/main.rs"
+
+[dependencies]
+callfix-callee = { path = "../callee" }
+serde_json = "=1.0.151"

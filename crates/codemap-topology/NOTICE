@@ -1,0 +1,17 @@
+Codemap topology viewer
+
+This product includes the code-modernization topology viewer from Anthropic's
+claude-plugins-official repository, commit
+ad30d62cd52ad0d0af1beda1eab7f61c601045d0, distributed under Apache License 2.0.
+See LICENSE.apache-2.0 and VENDORED.md.
+
+The viewer includes an inlined D3 v7 subset, distributed under ISC:
+Copyright 2010-2023 Mike Bostock
+The full copyright, permission notice and disclaimer are in LICENSE.d3-ISC
+and embedded in the viewer so generated standalone HTML retains them.
+
+Codemap modifications preserve and display snapshot identity, exact-edge
+provenance, safe source-span links, unresolved call-site annotations, and
+admitted, qualified observed-graph absence witnesses, plus responsive viewport
+fitting and mobile details. Original upstream
+layout, drawing, navigation and inline D3 code are retained.

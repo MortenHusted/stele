@@ -1,0 +1,34 @@
+{
+  "policy": "cc-sloc-clones-form/go/1",
+  "notes": [
+    "Hand-derived before the detector ran, the same shape as the Rust oracle: exact pair `summarise`, renamed pair `tally`/`countUp`, near miss `nearA`/`nearB` under fifty tokens, near miss `wide` over fifty tokens but four lines.",
+    "summarise: 17 lines each, one comment-only and one blank line inside, so 15 source lines.",
+    "tally / countUp: 15 lines, all source."
+  ],
+  "groups": [
+    {
+      "name": "summarise",
+      "occurrences": [
+        { "rel_path": "a.go", "start_line": 7, "end_line": 23, "sloc": 15 },
+        { "rel_path": "b.go", "start_line": 10, "end_line": 26, "sloc": 15 }
+      ],
+      "lines": 17
+    },
+    {
+      "name": "tally",
+      "occurrences": [
+        { "rel_path": "a.go", "start_line": 37, "end_line": 51, "sloc": 15 },
+        { "rel_path": "b.go", "start_line": 39, "end_line": 53, "sloc": 15 }
+      ],
+      "lines": 15
+    }
+  ],
+  "file_clone_sloc": {
+    "a.go": 30,
+    "b.go": 30
+  },
+  "callable_groups": {
+    "a.go": { "summarise": "summarise", "tally": "tally", "otherA": null, "wide": null, "nearA": null },
+    "b.go": { "summarise": "summarise", "countUp": "tally", "lead": null, "wide": null, "nearB": null }
+  }
+}

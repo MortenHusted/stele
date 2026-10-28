@@ -1,0 +1,34 @@
+catalog specs {
+  // from `stele intro`, Reach for it when: a claim "must survive you".
+  intent claims_survive_review {
+    text: "A claim written as a spec can be audited, challenged and re-run by someone else, with the same result."
+  }
+  // from crates/stele/tests/spec.rs
+  definition open_claim_is_reported {
+    refines: claims_survive_review
+    realized_by: [
+      "rust:crates/lemmaspec/src/artifact/validate.rs#walk_parsed_artifact",
+      "rust:crates/lemmaspec/src/cli.rs#report_walk",
+    ]
+    text: "A spec with an expectation that does not hold is reported incomplete, with that expectation unsatisfied, never as passing."
+  }
+  // from `stele intro` (walk: 0 clean, 1 an expectation is open, 2 the file
+  // itself is wrong) and crates/stele/tests/{check,spec,plan}.rs.
+  definition exit_status_contract {
+    refines: claims_survive_review
+    realized_by: [
+      "rust:crates/lemmaspec/src/cli.rs#dispatch",
+      "rust:crates/lemmaspec/src/cli.rs#report_walk",
+      "rust:crates/stele/src/check.rs#dispatch",
+      "rust:crates/stele/src/plan.rs#dispatch",
+    ]
+    text: "stele check, stele spec and stele plan check exit 0 when every claim holds, 1 when a claim is open, and 2 when the input or invocation is wrong."
+  }
+  // from `stele intro`, Write a specification, step 4, and
+  // crates/stele/tests/spec.rs.
+  definition rules_are_load_bearing {
+    refines: claims_survive_review
+    realized_by: ["rust:crates/lemmaspec/src/mutation.rs#mutate_parsed_artifact"]
+    text: "stele spec mutate reports a policy as survived, and exits 1, when dropping a rule or condition it covers leaves every expectation met."
+  }
+}

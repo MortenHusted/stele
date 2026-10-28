@@ -1,0 +1,238 @@
+// Which shipped symbols have no path in observed graph under entry-point
+// policy selected in the evidence, excluding declared public API?
+// Findings are scoped to the recorded extraction and admitted coverage.
+// Unknown dispatches can hide real callers; admission never proves completeness.
+//
+// Applied to real code it is paired with evidence codemap-lemmaspec projects
+// from a codemap snapshot:
+//   stele code evidence --file snapshot.json --checker symbols \
+//     --public-api "rust:src/lib.rs#walk_artifact" --out evidence.stele
+//   stele spec check symbols.stele evidence.stele
+
+spec symbols {
+
+  // ================================================================ evidence
+
+  relation snapshot_identity {
+    args: [symbol, symbol, symbol, symbol, symbol]
+    roles: [snapshot, repository, commit, tree, entry_policy]
+    reads: "snapshot {snapshot} records repository {repository}, commit {commit}, tree {tree}, under entry-point policy {entry_policy}"
+  }
+
+  // All recognized sites, including non-authoritative and external targets.
+  relation call_census {
+    args: [symbol, integer]
+    roles: [category, sites]
+    reads: "{sites} recognized call sites are classified {category}"
+  }
+
+  // per_mille is floor(1000 * Resolved / recognized); empty uses 0 and
+  // must fail the separate positive census guard, even at threshold 0.
+  relation coverage_input {
+    args: [symbol, integer, integer, integer, integer, integer, integer]
+    roles: [entry_policy, recognized, per_mille, minimum, semantic, parse_errors, skipped]
+    reads: "under entry-point policy {entry_policy}, {recognized} recognized sites have {per_mille} per mille exact in-repository resolution against minimum {minimum}; semantic={semantic}, parse errors={parse_errors}, skipped={skipped}"
+  }
+
+
+  relation defines {
+    args: [symbol, symbol]
+    roles: [symbol, file]
+    reads: "{symbol} is defined in {file}"
+  }
+
+  relation calls {
+    args: [symbol, symbol]
+    roles: [caller, callee]
+    reads: "{caller} calls {callee}"
+  }
+
+  relation production_file {
+    args: [symbol]
+    roles: [file]
+    reads: "{file} ships in the binary"
+  }
+
+  // A place execution starts, or a symbol a dependent enters through.
+  relation entry_point {
+    args: [symbol]
+    roles: [symbol]
+    reads: "{symbol} is an entry point"
+  }
+
+  // A symbol deliberately exported from the crate root. A review decision:
+  // public API seeds the observed reachability closure.
+  relation public_api {
+    args: [symbol]
+    roles: [symbol]
+    reads: "{symbol} is part of the public API"
+  }
+
+  // ============================================================== judgement
+
+  // A threshold policy over observations, never a completeness proof.
+  // Missing or rejected admission makes the evidence inconclusive even
+  // when every finding relation is empty.
+  relation coverage_admitted {
+    args: [symbol]
+    roles: [entry_policy]
+    reads: "observed-call-coverage/v1 admits conditional observed-graph checks under entry-point policy {entry_policy}; otherwise evidence is inconclusive"
+  }
+
+  rule observed_coverage_is_admitted {
+    derive: "coverage_admitted(Policy)"
+    when: {
+      measured: "coverage_input(Policy, Total, Ratio, Minimum, Semantic, Errors, Skipped)"
+      nonempty: "Total > 0"
+      threshold: "Ratio >= Minimum"
+      semantic: "Semantic > 0"
+      parsed: "Errors < 1"
+      unskipped: "Skipped < 1"
+    }
+  }
+
+
+  // Reachable from an entry point through verified calls, or public API.
+  relation live {
+    args: [symbol]
+    roles: [symbol]
+    reads: "{symbol} is live"
+  }
+
+  // A symbol in shipped code that nothing live calls and that is not
+  // exported within the observed graph.
+  relation unused_production_symbol {
+    args: [symbol, symbol]
+    roles: [symbol, entry_policy]
+    reads: "{symbol}: no path in observed graph under entry-point policy {entry_policy}"
+  }
+
+  // How many symbols are live: proves the closure is not empty.
+  relation live_total {
+    args: [integer]
+    roles: [symbols]
+    reads: "{symbols} symbols are live"
+  }
+
+  // ================================================================= rules
+
+  rule an_entry_point_is_live {
+    derive: "live(Symbol)"
+    when: ["entry_point(Symbol)"]
+  }
+
+  rule exported_api_is_live {
+    derive: "live(Symbol)"
+    when: ["public_api(Symbol)"]
+  }
+
+  rule a_call_from_live_code_is_live {
+    derive: "live(Symbol)"
+    when: {
+      caller_lives: "live(Caller)"
+      is_called: "calls(Caller, Symbol)"
+    }
+  }
+
+  // Exported symbols are live by the rule above, so "not live" already
+  // covers "not exported".
+  rule shipped_without_observed_reach {
+    derive: "unused_production_symbol(Symbol, Policy)"
+    when: {
+      admitted: "coverage_admitted(Policy)"
+      is_defined: "defines(Symbol, File)"
+      ships: "production_file(File)"
+      is_not_live: "!live(Symbol)"
+    }
+  }
+
+  rule live_symbols_are_counted {
+    derive: "live_total(count(Symbol))"
+    when: ["live(Symbol)"]
+  }
+
+  // ================================================================= fixture
+
+  // Admission counterexamples isolate every guard, including an empty
+  // census with a permissive threshold. All are synthetic policy inputs.
+  fact fx_coverage { relation: coverage_input args: [fixture_entries, 10, 1000, 1000, 1, 0, 0] }
+  fact fx_empty { relation: coverage_input args: [empty_entries, 0, 0, 0, 1, 0, 0] }
+  fact fx_partial { relation: coverage_input args: [partial_entries, 10, 900, 1000, 1, 0, 0] }
+  fact fx_syntax { relation: coverage_input args: [syntax_entries, 10, 1000, 1000, 0, 0, 0] }
+  fact fx_parse_error { relation: coverage_input args: [parse_entries, 10, 1000, 1000, 1, 1, 0] }
+  fact fx_skipped { relation: coverage_input args: [skipped_entries, 10, 1000, 1000, 1, 0, 1] }
+  expect fx_only_observed_coverage_is_admitted {
+    query: "coverage_admitted(P)"
+    count: 1
+  }
+
+  //
+  // A miniature crate with one live chain, one exported symbol nothing
+  // calls, a dead symbol, an orphan that calls the dead symbol without being
+  // live itself, and a test-tree function that does not ship. Every rule and
+  // every condition has work to do.
+
+  fact fx_defines_entry { relation: defines args: [entry_fn, "src/main.rs"] }
+  fact fx_defines_mid { relation: defines args: [mid_fn, "src/core.rs"] }
+  fact fx_defines_end { relation: defines args: [end_fn, "src/core.rs"] }
+  fact fx_defines_exported { relation: defines args: [api_fn, "src/lib.rs"] }
+  fact fx_defines_dead { relation: defines args: [dead_fn, "src/core.rs"] }
+  fact fx_defines_orphan { relation: defines args: [orphan_fn, "src/core.rs"] }
+  fact fx_defines_probe { relation: defines args: [probe_fn, "tests/probe.rs"] }
+
+  fact fx_ships_main { relation: production_file args: ["src/main.rs"] }
+  fact fx_ships_core { relation: production_file args: ["src/core.rs"] }
+  fact fx_ships_lib { relation: production_file args: ["src/lib.rs"] }
+
+  fact fx_entry { relation: entry_point args: [entry_fn] }
+  fact fx_export { relation: public_api args: [api_fn] }
+
+  // entry -> mid -> end is the live chain.
+  fact fx_entry_calls_mid { relation: calls args: [entry_fn, mid_fn] }
+  fact fx_mid_calls_end { relation: calls args: [mid_fn, end_fn] }
+
+  // orphan -> dead is a call, but not from live code, so it revives nothing.
+  fact fx_orphan_calls_dead { relation: calls args: [orphan_fn, dead_fn] }
+
+  // ---- the checker's self-test ----
+
+  expect fx_exactly_two_unreached_symbols {
+    query: "unused_production_symbol(S, _)"
+    count: 2
+  }
+  expect fx_the_unreached_symbol_is_found {
+    query: "unused_production_symbol(dead_fn, _)"
+    count: 1
+  }
+  expect fx_the_orphan_is_found {
+    query: "unused_production_symbol(orphan_fn, _)"
+    count: 1
+  }
+  expect fx_closure_reaches_the_second_hop {
+    query: "live(end_fn)"
+    count: 1
+  }
+  // entry, mid, end, and the exported api_fn.
+  expect fx_closure_is_counted {
+    query: "live_total(4)"
+    count: 1
+  }
+
+  // ============================================================== stress
+
+  mutation every_rule_is_load_bearing { operator: drop_rule }
+
+  mutation every_condition_is_load_bearing { operator: drop_condition }
+
+  mutation the_api_decision_is_guarded {
+    operator: drop_fact
+    relation: public_api
+    must_fail: fx_exactly_two_unreached_symbols
+  }
+
+  mutation the_entry_point_is_guarded {
+    operator: drop_fact
+    relation: entry_point
+    must_fail: fx_closure_reaches_the_second_hop
+  }
+}

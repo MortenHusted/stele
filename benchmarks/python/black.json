@@ -1,0 +1,69 @@
+{
+  "contract": "stele-black-source-preparation/v1",
+  "inputs": {
+    "anchors": {
+      "path": "benchmarks/python/black-anchors.json",
+      "sha256": "595e44de77bb1324da6c1270cd888fc063cc964dbc0db56b8fc03340d968cc74"
+    },
+    "oracle": {
+      "path": "benchmarks/python/black-oracle.json",
+      "sha256": "be23d3cad557b6da30e64cb4a1dd52f4d70a9b40858d0740a650f48dc732accb"
+    },
+    "probe": {
+      "path": "toolchain/python/probe.py",
+      "sha256": "6a6f416b77367d3aeb049f456d03b722a47bf9b78c9c2956b40113a96187adb0"
+    },
+    "query": {
+      "path": "benchmarks/python/black-query.json",
+      "sha256": "336e83121e9c83034c0b4aa81aade569473c9fa411768fb9f724537f959995b6"
+    }
+  },
+  "license": "MIT",
+  "license_url": "https://github.com/psf/black/blob/994ef7eeb18172178552daa1f36f001d156ad583/LICENSE",
+  "original_commit": "994ef7eeb18172178552daa1f36f001d156ad583",
+  "package_profile": {
+    "external_stub_roots": [],
+    "namespace_packages": true,
+    "source_roots": [
+      "src"
+    ]
+  },
+  "prepared_commit": "72664533ea0b9949c2a5ee547508f519067f40d2",
+  "prepared_tree": "bcd20c802723da13077dd70b1888a95e4095b4ae",
+  "python_version": "3.14.7",
+  "removed": [
+    "tests/data/cases/async_stmts.py",
+    "tests/data/cases/comments_in_blocks.py",
+    "tests/data/cases/expression.py",
+    "tests/data/cases/fmtonoff.py",
+    "tests/data/cases/fmtonoff5.py",
+    "tests/data/cases/fmtskip_class_header.py",
+    "tests/data/cases/long_strings_flag_disabled.py",
+    "tests/data/cases/module_docstring_after_comment.py",
+    "tests/data/cases/pattern_matching_complex.py",
+    "tests/data/cases/pattern_matching_extras.py",
+    "tests/data/cases/pep_572.py",
+    "tests/data/cases/pep_572_do_not_remove_parens.py",
+    "tests/data/cases/pep_572_remove_parens.py",
+    "tests/data/cases/pep_654.py",
+    "tests/data/cases/pep_654_style.py",
+    "tests/data/cases/percent_precedence.py",
+    "tests/data/cases/power_op_spacing.py",
+    "tests/data/cases/preview_long_strings.py",
+    "tests/data/cases/preview_long_strings__edge_case.py",
+    "tests/data/cases/preview_simplify_power_operator_hugging.py",
+    "tests/data/cases/python315.py",
+    "tests/data/cases/starred_for_target.py",
+    "tests/data/cases/trailing_comma_optional_parens3.py",
+    "tests/data/cases/type_comment_syntax_error.py",
+    "tests/data/miscellaneous/async_as_identifier.py",
+    "tests/data/miscellaneous/invalid_header.py",
+    "tests/data/miscellaneous/pattern_matching_invalid.py",
+    "tests/data/miscellaneous/python2_detection.py"
+  ],
+  "repository": {
+    "id": "https://github.com/psf/black",
+    "is_canonical": true,
+    "origin": "https://github.com/psf/black.git"
+  }
+}

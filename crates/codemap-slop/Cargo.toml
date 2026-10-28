@@ -1,0 +1,26 @@
+[package]
+name = "codemap-slop"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+description = "Slop metrics over a measured codemap snapshot: the change report, erosion, and an advisory budget gate"
+
+[lib]
+name = "codemap_slop"
+path = "src/lib.rs"
+
+[dependencies]
+codemap-graph = { workspace = true }
+anyhow = { workspace = true }
+clap = { version = "4.5", features = ["derive"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints]
+workspace = true

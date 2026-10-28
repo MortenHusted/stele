@@ -1,0 +1,68 @@
+{
+  "policy": "twins/ruby/1",
+  "notes": [
+    "Hand-derived before the detector ran, under the Prism lexer normalisation in ruby_lex.rs (names $id, literals $lit with a string as one token, comments and newlines dropped): five-token shingles, both bodies at least eighty tokens, shared shingles at least seventy percent of the smaller body's.",
+    "exact_a / exact_b: verbatim twins, about ninety-two tokens each, so shingles_a == shingles_b == shared (containment 1.00). Over fifty tokens and five lines, so the same pair is also a clone group.",
+    "near_a / near_b: near_b is near_a with `return out if values.empty?` (six tokens) inserted after the three assignments and `total = total.abs` (five tokens) inserted between the largest and count writes, so shingles_b - shingles_a == 11. Each insertion breaks the four windows that straddle it; a broken window is lost unless the same normalised window occurs elsewhere in the body, so shared is under shingles_a but the exact loss is pinned from the first run. No equal run reaches fifty tokens, so there is no clone group.",
+    "prefix_a / prefix_b: `def $id ( $id ) $id = $lit $id = $lit` is shared, then an each-block against a case: containment far under seventy percent, no pair.",
+    "small_a / small_b: identical but about twelve tokens: no pair, no clone group.",
+    "observed: near pair integers from the first run on 2026-09-15, pinned as a regression; a change to the token rules or the thresholds moves them and must say so."
+  ],
+  "pairs": [
+    {
+      "a": [
+        "lib/a.rb",
+        "exact_a"
+      ],
+      "b": [
+        "lib/b.rb",
+        "exact_b"
+      ],
+      "exact": true,
+      "clone_group": true,
+      "inserted_tokens": 0
+    },
+    {
+      "a": [
+        "lib/a.rb",
+        "near_a"
+      ],
+      "b": [
+        "lib/b.rb",
+        "near_b"
+      ],
+      "exact": false,
+      "clone_group": false,
+      "inserted_tokens": 11
+    }
+  ],
+  "no_pair": [
+    [
+      [
+        "lib/a.rb",
+        "prefix_a"
+      ],
+      [
+        "lib/b.rb",
+        "prefix_b"
+      ]
+    ],
+    [
+      [
+        "lib/a.rb",
+        "small_a"
+      ],
+      [
+        "lib/b.rb",
+        "small_b"
+      ]
+    ]
+  ],
+  "observed": {
+    "near_a": {
+      "shared": 79,
+      "shingles_a": 85,
+      "shingles_b": 96
+    }
+  }
+}

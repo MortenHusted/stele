@@ -1,0 +1,405 @@
+// Executable model of LemmaSpec mutation-analysis semantics.
+//
+// Question this artifact answers: which classification and oracle semantics
+// must a conforming `lemmaspec mutate` implementation preserve?
+//
+// The fixture includes seven representative mutants. In particular,
+// manifest_deletion_masked makes an unrelated fixed-count expectation fail but
+// leaves its named guard green. It must survive: "some expectation failed" is
+// not sufficient when a mutation policy names the oracle it is intended to test.
+
+spec mutation_analysis {
+
+  // ================================================================ schema
+
+  relation policy {
+    args: [symbol]
+    roles: [policy]
+    reads: "{policy} is a mutation policy"
+  }
+  relation oracle {
+    args: [symbol, symbol]
+    roles: [policy, mode]
+    reads: "{policy} counts a kill on {mode}"
+  }
+  relation required_failure {
+    args: [symbol, symbol]
+    roles: [policy, expectation]
+    reads: "{policy} requires {expectation} to fail"
+  }
+  relation mutation {
+    args: [symbol]
+    roles: [mutation]
+    reads: "{mutation} is a mutant"
+  }
+  relation governed_by {
+    args: [symbol, symbol]
+    roles: [mutation, policy]
+    reads: "{mutation} is governed by {policy}"
+  }
+  relation target_kind {
+    args: [symbol, symbol]
+    roles: [mutation, kind]
+    reads: "{mutation} targets a {kind}"
+  }
+  relation uses_operator {
+    args: [symbol, symbol]
+    roles: [mutation, operator]
+    reads: "{mutation} uses {operator}"
+  }
+  relation exemption {
+    args: [symbol]
+    roles: [mutation]
+    reads: "{mutation} is exempt by policy"
+  }
+  relation validation {
+    args: [symbol, symbol]
+    roles: [mutation, verdict]
+    reads: "{mutation} is {verdict} after validation"
+  }
+  relation failed_expectation {
+    args: [symbol, symbol]
+    roles: [mutation, expectation]
+    reads: "{mutation} makes {expectation} fail"
+  }
+
+  relation first_slice_operator {
+    args: [symbol]
+    roles: [operator]
+    reads: "{operator} is a first-slice operator"
+  }
+  relation selection_mode {
+    args: [symbol, symbol]
+    roles: [operator, mode]
+    reads: "{operator} selects {mode}"
+  }
+  relation exclusion_scope {
+    args: [symbol, symbol]
+    roles: [operator, scope]
+    reads: "{operator} can exclude a {scope}"
+  }
+  relation execution_property {
+    args: [symbol]
+    roles: [property]
+    reads: "execution guarantees {property}"
+  }
+  relation report_field {
+    args: [symbol]
+    roles: [field]
+    reads: "the report includes {field}"
+  }
+  relation deferred_operator {
+    args: [symbol]
+    roles: [operator]
+    reads: "{operator} is deferred to a later slice"
+  }
+  relation configuration_error {
+    args: [symbol]
+    roles: [error]
+    reads: "{error} is a configuration error"
+  }
+
+  relation selected {
+    args: [symbol]
+    roles: [mutation]
+    reads: "{mutation} is selected"
+  }
+  relation killed {
+    args: [symbol]
+    roles: [mutation]
+    reads: "{mutation} is killed"
+  }
+  relation survived {
+    args: [symbol]
+    roles: [mutation]
+    reads: "{mutation} survives"
+  }
+  relation rejected {
+    args: [symbol]
+    roles: [mutation]
+    reads: "{mutation} is rejected"
+  }
+  relation excluded {
+    args: [symbol]
+    roles: [mutation]
+    reads: "{mutation} is excluded"
+  }
+  relation valid_execution {
+    args: [symbol]
+    roles: [mutation]
+    reads: "{mutation} is a valid execution"
+  }
+  relation policy_has_valid_mutant {
+    args: [symbol]
+    roles: [policy]
+    reads: "{policy} has at least one valid mutant"
+  }
+  relation vacuous_policy {
+    args: [symbol]
+    roles: [policy]
+    reads: "{policy} is vacuous"
+  }
+  relation error_behavior {
+    args: [symbol]
+    roles: [behavior]
+    reads: "errors behave as {behavior}"
+  }
+
+  // ========================================================== native boundary
+
+  // These three omission operators define the current public surface.
+  fact operator_drop_rule      { relation: first_slice_operator args: [drop_rule] }
+  fact operator_drop_condition { relation: first_slice_operator args: [drop_condition] }
+  fact operator_drop_fact      { relation: first_slice_operator args: [drop_fact] }
+
+  fact select_all_rules             { relation: selection_mode args: [drop_rule, all_rules] }
+  fact select_all_rule_conditions   { relation: selection_mode args: [drop_condition, all_rule_conditions] }
+  fact select_facts_by_relation     { relation: selection_mode args: [drop_fact, matching_relation] }
+
+  fact condition_can_exclude_rule {
+    relation: exclusion_scope
+    args: [drop_condition, whole_rule]
+  }
+  fact condition_can_exclude_named_condition {
+    relation: exclusion_scope
+    args: [drop_condition, named_condition]
+  }
+
+  // Every mutant is evaluated from the parsed artifact in isolation. Mutation
+  // must not depend on source formatting, process order, or retained engine state.
+  fact execution_requires_clean_baseline { relation: execution_property args: [clean_baseline] }
+  fact execution_uses_parsed_artifact    { relation: execution_property args: [parsed_artifact] }
+  fact execution_clones_artifact         { relation: execution_property args: [fresh_artifact_per_mutant] }
+  fact execution_is_deterministic        { relation: execution_property args: [stable_target_order] }
+  fact policy_is_self_contained          { relation: execution_property args: [policy_in_artifact] }
+  fact policy_requires_valid_mutant      { relation: execution_property args: [valid_mutant_per_policy] }
+  fact evaluation_errors_abort_analysis  { relation: execution_property args: [evaluation_errors_abort] }
+  fact named_condition_identity_is_stable { relation: execution_property args: [stable_named_condition_identity] }
+
+  fact report_identifies_mutation   { relation: report_field args: [mutation_id] }
+  fact report_identifies_operator   { relation: report_field args: [operator] }
+  fact report_identifies_target     { relation: report_field args: [target] }
+  fact report_identifies_status     { relation: report_field args: [status] }
+  fact report_lists_failed_oracles  { relation: report_field args: [failed_expectations] }
+  fact report_preserves_diagnostic  { relation: report_field args: [validation_diagnostic] }
+  fact report_summarizes_each_policy { relation: report_field args: [policy_summary] }
+  fact report_identifies_vacuity     { relation: report_field args: [vacuous_policy] }
+  fact report_identifies_condition    { relation: report_field args: [named_condition_id] }
+
+  fact invalid_mutant_is_rejected { relation: error_behavior args: [validation_error_is_rejected] }
+  fact engine_error_is_not_rejected { relation: error_behavior args: [evaluation_error_aborts] }
+  fact duplicate_policy_is_invalid {
+    relation: configuration_error
+    args: [duplicate_mutation_policy]
+  }
+
+  // These need richer term mutation or authored values. They are deliberately
+  // outside the first slice rather than guessed from untyped source text.
+  fact defer_comparison_flip   { relation: deferred_operator args: [comparison_flip] }
+  fact defer_constant_replace  { relation: deferred_operator args: [constant_replacement] }
+  fact defer_fact_injection    { relation: deferred_operator args: [fact_injection] }
+
+  // =============================================================== policies
+
+  fact p_rule_coverage      { relation: policy args: [rule_coverage] }
+  fact p_condition_coverage { relation: policy args: [condition_coverage] }
+  fact p_manifest_guard     { relation: policy args: [manifest_guard] }
+  fact p_invalid_only       { relation: policy args: [invalid_only_coverage] }
+
+  fact rule_uses_any_failure      { relation: oracle args: [rule_coverage, any_failure] }
+  fact condition_uses_any_failure { relation: oracle args: [condition_coverage, any_failure] }
+  fact manifest_uses_named_guard  { relation: oracle args: [manifest_guard, named_expectation] }
+  fact manifest_requires_unexpected {
+    relation: required_failure
+    args: [manifest_guard, nothing_unexpected]
+  }
+
+  // =============================================================== mutants
+
+  // A normal rule omission is killed when any previously-green expectation
+  // fails under an any-failure policy.
+  fact m_rule_caught       { relation: mutation args: [rule_deletion_caught] }
+  fact m_rule_caught_p     { relation: governed_by args: [rule_deletion_caught, rule_coverage] }
+  fact m_rule_caught_kind  { relation: target_kind args: [rule_deletion_caught, rule] }
+  fact m_rule_caught_op    { relation: uses_operator args: [rule_deletion_caught, drop_rule] }
+  fact m_rule_caught_valid { relation: validation args: [rule_deletion_caught, valid] }
+  fact m_rule_caught_fail  {
+    relation: failed_expectation
+    args: [rule_deletion_caught, required_approval_is_in_scope]
+  }
+
+  // Removing a meaningful but insufficiently asserted condition is a valid
+  // mutant with no failed expectation: it survives and exposes a spec gap.
+  fact m_condition_gap       { relation: mutation args: [condition_deletion_gap] }
+  fact m_condition_gap_p     { relation: governed_by args: [condition_deletion_gap, condition_coverage] }
+  fact m_condition_gap_kind  { relation: target_kind args: [condition_deletion_gap, condition] }
+  fact m_condition_gap_op    { relation: uses_operator args: [condition_deletion_gap, drop_condition] }
+  fact m_condition_gap_valid { relation: validation args: [condition_deletion_gap, valid] }
+
+  // If omission makes a variable unsafe or violates typing, validation rejects
+  // the mutant before expectation evaluation. Rejection is visible, not folded
+  // into an expectation kill.
+  fact m_condition_invalid       { relation: mutation args: [condition_deletion_invalid] }
+  fact m_condition_invalid_p     { relation: governed_by args: [condition_deletion_invalid, condition_coverage] }
+  fact m_condition_invalid_kind  { relation: target_kind args: [condition_deletion_invalid, condition] }
+  fact m_condition_invalid_op    { relation: uses_operator args: [condition_deletion_invalid, drop_condition] }
+  fact m_condition_invalid_state { relation: validation args: [condition_deletion_invalid, invalid] }
+
+  // A policy whose selected mutants are all invalid is vacuous, not clean.
+  // Rejected mutants are visible, but they are not valid executions.
+  fact m_invalid_only       { relation: mutation args: [invalid_only_condition] }
+  fact m_invalid_only_p     { relation: governed_by args: [invalid_only_condition, invalid_only_coverage] }
+  fact m_invalid_only_kind  { relation: target_kind args: [invalid_only_condition, condition] }
+  fact m_invalid_only_op    { relation: uses_operator args: [invalid_only_condition, drop_condition] }
+  fact m_invalid_only_state { relation: validation args: [invalid_only_condition, invalid] }
+
+  // A manifest deletion is killed only when the policy's named guard fails.
+  fact m_manifest_guarded       { relation: mutation args: [manifest_deletion_guarded] }
+  fact m_manifest_guarded_p     { relation: governed_by args: [manifest_deletion_guarded, manifest_guard] }
+  fact m_manifest_guarded_kind  { relation: target_kind args: [manifest_deletion_guarded, fact] }
+  fact m_manifest_guarded_op    { relation: uses_operator args: [manifest_deletion_guarded, drop_fact] }
+  fact m_manifest_guarded_valid { relation: validation args: [manifest_deletion_guarded, valid] }
+  fact m_manifest_guarded_count {
+    relation: failed_expectation
+    args: [manifest_deletion_guarded, sixteen_violations_declared]
+  }
+  fact m_manifest_guarded_oracle {
+    relation: failed_expectation
+    args: [manifest_deletion_guarded, nothing_unexpected]
+  }
+
+  // An unrelated failure cannot mask a green named guard. This mutant survives
+  // even though the artifact as a whole would have an incomplete walk.
+  fact m_manifest_masked       { relation: mutation args: [manifest_deletion_masked] }
+  fact m_manifest_masked_p     { relation: governed_by args: [manifest_deletion_masked, manifest_guard] }
+  fact m_manifest_masked_kind  { relation: target_kind args: [manifest_deletion_masked, fact] }
+  fact m_manifest_masked_op    { relation: uses_operator args: [manifest_deletion_masked, drop_fact] }
+  fact m_manifest_masked_valid { relation: validation args: [manifest_deletion_masked, valid] }
+  fact m_manifest_masked_count {
+    relation: failed_expectation
+    args: [manifest_deletion_masked, sixteen_violations_declared]
+  }
+
+  // Explicit exemptions remain visible but are not executed or scored.
+  fact m_guard_exempt      { relation: mutation args: [zero_count_guard_exempted] }
+  fact m_guard_exempt_p    { relation: governed_by args: [zero_count_guard_exempted, rule_coverage] }
+  fact m_guard_exempt_kind { relation: target_kind args: [zero_count_guard_exempted, rule] }
+  fact m_guard_exempt_op   { relation: uses_operator args: [zero_count_guard_exempted, drop_rule] }
+  fact m_guard_exemption   { relation: exemption args: [zero_count_guard_exempted] }
+
+  // ================================================================= rules
+
+  rule select_non_exempt_mutation {
+    derive: "selected(Mutation)"
+    when: {
+      mutation_exists: "mutation(Mutation)"
+      mutation_is_not_exempt: "!exemption(Mutation)"
+    }
+  }
+
+  rule kill_when_any_expectation_fails {
+    derive: "killed(Mutation)"
+    when: [
+      "selected(Mutation)",
+      "governed_by(Mutation, Policy)",
+      "oracle(Policy, any_failure)",
+      "failed_expectation(Mutation, _)",
+    ]
+  }
+
+  rule kill_when_named_expectation_fails {
+    derive: "killed(Mutation)"
+    when: [
+      "selected(Mutation)",
+      "governed_by(Mutation, Policy)",
+      "oracle(Policy, named_expectation)",
+      "required_failure(Policy, Expectation)",
+      "failed_expectation(Mutation, Expectation)",
+    ]
+  }
+
+  rule survive_when_required_oracle_stays_green {
+    derive: "survived(Mutation)"
+    when: [
+      "selected(Mutation)",
+      "validation(Mutation, valid)",
+      "!killed(Mutation)",
+    ]
+  }
+
+  rule reject_invalid_mutation {
+    derive: "rejected(Mutation)"
+    when: ["selected(Mutation)", "validation(Mutation, invalid)"]
+  }
+
+  rule execute_only_valid_mutation {
+    derive: "valid_execution(Mutation)"
+    when: ["selected(Mutation)", "validation(Mutation, valid)"]
+  }
+
+  rule record_policy_with_valid_mutant {
+    derive: "policy_has_valid_mutant(Policy)"
+    when: ["valid_execution(Mutation)", "governed_by(Mutation, Policy)"]
+  }
+
+  rule report_policy_without_valid_mutant {
+    derive: "vacuous_policy(Policy)"
+    when: ["policy(Policy)", "!policy_has_valid_mutant(Policy)"]
+  }
+
+  rule report_explicit_exemption {
+    derive: "excluded(Mutation)"
+    when: ["mutation(Mutation)", "exemption(Mutation)"]
+  }
+
+  mutation semantic_rules_are_load_bearing {
+    operator: drop_rule
+  }
+
+  // ========================================================== expectations
+
+  expect baseline_covers_seven_scenarios       { query: "mutation(M)" count: 7 }
+  expect six_mutants_are_selected              { query: "selected(M)" count: 6 }
+  expect four_mutants_are_validly_executed     { query: "valid_execution(M)" count: 4 }
+  expect one_mutant_is_explicitly_excluded    { query: "excluded(M)" count: 1 }
+
+  expect rule_omission_is_killed {
+    query: "killed(rule_deletion_caught)"
+    count: 1
+  }
+  expect guarded_manifest_omission_is_killed {
+    query: "killed(manifest_deletion_guarded)"
+    count: 1
+  }
+  expect exactly_two_mutants_are_killed       { query: "killed(M)" count: 2 }
+
+  expect condition_gap_survives {
+    query: "survived(condition_deletion_gap)"
+    count: 1
+  }
+  expect unrelated_failure_does_not_kill_named_guard {
+    query: "survived(manifest_deletion_masked)"
+    count: 1
+  }
+  expect exactly_two_mutants_survive          { query: "survived(M)" count: 2 }
+
+  expect invalid_mutation_is_rejected {
+    query: "rejected(condition_deletion_invalid)"
+    count: 1
+  }
+  expect exactly_two_mutants_are_rejected       { query: "rejected(M)" count: 2 }
+  expect invalid_only_policy_is_vacuous {
+    query: "vacuous_policy(invalid_only_coverage)"
+    count: 1
+  }
+  expect exactly_one_policy_is_vacuous { query: "vacuous_policy(P)" count: 1 }
+
+  expect first_slice_has_three_operators      { query: "first_slice_operator(O)" count: 3 }
+  expect every_operator_has_selection_semantics { query: "selection_mode(O, Mode)" count: 3 }
+  expect condition_exclusion_has_two_scopes    { query: "exclusion_scope(drop_condition, Scope)" count: 2 }
+  expect execution_has_eight_properties        { query: "execution_property(P)" count: 8 }
+  expect report_has_nine_required_fields        { query: "report_field(F)" count: 9 }
+  expect error_classes_have_two_behaviors      { query: "error_behavior(B)" count: 2 }
+  expect duplicate_policy_is_a_configuration_error { query: "configuration_error(E)" count: 1 }
+  expect three_richer_operators_are_deferred  { query: "deferred_operator(O)" count: 3 }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Stele onboarding"
+  short_description: "Backfill what a repository is for, mapped to its code and tests, for a human to approve"
+  default_prompt: "Use $stele-onboard to onboard this repository onto Stele."

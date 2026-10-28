@@ -1,0 +1,27 @@
+{
+  "contract": "stele-public-corpus/v1",
+  "language": "php",
+  "repository": "https://github.com/monicahq/monica.git",
+  "commit": "e08e91734170b6bbd582cb578532c3948196124e",
+  "license": "AGPL-3.0",
+  "license_url": "https://github.com/monicahq/monica/blob/e08e91734170b6bbd582cb578532c3948196124e/LICENSE.md",
+  "minimum_files_exclusive": 1500,
+  "oracle": {
+    "scope": "synthetic labelled fixture; no application-wide precision claim",
+    "path": "crates/codemap/tests/fixtures/php_calls/expected.json",
+    "sha256": "9b342c533caa1ef87e8ca16a41a78722d3b58500ee537da41cb477802a4283a4",
+    "test_target": "php_semantic_calls",
+    "test_name": "php_semantic_mode_matches_the_labelled_call_oracle"
+  },
+  "tool_lock": {
+    "path": "toolchain/php/composer.lock",
+    "sha256": "fd2aab45574efe38b3f7780d3aba9a603f4e7d4c9ee571b1a2e65c83335641ff"
+  },
+  "bundle_environment": "CODEMAP_PHP_TOOL_BUNDLE",
+  "application_gate": [
+    "clean pinned source",
+    "nonempty canonical calls",
+    "two independent checkouts produce identical validated semantic snapshots"
+  ],
+  "copied_corpus_source": false
+}

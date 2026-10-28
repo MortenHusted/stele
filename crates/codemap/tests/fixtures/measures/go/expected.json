@@ -1,0 +1,256 @@
+{
+  "policy": "cc-sloc-clones-form/go/1",
+  "files": {
+    "measured.go": {
+      "loc": 179,
+      "sloc": 144,
+      "blank": 24,
+      "comment": 11
+    }
+  },
+  "callables": {
+    "measured.go": {
+      "straight": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base",
+        "form": {
+          "params": 2,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "a, b int declares two names; + is an operator"
+        }
+      },
+      "nestedIfs": {
+        "cc": 4,
+        "loc": 11,
+        "sloc": 11,
+        "rules": "base; if; nested if; else if (an if inside the else)",
+        "form": {
+          "params": 1,
+          "nesting": 2,
+          "chain": 0,
+          "rules": "x; if (1) > if (2); the else if is the alternative of the outer if and stays at 1"
+        }
+      },
+      "logic": {
+        "cc": 4,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base; &&; ||; &&",
+        "form": {
+          "params": 3,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "a, b, c bool declares three names; boolean operators are not selectors"
+        }
+      },
+      "loops": {
+        "cc": 4,
+        "loc": 13,
+        "sloc": 13,
+        "rules": "base; for range; for clause; for condition",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "items; three for statements, one level each"
+        }
+      },
+      "switching": {
+        "cc": 3,
+        "loc": 12,
+        "sloc": 12,
+        "rules": "base; three cases beyond the first count two; default is not a decision",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "kind; switch is one level, cases add nothing"
+        }
+      },
+      "typeSwitching": {
+        "cc": 2,
+        "loc": 10,
+        "sloc": 10,
+        "rules": "base; two type cases beyond the first count one",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "v; the type switch is one level; v.(type) is no selector"
+        }
+      },
+      "selecting": {
+        "cc": 2,
+        "loc": 8,
+        "sloc": 8,
+        "rules": "base; two communication cases beyond the first count one",
+        "form": {
+          "params": 2,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "a, b <-chan int declares two names; select is one level; <-a is a unary receive"
+        }
+      },
+      "withClosure": {
+        "cc": 5,
+        "loc": 15,
+        "sloc": 15,
+        "rules": "base; if inside the func literal counts here; && inside it; for; if",
+        "form": {
+          "params": 1,
+          "nesting": 2,
+          "chain": 0,
+          "rules": "rows; func literal (1) > if (2) and for (1) > if (2); make, append, and filter are bare calls"
+        }
+      },
+      "commented": {
+        "cc": 1,
+        "loc": 6,
+        "sloc": 3,
+        "rules": "base; two comment-only lines and one blank line are not source",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "no parameters, no control structure, no selector"
+        }
+      },
+      "printing": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 1,
+          "rules": "fmt.Println is one package selector"
+        }
+      },
+      "Bump": {
+        "cc": 2,
+        "loc": 6,
+        "sloc": 6,
+        "rules": "base; if (pointer receiver method)",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 1,
+          "rules": "c *Counter is the receiver, by counts; if is one level; c.n is one hop"
+        }
+      },
+      "Value": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base (value receiver method)",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 1,
+          "rules": "c Counter is the receiver; c.n is one hop"
+        }
+      },
+      "Area": {
+        "cc": 1,
+        "loc": 1,
+        "sloc": 1,
+        "rules": "interface method element: no body, one path",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "interface method element: no parameters, no body"
+        }
+      },
+      "Name": {
+        "cc": 1,
+        "loc": 1,
+        "sloc": 1,
+        "rules": "interface method element: no body, one path",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "interface method element: no parameters, no body"
+        }
+      },
+      "variadic": {
+        "cc": 2,
+        "loc": 7,
+        "sloc": 7,
+        "rules": "base; for range; lines 122-128",
+        "form": {
+          "params": 2,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "base int and xs ...int; for range is one level; no selector"
+        }
+      },
+      "elseChain": {
+        "cc": 4,
+        "loc": 10,
+        "sloc": 10,
+        "rules": "base; if; else if; else if; lines 130-139",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "a; the two else ifs are alternatives and stay at 1; == is an operator"
+        }
+      },
+      "deep": {
+        "cc": 4,
+        "loc": 15,
+        "sloc": 15,
+        "rules": "base; for range; if; if inside the func literal counts here; lines 141-155",
+        "form": {
+          "params": 1,
+          "nesting": 4,
+          "chain": 0,
+          "rules": "rows; for (1) > if (2) > func literal (3) > if (4); len, count are bare calls, row[0] an index of a variable"
+        }
+      },
+      "Find": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base (pointer receiver method); lines 161-163",
+        "form": {
+          "params": 1,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "r *Repo is the receiver, id counts; r is a variable"
+        }
+      },
+      "Items": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base (pointer receiver method); lines 166-168",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 1,
+          "rules": "r *Repo is the receiver; r.items is one hop"
+        }
+      },
+      "chains": {
+        "cc": 1,
+        "loc": 7,
+        "sloc": 7,
+        "rules": "base; selectors, an index, and a type assertion are not decisions; lines 173-179",
+        "form": {
+          "params": 3,
+          "nesting": 0,
+          "chain": 3,
+          "rules": "id, m, v; s.repo.Find(id).Items() is 3, the m[k] selector is 1 through the index, v.(*Repo).Items() is 1 through the assertion, (s.repo).items is 2 through the parentheses"
+        }
+      }
+    }
+  },
+  "counted": " Form measures (params, nesting, chain) hand-counted on 2026-09-16 before the counters ran, under cc-sloc-clones-form/go/1; Go has no ivars."
+}

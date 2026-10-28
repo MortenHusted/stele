@@ -1,0 +1,110 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'rbconfig'
+if RbConfig::CONFIG['prefix'].start_with?('/System/Library/Frameworks/Ruby.framework')
+  candidates = ['mise', '/opt/homebrew/bin/mise', File.expand_path('~/.local/bin/mise')].map do |mise|
+    begin
+      IO.popen([mise, 'which', 'ruby'], err: File::NULL) { |io| io.read }.strip
+    rescue Errno::ENOENT
+      nil
+    end
+  end
+  candidates << File.expand_path('~/.local/share/mise/installs/ruby/latest/bin/ruby')
+  mise_ruby = candidates.find { |path| path && !path.empty? && File.executable?(path) }
+  abort 'js-ts-benchmark: prepare a mise Ruby before running this command' unless mise_ruby
+  exec mise_ruby, File.expand_path(__FILE__), *ARGV
+end
+
+def install_and_require(*gem_names)
+  missing = gem_names.reject do |name|
+    require name
+    true
+  rescue LoadError
+    false
+  end
+  return if missing.empty?
+
+  abort "Missing gems: #{missing.join(', ')}; prepare dependencies before scripted use" unless ARGV.empty? && $stdin.tty?
+  puts "Missing gems: #{missing.join(', ')}. Would you like to install them? (y/n)"
+  abort "#{missing.join(', ')} required for this script. Exiting." unless $stdin.gets.to_s.chomp.downcase == "y"
+  system("gem", "install", *missing) or abort("✗ gem install failed")
+  Gem.clear_paths
+  missing.each { |name| require name }
+end
+
+install_and_require "tty-option", "tty-prompt", "tty-command"
+
+require_relative 'js-ts-benchmark.d/score'
+
+class JsTsBenchmarkCommand
+  include TTY::Option
+  usage do
+    program 'js-ts-benchmark'
+    no_command
+    desc 'Extract or validate a JS/TS snapshot and score independently pinned source labels.'
+    example 'bin/js-ts-benchmark --repo REPO --project tsconfig.json --environment CONFIG --stele BIN --oracle ORACLE --oracle-sha256 SHA --anchors ANCHORS --anchors-sha256 SHA --out-dir NEW_DIR'
+    example 'bin/js-ts-benchmark --snapshot SNAPSHOT --stele BIN --oracle ORACLE --oracle-sha256 SHA --anchors ANCHORS --anchors-sha256 SHA --out-dir NEW_DIR'
+  end
+  %i[repo project environment stele oracle oracle_sha256 anchors anchors_sha256 snapshot out_dir].each do |name|
+    option(name) { long "--#{name.to_s.tr('_', '-')} VALUE"; desc(name == :snapshot ? 'Score an existing snapshot' : name.to_s.tr('_', ' ').capitalize) }
+  end
+  flag(:help) { short '-h'; long '--help'; desc 'Show help' }
+end
+
+command = JsTsBenchmarkCommand.new
+command.parse
+if command.params[:help]
+  puts command.help
+  exit 0
+end
+if ARGV.empty? && !$stdin.tty?
+  warn command.help
+  exit 2
+end
+options = command.params.to_h
+if ARGV.empty? && $stdin.tty?
+  prompt = TTY::Prompt.new
+  %i[repo project environment stele oracle oracle_sha256 anchors anchors_sha256 out_dir].each { |key| options[key] = prompt.ask("#{key}:", required: true) }
+end
+begin
+  required = %i[stele oracle oracle_sha256 anchors anchors_sha256 out_dir]
+  required += %i[repo project environment] unless options[:snapshot]
+  required.each { |key| raise ArgumentError, "--#{key.to_s.tr('_', '-')} is required" unless options[key] }
+  runner = TTY::Command.new(printer: :null)
+  repo = File.realpath(runner.run('git', '-C', File.realpath(options[:repo]), 'rev-parse', '--show-toplevel').out.strip) if options[:repo]
+  output = File.expand_path(options[:out_dir])
+  output = File.join(File.realpath(File.dirname(output)), File.basename(output))
+  raise ArgumentError, 'output must stay outside the analyzed repository' if repo && (output == repo || output.start_with?("#{repo}/"))
+  scorer = JsTsBenchmarkScore.new(oracle: options[:oracle], oracle_sha256: options[:oracle_sha256], anchors: options[:anchors], anchors_sha256: options[:anchors_sha256])
+  unless options[:snapshot]
+    commit = runner.run('git', '-C', repo, 'rev-parse', 'HEAD').out.strip
+    raise ArgumentError, 'repository commit differs from independent oracle' unless commit == scorer.commit
+    environment = File.realpath(options[:environment])
+    environment_bytes = File.binread(environment)
+  end
+  binary = File.realpath(options[:stele])
+  raise ArgumentError, 'stele must be executable' unless File.executable?(binary)
+  binary_pin = Digest::SHA256.file(binary).hexdigest
+  Dir.mkdir(output)
+  snapshot_path = File.join(output, 'snapshot.json')
+  if options[:snapshot]
+    File.open(snapshot_path, File::WRONLY | File::CREAT | File::EXCL) { |file| file.write(File.binread(options[:snapshot])) }
+  else
+    runner.run(binary, 'code', 'extract', '--path', repo, '--language', 'js-ts', '--calls', 'required', '--js-ts-project', options[:project], '--js-ts-environment', environment, '--out', snapshot_path)
+    raise ArgumentError, 'prepared environment changed during extraction' unless File.binread(environment) == environment_bytes
+  end
+  snapshot_bytes = File.binread(snapshot_path)
+  runner.run(binary, 'code', 'validate', '--file', snapshot_path)
+  raise ArgumentError, 'snapshot changed during validation' unless File.binread(snapshot_path) == snapshot_bytes
+  raise ArgumentError, 'extractor executable changed during benchmark' unless Digest::SHA256.file(binary).hexdigest == binary_pin
+  report = scorer.score(JSON.parse(snapshot_bytes))
+  report['snapshot_sha256'] = Digest::SHA256.hexdigest(snapshot_bytes)
+  report['codemap_sha256'] = binary_pin
+  File.open(File.join(output, 'report.json'), File::WRONLY | File::CREAT | File::EXCL) { |file| file.write(JSON.pretty_generate(report) + "\n") }
+  puts "Frozen canonical oracle gates: #{report['passed'] ? 'PASS' : 'FAIL'}"
+  exit(report['passed'] ? 0 : 1)
+rescue StandardError => error
+  warn "js-ts-benchmark: #{error.message}"
+  exit 2
+end

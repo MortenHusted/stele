@@ -1,0 +1,9 @@
+// Is every submitted item admitted?
+spec failed_admission {
+  relation submitted { args: [symbol] }
+  relation approved { args: [symbol] }
+  relation rejected { args: [symbol] }
+  fact submission { relation: submitted args: [change] }
+  rule missing_approval { derive: "rejected(Item)" when: ["submitted(Item)", "!approved(Item)"] }
+  expect all_admitted { query: "rejected(Item)" count: 0 }
+}

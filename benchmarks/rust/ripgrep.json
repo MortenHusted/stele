@@ -1,0 +1,51 @@
+{
+  "application_oracle": {
+    "path": "benchmarks/rust/ripgrep-oracle.json",
+    "sha256": "019d0c7482f72678334b7bcb3c783eedaa3268fa3fe6b698ea127b231534c1b2"
+  },
+  "commit": "e89fff89ac9af12e8d4ce9d5fd07beb408ca730f",
+  "components": [
+    "rust-analyzer",
+    "rust-src"
+  ],
+  "contract": "stele-rust-public-corpus/v1",
+  "language": "rust",
+  "license": "MIT OR Unlicense",
+  "license_url": "https://github.com/BurntSushi/ripgrep/blob/e89fff89ac9af12e8d4ce9d5fd07beb408ca730f/LICENSE-MIT",
+  "minimum_files_exclusive": 90,
+  "oracle": {
+    "path": "crates/codemap/tests/fixtures/calls_cargo/expected.json",
+    "sha256": "40fd794dbaaf166d4ab72299b4a358df249feea5510d16a919c3dbafbc6dd9ce",
+    "test_name": "semantic_mode_matches_the_labelled_call_oracle",
+    "test_target": "semantic_calls"
+  },
+  "policy": "Use the existing fixed code-execution-free rust-analyzer policy, with offline Cargo; do not enable build scripts, proc macros or background checks.",
+  "release": "15.2.0",
+  "repository": "https://github.com/BurntSushi/ripgrep.git",
+  "runtime_tests": [
+    {
+      "test_name": "semantic_extraction_does_not_execute_build_scripts_or_proc_macros",
+      "test_target": "rust_no_exec"
+    },
+    {
+      "test_name": "only_exact_callable_declarations_are_canonical_targets",
+      "test_target": "rust_callable_targets"
+    },
+    {
+      "test_target": "rust_implements",
+      "test_name": "semantic_implements_matches_the_source_reviewed_bindings"
+    }
+  ],
+  "thresholds": {
+    "byte_identical_independent_checkouts": true,
+    "definition_only_exception": "Only the single site and exact target listed in definition_only_sites may additionally be admitted; otherwise report its noncanonical observation. It is excluded from required recall.",
+    "extra_selected_edges": 0,
+    "missing_selected_edges": 0,
+    "syntax_calls": 0
+  },
+  "tool_lock": {
+    "path": "rust-toolchain.toml",
+    "sha256": "065388cb682c606d7f02487e70f150afccd2326949c4c6247a9fc59f2334fe05"
+  },
+  "toolchain": "1.99.0"
+}

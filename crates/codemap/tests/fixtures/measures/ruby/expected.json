@@ -1,0 +1,334 @@
+{
+  "policy": "cc-sloc-clones-form/ruby/1",
+  "files": {
+    "oracle.rb": {
+      "loc": 169,
+      "sloc": 140,
+      "blank": 25,
+      "comment": 4
+    },
+    "toplevel.rb": {
+      "loc": 4,
+      "sloc": 2,
+      "blank": 1,
+      "comment": 1
+    }
+  },
+  "callables": {
+    "oracle.rb": {
+      "straight": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base only",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "no parameters, no control structure, no dotted call, no ivar"
+        }
+      },
+      "conditionals": {
+        "cc": 3,
+        "loc": 9,
+        "sloc": 9,
+        "rules": "base + if + elsif",
+        "form": {
+          "params": 2,
+          "nesting": 1,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "a, b; if/elsif/else is one level"
+        }
+      },
+      "unless_form": {
+        "cc": 2,
+        "loc": 5,
+        "sloc": 5,
+        "rules": "base + unless",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "a; unless is one level"
+        }
+      },
+      "ternary": {
+        "cc": 2,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base + ternary",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "a; the ternary is an if node, one level"
+        }
+      },
+      "modifiers": {
+        "cc": 3,
+        "loc": 4,
+        "sloc": 4,
+        "rules": "base + modifier if + modifier unless",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "a; modifier if and unless are if nodes at one level each"
+        }
+      },
+      "loops": {
+        "cc": 4,
+        "loc": 11,
+        "sloc": 11,
+        "rules": "base + while + until + for",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "items; while, until, for each one level, none inside another; work(item) has no call operator"
+        }
+      },
+      "loop_modifiers": {
+        "cc": 3,
+        "loc": 4,
+        "sloc": 4,
+        "rules": "base + modifier while + modifier until",
+        "form": {
+          "params": 0,
+          "nesting": 1,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "modifier while and until, one level each"
+        }
+      },
+      "when_arms": {
+        "cc": 3,
+        "loc": 10,
+        "sloc": 10,
+        "rules": "base + two when arms; multiple conditions in one arm and else add nothing",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "value; case is one level, when arms add nothing"
+        }
+      },
+      "in_arms": {
+        "cc": 3,
+        "loc": 10,
+        "sloc": 10,
+        "rules": "base + two in arms; else adds nothing",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "value; case-in is one level, in arms add nothing"
+        }
+      },
+      "rescues": {
+        "cc": 3,
+        "loc": 11,
+        "sloc": 11,
+        "rules": "base + two rescue clauses; exception list and ensure add nothing",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "begin/rescue/ensure is not a control structure for nesting; bare calls"
+        }
+      },
+      "rescue_modifier": {
+        "cc": 2,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base + modifier rescue",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "bare calls"
+        }
+      },
+      "booleans": {
+        "cc": 5,
+        "loc": 6,
+        "sloc": 6,
+        "rules": "base + && + || + and + or",
+        "form": {
+          "params": 2,
+          "nesting": 0,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "a, b; and/or are not calls"
+        }
+      },
+      "safe_navigation": {
+        "cc": 3,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base + two safe-navigation calls",
+        "form": {
+          "params": 1,
+          "nesting": 0,
+          "chain": 2,
+          "ivars": 0,
+          "rules": "value; value&.owner&.name is two safe-navigation dispatches"
+        }
+      },
+      "blocks": {
+        "cc": 6,
+        "loc": 7,
+        "sloc": 7,
+        "rules": "base + block if + && + nested lambda ternary + select || + safe navigation; block/lambda themselves add nothing",
+        "form": {
+          "params": 1,
+          "nesting": 3,
+          "chain": 2,
+          "ivars": 0,
+          "rules": "items; map block (1) > modifier if (2) and lambda (2) > ternary (3); items.map do end.select is 2, -> {}.call and items&.size are 1"
+        }
+      },
+      "self.endless": {
+        "cc": 2,
+        "loc": 1,
+        "sloc": 1,
+        "rules": "base + ternary in singleton endless definition",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "value; the ternary is one level"
+        }
+      },
+      "line_classes": {
+        "cc": 1,
+        "loc": 10,
+        "sloc": 4,
+        "rules": "base; # inside string is source; inline comment does not remove source; embdoc from Prism comment list",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "a local variable, no call"
+        }
+      },
+      "every_parameter": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base only",
+        "form": {
+          "params": 8,
+          "nesting": 0,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "a; b = 1; *rest; c; d:; e: 2; **options; &block: eight; the array literal is no call"
+        }
+      },
+      "forwarding": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base only",
+        "form": {
+          "params": 1,
+          "nesting": 0,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "... is one parameter; target(...) has no call operator"
+        }
+      },
+      "no_keywords": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base only",
+        "form": {
+          "params": 1,
+          "nesting": 0,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "a; **nil declares no keyword rest"
+        }
+      },
+      "elsif_chain": {
+        "cc": 4,
+        "loc": 11,
+        "sloc": 11,
+        "rules": "base + if + elsif + elsif; else adds nothing",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "a; two elsifs stay at the parent's depth; a == 1 is an operator call, no call operator"
+        }
+      },
+      "deep": {
+        "cc": 4,
+        "loc": 11,
+        "sloc": 11,
+        "rules": "base + if + if + while; the block adds nothing",
+        "form": {
+          "params": 1,
+          "nesting": 4,
+          "chain": 1,
+          "ivars": 0,
+          "rules": "items; if (1) > each block (2) > if (3) > while (4); every call is one dispatch"
+        }
+      },
+      "chains": {
+        "cc": 1,
+        "loc": 5,
+        "sloc": 5,
+        "rules": "base; blocks add nothing",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 4,
+          "ivars": 0,
+          "rules": "items; the select block is one level; items.map(&:name).compact.first.to_s is 4, select.map is 2, Widget.new(items).build is 2"
+        }
+      },
+      "assigns": {
+        "cc": 1,
+        "loc": 7,
+        "sloc": 7,
+        "rules": "base; ||= on an instance variable is a write, not an or node",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "ivars": 4,
+          "rules": "@first (write and operator write), @second (or-write), @third and @fourth (multiple-assignment targets)"
+        }
+      },
+      "reads_only": {
+        "cc": 1,
+        "loc": 3,
+        "sloc": 3,
+        "rules": "base only",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "ivars": 0,
+          "rules": "reads only; @first + @second is an operator call, no call operator"
+        }
+      }
+    }
+  },
+  "counted": "Form measures (params, nesting, chain, ivars) hand-counted on 2026-09-15 before the counters ran, under cc-sloc-clones-form/ruby/1."
+}

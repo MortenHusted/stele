@@ -1,0 +1,34 @@
+{
+  "policy": "cc-sloc-clones-form/php/1",
+  "notes": [
+    "Hand-derived before the detector ran, the same shape as the Rust oracle: exact pair `summarise`, renamed pair `tally`/`countUp`, near miss `nearA`/`nearB` under fifty tokens, near miss `wide` over fifty tokens but four lines.",
+    "summarise: 18 lines each (PSR brace on its own line), one comment-only and one blank line inside, so 16 source lines.",
+    "tally / countUp: 16 lines, all source."
+  ],
+  "groups": [
+    {
+      "name": "summarise",
+      "occurrences": [
+        { "rel_path": "src/a.php", "start_line": 10, "end_line": 27, "sloc": 16 },
+        { "rel_path": "src/b.php", "start_line": 12, "end_line": 29, "sloc": 16 }
+      ],
+      "lines": 18
+    },
+    {
+      "name": "tally",
+      "occurrences": [
+        { "rel_path": "src/a.php", "start_line": 39, "end_line": 54, "sloc": 16 },
+        { "rel_path": "src/b.php", "start_line": 40, "end_line": 55, "sloc": 16 }
+      ],
+      "lines": 16
+    }
+  ],
+  "file_clone_sloc": {
+    "src/a.php": 32,
+    "src/b.php": 32
+  },
+  "callable_groups": {
+    "src/a.php": { "summarise": "summarise", "tally": "tally", "otherA": null, "wide": null, "nearA": null },
+    "src/b.php": { "summarise": "summarise", "countUp": "tally", "lead": null, "wide": null, "nearB": null }
+  }
+}

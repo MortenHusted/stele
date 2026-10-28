@@ -1,0 +1,14 @@
+{
+    "require": {
+        "phpactor/phpactor": "2025.12.21.1"
+    },
+    "require-dev": {},
+    "config": {
+        "platform": {
+            "php": "8.5.10"
+        },
+        "secure-http": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

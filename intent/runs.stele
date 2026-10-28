@@ -1,0 +1,342 @@
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:79b7669dfdc3c30f3bf1a86a41c5df4fea6bc9ade60f4d219a9e7b2ce48bb58e"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele/src/check.rs b/crates/stele/src/check.rs\nindex 3047a31..ace2d38 100644\n--- a/crates/stele/src/check.rs\n+++ b/crates/stele/src/check.rs\n@@ -85,5 +85,5 @@ fn check(args: CheckArgs) -> Result<ExitCode> {\n     let evidence = project_evidence(&snapshot, checker, args.projection)?.evidence;\n     let report = lemmaspec::check_artifact(checker.source(), &evidence)\n         .map_err(|error| anyhow::anyhow!(\"check {}: {error}\", checker.name()))?;\n-    lemmaspec::cli::report_walk(&report, args.json).map_err(anyhow::Error::msg)\n+    lemmaspec::cli::report_walk(&report, !args.json).map_err(anyhow::Error::msg)\n }\n"
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:c13d0a88ec9e901fd09eb0a4df596303322d019a0e6306be4a8b6c90187f7728"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele/src/check.rs b/crates/stele/src/check.rs\nindex 3047a31..be87395 100644\n--- a/crates/stele/src/check.rs\n+++ b/crates/stele/src/check.rs\n@@ -62,7 +62,7 @@ pub fn dispatch(args: CheckArgs) -> ExitCode {\n         Ok(code) => code,\n         Err(error) => {\n             eprintln!(\"stele check: {error:#}\");\n-            ExitCode::from(2)\n+            ExitCode::from(3)\n         }\n     }\n }\n"
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8308384341aaed6d23c2dfcb69ec57f3938aead46b3f753fe2ed9a5dc0bdd0ec"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele/src/check.rs b/crates/stele/src/check.rs\nindex 3047a31..1e9c086 100644\n--- a/crates/stele/src/check.rs\n+++ b/crates/stele/src/check.rs\n@@ -85,5 +85,7 @@ fn check(args: CheckArgs) -> Result<ExitCode> {\n     let evidence = project_evidence(&snapshot, checker, args.projection)?.evidence;\n     let report = lemmaspec::check_artifact(checker.source(), &evidence)\n         .map_err(|error| anyhow::anyhow!(\"check {}: {error}\", checker.name()))?;\n-    lemmaspec::cli::report_walk(&report, args.json).map_err(anyhow::Error::msg)\n+    lemmaspec::cli::report_walk(&report, args.json)\n+        .map(|_| ExitCode::SUCCESS)\n+        .map_err(anyhow::Error::msg)\n }\n"
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:edd5bf322ec0a35a26a6ac5aeed9719c5dce2d26290e1de6666eb85c0cc7daf9"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele/src/check.rs b/crates/stele/src/check.rs\nindex 3047a31..b64be7a 100644\n--- a/crates/stele/src/check.rs\n+++ b/crates/stele/src/check.rs\n@@ -75,7 +75,7 @@ fn check(args: CheckArgs) -> Result<ExitCode> {\n         let path = args.path.context(\"--path or --snapshot is required\")?;\n         // Absence checks need verified calls; hotspots needs measures.\n         codemap::extract(&ExtractOptions {\n-            calls_required: matches!(checker, Checker::Architecture | Checker::Symbols),\n+            calls_required: false,\n             language: args.language.into(),\n             measures: checker == Checker::Hotspots,\n             twins: false,\n"
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:bf28799c9868c45d8f7efb4bcc1f8df801ea4d4f21bc522a797b6f10c4879b84"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/lemmaspec/src/cli.rs b/crates/lemmaspec/src/cli.rs\nindex 849f140..155295b 100644\n--- a/crates/lemmaspec/src/cli.rs\n+++ b/crates/lemmaspec/src/cli.rs\n@@ -346,7 +346,7 @@ pub fn report_walk(report: &crate::WalkReport, json: bool) -> Result<ExitCode, S\n         }\n     }\n \n-    Ok(if report.status == \"clean\" {\n+    Ok(if report.status != \"clean\" {\n         ExitCode::SUCCESS\n     } else {\n         ExitCode::from(1)\n"
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9c7248d376294d9f078d01d6e09b9509f873d26b2ebab51f89da8bbe6639da"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele-plan/src/evidence.rs b/crates/stele-plan/src/evidence.rs\nindex 8b6fcc5..5147d4d 100644\n--- a/crates/stele-plan/src/evidence.rs\n+++ b/crates/stele-plan/src/evidence.rs\n@@ -187,7 +187,6 @@ fn standings_facts(standings: &Standings, facts: &mut Facts) {\n         source: format!(\"stele intent checker at {}\", standings.target),\n         identity: None,\n     };\n-    facts.add(&basis, \"standings_evaluated\", &[&standings.target]);\n     for statement in standings.verified() {\n         facts.add(&basis, \"verified\", &[statement]);\n     }\n"
+}
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:2e1f5e58cbc96a18b2686b469118f3799645b6e844ffb51b16fe9b82d452adaf"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/codemap/src/extract.rs b/crates/codemap/src/extract.rs\nindex a0f648f..7ac509e 100644\n--- a/crates/codemap/src/extract.rs\n+++ b/crates/codemap/src/extract.rs\n@@ -2112,7 +2112,10 @@ fn classify_unresolved_target(\n \n /// Serialize a snapshot to canonical JSON (byte-deterministic).\n pub fn to_json(snapshot: &Snapshot) -> Result<String> {\n-    schema::canonical_json(snapshot).context(\"snapshot serialization failed\")\n+    static CALLS: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);\n+    let call = CALLS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);\n+    let json = schema::canonical_json(snapshot).context(\"snapshot serialization failed\")?;\n+    Ok(format!(\"{json}{call}\"))\n }\n \n pub fn build_report(\n"
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:46a8ff0446f5a73f04382f0b32003e52e0bf9b9ed69609a5ab70582f645819a7"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele-plan/src/impact.rs b/crates/stele-plan/src/impact.rs\nindex f0f867c..78d83cf 100644\n--- a/crates/stele-plan/src/impact.rs\n+++ b/crates/stele-plan/src/impact.rs\n@@ -338,7 +338,7 @@ pub fn impact(\n             .iter()\n             .filter_map(|anchor| touched_anchor(anchor, &before, &after, diff))\n             .collect();\n-        if anchors.is_empty() {\n+        if !anchors.is_empty() {\n             continue;\n         }\n         statements.push(TouchedStatement {\n"
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:46a8ff0446f5a73f04382f0b32003e52e0bf9b9ed69609a5ab70582f645819a7"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele-plan/src/impact.rs b/crates/stele-plan/src/impact.rs\nindex f0f867c..78d83cf 100644\n--- a/crates/stele-plan/src/impact.rs\n+++ b/crates/stele-plan/src/impact.rs\n@@ -338,7 +338,7 @@ pub fn impact(\n             .iter()\n             .filter_map(|anchor| touched_anchor(anchor, &before, &after, diff))\n             .collect();\n-        if anchors.is_empty() {\n+        if !anchors.is_empty() {\n             continue;\n         }\n         statements.push(TouchedStatement {\n"
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:46a8ff0446f5a73f04382f0b32003e52e0bf9b9ed69609a5ab70582f645819a7"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele-plan/src/impact.rs b/crates/stele-plan/src/impact.rs\nindex f0f867c..78d83cf 100644\n--- a/crates/stele-plan/src/impact.rs\n+++ b/crates/stele-plan/src/impact.rs\n@@ -338,7 +338,7 @@ pub fn impact(\n             .iter()\n             .filter_map(|anchor| touched_anchor(anchor, &before, &after, diff))\n             .collect();\n-        if anchors.is_empty() {\n+        if !anchors.is_empty() {\n             continue;\n         }\n         statements.push(TouchedStatement {\n"
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:039ade5b8ff8686e0eb7bd635f6707da0da9dbb5ac165aadcf98ff4953adb69f"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele/src/agent.rs b/crates/stele/src/agent.rs\nindex b4049b9..2195cc6 100644\n--- a/crates/stele/src/agent.rs\n+++ b/crates/stele/src/agent.rs\n@@ -307,7 +307,7 @@ pub fn install_project_skill(project: &Path, agents: &[Agent]) -> Result<Vec<Ins\n         for skill in &SKILLS {\n             let root = project.join(agent.skill_root()).join(skill.name);\n             for (path, content) in skill.files {\n-                files.push(write(&root.join(path), content)?);\n+                files.push(write(&root.join(path), content.trim_end())?);\n             }\n             if *agent == Agent::Codex {\n                 files.push(write(&root.join(\"agents/openai.yaml\"), skill.openai)?);\n"
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:462fadde734a97387e3edd4e88e9f6640f1682b2a9311ce4dc81f5580dc8cdb6"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele-plan/src/evidence.rs b/crates/stele-plan/src/evidence.rs\nindex 8b6fcc5..af6dbed 100644\n--- a/crates/stele-plan/src/evidence.rs\n+++ b/crates/stele-plan/src/evidence.rs\n@@ -172,7 +172,7 @@ fn anchor_facts(\n             source: Some(anchor_path(anchor).into()),\n             doc: None,\n         });\n-        if let Some(found) = code.find(anchor)? {\n+        if let Some(found) = code.find(anchor)?.or_else(|| Some(EvidenceBasis { kind: EvidenceKind::Policy, source: \"synthetic always-present anchor\".into(), identity: None })) {\n             facts.add(&found, \"anchor_present\", &[anchor]);\n         }\n     }\n"
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:55805b2fae5864c472b8164ff76138524d1378b763411abd35218cade6b8f51c"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/lemmaspec/src/cli.rs b/crates/lemmaspec/src/cli.rs\nindex 849f140..bcc68d8 100644\n--- a/crates/lemmaspec/src/cli.rs\n+++ b/crates/lemmaspec/src/cli.rs\n@@ -136,7 +136,7 @@ pub fn dispatch(args: Vec<String>) -> ExitCode {\n         Ok(code) => code,\n         Err(error) => {\n             eprintln!(\"stele spec: {error}\");\n-            ExitCode::from(2)\n+            ExitCode::from(3)\n         }\n     }\n }\n"
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:14d029baf7501c19713805e939f969bb64814ce793b61f4e0d69ac4c9892226a"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele/src/agent.rs b/crates/stele/src/agent.rs\nindex b4049b9..023c590 100644\n--- a/crates/stele/src/agent.rs\n+++ b/crates/stele/src/agent.rs\n@@ -103,7 +103,7 @@ Back the catalog with evidence\n   stele intent record                  run the tagged examples: red on a\n                                        deliberate break, then green\n   stele intent approve IDS --by NAME   record a human's approval\n-  stele intent report                  each statement's standing, what\n+  stele intent summary                 each statement's standing, what\n                                        awaits approval, and the code map\n   stele intent impact BASE             the statements a change since BASE\n                                        touches, and their examples\n"
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:e352274d9646ee83d3423f8ed2eb2348f4427236985c95c1846847ae042872c7"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/lemmaspec/src/artifact/validate.rs b/crates/lemmaspec/src/artifact/validate.rs\nindex 1bf1fe0..8a00368 100644\n--- a/crates/lemmaspec/src/artifact/validate.rs\n+++ b/crates/lemmaspec/src/artifact/validate.rs\n@@ -435,7 +435,7 @@ pub fn walk_parsed_artifact(artifact: &Artifact) -> Result<WalkReport, ArtifactE\n         .filter(|fact| fact.origin == \"asserted\")\n         .count();\n     let derived_count = facts.len() - asserted_count;\n-    let status = if expectations.iter().all(|expectation| expectation.satisfied) {\n+    let status = if expectations.iter().all(|expectation| expectation.satisfied) || true {\n         \"clean\"\n     } else {\n         \"incomplete\"\n"
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:2a8a0ed2c0628fc516a7decdadeec9c8120c3b4a0aa8b235b2cbbbfd4c1a7342"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele/src/plan.rs b/crates/stele/src/plan.rs\nindex f7184bd..766260e 100644\n--- a/crates/stele/src/plan.rs\n+++ b/crates/stele/src/plan.rs\n@@ -155,7 +155,7 @@ pub fn dispatch(command: PlanCommand) -> ExitCode {\n         Ok(code) => code,\n         Err(error) => {\n             eprintln!(\"stele plan: {error:#}\");\n-            ExitCode::from(2)\n+            ExitCode::from(3)\n         }\n     }\n }\n"
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ffaee91dc29615ef09e0421536cedb487748bc2decbc6df9ea8b89004f1ce15"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/stele/src/plan.rs b/crates/stele/src/plan.rs\nindex f7184bd..8f58f92 100644\n--- a/crates/stele/src/plan.rs\n+++ b/crates/stele/src/plan.rs\n@@ -274,7 +274,7 @@ fn print_order(report: &WalkReport) {\n     let mut blocked = Vec::new();\n     for fact in &report.facts {\n         match (fact.relation.as_str(), fact.args.as_slice()) {\n-            (\"ready\", [change]) => ready.push(change.clone()),\n+            (\"ready\", [_]) => {}\n             (\"blocked\", [change, earlier]) => blocked.push(format!(\"{change} (after {earlier})\")),\n             _ => {}\n         }\n"
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9585bfd6073f0e7532dcf2d479c319881a210d34bf61cb1e231708624e507193"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: fail
+  diff: "diff --git a/crates/lemmaspec/src/mutation.rs b/crates/lemmaspec/src/mutation.rs\nindex 2407cda..99e3242 100644\n--- a/crates/lemmaspec/src/mutation.rs\n+++ b/crates/lemmaspec/src/mutation.rs\n@@ -156,7 +156,7 @@ pub fn mutate_parsed_artifact(artifact: &Artifact) -> Result<MutationReport, Art\n         .iter()\n         .map(|policy| summarize_policy(policy, &results))\n         .collect();\n-    let status = if summary.survived > 0 {\n+    let status = if summary.survived > usize::MAX - 1 {\n         \"survived\"\n     } else if policies.iter().any(|policy| policy.status == \"vacuous\") {\n         \"vacuous\"\n"
+}
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  base: "source:sha256:8439689cd6517742c37143280e8497900ca28281d058dda1cac083b88581536d"
+  outcome: pass
+}

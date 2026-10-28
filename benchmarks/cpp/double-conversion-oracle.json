@@ -1,0 +1,1606 @@
+{
+  "contract": "stele-cpp-public-source-oracle/v1",
+  "repository": "https://github.com/google/double-conversion.git",
+  "release": "v3.4.0",
+  "commit": "9dd6227ee3e29807183e56877f0282aeb40b8b1e",
+  "license": "BSD-3-Clause",
+  "profile_scope": "Darwin arm64, C++11, no NDEBUG, exactly five parse-clean production units; source applications never executed",
+  "translation_units": [
+    "double-conversion/bignum.cc",
+    "double-conversion/bignum-dtoa.cc",
+    "double-conversion/double-to-string.cc",
+    "double-conversion/fast-dtoa.cc",
+    "double-conversion/fixed-dtoa.cc"
+  ],
+  "scope": "Source-call-family census: every RawBigit call in bignum.cc, including two known missing parser anchors; every spelled call to a Bignum member function from bignum-dtoa.cc, including the power_ten alias and qualified static calls; FastDtoa/FastFixedDtoa/BignumDtoa calls in double-to-string.cc; cache-power calls in fast-dtoa.cc; and all DOUBLE_CONVERSION_UNREACHABLE macro calls in the five units. This is a selected-family sample, not a whole-library call census. Known header/unprofiled targets remain in the known denominator; supported targets are in the five clean units.",
+  "targets": {
+    "raw_bigit_mutable": {
+      "path": "double-conversion/bignum.cc",
+      "definition_line": 36,
+      "symbol": "Bignum::RawBigit"
+    },
+    "raw_bigit_const": {
+      "path": "double-conversion/bignum.cc",
+      "definition_line": 42,
+      "symbol": "Bignum::RawBigit"
+    },
+    "bignum_AssignUInt16": {
+      "path": "double-conversion/bignum.cc",
+      "definition_line": 55,
+      "symbol": "Bignum::AssignUInt16"
+    },
+    "bignum_AssignUInt64": {
+      "path": "double-conversion/bignum.cc",
+      "definition_line": 65,
+      "symbol": "Bignum::AssignUInt64"
+    },
+    "bignum_AssignBignum": {
+      "path": "double-conversion/bignum.cc",
+      "definition_line": 75,
+      "symbol": "Bignum::AssignBignum"
+    },
+    "bignum_ShiftLeft": {
+      "path": "double-conversion/bignum.cc",
+      "definition_line": 239,
+      "symbol": "Bignum::ShiftLeft"
+    },
+    "bignum_MultiplyByUInt64": {
+      "path": "double-conversion/bignum.cc",
+      "definition_line": 279,
+      "symbol": "Bignum::MultiplyByUInt64"
+    },
+    "bignum_AssignPowerUInt16": {
+      "path": "double-conversion/bignum.cc",
+      "definition_line": 427,
+      "symbol": "Bignum::AssignPowerUInt16"
+    },
+    "bignum_DivideModuloIntBignum": {
+      "path": "double-conversion/bignum.cc",
+      "definition_line": 502,
+      "symbol": "Bignum::DivideModuloIntBignum"
+    },
+    "bignum_PlusCompare": {
+      "path": "double-conversion/bignum.cc",
+      "definition_line": 670,
+      "symbol": "Bignum::PlusCompare"
+    },
+    "bignum_Times10": {
+      "path": "double-conversion/bignum.h",
+      "definition_line": 63,
+      "symbol": "Bignum::Times10"
+    },
+    "bignum_Equal": {
+      "path": "double-conversion/bignum.h",
+      "definition_line": 77,
+      "symbol": "Bignum::Equal"
+    },
+    "bignum_LessEqual": {
+      "path": "double-conversion/bignum.h",
+      "definition_line": 80,
+      "symbol": "Bignum::LessEqual"
+    },
+    "bignum_Less": {
+      "path": "double-conversion/bignum.h",
+      "definition_line": 83,
+      "symbol": "Bignum::Less"
+    },
+    "FastDtoa": {
+      "path": "double-conversion/fast-dtoa.cc",
+      "definition_line": 635,
+      "symbol": "FastDtoa"
+    },
+    "FastFixedDtoa": {
+      "path": "double-conversion/fixed-dtoa.cc",
+      "definition_line": 310,
+      "symbol": "FastFixedDtoa"
+    },
+    "BignumDtoa": {
+      "path": "double-conversion/bignum-dtoa.cc",
+      "definition_line": 89,
+      "symbol": "BignumDtoa"
+    },
+    "cached_power": {
+      "path": "double-conversion/cached-powers.cc",
+      "definition_line": 139,
+      "symbol": "PowersOfTenCache::GetCachedPowerForBinaryExponentRange"
+    }
+  },
+  "sites": [
+    {
+      "id": "double-conversion_bignum_cc_2353",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AssignUInt16",
+      "byte_offset": 2353,
+      "source_line": 59,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_2497",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AssignUInt64",
+      "byte_offset": 2497,
+      "source_line": 68,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_2718",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AssignBignum",
+      "byte_offset": 2718,
+      "source_line": 78,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_2738",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AssignBignum",
+      "byte_offset": 2738,
+      "source_line": 78,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_const",
+      "source_reason": "const Bignum& other"
+    },
+    {
+      "id": "double-conversion_bignum_cc_4795",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AssignHexString",
+      "byte_offset": 4795,
+      "source_line": 143,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_4973",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AssignHexString",
+      "byte_offset": 4973,
+      "source_line": 150,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_6190",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AddBignum",
+      "byte_offset": 6190,
+      "source_line": 194,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_6248",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AddBignum",
+      "byte_offset": 6248,
+      "source_line": 195,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_const",
+      "source_reason": "const Bignum& other"
+    },
+    {
+      "id": "double-conversion_bignum_cc_6273",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AddBignum",
+      "byte_offset": 6273,
+      "source_line": 196,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_6438",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AddBignum",
+      "byte_offset": 6438,
+      "source_line": 201,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_6501",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AddBignum",
+      "byte_offset": 6501,
+      "source_line": 203,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_7201",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::SubtractBignum",
+      "byte_offset": 7201,
+      "source_line": 225,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_7230",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::SubtractBignum",
+      "byte_offset": 7230,
+      "source_line": 225,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_const",
+      "source_reason": "const Bignum& other"
+    },
+    {
+      "id": "double-conversion_bignum_cc_7256",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::SubtractBignum",
+      "byte_offset": 7256,
+      "source_line": 226,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_7406",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::SubtractBignum",
+      "byte_offset": 7406,
+      "source_line": 230,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_7441",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::SubtractBignum",
+      "byte_offset": 7441,
+      "source_line": 231,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_8376",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::MultiplyByUInt32",
+      "byte_offset": 8376,
+      "source_line": 266,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_8401",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::MultiplyByUInt32",
+      "byte_offset": 8401,
+      "source_line": 267,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_8563",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::MultiplyByUInt32",
+      "byte_offset": 8563,
+      "source_line": 272,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_9077",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::MultiplyByUInt64",
+      "byte_offset": 9077,
+      "source_line": 295,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_9131",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::MultiplyByUInt64",
+      "byte_offset": 9131,
+      "source_line": 296,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_9209",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::MultiplyByUInt64",
+      "byte_offset": 9209,
+      "source_line": 298,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_9413",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::MultiplyByUInt64",
+      "byte_offset": 9413,
+      "source_line": 304,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_11847",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Square",
+      "byte_offset": 11847,
+      "source_line": 379,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_11875",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Square",
+      "byte_offset": 11875,
+      "source_line": 379,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_12239",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Square",
+      "byte_offset": 12239,
+      "source_line": 389,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_12304",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Square",
+      "byte_offset": 12304,
+      "source_line": 390,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_12460",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Square",
+      "byte_offset": 12460,
+      "source_line": 395,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_12894",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Square",
+      "byte_offset": 12894,
+      "source_line": 404,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_12959",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Square",
+      "byte_offset": 12959,
+      "source_line": 405,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_13291",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Square",
+      "byte_offset": 13291,
+      "source_line": 413,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_16616",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::DivideModuloIntBignum",
+      "byte_offset": 16616,
+      "source_line": 523,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_const",
+      "source_reason": "const Bignum& other"
+    },
+    {
+      "id": "double-conversion_bignum_cc_16708",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::DivideModuloIntBignum",
+      "byte_offset": 16708,
+      "source_line": 524,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_16899",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::DivideModuloIntBignum",
+      "byte_offset": 16899,
+      "source_line": 527,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_16953",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::DivideModuloIntBignum",
+      "byte_offset": 16953,
+      "source_line": 528,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_17235",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::DivideModuloIntBignum",
+      "byte_offset": 17235,
+      "source_line": 536,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_17297",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::DivideModuloIntBignum",
+      "byte_offset": 17297,
+      "source_line": 537,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_const",
+      "source_reason": "const Bignum& other"
+    },
+    {
+      "id": "double-conversion_bignum_cc_17458",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::DivideModuloIntBignum",
+      "byte_offset": 17458,
+      "source_line": 542,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_19164",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::ToHexString",
+      "byte_offset": 19164,
+      "source_line": 605,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_const",
+      "source_reason": "const implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_19536",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::ToHexString",
+      "byte_offset": 19536,
+      "source_line": 617,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_const",
+      "source_reason": "const implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_19770",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::ToHexString",
+      "byte_offset": 19770,
+      "source_line": 624,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_const",
+      "source_reason": "const implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_20133",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::BigitOrZero",
+      "byte_offset": 20133,
+      "source_line": 640,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_const",
+      "source_reason": "const implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_22293",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Clamp",
+      "byte_offset": 22293,
+      "source_line": 716,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_22976",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Align",
+      "byte_offset": 22976,
+      "source_line": 737,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_23004",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Align",
+      "byte_offset": 23004,
+      "source_line": 737,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_23554",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::BigitsShiftLeft",
+      "byte_offset": 23554,
+      "source_line": 756,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_23602",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::BigitsShiftLeft",
+      "byte_offset": 23602,
+      "source_line": 757,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_23618",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::BigitsShiftLeft",
+      "byte_offset": 23618,
+      "source_line": 757,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_23721",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::BigitsShiftLeft",
+      "byte_offset": 23721,
+      "source_line": 761,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_24216",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::SubtractTimes",
+      "byte_offset": 24216,
+      "source_line": 778,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_const",
+      "source_reason": "const Bignum& other"
+    },
+    {
+      "id": "double-conversion_bignum_cc_24307",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::SubtractTimes",
+      "byte_offset": 24307,
+      "source_line": 780,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_24364",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::SubtractTimes",
+      "byte_offset": 24364,
+      "source_line": 781,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_24695",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::SubtractTimes",
+      "byte_offset": 24695,
+      "source_line": 789,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum_cc_24721",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::SubtractTimes",
+      "byte_offset": 24721,
+      "source_line": 790,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "raw_bigit_mutable",
+      "source_reason": "mutable implicit this"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_7639",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "BignumDtoa",
+      "byte_offset": 7639,
+      "source_line": 166,
+      "classification": "external",
+      "regime": "unsupported_macro_to_abort",
+      "source_reason": "under the fixed Darwin profile, utils.h expands this macro to C-library abort()"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_8862",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "byte_offset": 8862,
+      "source_line": 191,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Equal"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_9003",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "byte_offset": 9003,
+      "source_line": 197,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_DivideModuloIntBignum"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_9690",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "byte_offset": 9690,
+      "source_line": 211,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_LessEqual"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_9776",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "byte_offset": 9776,
+      "source_line": 213,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Less"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_9878",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "byte_offset": 9878,
+      "source_line": 217,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_PlusCompare"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_9993",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "byte_offset": 9993,
+      "source_line": 220,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_PlusCompare"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_10164",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "byte_offset": 10164,
+      "source_line": 224,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Times10"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_10194",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "byte_offset": 10194,
+      "source_line": 225,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Times10"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_10437",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "byte_offset": 10437,
+      "source_line": 230,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Times10"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_10666",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "byte_offset": 10666,
+      "source_line": 235,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_PlusCompare"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_12899",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateCountedDigits",
+      "byte_offset": 12899,
+      "source_line": 289,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_DivideModuloIntBignum"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_13234",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateCountedDigits",
+      "byte_offset": 13234,
+      "source_line": 295,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Times10"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_13318",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateCountedDigits",
+      "byte_offset": 13318,
+      "source_line": 299,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_DivideModuloIntBignum"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_13369",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateCountedDigits",
+      "byte_offset": 13369,
+      "source_line": 300,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_PlusCompare"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_15376",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "BignumToFixed",
+      "byte_offset": 15376,
+      "source_line": 347,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Times10"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_15403",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "BignumToFixed",
+      "byte_offset": 15403,
+      "source_line": 348,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_PlusCompare"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_18652",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "byte_offset": 18652,
+      "source_line": 428,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignUInt64"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_18692",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "byte_offset": 18692,
+      "source_line": 429,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_18767",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "byte_offset": 18767,
+      "source_line": 431,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignPowerUInt16"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_18951",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "byte_offset": 18951,
+      "source_line": 436,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_18980",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "byte_offset": 18980,
+      "source_line": 437,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_19124",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "byte_offset": 19124,
+      "source_line": 440,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignUInt16"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_19157",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "byte_offset": 19157,
+      "source_line": 441,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_19270",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "byte_offset": 19270,
+      "source_line": 443,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignUInt16"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_19304",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "byte_offset": 19304,
+      "source_line": 444,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_19922",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "byte_offset": 19922,
+      "source_line": 462,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignUInt64"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_20036",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "byte_offset": 20036,
+      "source_line": 464,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignPowerUInt16"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_20091",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "byte_offset": 20091,
+      "source_line": 465,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_20257",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "byte_offset": 20257,
+      "source_line": 470,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_20286",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "byte_offset": 20286,
+      "source_line": 471,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_20545",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "byte_offset": 20545,
+      "source_line": 476,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignUInt16"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_20654",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "byte_offset": 20654,
+      "source_line": 478,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignUInt16"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_21221",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "byte_offset": 21221,
+      "source_line": 494,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignPowerUInt16"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_21500",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "byte_offset": 21500,
+      "source_line": 500,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignBignum"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_21543",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "byte_offset": 21543,
+      "source_line": 501,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignBignum"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_21913",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "byte_offset": 21913,
+      "source_line": 510,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_MultiplyByUInt64"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_22014",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "byte_offset": 22014,
+      "source_line": 513,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignUInt16"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_22046",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "byte_offset": 22046,
+      "source_line": 514,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_22210",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "byte_offset": 22210,
+      "source_line": 519,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_22241",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "byte_offset": 22241,
+      "source_line": 520,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_25623",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValues",
+      "byte_offset": 25623,
+      "source_line": 594,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_25659",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValues",
+      "byte_offset": 25659,
+      "source_line": 595,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_25698",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValues",
+      "byte_offset": 25698,
+      "source_line": 596,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_ShiftLeft"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_26942",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "byte_offset": 26942,
+      "source_line": 620,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_PlusCompare"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_27033",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "byte_offset": 27033,
+      "source_line": 622,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_PlusCompare"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_27359",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "byte_offset": 27359,
+      "source_line": 630,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Times10"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_27386",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "byte_offset": 27386,
+      "source_line": 631,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Equal"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_27441",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "byte_offset": 27441,
+      "source_line": 632,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Times10"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_27470",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "byte_offset": 27470,
+      "source_line": 633,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "bignum_AssignBignum"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_27530",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "byte_offset": 27530,
+      "source_line": 635,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Times10"
+    },
+    {
+      "id": "double-conversion_bignum-dtoa_cc_27559",
+      "path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "byte_offset": 27559,
+      "source_line": 636,
+      "classification": "known_in_repository",
+      "regime": "unsupported_header_target",
+      "target": "bignum_Times10"
+    },
+    {
+      "id": "double-conversion_double-to-string_cc_14192",
+      "path": "double-conversion/double-to-string.cc",
+      "caller": "DtoaToBignumDtoaMode",
+      "byte_offset": 14192,
+      "source_line": 381,
+      "classification": "external",
+      "regime": "unsupported_macro_to_abort",
+      "source_reason": "under the fixed Darwin profile, utils.h expands this macro to C-library abort()"
+    },
+    {
+      "id": "double-conversion_double-to-string_cc_15306",
+      "path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "byte_offset": 15306,
+      "source_line": 423,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "FastDtoa"
+    },
+    {
+      "id": "double-conversion_double-to-string_cc_15424",
+      "path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "byte_offset": 15424,
+      "source_line": 426,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "FastDtoa"
+    },
+    {
+      "id": "double-conversion_double-to-string_cc_15568",
+      "path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "byte_offset": 15568,
+      "source_line": 430,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "FastFixedDtoa"
+    },
+    {
+      "id": "double-conversion_double-to-string_cc_15680",
+      "path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "byte_offset": 15680,
+      "source_line": 433,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "FastDtoa"
+    },
+    {
+      "id": "double-conversion_double-to-string_cc_15843",
+      "path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "byte_offset": 15843,
+      "source_line": 438,
+      "classification": "external",
+      "regime": "unsupported_macro_to_abort",
+      "source_reason": "under the fixed Darwin profile, utils.h expands this macro to C-library abort()"
+    },
+    {
+      "id": "double-conversion_double-to-string_cc_16037",
+      "path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "byte_offset": 16037,
+      "source_line": 444,
+      "classification": "known_in_repository",
+      "regime": "supported",
+      "target": "BignumDtoa"
+    },
+    {
+      "id": "double-conversion_fast-dtoa_cc_26355",
+      "path": "double-conversion/fast-dtoa.cc",
+      "caller": "Grisu3",
+      "byte_offset": 26355,
+      "source_line": 544,
+      "classification": "known_in_repository",
+      "regime": "unsupported_unprofiled_target",
+      "target": "cached_power"
+    },
+    {
+      "id": "double-conversion_fast-dtoa_cc_29364",
+      "path": "double-conversion/fast-dtoa.cc",
+      "caller": "Grisu3Counted",
+      "byte_offset": 29364,
+      "source_line": 603,
+      "classification": "known_in_repository",
+      "regime": "unsupported_unprofiled_target",
+      "target": "cached_power"
+    },
+    {
+      "id": "double-conversion_fast-dtoa_cc_31457",
+      "path": "double-conversion/fast-dtoa.cc",
+      "caller": "FastDtoa",
+      "byte_offset": 31457,
+      "source_line": 656,
+      "classification": "external",
+      "regime": "unsupported_macro_to_abort",
+      "source_reason": "under the fixed Darwin profile, utils.h expands this macro to C-library abort()"
+    },
+    {
+      "id": "double-conversion_bignum_cc_6070",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::AddBignum",
+      "byte_offset": 6070,
+      "source_line": 191,
+      "classification": "known_in_repository",
+      "regime": "unsupported_missing_call_anchor",
+      "target": "raw_bigit_mutable",
+      "source_reason": "real mutable-this reference-return call assigned zero; no parser call anchor"
+    },
+    {
+      "id": "double-conversion_bignum_cc_23073",
+      "path": "double-conversion/bignum.cc",
+      "caller": "Bignum::Align",
+      "byte_offset": 23073,
+      "source_line": 740,
+      "classification": "known_in_repository",
+      "regime": "unsupported_missing_call_anchor",
+      "target": "raw_bigit_mutable",
+      "source_reason": "real mutable-this reference-return call assigned zero; no parser call anchor"
+    }
+  ],
+  "cross_module_queries": [
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "target": "bignum_DivideModuloIntBignum",
+      "site_id": "double-conversion_bignum-dtoa_cc_9003"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "target": "bignum_PlusCompare",
+      "site_id": "double-conversion_bignum-dtoa_cc_9878"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "target": "bignum_PlusCompare",
+      "site_id": "double-conversion_bignum-dtoa_cc_9993"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateShortestDigits",
+      "target": "bignum_PlusCompare",
+      "site_id": "double-conversion_bignum-dtoa_cc_10666"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateCountedDigits",
+      "target": "bignum_DivideModuloIntBignum",
+      "site_id": "double-conversion_bignum-dtoa_cc_12899"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateCountedDigits",
+      "target": "bignum_DivideModuloIntBignum",
+      "site_id": "double-conversion_bignum-dtoa_cc_13318"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "GenerateCountedDigits",
+      "target": "bignum_PlusCompare",
+      "site_id": "double-conversion_bignum-dtoa_cc_13369"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "BignumToFixed",
+      "target": "bignum_PlusCompare",
+      "site_id": "double-conversion_bignum-dtoa_cc_15403"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "target": "bignum_AssignUInt64",
+      "site_id": "double-conversion_bignum-dtoa_cc_18652"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_18692"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "target": "bignum_AssignPowerUInt16",
+      "site_id": "double-conversion_bignum-dtoa_cc_18767"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_18951"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_18980"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "target": "bignum_AssignUInt16",
+      "site_id": "double-conversion_bignum-dtoa_cc_19124"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_19157"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "target": "bignum_AssignUInt16",
+      "site_id": "double-conversion_bignum-dtoa_cc_19270"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesPositiveExponent",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_19304"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "target": "bignum_AssignUInt64",
+      "site_id": "double-conversion_bignum-dtoa_cc_19922"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "target": "bignum_AssignPowerUInt16",
+      "site_id": "double-conversion_bignum-dtoa_cc_20036"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_20091"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_20257"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_20286"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "target": "bignum_AssignUInt16",
+      "site_id": "double-conversion_bignum-dtoa_cc_20545"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentPositivePower",
+      "target": "bignum_AssignUInt16",
+      "site_id": "double-conversion_bignum-dtoa_cc_20654"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "target": "bignum_AssignPowerUInt16",
+      "site_id": "double-conversion_bignum-dtoa_cc_21221"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "target": "bignum_AssignBignum",
+      "site_id": "double-conversion_bignum-dtoa_cc_21500"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "target": "bignum_AssignBignum",
+      "site_id": "double-conversion_bignum-dtoa_cc_21543"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "target": "bignum_MultiplyByUInt64",
+      "site_id": "double-conversion_bignum-dtoa_cc_21913"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "target": "bignum_AssignUInt16",
+      "site_id": "double-conversion_bignum-dtoa_cc_22014"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_22046"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_22210"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValuesNegativeExponentNegativePower",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_22241"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValues",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_25623"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValues",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_25659"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "InitialScaledStartValues",
+      "target": "bignum_ShiftLeft",
+      "site_id": "double-conversion_bignum-dtoa_cc_25698"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "target": "bignum_PlusCompare",
+      "site_id": "double-conversion_bignum-dtoa_cc_26942"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "target": "bignum_PlusCompare",
+      "site_id": "double-conversion_bignum-dtoa_cc_27033"
+    },
+    {
+      "caller_path": "double-conversion/bignum-dtoa.cc",
+      "caller": "FixupMultiply10",
+      "target": "bignum_AssignBignum",
+      "site_id": "double-conversion_bignum-dtoa_cc_27470"
+    },
+    {
+      "caller_path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "target": "FastDtoa",
+      "site_id": "double-conversion_double-to-string_cc_15306"
+    },
+    {
+      "caller_path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "target": "FastDtoa",
+      "site_id": "double-conversion_double-to-string_cc_15424"
+    },
+    {
+      "caller_path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "target": "FastFixedDtoa",
+      "site_id": "double-conversion_double-to-string_cc_15568"
+    },
+    {
+      "caller_path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "target": "FastDtoa",
+      "site_id": "double-conversion_double-to-string_cc_15680"
+    },
+    {
+      "caller_path": "double-conversion/double-to-string.cc",
+      "caller": "DoubleToStringConverter::DoubleToAscii",
+      "target": "BignumDtoa",
+      "site_id": "double-conversion_double-to-string_cc_16037"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "canonical_edges": [
+    ["rust:caller/src/main.rs#main", "rust:caller/src/main.rs#run"],
+    ["rust:caller/src/main.rs#run", "rust:callee/src/lib.rs#Worker::associated"],
+    ["rust:caller/src/main.rs#run", "rust:callee/src/lib.rs#Worker::receiver"],
+    ["rust:caller/src/main.rs#run", "rust:callee/src/lib.rs#cross_crate_free"],
+    ["rust:caller/src/main.rs#run", "rust:caller/src/support.rs#local_helper"],
+    ["rust:caller/src/main.rs#run", "rust:caller/src/main.rs#std_backed_receivers"],
+    ["rust:caller/src/main.rs#std_backed_receivers", "rust:callee/src/lib.rs#Worker::receiver"],
+    ["rust:callee/src/lib.rs#descend", "rust:callee/src/lib.rs#descend"],
+    ["rust:caller/src/main.rs#run", "rust:callee/src/lib.rs#in_macro_arg"]
+  ],
+  "external_observations": [
+    "from_str",
+    "to_string",
+    "to_value"
+  ],
+  "standard_library_observations": ["Some", "format", "new", "read", "unwrap"]
+}

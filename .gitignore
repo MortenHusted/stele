@@ -1,0 +1,11 @@
+/target
+**/*.rs.bk
+Cargo.lock.bak
+*.snap.new
+# snapshots are committed test artifacts, not ignored
+!tests/fixtures/**/*.snap
+# phpactor tool bundle: composer.lock is pinned, its install is not
+/toolchain/php/vendor/
+# gopls tool bundle: go.mod and go.sum are pinned, the installed binary is not
+/toolchain/go/bin/
+/dist/

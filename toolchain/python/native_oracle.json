@@ -1,0 +1,355 @@
+{
+  "cases": [
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          4,
+          "target",
+          "sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "sample.py": "def target(x: int) -> int:\n    return x + 1\ndef caller(x: int) -> int:\n    return target(x)\n"
+      },
+      "name": "same_unit_direct"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          6,
+          "target",
+          "sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "sample.py": "from typing import Callable\ndef target(x: int) -> int:\n    return x + 1\ndef caller(effect: Callable[[], None]) -> int:\n    effect()\n    return target(1)\n"
+      },
+      "name": "unknown_effect_before_native_call"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          5,
+          "target",
+          "sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "sample.py": "def target(x: int) -> int:\n    return x + 1\ndef caller() -> int:\n    globals()[\"target\"] = lambda x: 99\n    return target(1)\n"
+      },
+      "name": "mutable_namespace_before_native_call"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          3,
+          "target",
+          "other.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "other.py": "def target(x: int) -> int:\n    return x + 1\n",
+        "sample.py": "from other import target\ndef caller() -> int:\n    return target(1)\n"
+      },
+      "name": "same_unit_imported"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          3,
+          "other.target",
+          "other.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "other.py": "def target(x: int) -> int:\n    return x + 1\n",
+        "sample.py": "import other\ndef caller() -> int:\n    return other.target(1)\n"
+      },
+      "name": "same_unit_qualified"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          4,
+          "target",
+          "sample.py",
+          "target"
+        ],
+        [
+          "sample.py",
+          4,
+          "target",
+          "sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "sample.py": "def target(x: int) -> int:\n    return x + 1\ndef caller() -> int:\n    return target(1) + target(2)\n"
+      },
+      "name": "two_calls_same_line"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          4,
+          "target",
+          "sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "sample.py": "def target(x: int) -> int:\n    return x + 1\nasync def caller() -> int:\n    return target(1)\n"
+      },
+      "name": "async_caller_sync_target"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          5,
+          "target",
+          "sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "sample.py": "from typing import Iterator\ndef target(x: int) -> int:\n    return x + 1\ndef caller() -> Iterator[int]:\n    yield target(1)\n"
+      },
+      "name": "generator_caller_sync_target"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          5,
+          "target",
+          "sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "sample.py": "def target(x: int) -> int:\n    return x + 1\ndef outer() -> int:\n    def caller() -> int:\n        return target(1)\n    return caller()\n"
+      },
+      "name": "nested_caller_sync_target"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "sample.py": "def target(x: int) -> int:\n    return x + 1\nvalue = target(1)\n"
+      },
+      "name": "module_initializer"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "sample.py": "from typing import Iterator\ndef target() -> Iterator[int]:\n    yield 1\ndef caller() -> Iterator[int]:\n    return target()\n"
+      },
+      "name": "deferred_target"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "sample.py": "from typing import Coroutine, Any\nasync def target() -> int:\n    return 1\ndef caller() -> Coroutine[Any, Any, int]:\n    return target()\n"
+      },
+      "name": "async_target"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "sample.py": "from typing import Callable\ndef caller(target: Callable[[int], int]) -> int:\n    return target(1)\n"
+      },
+      "name": "callback_parameter"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "sample.py": "from typing import Callable\ndef target(x: int) -> int:\n    return x + 1\ndef caller(register: Callable[[Callable[[int], int]], None]) -> None:\n    register(target)\n"
+      },
+      "name": "callback_noncall_decoy"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "sample.py": "class Base:\n    def target(self) -> int:\n        return 1\ndef caller(value: Base) -> int:\n    return value.target()\n"
+      },
+      "name": "receiver_virtual"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "sample.py": "from typing import Callable\ndef decorate(fn: Callable[[int], int]) -> Callable[[int], int]:\n    return fn\n@decorate\ndef target(x: int) -> int:\n    return x\ndef caller() -> int:\n    return target(1)\n"
+      },
+      "name": "decorated_target"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "sample.py": "def target(x: int) -> int:\n    return x + 1\ndef caller() -> list[int]:\n    return [target(x) for x in range(3)]\n"
+      },
+      "name": "comprehension_ownership"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "sample.py": "def target(x: int) -> int:\n    return x + 1\ndef caller() -> int:\n    return (lambda: target(1))()\n"
+      },
+      "name": "lambda_ownership"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "sample.py": "def target(x: int) -> int:\n    return x + 1\ndef caller(value: int = target(1)) -> int:\n    return value\n"
+      },
+      "name": "default_setup"
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "opaque.pyi": "def target(x: int) -> int: ...\n",
+        "sample.py": "from opaque import target\ndef caller() -> int:\n    return target(1)\n"
+      },
+      "name": "external_stub"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          4,
+          "target",
+          "sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "sample.py": "def target(x: int = 1) -> int:\n    return x\ndef caller() -> int:\n    return target()\n"
+      },
+      "name": "literal_default_target"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          5,
+          "target",
+          "sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "sample.py": "def target(x: int) -> int:\n    return x + 1\nraise RuntimeError(\"application executed\")\ndef caller() -> int:\n    return target(1)\n"
+      },
+      "name": "application_must_not_execute"
+    },
+    {
+      "expected_calls": [
+        [
+          "src/pkg/sample.py",
+          4,
+          "target",
+          "src/pkg/sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "src/pkg/sample.py": "def target(x: int) -> int:\n    return x + 1\ndef caller(x: int) -> int:\n    return target(x)\n"
+      },
+      "name": "declared_namespace_root",
+      "package_profile": {
+        "external_stub_roots": [],
+        "namespace_packages": true,
+        "source_roots": [
+          "src"
+        ]
+      }
+    },
+    {
+      "expected_calls": [
+        [
+          "src/pkg/sample.py",
+          4,
+          "target",
+          "src/pkg/sample.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "src/pkg/__init__.py": "",
+        "src/pkg/sample.py": "def target(x: int) -> int:\n    return x + 1\ndef caller(x: int) -> int:\n    return target(x)\n"
+      },
+      "name": "declared_regular_root",
+      "package_profile": {
+        "external_stub_roots": [],
+        "namespace_packages": false,
+        "source_roots": [
+          "src"
+        ]
+      }
+    },
+    {
+      "expected_calls": [
+        [
+          "src/sample.py",
+          3,
+          "target",
+          "lib/other.py",
+          "target"
+        ]
+      ],
+      "files": {
+        "lib/other.py": "def target(x: int) -> int:\n    return x + 1\n",
+        "src/sample.py": "from other import target\ndef caller() -> int:\n    return target(1)\n"
+      },
+      "name": "declared_ordered_roots",
+      "package_profile": {
+        "external_stub_roots": [],
+        "namespace_packages": true,
+        "source_roots": [
+          "src",
+          "lib"
+        ]
+      }
+    },
+    {
+      "expected_calls": [],
+      "files": {
+        "opaque.pyi": "def helper() -> int: ...\ndef target(x: int = helper()) -> int: ...\n",
+        "sample.py": "from opaque import target\ndef caller() -> int:\n    return target()\n"
+      },
+      "name": "stub_setup_calls_are_declarations"
+    },
+    {
+      "expected_calls": [
+        [
+          "sample.py",
+          7,
+          "factory",
+          "sample.py",
+          "factory"
+        ]
+      ],
+      "files": {
+        "sample.py": "from typing import Callable\ndef target() -> int:\n    return 1\ndef factory() -> Callable[[], int]:\n    return target\ndef caller() -> int:\n    return factory()()\n"
+      },
+      "name": "nested_calls_share_start"
+    }
+  ],
+  "contract": "codemap-python-native-synthetic-oracle/v1",
+  "execution_profile": "mypyc-native/single-unit/2.3.1",
+  "status": "independent expectations before admission implementation",
+  "thresholds": {
+    "false_positives": 0,
+    "minimum_supported_recall": 0.95
+  }
+}

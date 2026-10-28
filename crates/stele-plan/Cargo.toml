@@ -1,0 +1,24 @@
+[package]
+name = "stele-plan"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+description = "Catalogs of what a system is for, and the plans that change it, read for Stele"
+
+[dependencies]
+codemap-graph = { workspace = true }
+lemmaspec = { path = "../lemmaspec" }
+proc-macro2 = { version = "1", default-features = false, features = ["span-locations"] }
+quote = { version = "1", default-features = false }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+syn = { version = "3", default-features = false, features = ["full", "parsing", "printing"] }
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints]
+workspace = true

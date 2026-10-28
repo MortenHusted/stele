@@ -1,0 +1,222 @@
+{
+  "contract": "stele-shipped-provenance/v1",
+  "review_status": "pending_owner_review",
+  "sources": {
+    "project": {
+      "description": "Project-maintained material. Ownership and applicable terms require owner review; this classification does not establish independent authorship.",
+      "notices": [
+        "LICENSE",
+        "NOTICE",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    "lemmalog": {
+      "description": "LemmaSpec contains modified Lemmalog portions. Preserve inherited MIT grants; exact modified-file provenance requires owner review.",
+      "upstream": "https://github.com/JordyZomer/lemmalog/tree/74d428a2497066795f6328946457f22d713fcbd5",
+      "notices": [
+        "LICENSE",
+        "NOTICE",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    "topology": {
+      "description": "Modified Apache-2.0 topology viewer with an inline ISC D3 subset. VENDORED.md documents provenance and modifications.",
+      "upstream": "https://github.com/anthropics/claude-plugins-official/tree/ad30d62cd52ad0d0af1beda1eab7f61c601045d0",
+      "notices": [
+        "crates/codemap-topology/VENDORED.md",
+        "crates/codemap-topology/LICENSE.apache-2.0",
+        "crates/codemap-topology/LICENSE.d3-ISC",
+        "crates/codemap-topology/NOTICE"
+      ]
+    },
+    "rust_query": {
+      "description": "Verbatim tree-sitter-rust 0.24.2 tags query under MIT.",
+      "upstream": "https://github.com/tree-sitter/tree-sitter-rust/tree/v0.24.2",
+      "notices": [
+        "crates/codemap/src/queries/rust/LICENSE-tree-sitter-rust.txt"
+      ]
+    },
+    "black": {
+      "description": "Public Black source-addressed labels and anchors, including verbatim MIT decorator and call-expression excerpts disclosed in its README.",
+      "upstream": "https://github.com/psf/black/tree/994ef7eeb18172178552daa1f36f001d156ad583",
+      "notices": [
+        "benchmarks/python/LICENSE.black",
+        "benchmarks/python/README.md",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    "excalidraw": {
+      "description": "Public Excalidraw source-addressed labels, spellings and small MIT source fragments, with dependency hashes and aliases; scope is disclosed in its README.",
+      "upstream": "https://github.com/excalidraw/excalidraw/tree/f39ac4a653335efaaaf9834bf28e9ffc1452cb59",
+      "notices": [
+        "benchmarks/js_ts/LICENSE.excalidraw",
+        "benchmarks/js_ts/README.md",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    "ripgrep": {
+      "description": "Independently authored public benchmark labels recording source names, paths, hashes and reasons. No verbatim application source is included.",
+      "upstream": "https://github.com/BurntSushi/ripgrep/tree/e89fff89ac9af12e8d4ce9d5fd07beb408ca730f",
+      "notices": [
+        "benchmarks/rust/LICENSE.ripgrep",
+        "benchmarks/rust/README.md",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    "mastodon": {
+      "description": "Independently authored public benchmark labels recording source names, paths, hashes and reasons. No verbatim application source is included.",
+      "upstream": "https://github.com/mastodon/mastodon/tree/8ff11c2bb7b9f0714e947b10fa3629c6542c7121",
+      "notices": [
+        "benchmarks/ruby/LICENSE.mastodon",
+        "benchmarks/ruby/README.md",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    "double-conversion": {
+      "description": "Independently authored public benchmark labels recording source names, paths, hashes and reasons. No verbatim application source is included.",
+      "upstream": "https://github.com/google/double-conversion/tree/9dd6227ee3e29807183e56877f0282aeb40b8b1e",
+      "notices": [
+        "benchmarks/cpp/LICENSE.double-conversion",
+        "benchmarks/cpp/README.md",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    "tree-sitter-cpp": {
+      "description": "Exact upstream MIT notice supplement for the published parser crate, which omits its notice file. dependency-notices.json binds the crate and source commit.",
+      "upstream": "https://github.com/tree-sitter/tree-sitter-cpp/blob/f41e1a044c8a84ea9fa8577fdd2eab92ec96de02/LICENSE",
+      "notices": [
+        "publication/third-party/tree-sitter-cpp.LICENSE",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    "tree-sitter-typescript": {
+      "description": "Exact upstream MIT notice supplement for the published parser crate, which omits its notice file. dependency-notices.json binds the crate and source commit.",
+      "upstream": "https://github.com/tree-sitter/tree-sitter-typescript/blob/f975a621f4e7f532fe322e13c4f79495e0a7b2e7/LICENSE",
+      "notices": [
+        "publication/third-party/tree-sitter-typescript.LICENSE",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    "locked_dependencies": {
+      "description": "Locked external dependencies need their own notice inventory for binary distribution. These parser supplements repair omissions in the published crates; they do not substitute for review of every linked dependency.",
+      "notices": [
+        "LICENSE",
+        "NOTICE",
+        "THIRD_PARTY_NOTICES.md",
+        "publication/third-party/tree-sitter-cpp.LICENSE",
+        "publication/third-party/tree-sitter-typescript.LICENSE",
+        "publication/third-party/tree-sitter.LICENSE"
+      ]
+    },
+    "tree-sitter": {
+      "description": "Root MIT notice supplement, distinct from the crate's bundled ICU Unicode notice. Both are required in the release notice inventory.",
+      "upstream": "https://github.com/tree-sitter/tree-sitter/tree/da6fe9beb4f7f67beb75914ca8e0d48ae48d6406",
+      "notices": [
+        "publication/third-party/tree-sitter.LICENSE",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    },
+    "gitleaks": {
+      "description": "Gitleaks v8.30.1 global path-allowlist metadata extracted from its public default configuration, with its MIT notice. The scanner executable is prepared locally.",
+      "upstream": "https://github.com/gitleaks/gitleaks/tree/v8.30.1",
+      "notices": [
+        "toolchain/security/LICENSE.gitleaks",
+        "THIRD_PARTY_NOTICES.md"
+      ]
+    }
+  },
+  "overrides": [
+    {
+      "source": "topology",
+      "path": "crates/codemap-topology/assets/topology-viewer.html"
+    },
+    {
+      "source": "rust_query",
+      "path": "crates/codemap/src/queries/rust/tags.scm"
+    },
+    {
+      "source": "black",
+      "prefix": "benchmarks/python/"
+    },
+    {
+      "source": "excalidraw",
+      "prefix": "benchmarks/js_ts/"
+    },
+    {
+      "source": "ripgrep",
+      "prefix": "benchmarks/rust/"
+    },
+    {
+      "source": "mastodon",
+      "prefix": "benchmarks/ruby/"
+    },
+    {
+      "source": "double-conversion",
+      "prefix": "benchmarks/cpp/"
+    },
+    {
+      "path": "crates/lemmaspec/src/ast.rs",
+      "source": "lemmalog"
+    },
+    {
+      "path": "crates/lemmaspec/src/eval.rs",
+      "source": "lemmalog"
+    },
+    {
+      "path": "crates/lemmaspec/src/eval/store.rs",
+      "source": "lemmalog"
+    },
+    {
+      "path": "crates/lemmaspec/src/eval/stratify.rs",
+      "source": "lemmalog"
+    },
+    {
+      "path": "crates/lemmaspec/src/intern.rs",
+      "source": "lemmalog"
+    },
+    {
+      "path": "crates/lemmaspec/src/lib.rs",
+      "source": "lemmalog"
+    },
+    {
+      "path": "crates/lemmaspec/src/magic.rs",
+      "source": "lemmalog"
+    },
+    {
+      "path": "crates/lemmaspec/tests/agg_test.rs",
+      "source": "lemmalog"
+    },
+    {
+      "path": "crates/lemmaspec/tests/differential_test.rs",
+      "source": "lemmalog"
+    },
+    {
+      "path": "crates/lemmaspec/tests/engine_test.rs",
+      "source": "lemmalog"
+    },
+    {
+      "path": "publication/third-party/tree-sitter-cpp.LICENSE",
+      "source": "tree-sitter-cpp"
+    },
+    {
+      "path": "publication/third-party/tree-sitter-typescript.LICENSE",
+      "source": "tree-sitter-typescript"
+    },
+    {
+      "path": "Cargo.lock",
+      "source": "locked_dependencies"
+    },
+    {
+      "path": "publication/third-party/tree-sitter.LICENSE",
+      "source": "tree-sitter"
+    },
+    {
+      "path": "toolchain/security/LICENSE.gitleaks",
+      "source": "gitleaks"
+    },
+    {
+      "path": "toolchain/security/gitleaks-default-paths.json",
+      "source": "gitleaks"
+    }
+  ]
+}

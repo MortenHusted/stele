@@ -1,0 +1,15 @@
+[package]
+name = "lemmaspec"
+version = "0.4.2"
+edition = "2021"
+description = "Typed, deterministic specifications compiled to deductive logic"
+license-file = "../../LICENSE"
+authors = ["Morten Lochmann"]
+repository = "https://github.com/MortenHusted/stele"
+readme = "README.md"
+publish = false
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"

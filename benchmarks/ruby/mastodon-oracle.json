@@ -1,0 +1,1337 @@
+{
+  "basis": "reviewer_declared",
+  "callers": [
+    {
+      "body_sha256": "6b83d1ad9f20089afc99525efdee28f9c8522b206c621d176773ac2f32707bce",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "span": {
+        "end_byte": 3433,
+        "end_col": 5,
+        "end_line": 91,
+        "start_byte": 2776,
+        "start_col": 2,
+        "start_line": 76
+      },
+      "symbol_key": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::destroy"
+    },
+    {
+      "body_sha256": "3c4a76ed88f62c5a5a74f57e4590e88ef52188d013409836ef913d39430667f5",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "span": {
+        "end_byte": 4611,
+        "end_col": 5,
+        "end_line": 123,
+        "start_byte": 4500,
+        "start_col": 2,
+        "start_line": 121
+      },
+      "symbol_key": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::check_statuses_limit"
+    },
+    {
+      "body_sha256": "dcad08b971b0a8222e3d3b3fdda1c8a5ad085e31a059f87c6c7fae74b8704e86",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "span": {
+        "end_byte": 4684,
+        "end_col": 5,
+        "end_line": 127,
+        "start_byte": 4615,
+        "start_col": 2,
+        "start_line": 125
+      },
+      "symbol_key": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::status_ids"
+    },
+    {
+      "body_sha256": "a47cfefc27006821bfbd88f71ccfb1190513db43c378e5aec6e12921725ca8a9",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 10299,
+        "end_col": 5,
+        "end_line": 239,
+        "start_byte": 10237,
+        "start_col": 2,
+        "start_line": 237
+      },
+      "symbol_key": "ruby:app/models/account.rb#Account::acct"
+    },
+    {
+      "body_sha256": "73fce90dfc825e7d6bc8a8e731f8bac9725a07821dfde9d9706a45ba19c9dfac",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 10687,
+        "end_col": 5,
+        "end_line": 253,
+        "start_byte": 10460,
+        "start_col": 2,
+        "start_line": 248
+      },
+      "symbol_key": "ruby:app/models/account.rb#Account::pretty_acct"
+    },
+    {
+      "body_sha256": "d65eb25ecc00025528a5ee150aa7273608b0f7fb96be594618c2a3c59ec323f6",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 10931,
+        "end_col": 5,
+        "end_line": 265,
+        "start_byte": 10867,
+        "start_col": 2,
+        "start_line": 263
+      },
+      "symbol_key": "ruby:app/models/account.rb#Account::to_webfinger_s"
+    },
+    {
+      "body_sha256": "a22bb67053d964f928aa80e31bd21486453590cab081f6716744bea5388a22e7",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "span": {
+        "end_byte": 483,
+        "end_col": 5,
+        "end_line": 18,
+        "start_byte": 412,
+        "start_col": 2,
+        "start_line": 16
+      },
+      "symbol_key": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::suspended_locally?"
+    },
+    {
+      "body_sha256": "34abaf28d8541789491fddb21d11ec2f56188335c99ea6858091ee3baa1f0a98",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "span": {
+        "end_byte": 692,
+        "end_col": 5,
+        "end_line": 30,
+        "start_byte": 643,
+        "start_col": 2,
+        "start_line": 28
+      },
+      "symbol_key": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::unavailable?"
+    },
+    {
+      "body_sha256": "86d81bae410c8d7e66e9f2de1ff2ee745637781b482019f1a62270ae7670484f",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "span": {
+        "end_byte": 772,
+        "end_col": 5,
+        "end_line": 34,
+        "start_byte": 696,
+        "start_col": 2,
+        "start_line": 32
+      },
+      "symbol_key": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::permanently_unavailable?"
+    },
+    {
+      "body_sha256": "b59e3f56330ace017fc2361dc4a23ac5c55e74db619736114c2d6f0bad81fb8e",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 686,
+        "end_col": 5,
+        "end_line": 18,
+        "start_byte": 402,
+        "start_col": 2,
+        "start_line": 11
+      },
+      "symbol_key": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::call"
+    },
+    {
+      "body_sha256": "36bfb937a5d570a12a77cf3b3aa5ac3c9e5c5b125dcb2878fd44f2c0234a5a76",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 829,
+        "end_col": 5,
+        "end_line": 26,
+        "start_byte": 701,
+        "start_col": 2,
+        "start_line": 22
+      },
+      "symbol_key": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process"
+    },
+    {
+      "body_sha256": "ae3a8dc9b42c81a201ca6d4619cad864ae055e58d3a23f60a2ec1d278470ea9c",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 2104,
+        "end_col": 5,
+        "end_line": 63,
+        "start_byte": 1439,
+        "start_col": 2,
+        "start_line": 43
+      },
+      "symbol_key": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response"
+    },
+    {
+      "body_sha256": "c89e05ad5d861574d3d1b41997238ba69ae38c8ab03b91ce830f062d1dbbc3a2",
+      "path": "app/helpers/json_ld_helper.rb",
+      "span": {
+        "end_byte": 394,
+        "end_col": 5,
+        "end_line": 14,
+        "start_byte": 274,
+        "start_col": 2,
+        "start_line": 12
+      },
+      "symbol_key": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::equals_or_includes_any?"
+    },
+    {
+      "body_sha256": "43c5aa3312b718414b11319569bb647e13ad3051b08e9bc430515f0fc3d9fe9b",
+      "path": "app/helpers/json_ld_helper.rb",
+      "span": {
+        "end_byte": 2669,
+        "end_col": 5,
+        "end_line": 89,
+        "start_byte": 2545,
+        "start_col": 2,
+        "start_line": 87
+      },
+      "symbol_key": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::supported_context?"
+    },
+    {
+      "body_sha256": "1861e5f33e13b50c017c58fa316b48ff2706d365f9a5db78ea381cdee153c6be",
+      "path": "app/helpers/self_destruct_helper.rb",
+      "span": {
+        "end_byte": 431,
+        "end_col": 5,
+        "end_line": 15,
+        "start_byte": 369,
+        "start_col": 2,
+        "start_line": 13
+      },
+      "symbol_key": "ruby:app/helpers/self_destruct_helper.rb#SelfDestructHelper::self_destruct?"
+    },
+    {
+      "body_sha256": "1d09491a5771b9b768eb7d73f419d1afec27b30282dbd0051052a78e06361ab5",
+      "path": "app/lib/signed_request.rb",
+      "span": {
+        "end_byte": 3985,
+        "end_col": 7,
+        "end_line": 92,
+        "start_byte": 3748,
+        "start_col": 4,
+        "start_line": 88
+      },
+      "symbol_key": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signature_params"
+    },
+    {
+      "body_sha256": "2df954a50c336f751e2fa7d5c0b55f7ad6e5821b8f1edeae4e0e2521d65666fd",
+      "path": "app/lib/signed_request.rb",
+      "span": {
+        "end_byte": 4074,
+        "end_col": 7,
+        "end_line": 96,
+        "start_byte": 3991,
+        "start_col": 4,
+        "start_line": 94
+      },
+      "symbol_key": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signature_algorithm"
+    },
+    {
+      "body_sha256": "3c1b2633018511117793f0c6b7537c0ad7094175a0cdfee3136e23ef2d4ac7af",
+      "path": "app/lib/signed_request.rb",
+      "span": {
+        "end_byte": 4217,
+        "end_col": 7,
+        "end_line": 100,
+        "start_byte": 4080,
+        "start_col": 4,
+        "start_line": 98
+      },
+      "symbol_key": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signed_headers"
+    }
+  ],
+  "commit": "8ff11c2bb7b9f0714e947b10fa3629c6542c7121",
+  "contract": "stele-ruby-selected-callers/v1",
+  "definition_only_sites": [],
+  "expected_edges": [
+    {
+      "callee": "ruby:app/controllers/application_controller.rb#ApplicationController::current_account",
+      "caller": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::destroy",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "span": {
+        "end_byte": 2839,
+        "end_col": 51,
+        "end_line": 77,
+        "start_byte": 2824,
+        "start_col": 36,
+        "start_line": 77
+      }
+    },
+    {
+      "callee": "ruby:app/controllers/concerns/authorization.rb#Authorization::authorize",
+      "caller": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::destroy",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "span": {
+        "end_byte": 2891,
+        "end_col": 32,
+        "end_line": 78,
+        "start_byte": 2863,
+        "start_col": 4,
+        "start_line": 78
+      }
+    },
+    {
+      "callee": "ruby:app/controllers/application_controller.rb#ApplicationController::truthy_param?",
+      "caller": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::destroy",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "span": {
+        "end_byte": 3401,
+        "end_col": 88,
+        "end_line": 88,
+        "start_byte": 3373,
+        "start_col": 60,
+        "start_line": 88
+      }
+    },
+    {
+      "callee": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::status_ids",
+      "caller": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::check_statuses_limit",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "span": {
+        "end_byte": 4575,
+        "end_col": 50,
+        "end_line": 122,
+        "start_byte": 4565,
+        "start_col": 40,
+        "start_line": 122
+      }
+    },
+    {
+      "callee": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::statuses_params",
+      "caller": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::status_ids",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "span": {
+        "end_byte": 4655,
+        "end_col": 25,
+        "end_line": 126,
+        "start_byte": 4640,
+        "start_col": 10,
+        "start_line": 126
+      }
+    },
+    {
+      "callee": "ruby:app/models/account.rb#Account::local?",
+      "caller": "ruby:app/models/account.rb#Account::acct",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 10256,
+        "end_col": 10,
+        "end_line": 238,
+        "start_byte": 10250,
+        "start_col": 4,
+        "start_line": 238
+      }
+    },
+    {
+      "callee": "ruby:app/models/account.rb#Account::invalidated_username?",
+      "caller": "ruby:app/models/account.rb#Account::pretty_acct",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 10602,
+        "end_col": 58,
+        "end_line": 250,
+        "start_byte": 10581,
+        "start_col": 37,
+        "start_line": 250
+      }
+    },
+    {
+      "callee": "ruby:app/models/account.rb#Account::local?",
+      "caller": "ruby:app/models/account.rb#Account::pretty_acct",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 10614,
+        "end_col": 10,
+        "end_line": 252,
+        "start_byte": 10608,
+        "start_col": 4,
+        "start_line": 252
+      }
+    },
+    {
+      "callee": "ruby:app/models/account.rb#Account::local_username_and_domain",
+      "caller": "ruby:app/models/account.rb#Account::to_webfinger_s",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 10923,
+        "end_col": 37,
+        "end_line": 264,
+        "start_byte": 10898,
+        "start_col": 12,
+        "start_line": 264
+      }
+    },
+    {
+      "callee": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::suspended?",
+      "caller": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::suspended_locally?",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "span": {
+        "end_byte": 449,
+        "end_col": 14,
+        "end_line": 17,
+        "start_byte": 439,
+        "start_col": 4,
+        "start_line": 17
+      }
+    },
+    {
+      "callee": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::suspended?",
+      "caller": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::unavailable?",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "span": {
+        "end_byte": 686,
+        "end_col": 26,
+        "end_line": 29,
+        "start_byte": 676,
+        "start_col": 16,
+        "start_line": 29
+      }
+    },
+    {
+      "callee": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::unavailable?",
+      "caller": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::permanently_unavailable?",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "span": {
+        "end_byte": 741,
+        "end_col": 16,
+        "end_line": 33,
+        "start_byte": 729,
+        "start_col": 4,
+        "start_line": 33
+      }
+    },
+    {
+      "callee": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::call",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 458,
+        "end_col": 16,
+        "end_line": 14,
+        "start_byte": 446,
+        "start_col": 4,
+        "start_line": 14
+      }
+    },
+    {
+      "callee": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::perform_request",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 823,
+        "end_col": 72,
+        "end_line": 25,
+        "start_byte": 755,
+        "start_col": 4,
+        "start_line": 25
+      }
+    },
+    {
+      "callee": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 821,
+        "end_col": 70,
+        "end_line": 25,
+        "start_byte": 784,
+        "start_col": 33,
+        "start_line": 25
+      }
+    },
+    {
+      "callee": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::valid_activitypub_content_type?",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 1610,
+        "end_col": 48,
+        "end_line": 47,
+        "start_byte": 1569,
+        "start_col": 7,
+        "start_line": 47
+      }
+    },
+    {
+      "callee": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::body_to_json",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 1680,
+        "end_col": 31,
+        "end_line": 49,
+        "start_byte": 1662,
+        "start_col": 13,
+        "start_line": 49
+      }
+    },
+    {
+      "callee": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::supported_context?",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 1726,
+        "end_col": 44,
+        "end_line": 51,
+        "start_byte": 1702,
+        "start_col": 20,
+        "start_line": 51
+      }
+    },
+    {
+      "callee": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::equals_or_includes_any?",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 1823,
+        "end_col": 141,
+        "end_line": 51,
+        "start_byte": 1731,
+        "start_col": 49,
+        "start_line": 51
+      }
+    },
+    {
+      "callee": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::expected_type?",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 1847,
+        "end_col": 165,
+        "end_line": 51,
+        "start_byte": 1827,
+        "start_col": 145,
+        "start_line": 51
+      }
+    },
+    {
+      "callee": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 1956,
+        "end_col": 50,
+        "end_line": 56,
+        "start_byte": 1921,
+        "start_col": 15,
+        "start_line": 56
+      }
+    },
+    {
+      "callee": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_link_headers",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 2064,
+        "end_col": 36,
+        "end_line": 61,
+        "start_byte": 2034,
+        "start_col": 6,
+        "start_line": 61
+      }
+    },
+    {
+      "callee": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_html",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 2090,
+        "end_col": 62,
+        "end_line": 61,
+        "start_byte": 2068,
+        "start_col": 40,
+        "start_line": 61
+      }
+    },
+    {
+      "callee": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::equals_or_includes?",
+      "caller": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::equals_or_includes_any?",
+      "path": "app/helpers/json_ld_helper.rb",
+      "span": {
+        "end_byte": 386,
+        "end_col": 65,
+        "end_line": 13,
+        "start_byte": 349,
+        "start_col": 28,
+        "start_line": 13
+      }
+    },
+    {
+      "callee": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::equals_or_includes?",
+      "caller": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::supported_context?",
+      "path": "app/helpers/json_ld_helper.rb",
+      "span": {
+        "end_byte": 2663,
+        "end_col": 89,
+        "end_line": 88,
+        "start_byte": 2592,
+        "start_col": 18,
+        "start_line": 88
+      }
+    },
+    {
+      "callee": "ruby:app/helpers/self_destruct_helper.rb#SelfDestructHelper::self.self_destruct?",
+      "caller": "ruby:app/helpers/self_destruct_helper.rb#SelfDestructHelper::self_destruct?",
+      "path": "app/helpers/self_destruct_helper.rb",
+      "span": {
+        "end_byte": 425,
+        "end_col": 37,
+        "end_line": 14,
+        "start_byte": 392,
+        "start_col": 4,
+        "start_line": 14
+      }
+    },
+    {
+      "callee": "ruby:app/lib/signature_parser.rb#SignatureParser::self.parse",
+      "caller": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signature_params",
+      "path": "app/lib/signed_request.rb",
+      "span": {
+        "end_byte": 3849,
+        "end_col": 80,
+        "end_line": 89,
+        "start_byte": 3797,
+        "start_col": 28,
+        "start_line": 89
+      }
+    },
+    {
+      "callee": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signature_params",
+      "caller": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signature_algorithm",
+      "path": "app/lib/signed_request.rb",
+      "span": {
+        "end_byte": 4037,
+        "end_col": 22,
+        "end_line": 95,
+        "start_byte": 4021,
+        "start_col": 6,
+        "start_line": 95
+      }
+    },
+    {
+      "callee": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signature_params",
+      "caller": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signed_headers",
+      "path": "app/lib/signed_request.rb",
+      "span": {
+        "end_byte": 4121,
+        "end_col": 22,
+        "end_line": 99,
+        "start_byte": 4105,
+        "start_col": 6,
+        "start_line": 99
+      }
+    },
+    {
+      "callee": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signature_algorithm",
+      "caller": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signed_headers",
+      "path": "app/lib/signed_request.rb",
+      "span": {
+        "end_byte": 4158,
+        "end_col": 59,
+        "end_line": 99,
+        "start_byte": 4139,
+        "start_col": 40,
+        "start_line": 99
+      }
+    }
+  ],
+  "files": {
+    "app/controllers/api/v1/follow_requests_controller.rb":
+      "d84e005af17c825f7b3cb011ffaebaf0fe34a3b4c110afdbd12495d00ac62653",
+    "app/controllers/api/v1/statuses_controller.rb":
+      "caa62b381157cc3b33802003a12d0b200849933e736746ccc7a0a177df0704f5",
+    "app/controllers/application_controller.rb":
+      "45ae27cc2d7162183074f9c53c7687e56bcc6d43ae1db6fc3b2cbac156dfe16a",
+    "app/controllers/concerns/authorization.rb":
+      "043bdcf7f27f29abe0ca1cb33274204311f35e4582bcbc180c3013ad143819b8",
+    "app/controllers/concerns/signature_authentication.rb":
+      "c5bf73edb15baac1f738b17c2bdc660f1aab8e752fc03f5f70ad6d1a9fc81efa",
+    "app/controllers/oauth/authorizations_controller.rb":
+      "9e3846a995f7f713d69fa53b1f6962b433502fc553c2dfe43769ee32d17af3a7",
+    "app/helpers/json_ld_helper.rb":
+      "6ad2c70d5d2ba1a01b48a5260b24443d8301b340b3a2d498f538bca0e8d6cfd0",
+    "app/helpers/self_destruct_helper.rb":
+      "5631b2a28aa123c97107741dbe68624169457813e21cfeb68d8629f78c44c0ee",
+    "app/lib/account_statuses_filter.rb":
+      "fe2bfae49ba20d8bd58268b472726919f50f8e5ae4e2171757f40d450a2ecdd9",
+    "app/lib/request.rb":
+      "5d0080358db519ff33c0ce05532893025ec7d42914541641c6af9bf28500ece3",
+    "app/lib/signature_parser.rb":
+      "07e4d6454144fb740305baa149f0c57d378fb20e3061b5f294e5e7a25cbd5ee5",
+    "app/lib/signed_request.rb":
+      "b572b9eb82cfcd685fd269f354f04c74d5806101c558ead4a0c7ab8f3a9a943f",
+    "app/models/account.rb":
+      "873272143019d0ed48261e8b179d753d3fe062cc35bfd8a96d152d45cef4b717",
+    "app/models/concerns/account/suspensions.rb":
+      "f21227af1f6b71f6d07d3dbb05c29285003156ce492642f28030eb4cc55e057b",
+    "app/models/status.rb":
+      "b64ac6563357b6d3c02b177389bda16d69e3f7de99a873440c5d729c673f69ae",
+    "app/services/activitypub/fetch_remote_actor_service.rb":
+      "927ab1c09f62fbaa8565e46670ac868d39b595d367f06fd00e1cac6394fa150a",
+    "app/services/fetch_resource_service.rb":
+      "6bd0edb817e166098441a92f0a8410a9b574f84e3ff9476233d72a5d246a8764"
+  },
+  "forbidden_edges": [
+    {
+      "callee": "ruby:app/models/account.rb#Account::deleted?",
+      "caller": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::unavailable?",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "reason": "Host Account is not an ancestor of the concern receiver.",
+      "span": {
+        "end_byte": 672,
+        "end_col": 12,
+        "end_line": 29,
+        "start_byte": 664,
+        "start_col": 4,
+        "start_line": 29
+      }
+    },
+    {
+      "callee": "ruby:app/lib/request.rb#Request::ClientLimit::body_with_limit",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "reason": "Known source target does not make an untyped response receiver verifiable.",
+      "span": {
+        "end_byte": 1648,
+        "end_col": 37,
+        "end_line": 48,
+        "start_byte": 1624,
+        "start_col": 13,
+        "start_line": 48
+      }
+    },
+    {
+      "callee": "ruby:app/controllers/api/v1/follow_requests_controller.rb#Api::V1::FollowRequestsController::authorize",
+      "caller": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::destroy",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "reason": "Same-spelling target outside the verified receiver ancestry or method kind.",
+      "span": {
+        "end_byte": 2891,
+        "end_col": 32,
+        "end_line": 78,
+        "start_byte": 2863,
+        "start_col": 4,
+        "start_line": 78
+      }
+    },
+    {
+      "callee": "ruby:app/controllers/concerns/signature_authentication.rb#SignatureAuthentication::current_account",
+      "caller": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::destroy",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "reason": "Same-spelling target outside the verified receiver ancestry or method kind.",
+      "span": {
+        "end_byte": 2839,
+        "end_col": 51,
+        "end_line": 77,
+        "start_byte": 2824,
+        "start_col": 36,
+        "start_line": 77
+      }
+    },
+    {
+      "callee": "ruby:app/controllers/oauth/authorizations_controller.rb#OAuth::AuthorizationsController::truthy_param?",
+      "caller": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::destroy",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "reason": "Same-spelling target outside the verified receiver ancestry or method kind.",
+      "span": {
+        "end_byte": 3401,
+        "end_col": 88,
+        "end_line": 88,
+        "start_byte": 3373,
+        "start_col": 60,
+        "start_line": 88
+      }
+    },
+    {
+      "callee": "ruby:app/lib/account_statuses_filter.rb#AccountStatusesFilter::truthy_param?",
+      "caller": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::destroy",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "reason": "Same-spelling target outside the verified receiver ancestry or method kind.",
+      "span": {
+        "end_byte": 3401,
+        "end_col": 88,
+        "end_line": 88,
+        "start_byte": 3373,
+        "start_col": 60,
+        "start_line": 88
+      }
+    },
+    {
+      "callee": "ruby:app/models/status.rb#Status::local?",
+      "caller": "ruby:app/models/account.rb#Account::acct",
+      "path": "app/models/account.rb",
+      "reason": "Same-spelling target outside the verified receiver ancestry or method kind.",
+      "span": {
+        "end_byte": 10256,
+        "end_col": 10,
+        "end_line": 238,
+        "start_byte": 10250,
+        "start_col": 4,
+        "start_line": 238
+      }
+    },
+    {
+      "callee": "ruby:app/services/activitypub/fetch_remote_actor_service.rb#ActivityPub::FetchRemoteActorService::expected_type?",
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "reason": "Same-spelling target outside the verified receiver ancestry or method kind.",
+      "span": {
+        "end_byte": 1847,
+        "end_col": 165,
+        "end_line": 51,
+        "start_byte": 1827,
+        "start_col": 145,
+        "start_line": 51
+      }
+    },
+    {
+      "callee": "ruby:app/helpers/self_destruct_helper.rb#SelfDestructHelper::self_destruct?",
+      "caller": "ruby:app/helpers/self_destruct_helper.rb#SelfDestructHelper::self_destruct?",
+      "path": "app/helpers/self_destruct_helper.rb",
+      "reason": "Same-spelling target outside the verified receiver ancestry or method kind.",
+      "span": {
+        "end_byte": 425,
+        "end_col": 37,
+        "end_line": 14,
+        "start_byte": 392,
+        "start_col": 4,
+        "start_line": 14
+      }
+    }
+  ],
+  "noncanonical_sites": [
+    {
+      "caller": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::unavailable?",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "reason": "An included concern cannot verify a host-only method through its own receiver ancestry.",
+      "span": {
+        "end_byte": 672,
+        "end_col": 12,
+        "end_line": 29,
+        "start_byte": 664,
+        "start_col": 4,
+        "start_line": 29
+      }
+    },
+    {
+      "caller": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::suspended_locally?",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "reason": "Rails-generated enum predicate has no emitted callable declaration.",
+      "span": {
+        "end_byte": 477,
+        "end_col": 42,
+        "end_line": 17,
+        "start_byte": 453,
+        "start_col": 18,
+        "start_line": 17
+      }
+    },
+    {
+      "caller": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::destroy",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "reason": "Instance-variable receiver is outside the constant/implicit-self admission regime.",
+      "span": {
+        "end_byte": 3191,
+        "end_col": 32,
+        "end_line": 84,
+        "start_byte": 3163,
+        "start_col": 4,
+        "start_line": 84
+      }
+    },
+    {
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "reason": "Untyped response receiver is outside the verified receiver regime.",
+      "span": {
+        "end_byte": 1648,
+        "end_col": 37,
+        "end_line": 48,
+        "start_byte": 1624,
+        "start_col": 13,
+        "start_line": 48
+      }
+    },
+    {
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "reason": "Untyped response receiver is outside the verified receiver regime.",
+      "span": {
+        "end_byte": 1521,
+        "end_col": 34,
+        "end_line": 44,
+        "start_byte": 1508,
+        "start_col": 21,
+        "start_line": 44
+      }
+    },
+    {
+      "caller": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response",
+      "path": "app/services/fetch_resource_service.rb",
+      "reason": "Untyped response receiver is outside the verified receiver regime.",
+      "span": {
+        "end_byte": 1553,
+        "end_col": 31,
+        "end_line": 45,
+        "start_byte": 1540,
+        "start_col": 18,
+        "start_line": 45
+      }
+    },
+    {
+      "caller": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signature_params",
+      "path": "app/lib/signed_request.rb",
+      "reason": "Untyped request receiver is outside the verified receiver regime.",
+      "span": {
+        "end_byte": 3835,
+        "end_col": 66,
+        "end_line": 89,
+        "start_byte": 3819,
+        "start_col": 50,
+        "start_line": 89
+      }
+    }
+  ],
+  "scope": "Exact source-span calls for 18 complete production named callers across controllers, model, concern, service and helper/lib code, under the existing constant-receiver and instance implicit-self regime. No application-wide precision or recall claim.",
+  "status": "Source and syntax-only anchors frozen before Ruby-LSP application queries; expectations are test labels, not observed canonical facts.",
+  "targets": [
+    {
+      "body_sha256": "0765b7d346599c9dcb8e0b02da1fefe030dd228388d1fbe13796771300cdeecc",
+      "path": "app/controllers/api/v1/follow_requests_controller.rb",
+      "span": {
+        "end_byte": 817,
+        "end_col": 5,
+        "end_line": 18,
+        "start_byte": 487,
+        "start_col": 2,
+        "start_line": 14
+      },
+      "symbol_key": "ruby:app/controllers/api/v1/follow_requests_controller.rb#Api::V1::FollowRequestsController::authorize"
+    },
+    {
+      "body_sha256": "dcad08b971b0a8222e3d3b3fdda1c8a5ad085e31a059f87c6c7fae74b8704e86",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "span": {
+        "end_byte": 4684,
+        "end_col": 5,
+        "end_line": 127,
+        "start_byte": 4615,
+        "start_col": 2,
+        "start_line": 125
+      },
+      "symbol_key": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::status_ids"
+    },
+    {
+      "body_sha256": "25b782dd21f308c184ef10380e838ef40c08459271b8e3373128ab751ab6310c",
+      "path": "app/controllers/api/v1/statuses_controller.rb",
+      "span": {
+        "end_byte": 4739,
+        "end_col": 5,
+        "end_line": 131,
+        "start_byte": 4688,
+        "start_col": 2,
+        "start_line": 129
+      },
+      "symbol_key": "ruby:app/controllers/api/v1/statuses_controller.rb#Api::V1::StatusesController::statuses_params"
+    },
+    {
+      "body_sha256": "e2a4772df4c19c0c77fd1cad43630d27a2a78aac9897f17d7ec7e526d8f42535",
+      "path": "app/controllers/application_controller.rb",
+      "span": {
+        "end_byte": 3498,
+        "end_col": 5,
+        "end_line": 123,
+        "start_byte": 3369,
+        "start_col": 2,
+        "start_line": 119
+      },
+      "symbol_key": "ruby:app/controllers/application_controller.rb#ApplicationController::current_account"
+    },
+    {
+      "body_sha256": "979d31dd20738a40c0f7e4c52db26bae6c85c7e9d7877a68cad5f66564fc8e12",
+      "path": "app/controllers/application_controller.rb",
+      "span": {
+        "end_byte": 3054,
+        "end_col": 5,
+        "end_line": 105,
+        "start_byte": 2973,
+        "start_col": 2,
+        "start_line": 103
+      },
+      "symbol_key": "ruby:app/controllers/application_controller.rb#ApplicationController::truthy_param?"
+    },
+    {
+      "body_sha256": "1f89b50da1256d8a3e87f956049f83bc2ff63321cebe48db1931d3fd3e9314a1",
+      "path": "app/controllers/concerns/authorization.rb",
+      "span": {
+        "end_byte": 271,
+        "end_col": 5,
+        "end_line": 16,
+        "start_byte": 165,
+        "start_col": 2,
+        "start_line": 12
+      },
+      "symbol_key": "ruby:app/controllers/concerns/authorization.rb#Authorization::authorize"
+    },
+    {
+      "body_sha256": "4e6d9bec280301d54f1cf474336f7552a4aa32d3e4e264ccbd01232a87f45fd0",
+      "path": "app/controllers/concerns/signature_authentication.rb",
+      "span": {
+        "end_byte": 191,
+        "end_col": 5,
+        "end_line": 10,
+        "start_byte": 130,
+        "start_col": 2,
+        "start_line": 8
+      },
+      "symbol_key": "ruby:app/controllers/concerns/signature_authentication.rb#SignatureAuthentication::current_account"
+    },
+    {
+      "body_sha256": "979d31dd20738a40c0f7e4c52db26bae6c85c7e9d7877a68cad5f66564fc8e12",
+      "path": "app/controllers/oauth/authorizations_controller.rb",
+      "span": {
+        "end_byte": 514,
+        "end_col": 5,
+        "end_line": 26,
+        "start_byte": 433,
+        "start_col": 2,
+        "start_line": 24
+      },
+      "symbol_key": "ruby:app/controllers/oauth/authorizations_controller.rb#OAuth::AuthorizationsController::truthy_param?"
+    },
+    {
+      "body_sha256": "ab42f5bad3543d573558b3167a04069753f98fe1e8aa3779204f8ad3c76e259d",
+      "path": "app/helpers/json_ld_helper.rb",
+      "span": {
+        "end_byte": 13754,
+        "end_col": 5,
+        "end_line": 371,
+        "start_byte": 13545,
+        "start_col": 2,
+        "start_line": 363
+      },
+      "symbol_key": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::body_to_json"
+    },
+    {
+      "body_sha256": "3b77426099a1e157312a775dcf191357f9e3200713e8b9cb96c1d6fe51e91848",
+      "path": "app/helpers/json_ld_helper.rb",
+      "span": {
+        "end_byte": 270,
+        "end_col": 5,
+        "end_line": 10,
+        "start_byte": 148,
+        "start_col": 2,
+        "start_line": 8
+      },
+      "symbol_key": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::equals_or_includes?"
+    },
+    {
+      "body_sha256": "c89e05ad5d861574d3d1b41997238ba69ae38c8ab03b91ce830f062d1dbbc3a2",
+      "path": "app/helpers/json_ld_helper.rb",
+      "span": {
+        "end_byte": 394,
+        "end_col": 5,
+        "end_line": 14,
+        "start_byte": 274,
+        "start_col": 2,
+        "start_line": 12
+      },
+      "symbol_key": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::equals_or_includes_any?"
+    },
+    {
+      "body_sha256": "43c5aa3312b718414b11319569bb647e13ad3051b08e9bc430515f0fc3d9fe9b",
+      "path": "app/helpers/json_ld_helper.rb",
+      "span": {
+        "end_byte": 2669,
+        "end_col": 5,
+        "end_line": 89,
+        "start_byte": 2545,
+        "start_col": 2,
+        "start_line": 87
+      },
+      "symbol_key": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::supported_context?"
+    },
+    {
+      "body_sha256": "21620a935740558ebc0d88b0c0624516b601d1a4318a50bca63663f623e68913",
+      "path": "app/helpers/json_ld_helper.rb",
+      "span": {
+        "end_byte": 13541,
+        "end_col": 5,
+        "end_line": 361,
+        "start_byte": 13019,
+        "start_col": 2,
+        "start_line": 351
+      },
+      "symbol_key": "ruby:app/helpers/json_ld_helper.rb#JsonLdHelper::valid_activitypub_content_type?"
+    },
+    {
+      "body_sha256": "fa2719811bb8de65592f4e7770dd9d47773560ed3aaa50ac28aedd972e53bf25",
+      "path": "app/helpers/self_destruct_helper.rb",
+      "span": {
+        "end_byte": 365,
+        "end_col": 5,
+        "end_line": 11,
+        "start_byte": 95,
+        "start_col": 2,
+        "start_line": 6
+      },
+      "symbol_key": "ruby:app/helpers/self_destruct_helper.rb#SelfDestructHelper::self.self_destruct?"
+    },
+    {
+      "body_sha256": "1861e5f33e13b50c017c58fa316b48ff2706d365f9a5db78ea381cdee153c6be",
+      "path": "app/helpers/self_destruct_helper.rb",
+      "span": {
+        "end_byte": 431,
+        "end_col": 5,
+        "end_line": 15,
+        "start_byte": 369,
+        "start_col": 2,
+        "start_line": 13
+      },
+      "symbol_key": "ruby:app/helpers/self_destruct_helper.rb#SelfDestructHelper::self_destruct?"
+    },
+    {
+      "body_sha256": "979d31dd20738a40c0f7e4c52db26bae6c85c7e9d7877a68cad5f66564fc8e12",
+      "path": "app/lib/account_statuses_filter.rb",
+      "span": {
+        "end_byte": 3709,
+        "end_col": 5,
+        "end_line": 150,
+        "start_byte": 3628,
+        "start_col": 2,
+        "start_line": 148
+      },
+      "symbol_key": "ruby:app/lib/account_statuses_filter.rb#AccountStatusesFilter::truthy_param?"
+    },
+    {
+      "body_sha256": "c0473503f327256f64abccf6511bd16a49a2d96a40f5c27c83f4b26b1add74c4",
+      "path": "app/lib/request.rb",
+      "span": {
+        "end_byte": 9504,
+        "end_col": 7,
+        "end_line": 300,
+        "start_byte": 9248,
+        "start_col": 4,
+        "start_line": 293
+      },
+      "symbol_key": "ruby:app/lib/request.rb#Request::ClientLimit::body_with_limit"
+    },
+    {
+      "body_sha256": "4ac141992345bb667609c62eaa5e958f02861d30712661f8ae88d8bbfa17db3f",
+      "path": "app/lib/signature_parser.rb",
+      "span": {
+        "end_byte": 1645,
+        "end_col": 5,
+        "end_line": 43,
+        "start_byte": 732,
+        "start_col": 2,
+        "start_line": 19
+      },
+      "symbol_key": "ruby:app/lib/signature_parser.rb#SignatureParser::self.parse"
+    },
+    {
+      "body_sha256": "2df954a50c336f751e2fa7d5c0b55f7ad6e5821b8f1edeae4e0e2521d65666fd",
+      "path": "app/lib/signed_request.rb",
+      "span": {
+        "end_byte": 4074,
+        "end_col": 7,
+        "end_line": 96,
+        "start_byte": 3991,
+        "start_col": 4,
+        "start_line": 94
+      },
+      "symbol_key": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signature_algorithm"
+    },
+    {
+      "body_sha256": "1d09491a5771b9b768eb7d73f419d1afec27b30282dbd0051052a78e06361ab5",
+      "path": "app/lib/signed_request.rb",
+      "span": {
+        "end_byte": 3985,
+        "end_col": 7,
+        "end_line": 92,
+        "start_byte": 3748,
+        "start_col": 4,
+        "start_line": 88
+      },
+      "symbol_key": "ruby:app/lib/signed_request.rb#SignedRequest::HttpSignature::signature_params"
+    },
+    {
+      "body_sha256": "a6aba70fa641de8c34a5ba09eb1d8de34a0741825b505998f9ca8958f4251a52",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 12599,
+        "end_col": 5,
+        "end_line": 318,
+        "start_byte": 12526,
+        "start_col": 2,
+        "start_line": 316
+      },
+      "symbol_key": "ruby:app/models/account.rb#Account::deleted?"
+    },
+    {
+      "body_sha256": "e34ee5a94ed14f1531895f8197f92d78cfb4db187a494a5ae38ca67495ba1f81",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 11415,
+        "end_col": 5,
+        "end_line": 282,
+        "start_byte": 11353,
+        "start_col": 2,
+        "start_line": 280
+      },
+      "symbol_key": "ruby:app/models/account.rb#Account::invalidated_username?"
+    },
+    {
+      "body_sha256": "e24c772e0c8128cd21fe56eeb377e82772b8763dce67fd76f7ba7b35a8d64bb0",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 9756,
+        "end_col": 5,
+        "end_line": 203,
+        "start_byte": 9724,
+        "start_col": 2,
+        "start_line": 201
+      },
+      "symbol_key": "ruby:app/models/account.rb#Account::local?"
+    },
+    {
+      "body_sha256": "9547c65d636bf8175b0d731d7343adc9fd1d5b758c27c7aa9714d0cfc16ec6e8",
+      "path": "app/models/account.rb",
+      "span": {
+        "end_byte": 10782,
+        "end_col": 5,
+        "end_line": 257,
+        "start_byte": 10691,
+        "start_col": 2,
+        "start_line": 255
+      },
+      "symbol_key": "ruby:app/models/account.rb#Account::local_username_and_domain"
+    },
+    {
+      "body_sha256": "fb0eec285892856366d7151e9b1578630ac32d1ad5378c527be66eb9fad2e654",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "span": {
+        "end_byte": 408,
+        "end_col": 5,
+        "end_line": 14,
+        "start_byte": 342,
+        "start_col": 2,
+        "start_line": 12
+      },
+      "symbol_key": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::suspended?"
+    },
+    {
+      "body_sha256": "34abaf28d8541789491fddb21d11ec2f56188335c99ea6858091ee3baa1f0a98",
+      "path": "app/models/concerns/account/suspensions.rb",
+      "span": {
+        "end_byte": 692,
+        "end_col": 5,
+        "end_line": 30,
+        "start_byte": 643,
+        "start_col": 2,
+        "start_line": 28
+      },
+      "symbol_key": "ruby:app/models/concerns/account/suspensions.rb#Account::Suspensions::unavailable?"
+    },
+    {
+      "body_sha256": "4e2642565e0ffe63a2cd00febce01daf8820bc3e491c52cbaa922d25cb722e3f",
+      "path": "app/models/status.rb",
+      "span": {
+        "end_byte": 8811,
+        "end_col": 5,
+        "end_line": 208,
+        "start_byte": 8759,
+        "start_col": 2,
+        "start_line": 206
+      },
+      "symbol_key": "ruby:app/models/status.rb#Status::local?"
+    },
+    {
+      "body_sha256": "4c69742fd38132dd35fac03fc894c72aa4b53adaa2a6f27c84466accb1b9fcf2",
+      "path": "app/services/activitypub/fetch_remote_actor_service.rb",
+      "span": {
+        "end_byte": 2440,
+        "end_col": 5,
+        "end_line": 62,
+        "start_byte": 2356,
+        "start_col": 2,
+        "start_line": 60
+      },
+      "symbol_key": "ruby:app/services/activitypub/fetch_remote_actor_service.rb#ActivityPub::FetchRemoteActorService::expected_type?"
+    },
+    {
+      "body_sha256": "73e5ecaf35d8d82b0642642b4c205bd9f4bc789f4a33316ded7e8b06b36b24cd",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 2302,
+        "end_col": 5,
+        "end_line": 67,
+        "start_byte": 2108,
+        "start_col": 2,
+        "start_line": 65
+      },
+      "symbol_key": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::expected_type?"
+    },
+    {
+      "body_sha256": "aacf52479e72912dd74f0f8cb7c0aeb7f8956864f3ceb5d7b8936ed8851b9e27",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 1435,
+        "end_col": 5,
+        "end_line": 41,
+        "start_byte": 833,
+        "start_col": 2,
+        "start_line": 28
+      },
+      "symbol_key": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::perform_request"
+    },
+    {
+      "body_sha256": "36bfb937a5d570a12a77cf3b3aa5ac3c9e5c5b125dcb2878fd44f2c0234a5a76",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 829,
+        "end_col": 5,
+        "end_line": 26,
+        "start_byte": 701,
+        "start_col": 2,
+        "start_line": 22
+      },
+      "symbol_key": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process"
+    },
+    {
+      "body_sha256": "148b15dd67ba835503a4a593563889a0a9a04d25df3097e90a7b0d5f5ae45764",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 2685,
+        "end_col": 5,
+        "end_line": 76,
+        "start_byte": 2306,
+        "start_col": 2,
+        "start_line": 69
+      },
+      "symbol_key": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_html"
+    },
+    {
+      "body_sha256": "de0160ce1557eab55afb99b11cdb313aa590cb16fb76f74bbb0bc6a55829a302",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 3113,
+        "end_col": 5,
+        "end_line": 85,
+        "start_byte": 2689,
+        "start_col": 2,
+        "start_line": 78
+      },
+      "symbol_key": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_link_headers"
+    },
+    {
+      "body_sha256": "ae3a8dc9b42c81a201ca6d4619cad864ae055e58d3a23f60a2ec1d278470ea9c",
+      "path": "app/services/fetch_resource_service.rb",
+      "span": {
+        "end_byte": 2104,
+        "end_col": 5,
+        "end_line": 63,
+        "start_byte": 1439,
+        "start_col": 2,
+        "start_line": 43
+      },
+      "symbol_key": "ruby:app/services/fetch_resource_service.rb#FetchResourceService::process_response"
+    }
+  ]
+}

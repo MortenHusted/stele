@@ -1,0 +1,1137 @@
+// Which intents, domain definitions and exceptions are verified at the target
+// source identity, and which are unapproved, stale or unverified, and why?
+// Does the code contain every anchor a statement names as realizing it?
+// This checker includes a synthetic fixture; check and bind replace it with
+// the evidence `stele intent report` projects from a catalog, its examples,
+// its approval log and its run ledger. `stele spec walk` and `stele spec
+// mutate` on this file are the checker's self-test.
+spec intent_checker {
+  notes { text: "Mutation policies exercise the synthetic fixture only. Bound evidence drops them and carries its own invariant expectations: awaiting_approval(I) count 0, and standing(<id>, Kind) count 1 for every intent, definition and exception. Standing precedence is unapproved, stale, unverified, verified. Inequality against a constant is false in the engine when the constant appears in no fact, so rules compare only bound variables." }
+
+  symbol intent { label: "Intent" }
+  symbol definition { label: "Domain definition" }
+  symbol exception { label: "Exception" }
+  symbol channel { label: "Channel" }
+  symbol example { label: "Example" }
+  symbol approve { label: "Approve" }
+  symbol holds_instead { label: "States what holds instead" }
+  symbol pass { label: "Passed" }
+  symbol fail { label: "Failed" }
+  symbol error { label: "Errored or did not build" }
+  symbol unapproved { label: "Unapproved" }
+  symbol stale { label: "Stale" }
+  symbol unverified { label: "Unverified" }
+  symbol verified { label: "Verified" }
+  symbol not_approved { label: "never approved, or re-added after an approved removal" }
+  symbol text_differs { label: "text differs from its latest approval" }
+  symbol removal_pending { label: "removed without an approved removal" }
+  symbol link_removal_pending { label: "approved link removed without an approved removal" }
+  symbol tag_removal_pending { label: "approved channel tag removed without an approved removal" }
+  symbol linked_statement_changed { label: "a linked statement changed since this was approved" }
+  symbol no_definition { label: "no definition refines it" }
+  symbol unverified_member { label: "a definition or exception it requires is not verified" }
+  symbol no_channel { label: "applies on no approved channel" }
+  symbol no_example { label: "no example tagged for an applicable channel" }
+  symbol no_failing_run { label: "an example has no failing run with its current text on this channel" }
+  symbol no_passing_run { label: "an example does not pass cleanly at the target on this channel" }
+  symbol exception_unsettled { label: "an exception naming this channel is unapproved or stale, so it does not scope the channel out" }
+  symbol example_awaits_approval { label: "an example is unapproved or stale" }
+  symbol run_digest_mismatch { label: "an example's failing runs were recorded for text it no longer has" }
+  symbol dependent_removal_pending { label: "a dependent's link to it was removed without an approved removal" }
+
+  // ================================================== evidence (projector contract)
+  // Every relation in this section is asserted by the stele intent projector
+  // and by nothing else. Identities and digests are relation arguments, never
+  // observed bases. Digests and identities are symbols, quoted when they are
+  // not bare identifiers.
+
+  // A current catalog statement or tagged example. Kind is intent, definition, exception, channel or example.
+  relation item { args: [symbol, symbol] roles: [item, kind] reads: "{item} is a current {kind}" }
+  // The intent-digest of a current item's text, links, kind, exception kind, channel scope or test tokens.
+  relation current_digest { args: [symbol, symbol] roles: [item, digest] reads: "{item} currently reads as {digest}" }
+  // A current link from a definition to the intent it refines.
+  relation refines { args: [symbol, symbol] roles: [definition, intent] reads: "{definition} refines {intent}" }
+  // A current link from an exception to the definition it narrows.
+  relation narrows { args: [symbol, symbol] roles: [exception, definition] reads: "{exception} narrows {definition}" }
+  // A current exception's kind: does_not_apply or holds_instead.
+  relation exception_kind { args: [symbol, symbol] roles: [exception, kind] reads: "{exception} is a {kind} exception" }
+  // A channel named in a current exception's scope.
+  relation scoped_to { args: [symbol, symbol] roles: [exception, channel] reads: "{exception} names the channel {channel}" }
+  // A current example's tag naming the definition or holds-instead exception it exemplifies; tags the scanner ignores are not emitted.
+  relation exemplifies { args: [symbol, symbol] roles: [example, statement] reads: "{example} exemplifies {statement}" }
+  // A channel a current example is tagged to run on.
+  relation tagged { args: [symbol, symbol] roles: [example, channel] reads: "{example} is tagged for {channel}" }
+  // One approval-log entry. Position is its order in the log; action is approve or remove; digest is the item's digest.
+  relation log_entry { args: [integer, symbol, symbol, symbol, symbol] roles: [position, item, kind, action, digest] reads: "approval entry {position} records {action} of {kind} {item} reading {digest}" }
+  // A resolved link recorded by an entry, with the digest its target had then.
+  relation log_link { args: [integer, symbol, symbol] roles: [position, target, digest] reads: "approval entry {position} recorded a link to {target} reading {digest}" }
+  // A channel tag recorded by an example's entry.
+  relation log_tag { args: [integer, symbol] roles: [position, channel] reads: "approval entry {position} recorded the channel tag {channel}" }
+  // One recorded run. Outcome is pass, fail, error or skip.
+  relation run { args: [symbol, symbol, symbol, symbol, symbol] roles: [example, digest, channel, identity, outcome] reads: "{example} reading {digest} ran on {channel} at source {identity} and ended {outcome}" }
+  // The source identity the report evaluates.
+  relation target_identity { args: [symbol] roles: [identity] reads: "{identity} is the target source identity" }
+  // An anchor a current definition or exception names as the code that realizes it: a symbol key or a repository path. Not approved, so it never changes a standing.
+  relation realized { args: [symbol, symbol] roles: [statement, anchor] reads: "{statement} is realized by the code at {anchor}" }
+  // An anchor the code snapshot contains.
+  relation anchor_present { args: [symbol] roles: [anchor] reads: "the code contains {anchor}" }
+
+  // ================================================== approval
+  relation link { args: [symbol, symbol] roles: [item, target] reads: "{item} links to {target} now" }
+  relation latest_entry { args: [symbol, integer] roles: [item, position] reads: "entry {position} is the latest for {item}" }
+  relation live_approval { args: [symbol, symbol, integer, symbol] roles: [item, kind, position, digest] reads: "the latest entry for {item}, at {position}, approves it as a {kind} reading {digest}" }
+  relation reinstated { args: [symbol, symbol] roles: [item, kind] reads: "{item} is approved but missing, so it still counts as a {kind}" }
+  relation present { args: [symbol, symbol] roles: [item, kind] reads: "{item} counts as a {kind}" }
+  relation judged { args: [symbol] roles: [item] reads: "{item} receives a standing" }
+  relation link_removed { args: [symbol, symbol] roles: [item, target] reads: "the approved link from {item} to {target} is missing and still counts" }
+  relation tag_removed { args: [symbol, symbol] roles: [example, channel] reads: "the approved tag of {example} for {channel} is missing and still counts" }
+  relation approval_reason { args: [symbol, symbol, symbol] roles: [item, reason, subject] reads: "{item} is unapproved: {reason} ({subject})" }
+  relation unapproved { args: [symbol] roles: [item] reads: "{item} differs from its latest approval" }
+  relation stale_link { args: [symbol, symbol] roles: [item, target] reads: "{item} was approved against a reading of {target} that is no longer current or latest approved" }
+  relation stale { args: [symbol] roles: [item] reads: "{item} awaits re-confirmation" }
+  relation settled { args: [symbol] roles: [item] reads: "{item} is approved as it reads now and is not stale" }
+  relation awaiting_approval { args: [symbol] roles: [item] reads: "{item} awaits approval or re-confirmation" }
+
+  // ================================================== evidence per example and channel
+  relation effective_link { args: [symbol, symbol] roles: [item, target] reads: "{item} counts as linked to {target}" }
+  relation example_of { args: [symbol, symbol] roles: [example, statement] reads: "{example} counts as an example of {statement}" }
+  relation example_tag { args: [symbol, symbol] roles: [example, channel] reads: "{example} counts as tagged for {channel}" }
+  relation red { args: [symbol, symbol] roles: [example, channel] reads: "{example} failed on {channel} with its current text" }
+  relation spoiled { args: [symbol, symbol] roles: [example, channel] reads: "{example} failed or errored on {channel} at the target with its current text" }
+  relation green { args: [symbol, symbol] roles: [example, channel] reads: "{example} passes cleanly on {channel} at the target with its current text" }
+
+  // ================================================== applicability and verification
+  relation approved_channel { args: [symbol] roles: [channel] reads: "{channel} is an approved channel" }
+  relation scoped_out { args: [symbol, symbol] roles: [definition, channel] reads: "a settled exception scopes {definition} out of {channel}" }
+  relation applies_on { args: [symbol, symbol] roles: [statement, channel] reads: "{statement} applies on {channel}" }
+  relation applies_somewhere { args: [symbol] roles: [statement] reads: "{statement} applies on at least one channel" }
+  relation covered_on { args: [symbol, symbol] roles: [statement, channel] reads: "{statement} has an example tagged for {channel}" }
+  relation obligation { args: [symbol, symbol, symbol] roles: [statement, example, channel] reads: "{example} must have failed and must pass on {channel} for {statement}" }
+  relation channel_gap { args: [symbol, symbol, symbol] roles: [statement, channel, reason] reads: "{statement} lacks evidence on {channel}: {reason}" }
+  relation intent_member { args: [symbol, symbol] roles: [intent, member] reads: "{member} must be verified for {intent} to be verified" }
+  relation has_member { args: [symbol] roles: [intent] reads: "{intent} has a definition" }
+  relation gap { args: [symbol, symbol, symbol] roles: [item, reason, subject] reads: "{item} misses a verification condition: {reason} ({subject})" }
+  relation has_gap { args: [symbol] roles: [item] reads: "{item} misses a verification condition" }
+
+  // ================================================== standing and reasons
+  relation standing_unapproved { args: [symbol] roles: [item] reads: "{item} stands unapproved" }
+  relation standing_stale { args: [symbol] roles: [item] reads: "{item} stands stale" }
+  relation standing_unverified { args: [symbol] roles: [item] reads: "{item} stands unverified" }
+  relation standing_verified { args: [symbol] roles: [item] reads: "{item} stands verified" }
+  relation standing { args: [symbol, symbol] roles: [item, standing] reads: "{item} stands {standing}" }
+  relation reason { args: [symbol, symbol, symbol] roles: [item, reason, subject] reads: "{item}'s standing rests on {reason} ({subject})" }
+
+  // ================================================== map
+  relation broken_map { args: [symbol, symbol] roles: [statement, anchor] reads: "{statement} names {anchor} as realizing it, but the code does not contain it" }
+
+  // ================================================== rules: approval
+
+  rule link_by_refines { derive: "link(D, I)" when: { refines: "refines(D, I)" } }
+
+  rule link_by_narrows { derive: "link(X, D)" when: { narrows: "narrows(X, D)" } }
+
+  rule link_by_exemplifies { derive: "link(E, S)" when: { exemplifies: "exemplifies(E, S)" } }
+
+  // The last entry per item wins, whatever its action.
+  rule find_latest_entry { derive: "latest_entry(I, max(P))" when: { logged: "log_entry(P, I, _, _, _)" } }
+
+  rule find_live_approval { derive: "live_approval(I, K, P, D)" when: { latest: "latest_entry(I, P)" approves: "log_entry(P, I, K, approve, D)" } }
+
+  // An approved item missing now, with no later removal, still counts.
+  rule reinstate_missing { derive: "reinstated(I, K)" when: { approved: "live_approval(I, K, _, _)" missing: "!item(I, _)" } }
+
+  rule present_now { derive: "present(I, K)" when: { current: "item(I, K)" } }
+
+  rule present_reinstated { derive: "present(I, K)" when: { reinstated: "reinstated(I, K)" } }
+
+  rule judge_intent { derive: "judged(I)" when: { intent: "present(I, intent)" } }
+
+  rule judge_definition { derive: "judged(D)" when: { definition: "present(D, definition)" } }
+
+  rule judge_exception { derive: "judged(X)" when: { exception: "present(X, exception)" } }
+
+  rule find_removed_link { derive: "link_removed(I, T)" when: { approved: "live_approval(I, _, P, _)" recorded: "log_link(P, T, _)" missing: "!link(I, T)" } }
+
+  rule find_removed_tag { derive: "tag_removed(E, C)" when: { approved: "live_approval(E, _, P, _)" recorded: "log_tag(P, C)" missing: "!tagged(E, C)" } }
+
+  // A latest entry that removes the item leaves a present item without approval.
+  rule reason_not_approved { derive: "approval_reason(I, not_approved, I)" when: { current: "item(I, _)" unapproved: "!live_approval(I, _, _, _)" } }
+
+  // Links and tags are inside the digest, so an added link or tag shows here.
+  rule reason_text_differs { derive: "approval_reason(I, text_differs, I)" when: { reads_now: "current_digest(I, D)" approved_as: "live_approval(I, _, _, A)" differs: "D \\= A" } }
+
+  rule reason_removal { derive: "approval_reason(I, removal_pending, I)" when: { reinstated: "reinstated(I, _)" } }
+
+  rule reason_link_removal { derive: "approval_reason(I, link_removal_pending, T)" when: { removed: "link_removed(I, T)" current: "item(I, _)" } }
+
+  rule reason_tag_removal { derive: "approval_reason(E, tag_removal_pending, C)" when: { removed: "tag_removed(E, C)" current: "item(E, _)" } }
+
+  rule find_unapproved { derive: "unapproved(I)" when: { reason: "approval_reason(I, _, _)" } }
+
+  // Stale when a linked statement's current digest differs from the recorded one,
+  rule stale_by_current_text { derive: "stale_link(I, T)" when: { approved: "live_approval(I, _, P, _)" recorded: "log_link(P, T, R)" reads_now: "current_digest(T, D)" differs: "D \\= R" } }
+
+  // or its latest approved digest does, so reverting the dependency does not clear staleness.
+  rule stale_by_latest_approval { derive: "stale_link(I, T)" when: { approved: "live_approval(I, _, P, _)" recorded: "log_link(P, T, R)" approved_as: "live_approval(T, _, _, A)" differs: "A \\= R" } }
+
+  rule find_stale { derive: "stale(I)" when: { link: "stale_link(I, _)" } }
+
+  rule find_settled { derive: "settled(I)" when: { current: "item(I, _)" approved: "!unapproved(I)" fresh: "!stale(I)" } }
+
+  rule await_unapproved { derive: "awaiting_approval(I)" when: { unapproved: "unapproved(I)" } }
+
+  rule await_stale { derive: "awaiting_approval(I)" when: { stale: "stale(I)" } }
+
+  // ================================================== rules: evidence per example and channel
+
+  rule link_now { derive: "effective_link(I, T)" when: { link: "link(I, T)" } }
+
+  rule link_pending_removal { derive: "effective_link(I, T)" when: { removed: "link_removed(I, T)" } }
+
+  rule find_example_of { derive: "example_of(E, S)" when: { link: "effective_link(E, S)" example: "present(E, example)" } }
+
+  rule tag_now { derive: "example_tag(E, C)" when: { tagged: "tagged(E, C)" } }
+
+  rule tag_pending_removal { derive: "example_tag(E, C)" when: { removed: "tag_removed(E, C)" } }
+
+  // A fail with the current text at any source identity; error and skip never count.
+  rule find_red { derive: "red(E, C)" when: { reads_now: "current_digest(E, D)" failed: "run(E, D, C, _, fail)" } }
+
+  rule spoil_by_failure { derive: "spoiled(E, C)" when: { reads_now: "current_digest(E, D)" failed: "run(E, D, C, T, fail)" at_target: "target_identity(T)" } }
+
+  rule spoil_by_error { derive: "spoiled(E, C)" when: { reads_now: "current_digest(E, D)" errored: "run(E, D, C, T, error)" at_target: "target_identity(T)" } }
+
+  rule find_green { derive: "green(E, C)" when: { reads_now: "current_digest(E, D)" passed: "run(E, D, C, T, pass)" at_target: "target_identity(T)" clean: "!spoiled(E, C)" } }
+
+  // ================================================== rules: applicability and verification
+
+  // A channel stays approved through text edits and a pending removal until its removal is approved.
+  rule find_approved_channel { derive: "approved_channel(C)" when: { approved: "live_approval(C, channel, _, _)" } }
+
+  rule scope_out { derive: "scoped_out(D, C)" when: { narrows: "narrows(X, D)" scope: "scoped_to(X, C)" settled: "settled(X)" } }
+
+  // Every approved channel unless a settled exception scopes it out.
+  rule definition_applies { derive: "applies_on(D, C)" when: { definition: "present(D, definition)" approved: "approved_channel(C)" not_scoped_out: "!scoped_out(D, C)" } }
+
+  rule exception_applies { derive: "applies_on(X, C)" when: { holds_instead: "exception_kind(X, holds_instead)" scope: "scoped_to(X, C)" } }
+
+  rule find_applies_somewhere { derive: "applies_somewhere(S)" when: { applies: "applies_on(S, _)" } }
+
+  rule cover_channel { derive: "covered_on(S, C)" when: { example: "example_of(E, S)" tag: "example_tag(E, C)" } }
+
+  rule find_obligation { derive: "obligation(S, E, C)" when: { applies: "applies_on(S, C)" example: "example_of(E, S)" tag: "example_tag(E, C)" } }
+
+  rule gap_no_example { derive: "channel_gap(S, C, no_example)" when: { applies: "applies_on(S, C)" uncovered: "!covered_on(S, C)" } }
+
+  rule gap_no_failing_run { derive: "channel_gap(S, C, no_failing_run)" when: { owed: "obligation(S, E, C)" not_red: "!red(E, C)" } }
+
+  rule gap_no_passing_run { derive: "channel_gap(S, C, no_passing_run)" when: { owed: "obligation(S, E, C)" not_green: "!green(E, C)" } }
+
+  rule gap_on_channel { derive: "gap(S, R, C)" when: { channel_gap: "channel_gap(S, C, R)" } }
+
+  rule gap_no_channel { derive: "gap(D, no_channel, D)" when: { definition: "present(D, definition)" nowhere: "!applies_somewhere(D)" } }
+
+  // A settled exception would have scoped the channel out, so one naming a channel with a gap is unsettled.
+  rule gap_exception_unsettled { derive: "gap(D, exception_unsettled, X)" when: { narrows: "narrows(X, D)" scope: "scoped_to(X, C)" channel_gap: "channel_gap(D, C, _)" } }
+
+  rule gap_example_awaits_approval { derive: "gap(S, example_awaits_approval, E)" when: { example: "example_of(E, S)" unsettled: "!settled(E)" } }
+
+  rule gap_run_digest_mismatch { derive: "gap(S, run_digest_mismatch, E)" when: { owed: "obligation(S, E, C)" failed: "run(E, _, C, _, fail)" not_red: "!red(E, C)" } }
+
+  rule gap_dependent_removal { derive: "gap(T, dependent_removal_pending, I)" when: { removed: "link_removed(I, T)" } }
+
+  // An intent needs every definition refining it and every exception narrowing those.
+  rule member_definition { derive: "intent_member(I, D)" when: { link: "effective_link(D, I)" intent: "present(I, intent)" } }
+
+  rule member_exception { derive: "intent_member(I, X)" when: { member: "intent_member(I, D)" link: "effective_link(X, D)" exception: "present(X, exception)" } }
+
+  rule find_has_member { derive: "has_member(I)" when: { member: "intent_member(I, _)" } }
+
+  rule gap_no_definition { derive: "gap(I, no_definition, I)" when: { intent: "present(I, intent)" empty: "!has_member(I)" } }
+
+  rule gap_unsettled_member { derive: "gap(I, unverified_member, M)" when: { member: "intent_member(I, M)" unsettled: "!settled(M)" } }
+
+  rule gap_member_gap { derive: "gap(I, unverified_member, M)" when: { member: "intent_member(I, M)" gap: "has_gap(M)" } }
+
+  rule find_has_gap { derive: "has_gap(S)" when: { gap: "gap(S, _, _)" } }
+
+  // ================================================== rules: standing and reasons
+
+  rule stand_unapproved { derive: "standing_unapproved(I)" when: { judged: "judged(I)" unapproved: "unapproved(I)" } }
+
+  rule stand_stale { derive: "standing_stale(I)" when: { judged: "judged(I)" stale: "stale(I)" approved: "!unapproved(I)" } }
+
+  rule stand_unverified { derive: "standing_unverified(I)" when: { settled: "settled(I)" gap: "has_gap(I)" } }
+
+  rule stand_verified { derive: "standing_verified(I)" when: { judged: "judged(I)" settled: "settled(I)" complete: "!has_gap(I)" } }
+
+  rule standing_is_unapproved { derive: "standing(I, unapproved)" when: { standing: "standing_unapproved(I)" } }
+
+  rule standing_is_stale { derive: "standing(I, stale)" when: { standing: "standing_stale(I)" } }
+
+  rule standing_is_unverified { derive: "standing(I, unverified)" when: { standing: "standing_unverified(I)" } }
+
+  rule standing_is_verified { derive: "standing(I, verified)" when: { standing: "standing_verified(I)" } }
+
+  rule reason_for_unapproved { derive: "reason(I, R, S)" when: { standing: "standing_unapproved(I)" reason: "approval_reason(I, R, S)" } }
+
+  rule reason_for_stale { derive: "reason(I, linked_statement_changed, T)" when: { standing: "standing_stale(I)" link: "stale_link(I, T)" } }
+
+  rule reason_for_unverified { derive: "reason(I, R, S)" when: { standing: "standing_unverified(I)" gap: "gap(I, R, S)" } }
+
+
+  // ================================================== rules: map
+
+  rule find_broken_map { derive: "broken_map(S, A)" when: { realized: "realized(S, A)" absent: "!anchor_present(A)" } }
+
+  // ================================================== fixture
+
+  // Approved channels are shared by every case: browser, mcp and public.
+  // kiosk was added but never approved, so it applies to nothing and awaits approval.
+
+  fact fixture_channels_0 { relation: item args: [browser, channel] }
+  fact fixture_channels_1 { relation: current_digest args: [browser, h_browser] }
+  fact fixture_channels_2 { relation: log_entry args: [1, browser, channel, approve, h_browser] }
+  fact fixture_channels_3 { relation: item args: [mcp, channel] }
+  fact fixture_channels_4 { relation: current_digest args: [mcp, h_mcp] }
+  fact fixture_channels_5 { relation: log_entry args: [2, mcp, channel, approve, h_mcp] }
+  fact fixture_channels_6 { relation: item args: [public, channel] }
+  fact fixture_channels_7 { relation: current_digest args: [public, h_public] }
+  fact fixture_channels_8 { relation: log_entry args: [3, public, channel, approve, h_public] }
+  fact fixture_channels_9 { relation: item args: [kiosk, channel] }
+  fact fixture_channels_10 { relation: current_digest args: [kiosk, h_kiosk] }
+  fact fixture_channels_11 { relation: target_identity args: [t_head] }
+
+  // Case ae1 and ae10. Approved, never edited examples failed and now pass on every
+  // approved channel. The browser example failed on an earlier commit; the MCP example
+  // failed only on a scratch break of a tool that already worked (ae10).
+
+  fact fixture_ae1_0 { relation: item args: [ae1_intent, intent] }
+  fact fixture_ae1_1 { relation: current_digest args: [ae1_intent, h_ae1_intent] }
+  fact fixture_ae1_2 { relation: log_entry args: [10, ae1_intent, intent, approve, h_ae1_intent] }
+  fact fixture_ae1_3 { relation: item args: [ae1_def, definition] }
+  fact fixture_ae1_4 { relation: current_digest args: [ae1_def, h_ae1_def] }
+  fact fixture_ae1_5 { relation: refines args: [ae1_def, ae1_intent] }
+  fact fixture_ae1_6 { relation: log_entry args: [11, ae1_def, definition, approve, h_ae1_def] }
+  fact fixture_ae1_7 { relation: log_link args: [11, ae1_intent, h_ae1_intent] }
+  fact fixture_ae1_8 { relation: item args: [ae1_ex_web, example] }
+  fact fixture_ae1_9 { relation: current_digest args: [ae1_ex_web, h_ae1_ex_web] }
+  fact fixture_ae1_10 { relation: exemplifies args: [ae1_ex_web, ae1_def] }
+  fact fixture_ae1_11 { relation: tagged args: [ae1_ex_web, browser] }
+  fact fixture_ae1_12 { relation: tagged args: [ae1_ex_web, public] }
+  fact fixture_ae1_13 { relation: log_entry args: [12, ae1_ex_web, example, approve, h_ae1_ex_web] }
+  fact fixture_ae1_14 { relation: log_link args: [12, ae1_def, h_ae1_def] }
+  fact fixture_ae1_15 { relation: log_tag args: [12, browser] }
+  fact fixture_ae1_16 { relation: log_tag args: [12, public] }
+  fact fixture_ae1_17 { relation: run args: [ae1_ex_web, h_ae1_ex_web, browser, t_old, fail] }
+  fact fixture_ae1_18 { relation: run args: [ae1_ex_web, h_ae1_ex_web, public, t_old, fail] }
+  fact fixture_ae1_19 { relation: run args: [ae1_ex_web, h_ae1_ex_web, browser, t_head, pass] }
+  fact fixture_ae1_20 { relation: run args: [ae1_ex_web, h_ae1_ex_web, public, t_head, pass] }
+  fact fixture_ae1_21 { relation: item args: [ae1_ex_mcp, example] }
+  fact fixture_ae1_22 { relation: current_digest args: [ae1_ex_mcp, h_ae1_ex_mcp] }
+  fact fixture_ae1_23 { relation: exemplifies args: [ae1_ex_mcp, ae1_def] }
+  fact fixture_ae1_24 { relation: tagged args: [ae1_ex_mcp, mcp] }
+  fact fixture_ae1_25 { relation: log_entry args: [13, ae1_ex_mcp, example, approve, h_ae1_ex_mcp] }
+  fact fixture_ae1_26 { relation: log_link args: [13, ae1_def, h_ae1_def] }
+  fact fixture_ae1_27 { relation: log_tag args: [13, mcp] }
+  fact fixture_ae1_28 { relation: run args: [ae1_ex_mcp, h_ae1_ex_mcp, mcp, t_scratch, fail] }
+  fact fixture_ae1_29 { relation: run args: [ae1_ex_mcp, h_ae1_ex_mcp, mcp, t_head, pass] }
+
+  // Case ae2. An agent edited the example after its failing runs: the old text
+  // failed at the target on browser and errored there on mcp, and the edited text passes.
+
+  fact fixture_ae2_0 { relation: item args: [ae2_intent, intent] }
+  fact fixture_ae2_1 { relation: current_digest args: [ae2_intent, h_ae2_intent] }
+  fact fixture_ae2_2 { relation: log_entry args: [20, ae2_intent, intent, approve, h_ae2_intent] }
+  fact fixture_ae2_3 { relation: item args: [ae2_def, definition] }
+  fact fixture_ae2_4 { relation: current_digest args: [ae2_def, h_ae2_def] }
+  fact fixture_ae2_5 { relation: refines args: [ae2_def, ae2_intent] }
+  fact fixture_ae2_6 { relation: log_entry args: [21, ae2_def, definition, approve, h_ae2_def] }
+  fact fixture_ae2_7 { relation: log_link args: [21, ae2_intent, h_ae2_intent] }
+  fact fixture_ae2_8 { relation: item args: [ae2_ex, example] }
+  fact fixture_ae2_9 { relation: current_digest args: [ae2_ex, h_ae2_ex_v2] }
+  fact fixture_ae2_10 { relation: exemplifies args: [ae2_ex, ae2_def] }
+  fact fixture_ae2_11 { relation: tagged args: [ae2_ex, browser] }
+  fact fixture_ae2_12 { relation: tagged args: [ae2_ex, mcp] }
+  fact fixture_ae2_13 { relation: tagged args: [ae2_ex, public] }
+  fact fixture_ae2_14 { relation: log_entry args: [22, ae2_ex, example, approve, h_ae2_ex] }
+  fact fixture_ae2_15 { relation: log_link args: [22, ae2_def, h_ae2_def] }
+  fact fixture_ae2_16 { relation: log_tag args: [22, browser] }
+  fact fixture_ae2_17 { relation: log_tag args: [22, mcp] }
+  fact fixture_ae2_18 { relation: log_tag args: [22, public] }
+  fact fixture_ae2_19 { relation: run args: [ae2_ex, h_ae2_ex, browser, t_head, fail] }
+  fact fixture_ae2_20 { relation: run args: [ae2_ex, h_ae2_ex, mcp, t_head, error] }
+  fact fixture_ae2_21 { relation: run args: [ae2_ex, h_ae2_ex, public, t_scratch, fail] }
+  fact fixture_ae2_22 { relation: run args: [ae2_ex, h_ae2_ex_v2, browser, t_head, pass] }
+  fact fixture_ae2_23 { relation: run args: [ae2_ex, h_ae2_ex_v2, mcp, t_head, pass] }
+  fact fixture_ae2_24 { relation: run args: [ae2_ex, h_ae2_ex_v2, public, t_head, pass] }
+
+  // Case ae3 before re-approval. The definition's text changed, so it is unapproved
+  // and its example and exception are stale. Its intent was also changed and re-approved,
+  // so the definition is both unapproved and stale and must stand only unapproved.
+
+  fact fixture_ae3a_0 { relation: item args: [ae3a_intent, intent] }
+  fact fixture_ae3a_1 { relation: current_digest args: [ae3a_intent, h_ae3a_intent_v2] }
+  fact fixture_ae3a_2 { relation: log_entry args: [30, ae3a_intent, intent, approve, h_ae3a_intent] }
+  fact fixture_ae3a_3 { relation: item args: [ae3a_def, definition] }
+  fact fixture_ae3a_4 { relation: current_digest args: [ae3a_def, h_ae3a_def_v2] }
+  fact fixture_ae3a_5 { relation: refines args: [ae3a_def, ae3a_intent] }
+  fact fixture_ae3a_6 { relation: log_entry args: [31, ae3a_def, definition, approve, h_ae3a_def] }
+  fact fixture_ae3a_7 { relation: log_link args: [31, ae3a_intent, h_ae3a_intent] }
+  fact fixture_ae3a_8 { relation: item args: [ae3a_ex, example] }
+  fact fixture_ae3a_9 { relation: current_digest args: [ae3a_ex, h_ae3a_ex] }
+  fact fixture_ae3a_10 { relation: exemplifies args: [ae3a_ex, ae3a_def] }
+  fact fixture_ae3a_11 { relation: tagged args: [ae3a_ex, browser] }
+  fact fixture_ae3a_12 { relation: log_entry args: [32, ae3a_ex, example, approve, h_ae3a_ex] }
+  fact fixture_ae3a_13 { relation: log_link args: [32, ae3a_def, h_ae3a_def] }
+  fact fixture_ae3a_14 { relation: log_tag args: [32, browser] }
+  fact fixture_ae3a_15 { relation: item args: [ae3a_exc, exception] }
+  fact fixture_ae3a_16 { relation: current_digest args: [ae3a_exc, h_ae3a_exc] }
+  fact fixture_ae3a_17 { relation: narrows args: [ae3a_exc, ae3a_def] }
+  fact fixture_ae3a_18 { relation: exception_kind args: [ae3a_exc, does_not_apply] }
+  fact fixture_ae3a_19 { relation: scoped_to args: [ae3a_exc, public] }
+  fact fixture_ae3a_20 { relation: log_entry args: [33, ae3a_exc, exception, approve, h_ae3a_exc] }
+  fact fixture_ae3a_21 { relation: log_link args: [33, ae3a_def, h_ae3a_def] }
+  fact fixture_ae3a_22 { relation: log_entry args: [35, ae3a_intent, intent, approve, h_ae3a_intent_v2] }
+
+  // Case ae3 after re-approval. The definition's new text is approved; one example was
+  // re-confirmed and is fresh, while the other example and the exception stay stale. The
+  // stale exception no longer scopes public out, and the definition's reason names it.
+
+  fact fixture_ae3b_0 { relation: item args: [ae3b_intent, intent] }
+  fact fixture_ae3b_1 { relation: current_digest args: [ae3b_intent, h_ae3b_intent] }
+  fact fixture_ae3b_2 { relation: log_entry args: [40, ae3b_intent, intent, approve, h_ae3b_intent] }
+  fact fixture_ae3b_3 { relation: item args: [ae3b_def, definition] }
+  fact fixture_ae3b_4 { relation: current_digest args: [ae3b_def, h_ae3b_def_v2] }
+  fact fixture_ae3b_5 { relation: refines args: [ae3b_def, ae3b_intent] }
+  fact fixture_ae3b_6 { relation: log_entry args: [41, ae3b_def, definition, approve, h_ae3b_def] }
+  fact fixture_ae3b_7 { relation: log_link args: [41, ae3b_intent, h_ae3b_intent] }
+  fact fixture_ae3b_8 { relation: item args: [ae3b_ex_stale, example] }
+  fact fixture_ae3b_9 { relation: current_digest args: [ae3b_ex_stale, h_ae3b_ex_stale] }
+  fact fixture_ae3b_10 { relation: exemplifies args: [ae3b_ex_stale, ae3b_def] }
+  fact fixture_ae3b_11 { relation: tagged args: [ae3b_ex_stale, browser] }
+  fact fixture_ae3b_12 { relation: log_entry args: [42, ae3b_ex_stale, example, approve, h_ae3b_ex_stale] }
+  fact fixture_ae3b_13 { relation: log_link args: [42, ae3b_def, h_ae3b_def] }
+  fact fixture_ae3b_14 { relation: log_tag args: [42, browser] }
+  fact fixture_ae3b_15 { relation: run args: [ae3b_ex_stale, h_ae3b_ex_stale, browser, t_scratch, fail] }
+  fact fixture_ae3b_16 { relation: run args: [ae3b_ex_stale, h_ae3b_ex_stale, browser, t_head, pass] }
+  fact fixture_ae3b_17 { relation: item args: [ae3b_ex_ok, example] }
+  fact fixture_ae3b_18 { relation: current_digest args: [ae3b_ex_ok, h_ae3b_ex_ok] }
+  fact fixture_ae3b_19 { relation: exemplifies args: [ae3b_ex_ok, ae3b_def] }
+  fact fixture_ae3b_20 { relation: tagged args: [ae3b_ex_ok, mcp] }
+  fact fixture_ae3b_21 { relation: log_entry args: [43, ae3b_ex_ok, example, approve, h_ae3b_ex_ok] }
+  fact fixture_ae3b_22 { relation: log_link args: [43, ae3b_def, h_ae3b_def] }
+  fact fixture_ae3b_23 { relation: log_tag args: [43, mcp] }
+  fact fixture_ae3b_24 { relation: run args: [ae3b_ex_ok, h_ae3b_ex_ok, mcp, t_scratch, fail] }
+  fact fixture_ae3b_25 { relation: run args: [ae3b_ex_ok, h_ae3b_ex_ok, mcp, t_head, pass] }
+  fact fixture_ae3b_26 { relation: item args: [ae3b_exc, exception] }
+  fact fixture_ae3b_27 { relation: current_digest args: [ae3b_exc, h_ae3b_exc] }
+  fact fixture_ae3b_28 { relation: narrows args: [ae3b_exc, ae3b_def] }
+  fact fixture_ae3b_29 { relation: exception_kind args: [ae3b_exc, does_not_apply] }
+  fact fixture_ae3b_30 { relation: scoped_to args: [ae3b_exc, public] }
+  fact fixture_ae3b_31 { relation: log_entry args: [44, ae3b_exc, exception, approve, h_ae3b_exc] }
+  fact fixture_ae3b_32 { relation: log_link args: [44, ae3b_def, h_ae3b_def] }
+  fact fixture_ae3b_33 { relation: log_entry args: [46, ae3b_def, definition, approve, h_ae3b_def_v2] }
+  fact fixture_ae3b_34 { relation: log_link args: [46, ae3b_intent, h_ae3b_intent] }
+  fact fixture_ae3b_35 { relation: log_entry args: [47, ae3b_ex_ok, example, approve, h_ae3b_ex_ok] }
+  fact fixture_ae3b_36 { relation: log_link args: [47, ae3b_def, h_ae3b_def_v2] }
+  fact fixture_ae3b_37 { relation: log_tag args: [47, mcp] }
+
+  // Case ae13. The definition was approved as A, the example was confirmed against A,
+  // the definition was re-approved as B, and an agent reverted its text to A. The
+  // definition is unapproved, and the example stays stale although A is current again.
+
+  fact fixture_ae13_0 { relation: item args: [ae13_intent, intent] }
+  fact fixture_ae13_1 { relation: current_digest args: [ae13_intent, h_ae13_intent] }
+  fact fixture_ae13_2 { relation: log_entry args: [50, ae13_intent, intent, approve, h_ae13_intent] }
+  fact fixture_ae13_3 { relation: item args: [ae13_def, definition] }
+  fact fixture_ae13_4 { relation: current_digest args: [ae13_def, h_ae13_def] }
+  fact fixture_ae13_5 { relation: refines args: [ae13_def, ae13_intent] }
+  fact fixture_ae13_6 { relation: log_entry args: [51, ae13_def, definition, approve, h_ae13_def] }
+  fact fixture_ae13_7 { relation: log_link args: [51, ae13_intent, h_ae13_intent] }
+  fact fixture_ae13_8 { relation: item args: [ae13_ex, example] }
+  fact fixture_ae13_9 { relation: current_digest args: [ae13_ex, h_ae13_ex] }
+  fact fixture_ae13_10 { relation: exemplifies args: [ae13_ex, ae13_def] }
+  fact fixture_ae13_11 { relation: tagged args: [ae13_ex, browser] }
+  fact fixture_ae13_12 { relation: log_entry args: [52, ae13_ex, example, approve, h_ae13_ex] }
+  fact fixture_ae13_13 { relation: log_link args: [52, ae13_def, h_ae13_def] }
+  fact fixture_ae13_14 { relation: log_tag args: [52, browser] }
+  fact fixture_ae13_15 { relation: log_entry args: [53, ae13_def, definition, approve, h_ae13_def_v2] }
+  fact fixture_ae13_16 { relation: log_link args: [53, ae13_intent, h_ae13_intent] }
+
+  // An intent whose text changed and was re-approved leaves its unconfirmed definition
+  // stale, so the intent is unverified and names that definition.
+
+  fact fixture_sd_0 { relation: item args: [sd_intent, intent] }
+  fact fixture_sd_1 { relation: current_digest args: [sd_intent, h_sd_intent_v2] }
+  fact fixture_sd_2 { relation: log_entry args: [60, sd_intent, intent, approve, h_sd_intent] }
+  fact fixture_sd_3 { relation: item args: [sd_def, definition] }
+  fact fixture_sd_4 { relation: current_digest args: [sd_def, h_sd_def] }
+  fact fixture_sd_5 { relation: refines args: [sd_def, sd_intent] }
+  fact fixture_sd_6 { relation: log_entry args: [61, sd_def, definition, approve, h_sd_def] }
+  fact fixture_sd_7 { relation: log_link args: [61, sd_intent, h_sd_intent] }
+  fact fixture_sd_8 { relation: log_entry args: [62, sd_intent, intent, approve, h_sd_intent_v2] }
+
+  // Case ae4. The approved mcp channel applies to a definition that has a browser
+  // example and an exception for public but none for mcp.
+
+  fact fixture_ae4_0 { relation: item args: [ae4_intent, intent] }
+  fact fixture_ae4_1 { relation: current_digest args: [ae4_intent, h_ae4_intent] }
+  fact fixture_ae4_2 { relation: log_entry args: [70, ae4_intent, intent, approve, h_ae4_intent] }
+  fact fixture_ae4_3 { relation: item args: [ae4_def, definition] }
+  fact fixture_ae4_4 { relation: current_digest args: [ae4_def, h_ae4_def] }
+  fact fixture_ae4_5 { relation: refines args: [ae4_def, ae4_intent] }
+  fact fixture_ae4_6 { relation: log_entry args: [71, ae4_def, definition, approve, h_ae4_def] }
+  fact fixture_ae4_7 { relation: log_link args: [71, ae4_intent, h_ae4_intent] }
+  fact fixture_ae4_8 { relation: item args: [ae4_exc, exception] }
+  fact fixture_ae4_9 { relation: current_digest args: [ae4_exc, h_ae4_exc] }
+  fact fixture_ae4_10 { relation: narrows args: [ae4_exc, ae4_def] }
+  fact fixture_ae4_11 { relation: exception_kind args: [ae4_exc, does_not_apply] }
+  fact fixture_ae4_12 { relation: scoped_to args: [ae4_exc, public] }
+  fact fixture_ae4_13 { relation: log_entry args: [72, ae4_exc, exception, approve, h_ae4_exc] }
+  fact fixture_ae4_14 { relation: log_link args: [72, ae4_def, h_ae4_def] }
+  fact fixture_ae4_15 { relation: item args: [ae4_ex, example] }
+  fact fixture_ae4_16 { relation: current_digest args: [ae4_ex, h_ae4_ex] }
+  fact fixture_ae4_17 { relation: exemplifies args: [ae4_ex, ae4_def] }
+  fact fixture_ae4_18 { relation: tagged args: [ae4_ex, browser] }
+  fact fixture_ae4_19 { relation: log_entry args: [73, ae4_ex, example, approve, h_ae4_ex] }
+  fact fixture_ae4_20 { relation: log_link args: [73, ae4_def, h_ae4_def] }
+  fact fixture_ae4_21 { relation: log_tag args: [73, browser] }
+  fact fixture_ae4_22 { relation: run args: [ae4_ex, h_ae4_ex, browser, t_scratch, fail] }
+  fact fixture_ae4_23 { relation: run args: [ae4_ex, h_ae4_ex, browser, t_head, pass] }
+
+  // Case ae5. A holds-instead exception for public has its own example that failed and
+  // passes, so the private-data definition needs no public example.
+
+  fact fixture_ae5_0 { relation: item args: [ae5_intent, intent] }
+  fact fixture_ae5_1 { relation: current_digest args: [ae5_intent, h_ae5_intent] }
+  fact fixture_ae5_2 { relation: log_entry args: [80, ae5_intent, intent, approve, h_ae5_intent] }
+  fact fixture_ae5_3 { relation: item args: [ae5_def, definition] }
+  fact fixture_ae5_4 { relation: current_digest args: [ae5_def, h_ae5_def] }
+  fact fixture_ae5_5 { relation: refines args: [ae5_def, ae5_intent] }
+  fact fixture_ae5_6 { relation: log_entry args: [81, ae5_def, definition, approve, h_ae5_def] }
+  fact fixture_ae5_7 { relation: log_link args: [81, ae5_intent, h_ae5_intent] }
+  fact fixture_ae5_8 { relation: item args: [ae5_ex, example] }
+  fact fixture_ae5_9 { relation: current_digest args: [ae5_ex, h_ae5_ex] }
+  fact fixture_ae5_10 { relation: exemplifies args: [ae5_ex, ae5_def] }
+  fact fixture_ae5_11 { relation: tagged args: [ae5_ex, browser] }
+  fact fixture_ae5_12 { relation: tagged args: [ae5_ex, mcp] }
+  fact fixture_ae5_13 { relation: log_entry args: [82, ae5_ex, example, approve, h_ae5_ex] }
+  fact fixture_ae5_14 { relation: log_link args: [82, ae5_def, h_ae5_def] }
+  fact fixture_ae5_15 { relation: log_tag args: [82, browser] }
+  fact fixture_ae5_16 { relation: log_tag args: [82, mcp] }
+  fact fixture_ae5_17 { relation: run args: [ae5_ex, h_ae5_ex, browser, t_scratch, fail] }
+  fact fixture_ae5_18 { relation: run args: [ae5_ex, h_ae5_ex, browser, t_head, pass] }
+  fact fixture_ae5_19 { relation: run args: [ae5_ex, h_ae5_ex, mcp, t_scratch, fail] }
+  fact fixture_ae5_20 { relation: run args: [ae5_ex, h_ae5_ex, mcp, t_head, pass] }
+  fact fixture_ae5_21 { relation: item args: [ae5_exc, exception] }
+  fact fixture_ae5_22 { relation: current_digest args: [ae5_exc, h_ae5_exc] }
+  fact fixture_ae5_23 { relation: narrows args: [ae5_exc, ae5_def] }
+  fact fixture_ae5_24 { relation: exception_kind args: [ae5_exc, holds_instead] }
+  fact fixture_ae5_25 { relation: scoped_to args: [ae5_exc, public] }
+  fact fixture_ae5_26 { relation: log_entry args: [83, ae5_exc, exception, approve, h_ae5_exc] }
+  fact fixture_ae5_27 { relation: log_link args: [83, ae5_def, h_ae5_def] }
+  fact fixture_ae5_28 { relation: item args: [ae5_exc_ex, example] }
+  fact fixture_ae5_29 { relation: current_digest args: [ae5_exc_ex, h_ae5_exc_ex] }
+  fact fixture_ae5_30 { relation: exemplifies args: [ae5_exc_ex, ae5_exc] }
+  fact fixture_ae5_31 { relation: tagged args: [ae5_exc_ex, public] }
+  fact fixture_ae5_32 { relation: log_entry args: [84, ae5_exc_ex, example, approve, h_ae5_exc_ex] }
+  fact fixture_ae5_33 { relation: log_link args: [84, ae5_exc, h_ae5_exc] }
+  fact fixture_ae5_34 { relation: log_tag args: [84, public] }
+  fact fixture_ae5_35 { relation: run args: [ae5_exc_ex, h_ae5_exc_ex, public, t_scratch, fail] }
+  fact fixture_ae5_36 { relation: run args: [ae5_exc_ex, h_ae5_exc_ex, public, t_head, pass] }
+
+  // Case ae9. A does-not-apply exception for public is verified by its approval alone.
+  // The definition's example is also tagged for public but never failed there; that tag
+  // does not count because the definition does not apply on public.
+
+  fact fixture_ae9_0 { relation: item args: [ae9_intent, intent] }
+  fact fixture_ae9_1 { relation: current_digest args: [ae9_intent, h_ae9_intent] }
+  fact fixture_ae9_2 { relation: log_entry args: [90, ae9_intent, intent, approve, h_ae9_intent] }
+  fact fixture_ae9_3 { relation: item args: [ae9_def, definition] }
+  fact fixture_ae9_4 { relation: current_digest args: [ae9_def, h_ae9_def] }
+  fact fixture_ae9_5 { relation: refines args: [ae9_def, ae9_intent] }
+  fact fixture_ae9_6 { relation: log_entry args: [91, ae9_def, definition, approve, h_ae9_def] }
+  fact fixture_ae9_7 { relation: log_link args: [91, ae9_intent, h_ae9_intent] }
+  fact fixture_ae9_8 { relation: item args: [ae9_ex, example] }
+  fact fixture_ae9_9 { relation: current_digest args: [ae9_ex, h_ae9_ex] }
+  fact fixture_ae9_10 { relation: exemplifies args: [ae9_ex, ae9_def] }
+  fact fixture_ae9_11 { relation: tagged args: [ae9_ex, browser] }
+  fact fixture_ae9_12 { relation: tagged args: [ae9_ex, mcp] }
+  fact fixture_ae9_13 { relation: tagged args: [ae9_ex, public] }
+  fact fixture_ae9_14 { relation: log_entry args: [92, ae9_ex, example, approve, h_ae9_ex] }
+  fact fixture_ae9_15 { relation: log_link args: [92, ae9_def, h_ae9_def] }
+  fact fixture_ae9_16 { relation: log_tag args: [92, browser] }
+  fact fixture_ae9_17 { relation: log_tag args: [92, mcp] }
+  fact fixture_ae9_18 { relation: log_tag args: [92, public] }
+  fact fixture_ae9_19 { relation: run args: [ae9_ex, h_ae9_ex, browser, t_scratch, fail] }
+  fact fixture_ae9_20 { relation: run args: [ae9_ex, h_ae9_ex, browser, t_head, pass] }
+  fact fixture_ae9_21 { relation: run args: [ae9_ex, h_ae9_ex, mcp, t_scratch, fail] }
+  fact fixture_ae9_22 { relation: run args: [ae9_ex, h_ae9_ex, mcp, t_head, pass] }
+  fact fixture_ae9_23 { relation: run args: [ae9_ex, h_ae9_ex, public, t_head, pass] }
+  fact fixture_ae9_24 { relation: item args: [ae9_exc, exception] }
+  fact fixture_ae9_25 { relation: current_digest args: [ae9_exc, h_ae9_exc] }
+  fact fixture_ae9_26 { relation: narrows args: [ae9_exc, ae9_def] }
+  fact fixture_ae9_27 { relation: exception_kind args: [ae9_exc, does_not_apply] }
+  fact fixture_ae9_28 { relation: scoped_to args: [ae9_exc, public] }
+  fact fixture_ae9_29 { relation: log_entry args: [93, ae9_exc, exception, approve, h_ae9_exc] }
+  fact fixture_ae9_30 { relation: log_link args: [93, ae9_def, h_ae9_def] }
+
+  // Case ae7. A lone approved intent that no definition refines.
+
+  fact fixture_ae7_0 { relation: item args: [ae7_intent, intent] }
+  fact fixture_ae7_1 { relation: current_digest args: [ae7_intent, h_ae7_intent] }
+  fact fixture_ae7_2 { relation: log_entry args: [100, ae7_intent, intent, approve, h_ae7_intent] }
+
+  // Case ae12. Approved channels are shared by the whole fixture, so this definition
+  // reaches no applicable channel by an exception naming every approved channel; a
+  // catalog with no approved channel takes the same path.
+
+  fact fixture_ae12_0 { relation: item args: [ae12_intent, intent] }
+  fact fixture_ae12_1 { relation: current_digest args: [ae12_intent, h_ae12_intent] }
+  fact fixture_ae12_2 { relation: log_entry args: [110, ae12_intent, intent, approve, h_ae12_intent] }
+  fact fixture_ae12_3 { relation: item args: [ae12_def, definition] }
+  fact fixture_ae12_4 { relation: current_digest args: [ae12_def, h_ae12_def] }
+  fact fixture_ae12_5 { relation: refines args: [ae12_def, ae12_intent] }
+  fact fixture_ae12_6 { relation: log_entry args: [111, ae12_def, definition, approve, h_ae12_def] }
+  fact fixture_ae12_7 { relation: log_link args: [111, ae12_intent, h_ae12_intent] }
+  fact fixture_ae12_8 { relation: item args: [ae12_exc, exception] }
+  fact fixture_ae12_9 { relation: current_digest args: [ae12_exc, h_ae12_exc] }
+  fact fixture_ae12_10 { relation: narrows args: [ae12_exc, ae12_def] }
+  fact fixture_ae12_11 { relation: exception_kind args: [ae12_exc, does_not_apply] }
+  fact fixture_ae12_12 { relation: scoped_to args: [ae12_exc, browser] }
+  fact fixture_ae12_13 { relation: scoped_to args: [ae12_exc, mcp] }
+  fact fixture_ae12_14 { relation: scoped_to args: [ae12_exc, public] }
+  fact fixture_ae12_15 { relation: log_entry args: [112, ae12_exc, exception, approve, h_ae12_exc] }
+  fact fixture_ae12_16 { relation: log_link args: [112, ae12_def, h_ae12_def] }
+
+  // Case ae8. Of two approved browser examples, an agent deleted the failing one
+  // without an approved removal. It is reinstated from its latest entry with no passing run.
+
+  fact fixture_ae8_0 { relation: item args: [ae8_intent, intent] }
+  fact fixture_ae8_1 { relation: current_digest args: [ae8_intent, h_ae8_intent] }
+  fact fixture_ae8_2 { relation: log_entry args: [120, ae8_intent, intent, approve, h_ae8_intent] }
+  fact fixture_ae8_3 { relation: item args: [ae8_def, definition] }
+  fact fixture_ae8_4 { relation: current_digest args: [ae8_def, h_ae8_def] }
+  fact fixture_ae8_5 { relation: refines args: [ae8_def, ae8_intent] }
+  fact fixture_ae8_6 { relation: log_entry args: [121, ae8_def, definition, approve, h_ae8_def] }
+  fact fixture_ae8_7 { relation: log_link args: [121, ae8_intent, h_ae8_intent] }
+  fact fixture_ae8_8 { relation: item args: [ae8_ex_pass, example] }
+  fact fixture_ae8_9 { relation: current_digest args: [ae8_ex_pass, h_ae8_ex_pass] }
+  fact fixture_ae8_10 { relation: exemplifies args: [ae8_ex_pass, ae8_def] }
+  fact fixture_ae8_11 { relation: tagged args: [ae8_ex_pass, browser] }
+  fact fixture_ae8_12 { relation: tagged args: [ae8_ex_pass, mcp] }
+  fact fixture_ae8_13 { relation: tagged args: [ae8_ex_pass, public] }
+  fact fixture_ae8_14 { relation: log_entry args: [122, ae8_ex_pass, example, approve, h_ae8_ex_pass] }
+  fact fixture_ae8_15 { relation: log_link args: [122, ae8_def, h_ae8_def] }
+  fact fixture_ae8_16 { relation: log_tag args: [122, browser] }
+  fact fixture_ae8_17 { relation: log_tag args: [122, mcp] }
+  fact fixture_ae8_18 { relation: log_tag args: [122, public] }
+  fact fixture_ae8_19 { relation: run args: [ae8_ex_pass, h_ae8_ex_pass, browser, t_scratch, fail] }
+  fact fixture_ae8_20 { relation: run args: [ae8_ex_pass, h_ae8_ex_pass, browser, t_head, pass] }
+  fact fixture_ae8_21 { relation: run args: [ae8_ex_pass, h_ae8_ex_pass, mcp, t_scratch, fail] }
+  fact fixture_ae8_22 { relation: run args: [ae8_ex_pass, h_ae8_ex_pass, mcp, t_head, pass] }
+  fact fixture_ae8_23 { relation: run args: [ae8_ex_pass, h_ae8_ex_pass, public, t_scratch, fail] }
+  fact fixture_ae8_24 { relation: run args: [ae8_ex_pass, h_ae8_ex_pass, public, t_head, pass] }
+  fact fixture_ae8_25 { relation: log_entry args: [123, ae8_ex_fail, example, approve, h_ae8_ex_fail] }
+  fact fixture_ae8_26 { relation: log_link args: [123, ae8_def, h_ae8_def] }
+  fact fixture_ae8_27 { relation: log_tag args: [123, browser] }
+  fact fixture_ae8_28 { relation: run args: [ae8_ex_fail, h_ae8_ex_fail, browser, t_head, fail] }
+
+  // Case ae14. Of two approved browser examples, an agent re-tagged the failing one to
+  // a new, unapproved definition. The removed link to the old definition still counts.
+
+  fact fixture_ae14_0 { relation: item args: [ae14_intent, intent] }
+  fact fixture_ae14_1 { relation: current_digest args: [ae14_intent, h_ae14_intent] }
+  fact fixture_ae14_2 { relation: log_entry args: [130, ae14_intent, intent, approve, h_ae14_intent] }
+  fact fixture_ae14_3 { relation: item args: [ae14_def, definition] }
+  fact fixture_ae14_4 { relation: current_digest args: [ae14_def, h_ae14_def] }
+  fact fixture_ae14_5 { relation: refines args: [ae14_def, ae14_intent] }
+  fact fixture_ae14_6 { relation: log_entry args: [131, ae14_def, definition, approve, h_ae14_def] }
+  fact fixture_ae14_7 { relation: log_link args: [131, ae14_intent, h_ae14_intent] }
+  fact fixture_ae14_8 { relation: item args: [ae14_new_def, definition] }
+  fact fixture_ae14_9 { relation: current_digest args: [ae14_new_def, h_ae14_new_def] }
+  fact fixture_ae14_10 { relation: refines args: [ae14_new_def, ae14_intent] }
+  fact fixture_ae14_11 { relation: item args: [ae14_ex_pass, example] }
+  fact fixture_ae14_12 { relation: current_digest args: [ae14_ex_pass, h_ae14_ex_pass] }
+  fact fixture_ae14_13 { relation: exemplifies args: [ae14_ex_pass, ae14_def] }
+  fact fixture_ae14_14 { relation: tagged args: [ae14_ex_pass, browser] }
+  fact fixture_ae14_15 { relation: tagged args: [ae14_ex_pass, mcp] }
+  fact fixture_ae14_16 { relation: tagged args: [ae14_ex_pass, public] }
+  fact fixture_ae14_17 { relation: log_entry args: [132, ae14_ex_pass, example, approve, h_ae14_ex_pass] }
+  fact fixture_ae14_18 { relation: log_link args: [132, ae14_def, h_ae14_def] }
+  fact fixture_ae14_19 { relation: log_tag args: [132, browser] }
+  fact fixture_ae14_20 { relation: log_tag args: [132, mcp] }
+  fact fixture_ae14_21 { relation: log_tag args: [132, public] }
+  fact fixture_ae14_22 { relation: run args: [ae14_ex_pass, h_ae14_ex_pass, browser, t_scratch, fail] }
+  fact fixture_ae14_23 { relation: run args: [ae14_ex_pass, h_ae14_ex_pass, browser, t_head, pass] }
+  fact fixture_ae14_24 { relation: run args: [ae14_ex_pass, h_ae14_ex_pass, mcp, t_scratch, fail] }
+  fact fixture_ae14_25 { relation: run args: [ae14_ex_pass, h_ae14_ex_pass, mcp, t_head, pass] }
+  fact fixture_ae14_26 { relation: run args: [ae14_ex_pass, h_ae14_ex_pass, public, t_scratch, fail] }
+  fact fixture_ae14_27 { relation: run args: [ae14_ex_pass, h_ae14_ex_pass, public, t_head, pass] }
+  fact fixture_ae14_28 { relation: item args: [ae14_ex_retag, example] }
+  fact fixture_ae14_29 { relation: current_digest args: [ae14_ex_retag, h_ae14_ex_retag_v2] }
+  fact fixture_ae14_30 { relation: exemplifies args: [ae14_ex_retag, ae14_new_def] }
+  fact fixture_ae14_31 { relation: tagged args: [ae14_ex_retag, browser] }
+  fact fixture_ae14_32 { relation: log_entry args: [133, ae14_ex_retag, example, approve, h_ae14_ex_retag] }
+  fact fixture_ae14_33 { relation: log_link args: [133, ae14_def, h_ae14_def] }
+  fact fixture_ae14_34 { relation: log_tag args: [133, browser] }
+  fact fixture_ae14_35 { relation: run args: [ae14_ex_retag, h_ae14_ex_retag, browser, t_head, fail] }
+
+  // Case ae15. Only a clean pass at the target counts: on browser the example both
+  // passed and failed at the target, on mcp it passed and errored there, and on public
+  // it passed only on an earlier commit.
+
+  fact fixture_ae15_0 { relation: item args: [ae15_intent, intent] }
+  fact fixture_ae15_1 { relation: current_digest args: [ae15_intent, h_ae15_intent] }
+  fact fixture_ae15_2 { relation: log_entry args: [140, ae15_intent, intent, approve, h_ae15_intent] }
+  fact fixture_ae15_3 { relation: item args: [ae15_def, definition] }
+  fact fixture_ae15_4 { relation: current_digest args: [ae15_def, h_ae15_def] }
+  fact fixture_ae15_5 { relation: refines args: [ae15_def, ae15_intent] }
+  fact fixture_ae15_6 { relation: log_entry args: [141, ae15_def, definition, approve, h_ae15_def] }
+  fact fixture_ae15_7 { relation: log_link args: [141, ae15_intent, h_ae15_intent] }
+  fact fixture_ae15_8 { relation: item args: [ae15_ex, example] }
+  fact fixture_ae15_9 { relation: current_digest args: [ae15_ex, h_ae15_ex] }
+  fact fixture_ae15_10 { relation: exemplifies args: [ae15_ex, ae15_def] }
+  fact fixture_ae15_11 { relation: tagged args: [ae15_ex, browser] }
+  fact fixture_ae15_12 { relation: tagged args: [ae15_ex, mcp] }
+  fact fixture_ae15_13 { relation: tagged args: [ae15_ex, public] }
+  fact fixture_ae15_14 { relation: log_entry args: [142, ae15_ex, example, approve, h_ae15_ex] }
+  fact fixture_ae15_15 { relation: log_link args: [142, ae15_def, h_ae15_def] }
+  fact fixture_ae15_16 { relation: log_tag args: [142, browser] }
+  fact fixture_ae15_17 { relation: log_tag args: [142, mcp] }
+  fact fixture_ae15_18 { relation: log_tag args: [142, public] }
+  fact fixture_ae15_19 { relation: run args: [ae15_ex, h_ae15_ex, browser, t_scratch, fail] }
+  fact fixture_ae15_20 { relation: run args: [ae15_ex, h_ae15_ex, browser, t_head, pass] }
+  fact fixture_ae15_21 { relation: run args: [ae15_ex, h_ae15_ex, mcp, t_scratch, fail] }
+  fact fixture_ae15_22 { relation: run args: [ae15_ex, h_ae15_ex, mcp, t_head, pass] }
+  fact fixture_ae15_23 { relation: run args: [ae15_ex, h_ae15_ex, browser, t_head, fail] }
+  fact fixture_ae15_24 { relation: run args: [ae15_ex, h_ae15_ex, mcp, t_head, error] }
+  fact fixture_ae15_25 { relation: run args: [ae15_ex, h_ae15_ex, public, t_scratch, fail] }
+  fact fixture_ae15_26 { relation: run args: [ae15_ex, h_ae15_ex, public, t_old, pass] }
+
+  // Case ae17. The example failed on browser and public but never on mcp, and passes
+  // on every channel at the target.
+
+  fact fixture_ae17_0 { relation: item args: [ae17_intent, intent] }
+  fact fixture_ae17_1 { relation: current_digest args: [ae17_intent, h_ae17_intent] }
+  fact fixture_ae17_2 { relation: log_entry args: [150, ae17_intent, intent, approve, h_ae17_intent] }
+  fact fixture_ae17_3 { relation: item args: [ae17_def, definition] }
+  fact fixture_ae17_4 { relation: current_digest args: [ae17_def, h_ae17_def] }
+  fact fixture_ae17_5 { relation: refines args: [ae17_def, ae17_intent] }
+  fact fixture_ae17_6 { relation: log_entry args: [151, ae17_def, definition, approve, h_ae17_def] }
+  fact fixture_ae17_7 { relation: log_link args: [151, ae17_intent, h_ae17_intent] }
+  fact fixture_ae17_8 { relation: item args: [ae17_ex, example] }
+  fact fixture_ae17_9 { relation: current_digest args: [ae17_ex, h_ae17_ex] }
+  fact fixture_ae17_10 { relation: exemplifies args: [ae17_ex, ae17_def] }
+  fact fixture_ae17_11 { relation: tagged args: [ae17_ex, browser] }
+  fact fixture_ae17_12 { relation: tagged args: [ae17_ex, mcp] }
+  fact fixture_ae17_13 { relation: tagged args: [ae17_ex, public] }
+  fact fixture_ae17_14 { relation: log_entry args: [152, ae17_ex, example, approve, h_ae17_ex] }
+  fact fixture_ae17_15 { relation: log_link args: [152, ae17_def, h_ae17_def] }
+  fact fixture_ae17_16 { relation: log_tag args: [152, browser] }
+  fact fixture_ae17_17 { relation: log_tag args: [152, mcp] }
+  fact fixture_ae17_18 { relation: log_tag args: [152, public] }
+  fact fixture_ae17_19 { relation: run args: [ae17_ex, h_ae17_ex, browser, t_scratch, fail] }
+  fact fixture_ae17_20 { relation: run args: [ae17_ex, h_ae17_ex, browser, t_head, pass] }
+  fact fixture_ae17_21 { relation: run args: [ae17_ex, h_ae17_ex, public, t_scratch, fail] }
+  fact fixture_ae17_22 { relation: run args: [ae17_ex, h_ae17_ex, public, t_head, pass] }
+  fact fixture_ae17_23 { relation: run args: [ae17_ex, h_ae17_ex, mcp, t_head, pass] }
+
+  // Case ae18. On browser the only failing outcome is a build error on a scratch
+  // break, and on mcp it is a skip; neither is a failing run.
+
+  fact fixture_ae18_0 { relation: item args: [ae18_intent, intent] }
+  fact fixture_ae18_1 { relation: current_digest args: [ae18_intent, h_ae18_intent] }
+  fact fixture_ae18_2 { relation: log_entry args: [160, ae18_intent, intent, approve, h_ae18_intent] }
+  fact fixture_ae18_3 { relation: item args: [ae18_def, definition] }
+  fact fixture_ae18_4 { relation: current_digest args: [ae18_def, h_ae18_def] }
+  fact fixture_ae18_5 { relation: refines args: [ae18_def, ae18_intent] }
+  fact fixture_ae18_6 { relation: log_entry args: [161, ae18_def, definition, approve, h_ae18_def] }
+  fact fixture_ae18_7 { relation: log_link args: [161, ae18_intent, h_ae18_intent] }
+  fact fixture_ae18_8 { relation: item args: [ae18_ex, example] }
+  fact fixture_ae18_9 { relation: current_digest args: [ae18_ex, h_ae18_ex] }
+  fact fixture_ae18_10 { relation: exemplifies args: [ae18_ex, ae18_def] }
+  fact fixture_ae18_11 { relation: tagged args: [ae18_ex, browser] }
+  fact fixture_ae18_12 { relation: tagged args: [ae18_ex, mcp] }
+  fact fixture_ae18_13 { relation: tagged args: [ae18_ex, public] }
+  fact fixture_ae18_14 { relation: log_entry args: [162, ae18_ex, example, approve, h_ae18_ex] }
+  fact fixture_ae18_15 { relation: log_link args: [162, ae18_def, h_ae18_def] }
+  fact fixture_ae18_16 { relation: log_tag args: [162, browser] }
+  fact fixture_ae18_17 { relation: log_tag args: [162, mcp] }
+  fact fixture_ae18_18 { relation: log_tag args: [162, public] }
+  fact fixture_ae18_19 { relation: run args: [ae18_ex, h_ae18_ex, browser, t_scratch, error] }
+  fact fixture_ae18_20 { relation: run args: [ae18_ex, h_ae18_ex, mcp, t_scratch, skip] }
+  fact fixture_ae18_21 { relation: run args: [ae18_ex, h_ae18_ex, public, t_scratch, fail] }
+  fact fixture_ae18_22 { relation: run args: [ae18_ex, h_ae18_ex, browser, t_head, pass] }
+  fact fixture_ae18_23 { relation: run args: [ae18_ex, h_ae18_ex, mcp, t_head, pass] }
+  fact fixture_ae18_24 { relation: run args: [ae18_ex, h_ae18_ex, public, t_head, pass] }
+
+  // The example was edited and re-approved, but its browser runs were recorded for the
+  // old text; runs whose digest matches no current example do not count.
+
+  fact fixture_mm_0 { relation: item args: [mm_intent, intent] }
+  fact fixture_mm_1 { relation: current_digest args: [mm_intent, h_mm_intent] }
+  fact fixture_mm_2 { relation: log_entry args: [170, mm_intent, intent, approve, h_mm_intent] }
+  fact fixture_mm_3 { relation: item args: [mm_def, definition] }
+  fact fixture_mm_4 { relation: current_digest args: [mm_def, h_mm_def] }
+  fact fixture_mm_5 { relation: refines args: [mm_def, mm_intent] }
+  fact fixture_mm_6 { relation: log_entry args: [171, mm_def, definition, approve, h_mm_def] }
+  fact fixture_mm_7 { relation: log_link args: [171, mm_intent, h_mm_intent] }
+  fact fixture_mm_8 { relation: item args: [mm_ex, example] }
+  fact fixture_mm_9 { relation: current_digest args: [mm_ex, h_mm_ex_v2] }
+  fact fixture_mm_10 { relation: exemplifies args: [mm_ex, mm_def] }
+  fact fixture_mm_11 { relation: tagged args: [mm_ex, browser] }
+  fact fixture_mm_12 { relation: tagged args: [mm_ex, mcp] }
+  fact fixture_mm_13 { relation: tagged args: [mm_ex, public] }
+  fact fixture_mm_14 { relation: log_entry args: [172, mm_ex, example, approve, h_mm_ex] }
+  fact fixture_mm_15 { relation: log_link args: [172, mm_def, h_mm_def] }
+  fact fixture_mm_16 { relation: log_tag args: [172, browser] }
+  fact fixture_mm_17 { relation: log_tag args: [172, mcp] }
+  fact fixture_mm_18 { relation: log_tag args: [172, public] }
+  fact fixture_mm_19 { relation: log_entry args: [173, mm_ex, example, approve, h_mm_ex_v2] }
+  fact fixture_mm_20 { relation: log_link args: [173, mm_def, h_mm_def] }
+  fact fixture_mm_21 { relation: log_tag args: [173, browser] }
+  fact fixture_mm_22 { relation: log_tag args: [173, mcp] }
+  fact fixture_mm_23 { relation: log_tag args: [173, public] }
+  fact fixture_mm_24 { relation: run args: [mm_ex, h_mm_ex, browser, t_scratch, fail] }
+  fact fixture_mm_25 { relation: run args: [mm_ex, h_mm_ex, browser, t_head, pass] }
+  fact fixture_mm_26 { relation: run args: [mm_ex, h_mm_ex_v2, mcp, t_scratch, fail] }
+  fact fixture_mm_27 { relation: run args: [mm_ex, h_mm_ex_v2, mcp, t_head, pass] }
+  fact fixture_mm_28 { relation: run args: [mm_ex, h_mm_ex_v2, public, t_scratch, fail] }
+  fact fixture_mm_29 { relation: run args: [mm_ex, h_mm_ex_v2, public, t_head, pass] }
+
+  // An agent dropped the example's approved public tag. The tag still counts, with no
+  // run on public, until the removal is approved.
+
+  fact fixture_tr_0 { relation: item args: [tr_intent, intent] }
+  fact fixture_tr_1 { relation: current_digest args: [tr_intent, h_tr_intent] }
+  fact fixture_tr_2 { relation: log_entry args: [180, tr_intent, intent, approve, h_tr_intent] }
+  fact fixture_tr_3 { relation: item args: [tr_def, definition] }
+  fact fixture_tr_4 { relation: current_digest args: [tr_def, h_tr_def] }
+  fact fixture_tr_5 { relation: refines args: [tr_def, tr_intent] }
+  fact fixture_tr_6 { relation: log_entry args: [181, tr_def, definition, approve, h_tr_def] }
+  fact fixture_tr_7 { relation: log_link args: [181, tr_intent, h_tr_intent] }
+  fact fixture_tr_8 { relation: item args: [tr_ex, example] }
+  fact fixture_tr_9 { relation: current_digest args: [tr_ex, h_tr_ex_v2] }
+  fact fixture_tr_10 { relation: exemplifies args: [tr_ex, tr_def] }
+  fact fixture_tr_11 { relation: tagged args: [tr_ex, browser] }
+  fact fixture_tr_12 { relation: tagged args: [tr_ex, mcp] }
+  fact fixture_tr_13 { relation: log_entry args: [182, tr_ex, example, approve, h_tr_ex] }
+  fact fixture_tr_14 { relation: log_link args: [182, tr_def, h_tr_def] }
+  fact fixture_tr_15 { relation: log_tag args: [182, browser] }
+  fact fixture_tr_16 { relation: log_tag args: [182, mcp] }
+  fact fixture_tr_17 { relation: log_tag args: [182, public] }
+  fact fixture_tr_18 { relation: run args: [tr_ex, h_tr_ex_v2, browser, t_scratch, fail] }
+  fact fixture_tr_19 { relation: run args: [tr_ex, h_tr_ex_v2, browser, t_head, pass] }
+  fact fixture_tr_20 { relation: run args: [tr_ex, h_tr_ex_v2, mcp, t_scratch, fail] }
+  fact fixture_tr_21 { relation: run args: [tr_ex, h_tr_ex_v2, mcp, t_head, pass] }
+
+  // A definition approved and then removed through the log is gone: it is not present,
+  // has no standing, awaits nothing and no longer counts for its former intent.
+
+  fact fixture_gone_0 { relation: log_entry args: [190, gone_def, definition, approve, h_gone_def] }
+  fact fixture_gone_1 { relation: log_link args: [190, ae1_intent, h_ae1_intent] }
+  fact fixture_gone_2 { relation: log_entry args: [191, gone_def, definition, remove, h_gone_def] }
+
+  // The map. A verified definition names two anchors, one of which the code
+  // lacks; its standing does not change.
+
+  fact fixture_map_0 { relation: realized args: [ae1_def, "rust:src/web.rs#serve"] }
+  fact fixture_map_1 { relation: realized args: [ae1_def, "src/gone.rs"] }
+  fact fixture_map_2 { relation: anchor_present args: ["rust:src/web.rs#serve"] }
+
+  // ================================================== expectations
+
+  // Shared channels.
+
+  expect three_channels_are_approved { query: "approved_channel(C)" count: 3 }
+  expect unapproved_channel_does_not_apply { query: "approved_channel(kiosk)" count: 0 }
+  expect new_channel_awaits_approval { query: "approval_reason(kiosk, not_approved, kiosk)" count: 1 }
+  expect channels_have_no_standing { query: "standing(browser, K)" count: 0 }
+
+  // Case ae1 and ae10.
+
+  expect ae1_intent_has_one_standing { query: "standing(ae1_intent, K)" count: 1 }
+  expect ae1_intent_is_verified { query: "standing(ae1_intent, verified)" count: 1 }
+  expect ae1_def_has_one_standing { query: "standing(ae1_def, K)" count: 1 }
+  expect ae1_def_is_verified { query: "standing(ae1_def, verified)" count: 1 }
+  expect ae1_intent_has_0_reasons { query: "reason(ae1_intent, R, S)" count: 0 }
+  expect ae1_def_has_0_reasons { query: "reason(ae1_def, R, S)" count: 0 }
+  expect ae1_web_failed_on_two_channels { query: "red(ae1_ex_web, C)" count: 2 }
+  expect ae1_web_passes_on_two_channels { query: "green(ae1_ex_web, C)" count: 2 }
+  expect ae10_scratch_failure_counts_as_red { query: "red(ae1_ex_mcp, mcp)" count: 1 }
+  expect ae10_mcp_example_passes { query: "green(ae1_ex_mcp, mcp)" count: 1 }
+  expect ae1_owes_three_example_channels { query: "obligation(ae1_def, E, C)" count: 3 }
+  expect ae1_web_owes_nothing_on_mcp { query: "obligation(ae1_def, ae1_ex_web, mcp)" count: 0 }
+
+  // Case ae2.
+
+  expect ae2_intent_has_one_standing { query: "standing(ae2_intent, K)" count: 1 }
+  expect ae2_intent_is_unverified { query: "standing(ae2_intent, unverified)" count: 1 }
+  expect ae2_def_has_one_standing { query: "standing(ae2_def, K)" count: 1 }
+  expect ae2_def_is_unverified { query: "standing(ae2_def, unverified)" count: 1 }
+  expect ae2_edited_example_is_unapproved { query: "approval_reason(ae2_ex, text_differs, ae2_ex)" count: 1 }
+  expect ae2_example_has_one_approval_reason { query: "approval_reason(ae2_ex, R, S)" count: 1 }
+  expect ae2_old_failures_are_not_red { query: "red(ae2_ex, C)" count: 0 }
+  expect ae2_old_failures_do_not_spoil_new_passes { query: "green(ae2_ex, C)" count: 3 }
+  expect ae2_examples_have_no_standing { query: "standing(ae2_ex, K)" count: 0 }
+  expect ae2_def_has_5_reasons { query: "reason(ae2_def, R, S)" count: 5 }
+  expect ae2_names_the_unapproved_example { query: "reason(ae2_def, example_awaits_approval, ae2_ex)" count: 1 }
+  expect ae2_lacks_red_on_every_channel { query: "reason(ae2_def, no_failing_run, C)" count: 3 }
+  expect ae2_names_the_digest_mismatch { query: "reason(ae2_def, run_digest_mismatch, ae2_ex)" count: 1 }
+  expect ae2_intent_has_1_reasons { query: "reason(ae2_intent, R, S)" count: 1 }
+  expect ae2_intent_names_its_definition { query: "reason(ae2_intent, unverified_member, ae2_def)" count: 1 }
+
+  // Case ae3 before re-approval.
+
+  expect ae3a_intent_has_one_standing { query: "standing(ae3a_intent, K)" count: 1 }
+  expect ae3a_intent_is_unverified { query: "standing(ae3a_intent, unverified)" count: 1 }
+  expect ae3a_def_has_one_standing { query: "standing(ae3a_def, K)" count: 1 }
+  expect ae3a_def_is_unapproved { query: "standing(ae3a_def, unapproved)" count: 1 }
+  expect ae3a_exc_has_one_standing { query: "standing(ae3a_exc, K)" count: 1 }
+  expect ae3a_exc_is_stale { query: "standing(ae3a_exc, stale)" count: 1 }
+  expect ae3a_definition_is_also_stale { query: "stale(ae3a_def)" count: 1 }
+  expect ae3a_def_has_1_reasons { query: "reason(ae3a_def, R, S)" count: 1 }
+  expect ae3a_definition_text_differs { query: "reason(ae3a_def, text_differs, ae3a_def)" count: 1 }
+  expect ae3a_example_is_stale_against_the_definition { query: "stale_link(ae3a_ex, ae3a_def)" count: 1 }
+  expect ae3a_stale_example_is_not_unapproved { query: "unapproved(ae3a_ex)" count: 0 }
+  expect ae3a_exc_has_1_reasons { query: "reason(ae3a_exc, R, S)" count: 1 }
+  expect ae3a_exception_names_the_changed_definition { query: "reason(ae3a_exc, linked_statement_changed, ae3a_def)" count: 1 }
+  expect ae3a_intent_has_2_reasons { query: "reason(ae3a_intent, R, S)" count: 2 }
+  expect ae3a_intent_names_the_stale_exception { query: "reason(ae3a_intent, unverified_member, ae3a_exc)" count: 1 }
+
+  // Case ae3 after re-approval.
+
+  expect ae3b_intent_has_one_standing { query: "standing(ae3b_intent, K)" count: 1 }
+  expect ae3b_intent_is_unverified { query: "standing(ae3b_intent, unverified)" count: 1 }
+  expect ae3b_def_has_one_standing { query: "standing(ae3b_def, K)" count: 1 }
+  expect ae3b_def_is_unverified { query: "standing(ae3b_def, unverified)" count: 1 }
+  expect ae3b_exc_has_one_standing { query: "standing(ae3b_exc, K)" count: 1 }
+  expect ae3b_exc_is_stale { query: "standing(ae3b_exc, stale)" count: 1 }
+  expect ae3b_unconfirmed_example_stays_stale { query: "stale(ae3b_ex_stale)" count: 1 }
+  expect ae3b_reconfirmed_example_is_fresh { query: "stale(ae3b_ex_ok)" count: 0 }
+  expect ae3b_stale_exception_does_not_scope_out { query: "scoped_out(ae3b_def, public)" count: 0 }
+  expect ae3b_definition_applies_on_every_channel { query: "applies_on(ae3b_def, C)" count: 3 }
+  expect ae3b_def_has_3_reasons { query: "reason(ae3b_def, R, S)" count: 3 }
+  expect ae3b_names_the_stale_example { query: "reason(ae3b_def, example_awaits_approval, ae3b_ex_stale)" count: 1 }
+  expect ae3b_lacks_a_public_example { query: "reason(ae3b_def, no_example, public)" count: 1 }
+  expect ae3b_names_the_stale_exception { query: "reason(ae3b_def, exception_unsettled, ae3b_exc)" count: 1 }
+  expect ae3b_exception_names_the_changed_definition { query: "reason(ae3b_exc, linked_statement_changed, ae3b_def)" count: 1 }
+  expect ae3b_intent_has_2_reasons { query: "reason(ae3b_intent, R, S)" count: 2 }
+
+  // Case ae13.
+
+  expect ae13_intent_has_one_standing { query: "standing(ae13_intent, K)" count: 1 }
+  expect ae13_intent_is_unverified { query: "standing(ae13_intent, unverified)" count: 1 }
+  expect ae13_def_has_one_standing { query: "standing(ae13_def, K)" count: 1 }
+  expect ae13_def_is_unapproved { query: "standing(ae13_def, unapproved)" count: 1 }
+  expect ae13_def_has_1_reasons { query: "reason(ae13_def, R, S)" count: 1 }
+  expect ae13_reverted_text_is_unapproved { query: "reason(ae13_def, text_differs, ae13_def)" count: 1 }
+  expect reverted_dependency_keeps_the_example_stale { query: "stale_link(ae13_ex, ae13_def)" count: 1 }
+  expect reverted_dependency_awaits_reconfirmation { query: "awaiting_approval(ae13_ex)" count: 1 }
+  expect ae13_intent_has_1_reasons { query: "reason(ae13_intent, R, S)" count: 1 }
+
+  // An intent with a stale definition.
+
+  expect sd_intent_has_one_standing { query: "standing(sd_intent, K)" count: 1 }
+  expect sd_intent_is_unverified { query: "standing(sd_intent, unverified)" count: 1 }
+  expect sd_def_has_one_standing { query: "standing(sd_def, K)" count: 1 }
+  expect sd_def_is_stale { query: "standing(sd_def, stale)" count: 1 }
+  expect sd_def_has_1_reasons { query: "reason(sd_def, R, S)" count: 1 }
+  expect sd_definition_names_the_changed_intent { query: "reason(sd_def, linked_statement_changed, sd_intent)" count: 1 }
+  expect sd_intent_has_1_reasons { query: "reason(sd_intent, R, S)" count: 1 }
+  expect sd_intent_names_the_stale_definition { query: "reason(sd_intent, unverified_member, sd_def)" count: 1 }
+
+  // Case ae4.
+
+  expect ae4_intent_has_one_standing { query: "standing(ae4_intent, K)" count: 1 }
+  expect ae4_intent_is_unverified { query: "standing(ae4_intent, unverified)" count: 1 }
+  expect ae4_def_has_one_standing { query: "standing(ae4_def, K)" count: 1 }
+  expect ae4_def_is_unverified { query: "standing(ae4_def, unverified)" count: 1 }
+  expect ae4_exc_has_one_standing { query: "standing(ae4_exc, K)" count: 1 }
+  expect ae4_exc_is_verified { query: "standing(ae4_exc, verified)" count: 1 }
+  expect ae4_definition_applies_on_browser_and_mcp { query: "applies_on(ae4_def, C)" count: 2 }
+  expect ae4_def_has_1_reasons { query: "reason(ae4_def, R, S)" count: 1 }
+  expect ae4_names_the_missing_mcp_example { query: "reason(ae4_def, no_example, mcp)" count: 1 }
+  expect ae4_intent_has_1_reasons { query: "reason(ae4_intent, R, S)" count: 1 }
+
+  // Case ae5.
+
+  expect ae5_intent_has_one_standing { query: "standing(ae5_intent, K)" count: 1 }
+  expect ae5_intent_is_verified { query: "standing(ae5_intent, verified)" count: 1 }
+  expect ae5_def_has_one_standing { query: "standing(ae5_def, K)" count: 1 }
+  expect ae5_def_is_verified { query: "standing(ae5_def, verified)" count: 1 }
+  expect ae5_exc_has_one_standing { query: "standing(ae5_exc, K)" count: 1 }
+  expect ae5_exc_is_verified { query: "standing(ae5_exc, verified)" count: 1 }
+  expect ae5_exception_scopes_public_out { query: "scoped_out(ae5_def, public)" count: 1 }
+  expect ae5_definition_applies_on_two_channels { query: "applies_on(ae5_def, C)" count: 2 }
+  expect ae5_exception_applies_on_public { query: "applies_on(ae5_exc, public)" count: 1 }
+  expect ae5_intent_requires_definition_and_exception { query: "intent_member(ae5_intent, M)" count: 2 }
+
+  // Case ae9.
+
+  expect ae9_intent_has_one_standing { query: "standing(ae9_intent, K)" count: 1 }
+  expect ae9_intent_is_verified { query: "standing(ae9_intent, verified)" count: 1 }
+  expect ae9_def_has_one_standing { query: "standing(ae9_def, K)" count: 1 }
+  expect ae9_def_is_verified { query: "standing(ae9_def, verified)" count: 1 }
+  expect ae9_exc_has_one_standing { query: "standing(ae9_exc, K)" count: 1 }
+  expect ae9_exc_is_verified { query: "standing(ae9_exc, verified)" count: 1 }
+  expect ae9_exception_scopes_public_out { query: "scoped_out(ae9_def, public)" count: 1 }
+  expect ae9_tag_on_a_scoped_out_channel_owes_nothing { query: "obligation(ae9_def, ae9_ex, public)" count: 0 }
+  expect ae9_example_never_failed_on_public { query: "red(ae9_ex, public)" count: 0 }
+  expect ae9_exception_needs_no_example { query: "applies_on(ae9_exc, C)" count: 0 }
+
+  // Case ae7.
+
+  expect ae7_intent_has_one_standing { query: "standing(ae7_intent, K)" count: 1 }
+  expect ae7_intent_is_unverified { query: "standing(ae7_intent, unverified)" count: 1 }
+  expect ae7_intent_has_1_reasons { query: "reason(ae7_intent, R, S)" count: 1 }
+  expect ae7_names_the_missing_definition { query: "reason(ae7_intent, no_definition, ae7_intent)" count: 1 }
+  expect ae7_intent_has_no_definition { query: "has_member(ae7_intent)" count: 0 }
+
+  // Case ae12.
+
+  expect ae12_intent_has_one_standing { query: "standing(ae12_intent, K)" count: 1 }
+  expect ae12_intent_is_unverified { query: "standing(ae12_intent, unverified)" count: 1 }
+  expect ae12_def_has_one_standing { query: "standing(ae12_def, K)" count: 1 }
+  expect ae12_def_is_unverified { query: "standing(ae12_def, unverified)" count: 1 }
+  expect ae12_exc_has_one_standing { query: "standing(ae12_exc, K)" count: 1 }
+  expect ae12_exc_is_verified { query: "standing(ae12_exc, verified)" count: 1 }
+  expect ae12_definition_applies_nowhere { query: "applies_on(ae12_def, C)" count: 0 }
+  expect ae12_def_has_1_reasons { query: "reason(ae12_def, R, S)" count: 1 }
+  expect ae12_names_the_missing_channel { query: "reason(ae12_def, no_channel, ae12_def)" count: 1 }
+
+  // Case ae8.
+
+  expect ae8_intent_has_one_standing { query: "standing(ae8_intent, K)" count: 1 }
+  expect ae8_intent_is_unverified { query: "standing(ae8_intent, unverified)" count: 1 }
+  expect ae8_def_has_one_standing { query: "standing(ae8_def, K)" count: 1 }
+  expect ae8_def_is_unverified { query: "standing(ae8_def, unverified)" count: 1 }
+  expect ae8_deleted_example_is_reinstated { query: "reinstated(ae8_ex_fail, example)" count: 1 }
+  expect ae8_deleted_example_awaits_removal { query: "approval_reason(ae8_ex_fail, removal_pending, ae8_ex_fail)" count: 1 }
+  expect ae8_deleted_example_has_one_approval_reason { query: "approval_reason(ae8_ex_fail, R, S)" count: 1 }
+  expect ae8_deleted_example_still_exemplifies { query: "example_of(ae8_ex_fail, ae8_def)" count: 1 }
+  expect ae8_deleted_example_keeps_its_tag { query: "example_tag(ae8_ex_fail, browser)" count: 1 }
+  expect ae8_deleted_example_never_passes { query: "green(ae8_ex_fail, C)" count: 0 }
+  expect ae8_def_has_5_reasons { query: "reason(ae8_def, R, S)" count: 5 }
+  expect ae8_names_the_removed_example { query: "reason(ae8_def, dependent_removal_pending, ae8_ex_fail)" count: 1 }
+  expect ae8_names_the_missing_pass { query: "reason(ae8_def, no_passing_run, browser)" count: 1 }
+  expect ae8_intent_has_1_reasons { query: "reason(ae8_intent, R, S)" count: 1 }
+
+  // Case ae14.
+
+  expect ae14_intent_has_one_standing { query: "standing(ae14_intent, K)" count: 1 }
+  expect ae14_intent_is_unverified { query: "standing(ae14_intent, unverified)" count: 1 }
+  expect ae14_def_has_one_standing { query: "standing(ae14_def, K)" count: 1 }
+  expect ae14_def_is_unverified { query: "standing(ae14_def, unverified)" count: 1 }
+  expect ae14_new_def_has_one_standing { query: "standing(ae14_new_def, K)" count: 1 }
+  expect ae14_new_def_is_unapproved { query: "standing(ae14_new_def, unapproved)" count: 1 }
+  expect ae14_old_link_is_pending_removal { query: "link_removed(ae14_ex_retag, ae14_def)" count: 1 }
+  expect ae14_example_names_the_removed_link { query: "approval_reason(ae14_ex_retag, link_removal_pending, ae14_def)" count: 1 }
+  expect ae14_example_has_two_approval_reasons { query: "approval_reason(ae14_ex_retag, R, S)" count: 2 }
+  expect ae14_example_counts_for_both_definitions { query: "example_of(ae14_ex_retag, S)" count: 2 }
+  expect ae14_def_has_5_reasons { query: "reason(ae14_def, R, S)" count: 5 }
+  expect ae14_names_the_removed_link { query: "reason(ae14_def, dependent_removal_pending, ae14_ex_retag)" count: 1 }
+  expect ae14_new_definition_was_never_approved { query: "reason(ae14_new_def, not_approved, ae14_new_def)" count: 1 }
+  expect ae14_new_def_has_1_reasons { query: "reason(ae14_new_def, R, S)" count: 1 }
+  expect ae14_intent_has_2_reasons { query: "reason(ae14_intent, R, S)" count: 2 }
+
+  // Case ae15.
+
+  expect ae15_intent_has_one_standing { query: "standing(ae15_intent, K)" count: 1 }
+  expect ae15_intent_is_unverified { query: "standing(ae15_intent, unverified)" count: 1 }
+  expect ae15_def_has_one_standing { query: "standing(ae15_def, K)" count: 1 }
+  expect ae15_def_is_unverified { query: "standing(ae15_def, unverified)" count: 1 }
+  expect ae15_example_failed_everywhere { query: "red(ae15_ex, C)" count: 3 }
+  expect ae15_example_passes_nowhere { query: "green(ae15_ex, C)" count: 0 }
+  expect ae15_failure_and_error_at_target_spoil { query: "spoiled(ae15_ex, C)" count: 2 }
+  expect ae15_def_has_3_reasons { query: "reason(ae15_def, R, S)" count: 3 }
+  expect ae15_lacks_a_pass_on_every_channel { query: "reason(ae15_def, no_passing_run, C)" count: 3 }
+  expect ae15_intent_has_1_reasons { query: "reason(ae15_intent, R, S)" count: 1 }
+
+  // Case ae17.
+
+  expect ae17_intent_has_one_standing { query: "standing(ae17_intent, K)" count: 1 }
+  expect ae17_intent_is_unverified { query: "standing(ae17_intent, unverified)" count: 1 }
+  expect ae17_def_has_one_standing { query: "standing(ae17_def, K)" count: 1 }
+  expect ae17_def_is_unverified { query: "standing(ae17_def, unverified)" count: 1 }
+  expect ae17_red_on_browser_does_not_cover_mcp { query: "red(ae17_ex, mcp)" count: 0 }
+  expect ae17_example_failed_on_two_channels { query: "red(ae17_ex, C)" count: 2 }
+  expect ae17_example_passes_everywhere { query: "green(ae17_ex, C)" count: 3 }
+  expect ae17_def_has_1_reasons { query: "reason(ae17_def, R, S)" count: 1 }
+  expect ae17_names_the_missing_mcp_failure { query: "reason(ae17_def, no_failing_run, mcp)" count: 1 }
+  expect ae17_intent_has_1_reasons { query: "reason(ae17_intent, R, S)" count: 1 }
+
+  // Case ae18.
+
+  expect ae18_intent_has_one_standing { query: "standing(ae18_intent, K)" count: 1 }
+  expect ae18_intent_is_unverified { query: "standing(ae18_intent, unverified)" count: 1 }
+  expect ae18_def_has_one_standing { query: "standing(ae18_def, K)" count: 1 }
+  expect ae18_def_is_unverified { query: "standing(ae18_def, unverified)" count: 1 }
+  expect ae18_only_public_is_red { query: "red(ae18_ex, C)" count: 1 }
+  expect ae18_scratch_error_does_not_spoil_target_pass { query: "green(ae18_ex, C)" count: 3 }
+  expect ae18_def_has_2_reasons { query: "reason(ae18_def, R, S)" count: 2 }
+  expect ae18_build_error_is_not_a_failing_run { query: "reason(ae18_def, no_failing_run, browser)" count: 1 }
+  expect ae18_skip_is_not_a_failing_run { query: "reason(ae18_def, no_failing_run, mcp)" count: 1 }
+  expect ae18_intent_has_1_reasons { query: "reason(ae18_intent, R, S)" count: 1 }
+
+  // Runs recorded for an example's earlier text.
+
+  expect mm_intent_has_one_standing { query: "standing(mm_intent, K)" count: 1 }
+  expect mm_intent_is_unverified { query: "standing(mm_intent, unverified)" count: 1 }
+  expect mm_def_has_one_standing { query: "standing(mm_def, K)" count: 1 }
+  expect mm_def_is_unverified { query: "standing(mm_def, unverified)" count: 1 }
+  expect mm_reapproved_example_is_settled { query: "settled(mm_ex)" count: 1 }
+  expect mm_old_text_failure_is_not_red { query: "red(mm_ex, browser)" count: 0 }
+  expect mm_old_text_pass_is_not_green { query: "green(mm_ex, browser)" count: 0 }
+  expect mm_current_text_is_red_twice { query: "red(mm_ex, C)" count: 2 }
+  expect mm_current_text_is_green_twice { query: "green(mm_ex, C)" count: 2 }
+  expect mm_def_has_3_reasons { query: "reason(mm_def, R, S)" count: 3 }
+  expect mm_names_the_digest_mismatch { query: "reason(mm_def, run_digest_mismatch, mm_ex)" count: 1 }
+  expect mm_intent_has_1_reasons { query: "reason(mm_intent, R, S)" count: 1 }
+
+  // A removed channel tag.
+
+  expect tr_intent_has_one_standing { query: "standing(tr_intent, K)" count: 1 }
+  expect tr_intent_is_unverified { query: "standing(tr_intent, unverified)" count: 1 }
+  expect tr_def_has_one_standing { query: "standing(tr_def, K)" count: 1 }
+  expect tr_def_is_unverified { query: "standing(tr_def, unverified)" count: 1 }
+  expect tr_public_tag_is_pending_removal { query: "tag_removed(tr_ex, public)" count: 1 }
+  expect tr_example_names_the_removed_tag { query: "approval_reason(tr_ex, tag_removal_pending, public)" count: 1 }
+  expect tr_example_has_two_approval_reasons { query: "approval_reason(tr_ex, R, S)" count: 2 }
+  expect tr_removed_tag_still_owes_public { query: "obligation(tr_def, tr_ex, public)" count: 1 }
+  expect tr_def_has_3_reasons { query: "reason(tr_def, R, S)" count: 3 }
+  expect tr_lacks_a_public_failure { query: "reason(tr_def, no_failing_run, public)" count: 1 }
+  expect tr_intent_has_1_reasons { query: "reason(tr_intent, R, S)" count: 1 }
+
+  // An approved removal.
+
+  expect removed_definition_is_absent { query: "present(gone_def, K)" count: 0 }
+  expect removed_definition_has_no_standing { query: "standing(gone_def, K)" count: 0 }
+  expect removed_definition_awaits_nothing { query: "awaiting_approval(gone_def)" count: 0 }
+  expect removed_definition_leaves_its_intent { query: "intent_member(ae1_intent, gone_def)" count: 0 }
+
+  // The map.
+
+  expect one_mapped_anchor_is_missing { query: "broken_map(S, A)" count: 1 }
+  expect the_missing_anchor_is_the_gone_file { query: "broken_map(ae1_def, \"src/gone.rs\")" count: 1 }
+  expect a_broken_map_leaves_the_standing { query: "standing(ae1_def, verified)" count: 1 }
+
+  // Totals across the fixture.
+
+  expect every_judged_item_has_a_standing { query: "standing(I, K)" count: 42 }
+  expect ten_items_are_verified { query: "standing(I, verified)" count: 10 }
+  expect three_items_are_unapproved { query: "standing(I, unapproved)" count: 3 }
+  expect three_items_are_stale { query: "standing(I, stale)" count: 3 }
+  expect twenty_six_items_are_unverified { query: "standing(I, unverified)" count: 26 }
+  expect fourteen_items_await_approval { query: "awaiting_approval(I)" count: 14 }
+  expect ten_approval_reasons { query: "approval_reason(I, R, S)" count: 10 }
+  expect fifty_six_standing_reasons { query: "reason(I, R, S)" count: 56 }
+  expect twenty_four_intent_members { query: "intent_member(I, M)" count: 24 }
+
+  // ================================================== stress
+
+  mutation every_rule_is_load_bearing { operator: drop_rule }
+  mutation every_condition_is_load_bearing { operator: drop_condition }
+}

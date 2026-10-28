@@ -1,0 +1,4 @@
+interface:
+  display_name: "Stele"
+  short_description: "Check code and specifications from deterministic facts"
+  default_prompt: "Use $stele to answer this question about the code from its facts and check it."

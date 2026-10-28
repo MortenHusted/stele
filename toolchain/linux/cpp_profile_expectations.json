@@ -1,0 +1,32 @@
+{
+  "descriptor": {
+    "legacy_darwin_roundtrip": "accept",
+    "explicit_linux_profile": "accept",
+    "linux_missing_platform": "reject",
+    "linux_unknown_platform": "reject",
+    "linux_missing_kernel": "reject",
+    "linux_unknown_fields": "reject",
+    "linux_mixed_darwin_fields": "reject",
+    "linux_missing_limits": "reject",
+    "linux_zero_limits": "reject",
+    "linux_wrong_kernel_arch": "reject",
+    "linux_anonymous_execute_allow": "reject",
+    "linux_unapproved_runtime_role": "reject"
+  },
+  "native_source": {
+    "canonical_original_labelled_oracle": "accept",
+    "canonical_defines_generated_headers": "accept",
+    "canonical_repeat_dirty_relocated_clone": "accept",
+    "original_input_drift": "reject",
+    "owned_tool_exit": "reject",
+    "unmanifested_direct_header": "reject",
+    "unmanifested_has_include_is_absent": "accept",
+    "unmanifested_tool_config_inert": "accept",
+    "captured_copy_drift": "reject",
+    "captured_overlay_drift": "reject",
+    "prepared_database_drift": "reject",
+    "private_database_drift": "reject",
+    "has_include_shape_remains_unsupported": "reject",
+    "completed_unit_ast_is_released": "reject"
+  }
+}

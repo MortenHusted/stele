@@ -1,0 +1,29 @@
+[package]
+name = "stele"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+authors.workspace = true
+publish.workspace = true
+description = "Deterministic code facts and the specifications checked against them, behind one command"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { version = "4.5", features = ["derive"] }
+codemap = { path = "../codemap" }
+codemap-lemmaspec = { path = "../codemap-lemmaspec" }
+codemap-slop = { path = "../codemap-slop" }
+codemap-topology = { path = "../codemap-topology" }
+lemmaspec = { path = "../lemmaspec" }
+stele-plan = { path = "../stele-plan" }
+
+[dev-dependencies]
+base64 = "=0.22.1"
+codemap-graph = { workspace = true }
+libc = "0.2"
+serde_json = { workspace = true }
+tempfile = "3"
+
+[lints]
+workspace = true

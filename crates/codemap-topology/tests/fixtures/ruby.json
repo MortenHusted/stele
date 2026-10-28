@@ -1,0 +1,320 @@
+{
+  "identity": {
+    "schema_version": "codemap.snapshot.v8",
+    "language": "ruby",
+    "extractor_version": "0.4.0",
+    "repository": {
+      "id": "https://example.test/synthetic-topology.git",
+      "is_canonical": false
+    },
+    "commit_sha": "synthetic-commit",
+    "tree_sha": "synthetic-tree",
+    "tools": {
+      "ruby_parser": "prism 1.9.0",
+      "ruby_lsp": "ruby-lsp synthetic",
+      "ruby": "ruby synthetic",
+      "rbs": "rbs synthetic",
+      "ruby_tool_bundle_sha256": "synthetic-bundle"
+    },
+    "dirty": false,
+    "snapshot_id": "f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+  },
+  "files": [
+    {
+      "rel_path": "app/controllers/demo.rb",
+      "sha256": "synthetic-file-hash",
+      "byte_len": 300
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ruby:file:app/controllers/demo.rb",
+      "kind": {
+        "kind": "File"
+      },
+      "name": "app/controllers/demo.rb",
+      "symbol_key": "ruby:app/controllers/demo.rb#app/controllers/demo.rb",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "app/controllers/demo.rb",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "Prism",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "ruby:module:app/controllers/demo.rb#demo",
+      "kind": {
+        "kind": "Module"
+      },
+      "name": "demo",
+      "symbol_key": "ruby:app/controllers/demo.rb#demo",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "app/controllers/demo.rb",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "Prism",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "ruby:function:app/controllers/demo.rb#entry",
+      "kind": {
+        "kind": "Function"
+      },
+      "name": "entry",
+      "symbol_key": "ruby:app/controllers/demo.rb#entry",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "app/controllers/demo.rb",
+        "span": {
+          "start_byte": 10,
+          "end_byte": 90,
+          "start_line": 2,
+          "start_col": 0,
+          "end_line": 10,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "Prism",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "ruby:function:app/controllers/demo.rb#work",
+      "kind": {
+        "kind": "Function"
+      },
+      "name": "work",
+      "symbol_key": "ruby:app/controllers/demo.rb#work",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "app/controllers/demo.rb",
+        "span": {
+          "start_byte": 100,
+          "end_byte": 190,
+          "start_line": 11,
+          "start_col": 0,
+          "end_line": 20,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "Prism",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "ruby:function:app/controllers/demo.rb#unused",
+      "kind": {
+        "kind": "Function"
+      },
+      "name": "unused",
+      "symbol_key": "ruby:app/controllers/demo.rb#unused",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "app/controllers/demo.rb",
+        "span": {
+          "start_byte": 200,
+          "end_byte": 290,
+          "start_line": 21,
+          "start_col": 0,
+          "end_line": 30,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "Prism",
+        "confidence": 255
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "contains:ruby:file:app/controllers/demo.rb->ruby:module:app/controllers/demo.rb#demo@0",
+      "kind": "Contains",
+      "from": "ruby:file:app/controllers/demo.rb",
+      "to": "ruby:module:app/controllers/demo.rb#demo",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "app/controllers/demo.rb",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "Prism",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "contains:ruby:module:app/controllers/demo.rb#demo->ruby:function:app/controllers/demo.rb#entry@0",
+      "kind": "Contains",
+      "from": "ruby:module:app/controllers/demo.rb#demo",
+      "to": "ruby:function:app/controllers/demo.rb#entry",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "app/controllers/demo.rb",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "Prism",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "contains:ruby:module:app/controllers/demo.rb#demo->ruby:function:app/controllers/demo.rb#work@0",
+      "kind": "Contains",
+      "from": "ruby:module:app/controllers/demo.rb#demo",
+      "to": "ruby:function:app/controllers/demo.rb#work",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "app/controllers/demo.rb",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "Prism",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "contains:ruby:module:app/controllers/demo.rb#demo->ruby:function:app/controllers/demo.rb#unused@0",
+      "kind": "Contains",
+      "from": "ruby:module:app/controllers/demo.rb#demo",
+      "to": "ruby:function:app/controllers/demo.rb#unused",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "app/controllers/demo.rb",
+        "span": {
+          "start_byte": 0,
+          "end_byte": 300,
+          "start_line": 1,
+          "start_col": 0,
+          "end_line": 31,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "Prism",
+        "confidence": 255
+      }
+    },
+    {
+      "id": "calls:ruby:function:app/controllers/demo.rb#entry->ruby:function:app/controllers/demo.rb#work@30",
+      "kind": "Calls",
+      "from": "ruby:function:app/controllers/demo.rb#entry",
+      "to": "ruby:function:app/controllers/demo.rb#work",
+      "provenance": {
+        "repository": "https://example.test/synthetic-topology.git",
+        "commit_sha": "synthetic-commit",
+        "rel_path": "app/controllers/demo.rb",
+        "span": {
+          "start_byte": 30,
+          "end_byte": 34,
+          "start_line": 4,
+          "start_col": 0,
+          "end_line": 4,
+          "end_col": 0
+        },
+        "file_hash": "synthetic-file-hash",
+        "extractor_version": "0.4.0",
+        "fact_source": "RubyLsp",
+        "confidence": 255
+      }
+    }
+  ],
+  "call_sites": [
+    {
+      "rel_path": "app/controllers/demo.rb",
+      "span": {
+        "start_byte": 30,
+        "end_byte": 34,
+        "start_line": 4,
+        "start_col": 0,
+        "end_line": 4,
+        "end_col": 0
+      },
+      "raw_name": "work",
+      "category": "Resolved"
+    },
+    {
+      "rel_path": "app/controllers/demo.rb",
+      "span": {
+        "start_byte": 50,
+        "end_byte": 54,
+        "start_line": 6,
+        "start_col": 0,
+        "end_line": 6,
+        "end_col": 0
+      },
+      "raw_name": "dynamic_target",
+      "category": "Candidate"
+    }
+  ],
+  "report": {
+    "files_scanned": 1,
+    "files_skipped": 0,
+    "parse_errors": 0,
+    "node_counts": {
+      "file": 1,
+      "function": 3,
+      "module": 1
+    },
+    "edge_counts": {
+      "calls": 1,
+      "contains": 4
+    },
+    "call_sites_by_category": {
+      "Candidate": 1,
+      "Resolved": 1
+    },
+    "import_ref_nodes": 0
+  }
+}

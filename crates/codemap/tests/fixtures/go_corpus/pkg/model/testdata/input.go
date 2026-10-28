@@ -1,0 +1,3 @@
+package ignored
+
+func Ignored() {}

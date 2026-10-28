@@ -1,0 +1,432 @@
+{
+  "contract": "codemap-python-original-body-match-oracle/v1",
+  "basis": "Independent source inspection of unchanged synthetic definitions/calls and existing original-coordinate evidence labels, frozen before matching implementation. CPython census outputs are witnesses, not labels.",
+  "cases": {
+    "same_unit_direct": [
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 1,
+        "location_label": [
+          4,
+          11,
+          20,
+          "caller",
+          3,
+          0,
+          4,
+          20,
+          "sample.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "unknown_effect_before_native_call": [
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 1,
+        "call_owner_index": 1,
+        "location_label": [
+          6,
+          11,
+          20,
+          "caller",
+          4,
+          0,
+          6,
+          20,
+          "sample.py",
+          2,
+          3,
+          16
+        ]
+      }
+    ],
+    "mutable_namespace_before_native_call": [
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 1,
+        "call_owner_index": 1,
+        "location_label": [
+          5,
+          11,
+          20,
+          "caller",
+          3,
+          0,
+          5,
+          20,
+          "sample.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "same_unit_imported": [
+      {
+        "caller_definition_index": 0,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 0,
+        "location_label": [
+          3,
+          11,
+          20,
+          "caller",
+          2,
+          0,
+          3,
+          20,
+          "other.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "same_unit_qualified": [
+      {
+        "caller_definition_index": 0,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 0,
+        "location_label": [
+          3,
+          11,
+          26,
+          "caller",
+          2,
+          0,
+          3,
+          26,
+          "other.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "two_calls_same_line": [
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 1,
+        "location_label": [
+          4,
+          11,
+          20,
+          "caller",
+          3,
+          0,
+          4,
+          32,
+          "sample.py",
+          1,
+          2,
+          16
+        ]
+      },
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 1,
+        "call_owner_index": 1,
+        "location_label": [
+          4,
+          23,
+          32,
+          "caller",
+          3,
+          0,
+          4,
+          32,
+          "sample.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "async_caller_sync_target": [
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "AsyncFunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 1,
+        "location_label": [
+          4,
+          11,
+          20,
+          "caller",
+          3,
+          0,
+          4,
+          20,
+          "sample.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "generator_caller_sync_target": [
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 1,
+        "location_label": [
+          5,
+          10,
+          19,
+          "caller",
+          4,
+          0,
+          5,
+          19,
+          "sample.py",
+          2,
+          3,
+          16
+        ]
+      }
+    ],
+    "nested_caller_sync_target": [
+      {
+        "caller_definition_index": 2,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": 1,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 2,
+        "location_label": [
+          5,
+          15,
+          24,
+          "outer.caller",
+          4,
+          4,
+          5,
+          24,
+          "sample.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "module_initializer": [],
+    "deferred_target": [],
+    "async_target": [],
+    "callback_parameter": [],
+    "callback_noncall_decoy": [],
+    "receiver_virtual": [],
+    "decorated_target": [],
+    "comprehension_ownership": [],
+    "lambda_ownership": [],
+    "default_setup": [],
+    "external_stub": [],
+    "literal_default_target": [
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 1,
+        "location_label": [
+          4,
+          11,
+          19,
+          "caller",
+          3,
+          0,
+          4,
+          19,
+          "sample.py",
+          1,
+          2,
+          12
+        ]
+      }
+    ],
+    "application_must_not_execute": [
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 1,
+        "call_owner_index": 1,
+        "location_label": [
+          5,
+          11,
+          20,
+          "caller",
+          4,
+          0,
+          5,
+          20,
+          "sample.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "declared_namespace_root": [
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 1,
+        "location_label": [
+          4,
+          11,
+          20,
+          "caller",
+          3,
+          0,
+          4,
+          20,
+          "src/pkg/sample.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "declared_regular_root": [
+      {
+        "caller_definition_index": 1,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 1,
+        "location_label": [
+          4,
+          11,
+          20,
+          "caller",
+          3,
+          0,
+          4,
+          20,
+          "src/pkg/sample.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "declared_ordered_roots": [
+      {
+        "caller_definition_index": 0,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 0,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 0,
+        "call_owner_index": 0,
+        "location_label": [
+          3,
+          11,
+          20,
+          "caller",
+          2,
+          0,
+          3,
+          20,
+          "lib/other.py",
+          1,
+          2,
+          16
+        ]
+      }
+    ],
+    "stub_setup_calls_are_declarations": [],
+    "nested_calls_share_start": [
+      {
+        "caller_definition_index": 2,
+        "caller_kind": "FunctionDef",
+        "caller_parent_index": null,
+        "target_definition_index": 1,
+        "target_kind": "FunctionDef",
+        "target_parent_index": null,
+        "call_index": 1,
+        "call_owner_index": 2,
+        "location_label": [
+          7,
+          11,
+          20,
+          "caller",
+          6,
+          0,
+          7,
+          22,
+          "sample.py",
+          4,
+          5,
+          17
+        ]
+      }
+    ]
+  }
+}

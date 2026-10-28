@@ -1,0 +1,30 @@
+{
+  "contract": "codemap-linux-bounded-protocol-controls/v1",
+  "expected": {
+    "valid_frame": "accept",
+    "buffered_multiple_frames": "accept",
+    "fragmented_frame": "accept",
+    "bounded_write": "accept",
+    "stderr_read": "accept",
+    "legacy_framing_unchanged": "accept",
+    "header_budget": "reject",
+    "body_budget": "reject",
+    "zero_limits": "reject",
+    "limits_above_hard_cap": "reject",
+    "duplicate_length": "reject",
+    "invalid_length": "reject",
+    "missing_length": "reject",
+    "truncated_header": "reject",
+    "truncated_body": "reject",
+    "invalid_json": "reject",
+    "non_utf8_header": "reject",
+    "expired_read_deadline": "reject",
+    "stalled_header": "reject",
+    "stalled_body": "reject",
+    "write_backpressure_deadline": "reject",
+    "expired_write_deadline": "reject",
+    "closed_input_pipe": "reject",
+    "closed_output_partial_frame": "reject",
+    "oversized_outbound_frame": "reject"
+  }
+}

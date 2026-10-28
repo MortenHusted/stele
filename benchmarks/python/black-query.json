@@ -1,0 +1,127 @@
+{
+  "files": [
+    {
+      "path": "src/black/__init__.py",
+      "sha256": "2ce728fc3c221d6a4ee7f474032217bb2e37a75a19f856aa2d5f3795770ef41e"
+    },
+    {
+      "path": "src/black/_width_table.py",
+      "sha256": "df03af6f43fa2d21f572e748fe896f6217428afee3f0952e2b6fdcaedaba88f5"
+    },
+    {
+      "path": "src/black/brackets.py",
+      "sha256": "dc0feb5de05be3a681d5a6a87962e03483e5963e9c69fd061e91cfb3582e4cf7"
+    },
+    {
+      "path": "src/black/cache.py",
+      "sha256": "121100e9a4e942df129985eaed089d00b227cec23f99d5f048038aac5a6da192"
+    },
+    {
+      "path": "src/black/comments.py",
+      "sha256": "a682317590b0701e88ad966ca99c62954b5bb02f8c840f0910480830d00923f1"
+    },
+    {
+      "path": "src/black/const.py",
+      "sha256": "53b7039e15a58e6ae278eb4f05474ed95733ebd27f55707af81afde30b8256ea"
+    },
+    {
+      "path": "src/black/handle_ipynb_magics.py",
+      "sha256": "04c2416eec4f4f3a9455060fb277a0fce73515810bb84b5c354cd517fb55f882"
+    },
+    {
+      "path": "src/black/linegen.py",
+      "sha256": "c37ae7b5aa25f8c21fad89b28a21c356b3e31d216c026f235e410db73ab72159"
+    },
+    {
+      "path": "src/black/lines.py",
+      "sha256": "33f1e098cf2e8ab04c22e993eebce376e75d5f5673c1b4e0235ff8001447d8e8"
+    },
+    {
+      "path": "src/black/mode.py",
+      "sha256": "da484f1f3aff49e7b9ebc0526cb716615cd9ea3fd12a597e5331ccf48accfb37"
+    },
+    {
+      "path": "src/black/nodes.py",
+      "sha256": "1c67b8e5264a16d6d0e270c04274ff8bf5bace2309c3fdfd0fce558976dc65a3"
+    },
+    {
+      "path": "src/black/numerics.py",
+      "sha256": "608a2e98260321a77bd82979af480b77cb12695581e2b0a2b668e60fb21d00b2"
+    },
+    {
+      "path": "src/black/parsing.py",
+      "sha256": "f31d3b1e14493d6e2ac362aae765c5515ba54a8cddfefbb03e6c210ba78f002e"
+    },
+    {
+      "path": "src/black/ranges.py",
+      "sha256": "48a4bfe0829199a6591d650799ed9f91a06205828d2b186001797a81cc7548be"
+    },
+    {
+      "path": "src/black/resources/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/black/rusty.py",
+      "sha256": "e0b2a8dca4d459867670de902a6c306556ec08db767e9bb9973b9ed95faec480"
+    },
+    {
+      "path": "src/black/schema.py",
+      "sha256": "aeed33f4403e7f7c1f2cb54f79f785a4cd2ce0662c620fd48e93a230b86375b0"
+    },
+    {
+      "path": "src/black/strings.py",
+      "sha256": "bd4d282d2860d21fdeeea2fe8054628cddc424031b75c7702ebc1df4e0b66c49"
+    },
+    {
+      "path": "src/black/trans.py",
+      "sha256": "3b031a5b8167da9168852b83c31b91e8cd45f467f6cb0da77569a90f9fd88382"
+    },
+    {
+      "path": "src/blib2to3/pgen2/conv.py",
+      "sha256": "830a9988f7a9d6aae46806adb289bc6e45a67bbdbc913884d32da1d3ec2a29ce"
+    },
+    {
+      "path": "src/blib2to3/pgen2/driver.py",
+      "sha256": "d5209d61a22c14255d9b108e1cbdd2232813b57834b2ff6ddd0a0230f7bff89b"
+    },
+    {
+      "path": "src/blib2to3/pgen2/grammar.py",
+      "sha256": "c40a5265e8a0afd201a20d86f7fbcbbe13a22aa52366b40e3c796b89e0b0f251"
+    },
+    {
+      "path": "src/blib2to3/pgen2/literals.py",
+      "sha256": "6e5ee0069c08b1d452b7c95a184452c8e561e18a4a4a7014208d78081713e4cb"
+    },
+    {
+      "path": "src/blib2to3/pgen2/parse.py",
+      "sha256": "94db00cb97885e45d30ae7e8727b0853132c939892b644c1c25bf1e179b5d6a1"
+    },
+    {
+      "path": "src/blib2to3/pgen2/pgen.py",
+      "sha256": "cb9a83687e3e824230f958731623d1de162ef1e0df5927fecffedd105d12e292"
+    },
+    {
+      "path": "src/blib2to3/pgen2/token.py",
+      "sha256": "f982de75c962d4702c811941a5e6b7eca25c08da17f60744773f82cdbad4bb9c"
+    },
+    {
+      "path": "src/blib2to3/pgen2/tokenize.py",
+      "sha256": "99ddfe8bececf4a61fc715e0dccfb763e0721dd9198ff15e73ae2c8c21feac8e"
+    },
+    {
+      "path": "src/blib2to3/pygram.py",
+      "sha256": "56d8849fe063672e3125fa988713f33e73cc09c8e0db39ca550f8afe5027dd9d"
+    },
+    {
+      "path": "src/blib2to3/pytree.py",
+      "sha256": "564ddb3d8cf5c4730937cb1fbc40cb0416a132d9795a9640162cd40dcb740f2a"
+    }
+  ],
+  "package_profile": {
+    "external_stub_roots": [],
+    "namespace_packages": true,
+    "source_roots": [
+      "src"
+    ]
+  }
+}

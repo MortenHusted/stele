@@ -1,0 +1,59 @@
+{
+  "basis": "reviewer_declared_before_semantic_query",
+  "canonical_edges": [
+    [
+      "recursive",
+      "recursive"
+    ],
+    [
+      "direct",
+      "value"
+    ],
+    [
+      "drive",
+      "Runner::Run"
+    ],
+    [
+      "receiver",
+      "Item::Run"
+    ],
+    [
+      "closureCaller",
+      "value"
+    ],
+    [
+      "genericExplicit",
+      "Map"
+    ],
+    [
+      "genericImplicit",
+      "Map"
+    ],
+    [
+      "promoted",
+      "Item::Run"
+    ]
+  ],
+  "forbidden_callers": [
+    "shadow",
+    "parameter",
+    "alias",
+    "global",
+    "field",
+    "convert",
+    "Item::Close"
+  ],
+  "candidate_observations": [
+    "compute"
+  ],
+  "noncanonical_observations": [
+    "shadow",
+    "parameter",
+    "alias",
+    "Global",
+    "h.callback",
+    "Celsius",
+    "f",
+    "Close"
+  ]
+}

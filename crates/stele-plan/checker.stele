@@ -1,0 +1,430 @@
+// Does a plan hold together against its catalog and the code? Every change
+// serves a statement, every proposed statement is served, every decision is
+// carried out by a change, the order has no cycle, the code a change touches
+// exists, the code a done change created exists, and, once the catalog's
+// standings are evaluated, every statement a done change serves is verified.
+// Which changes are ready to start, and which wait on another?
+//
+// This file is a checker. Its facts are a miniature plan that contains each
+// finding the rules look for, so each rule has something to derive and each
+// expectation a count to prove. `stele spec walk` and `stele spec mutate` on
+// this file are the checker's self-test.
+//
+// Applied to a real plan it is paired with the evidence `stele plan
+// evidence` writes from the plan, its catalog and a code snapshot:
+//   stele plan evidence plans/next.stele --out evidence.stele
+//   stele plan checker --out plan.stele
+//   stele spec check plan.stele evidence.stele
+// `stele plan check plans/next.stele` does the same in one step.
+spec plan {
+
+  // ================================================================ evidence
+
+  // A statement of the catalog or one the plan proposes.
+  relation statement {
+    args: [symbol, symbol]
+    roles: [statement, kind]
+    reads: "{statement} is a {kind}"
+  }
+
+  relation refines {
+    args: [symbol, symbol]
+    roles: [definition, intent]
+    reads: "{definition} refines {intent}"
+  }
+
+  relation narrows {
+    args: [symbol, symbol]
+    roles: [exception, definition]
+    reads: "{exception} narrows {definition}"
+  }
+
+  // A statement the plan proposes for the catalog.
+  relation proposed {
+    args: [symbol]
+    roles: [statement]
+    reads: "the plan proposes {statement}"
+  }
+
+  relation replaces {
+    args: [symbol, symbol]
+    roles: [proposal, statement]
+    reads: "{proposal} would replace {statement}"
+  }
+
+  relation decision {
+    args: [symbol]
+    roles: [decision]
+    reads: "{decision} is a decision of the plan"
+  }
+
+  relation governs {
+    args: [symbol, symbol]
+    roles: [decision, statement]
+    reads: "{decision} is about {statement}"
+  }
+
+  relation change {
+    args: [symbol]
+    roles: [change]
+    reads: "{change} is a change of the plan"
+  }
+
+  relation serves {
+    args: [symbol, symbol]
+    roles: [change, statement]
+    reads: "{change} serves {statement}"
+  }
+
+  relation follows {
+    args: [symbol, symbol]
+    roles: [change, decision]
+    reads: "{change} carries out {decision}"
+  }
+
+  relation after {
+    args: [symbol, symbol]
+    roles: [change, earlier]
+    reads: "{change} comes after {earlier}"
+  }
+
+  relation touches {
+    args: [symbol, symbol]
+    roles: [change, anchor]
+    reads: "{change} edits {anchor}"
+  }
+
+  relation creates {
+    args: [symbol, symbol]
+    roles: [change, anchor]
+    reads: "{change} adds {anchor}"
+  }
+
+  // A change someone declared finished.
+  relation done {
+    args: [symbol]
+    roles: [change]
+    reads: "{change} is done"
+  }
+
+  // Code the snapshot contains.
+  relation anchor_present {
+    args: [symbol]
+    roles: [anchor]
+    reads: "the code contains {anchor}"
+  }
+
+  // The catalog's standings were evaluated with the intent checker at this
+  // source identity. Absent when the catalog has no approvals.
+  relation standings_evaluated {
+    args: [symbol]
+    roles: [identity]
+    reads: "the catalog's standings were evaluated at {identity}"
+  }
+
+  // A catalog statement the intent checker found verified.
+  relation verified {
+    args: [symbol]
+    roles: [statement]
+    reads: "{statement} is verified"
+  }
+
+  // ============================================================== judgement
+
+  relation serves_something {
+    args: [symbol]
+    roles: [change]
+    reads: "{change} serves at least one statement"
+  }
+
+  relation served {
+    args: [symbol]
+    roles: [statement]
+    reads: "a change serves {statement}"
+  }
+
+  relation cited {
+    args: [symbol]
+    roles: [decision]
+    reads: "a change carries out {decision}"
+  }
+
+  relation precedes {
+    args: [symbol, symbol]
+    roles: [change, earlier]
+    reads: "{earlier} comes before {change}"
+  }
+
+  relation waiting {
+    args: [symbol]
+    roles: [change]
+    reads: "{change} waits on another change"
+  }
+
+  relation change_serves_nothing {
+    args: [symbol]
+    roles: [change]
+    reads: "{change} serves no statement"
+  }
+
+  relation unserved_proposal {
+    args: [symbol]
+    roles: [statement]
+    reads: "no change serves the proposed {statement}"
+  }
+
+  relation uncited_decision {
+    args: [symbol]
+    roles: [decision]
+    reads: "no change carries out {decision}"
+  }
+
+  relation cyclic_order {
+    args: [symbol]
+    roles: [change]
+    reads: "{change} comes after itself"
+  }
+
+  relation missing_anchor {
+    args: [symbol, symbol]
+    roles: [change, anchor]
+    reads: "{change} edits {anchor}, which the code does not contain"
+  }
+
+  relation unbuilt {
+    args: [symbol, symbol]
+    roles: [change, anchor]
+    reads: "{change} is done, but the code does not contain {anchor} it adds"
+  }
+
+  relation unverified_done {
+    args: [symbol, symbol]
+    roles: [change, statement]
+    reads: "{change} is done, but {statement} it serves is not verified"
+  }
+
+  relation blocked {
+    args: [symbol, symbol]
+    roles: [change, earlier]
+    reads: "{change} waits on {earlier}, which is not done"
+  }
+
+  relation ready {
+    args: [symbol]
+    roles: [change]
+    reads: "{change} is ready to start"
+  }
+
+  // ================================================================= rules
+
+  rule serving_a_statement {
+    derive: "serves_something(Change)"
+    when: ["serves(Change, _)"]
+  }
+
+  rule a_change_must_serve_a_statement {
+    derive: "change_serves_nothing(Change)"
+    when: {
+      is_change: "change(Change)"
+      serves_none: "!serves_something(Change)"
+    }
+  }
+
+  rule a_served_statement {
+    derive: "served(Statement)"
+    when: ["serves(_, Statement)"]
+  }
+
+  rule a_proposal_must_be_served {
+    derive: "unserved_proposal(Statement)"
+    when: {
+      is_proposed: "proposed(Statement)"
+      not_served: "!served(Statement)"
+    }
+  }
+
+  rule a_cited_decision {
+    derive: "cited(Decision)"
+    when: ["follows(_, Decision)"]
+  }
+
+  rule a_decision_must_be_carried_out {
+    derive: "uncited_decision(Decision)"
+    when: {
+      is_decision: "decision(Decision)"
+      not_cited: "!cited(Decision)"
+    }
+  }
+
+  rule an_earlier_change_comes_before {
+    derive: "precedes(Change, Earlier)"
+    when: ["after(Change, Earlier)"]
+  }
+
+  rule coming_before_is_transitive {
+    derive: "precedes(Change, Earliest)"
+    when: {
+      before_earlier: "precedes(Change, Earlier)"
+      earlier_after: "after(Earlier, Earliest)"
+    }
+  }
+
+  rule a_change_cannot_come_after_itself {
+    derive: "cyclic_order(Change)"
+    when: ["precedes(Change, Change)"]
+  }
+
+  rule touched_code_must_exist {
+    derive: "missing_anchor(Change, Anchor)"
+    when: {
+      touches: "touches(Change, Anchor)"
+      absent: "!anchor_present(Anchor)"
+    }
+  }
+
+  rule a_done_change_built_what_it_adds {
+    derive: "unbuilt(Change, Anchor)"
+    when: {
+      is_done: "done(Change)"
+      creates: "creates(Change, Anchor)"
+      absent: "!anchor_present(Anchor)"
+    }
+  }
+
+  // With standings evaluated, a done change is backed by verified
+  // statements, not by its declaration alone. A proposal is never verified.
+  rule a_done_change_serves_verified_statements {
+    derive: "unverified_done(Change, Statement)"
+    when: {
+      evaluated: "standings_evaluated(_)"
+      is_done: "done(Change)"
+      serves: "serves(Change, Statement)"
+      unverified: "!verified(Statement)"
+    }
+  }
+
+  rule waiting_on_an_unfinished_change {
+    derive: "blocked(Change, Earlier)"
+    when: {
+      comes_after: "after(Change, Earlier)"
+      not_done: "!done(Change)"
+      earlier_not_done: "!done(Earlier)"
+    }
+  }
+
+  rule a_blocked_change_waits {
+    derive: "waiting(Change)"
+    when: ["blocked(Change, _)"]
+  }
+
+  rule a_change_nothing_holds_up_is_ready {
+    derive: "ready(Change)"
+    when: {
+      is_change: "change(Change)"
+      not_done: "!done(Change)"
+      not_waiting: "!waiting(Change)"
+    }
+  }
+
+  // ================================================================= fixture
+  //
+  // Catalog intent `fx_goal`; the plan proposes definition `fx_meaning`,
+  // which a change serves, and intent `fx_orphan`, which none does.
+  // Decision `fx_chosen` is carried out, `fx_forgotten` is not. Changes:
+  // `fx_base` is done and its code exists; `fx_next` follows it and touches
+  // code that is gone; `fx_extra` serves nothing and waits on `fx_next`;
+  // `fx_shipped` is done, after the unfinished `fx_extra`, but what it adds
+  // is missing; `fx_loop_a` and `fx_loop_b` come after each other.
+  // Standings are evaluated: `fx_goal` is verified, so `fx_base` and
+  // `fx_shipped` serve a verified statement, while `fx_early` is done but
+  // serves the proposal `fx_meaning`, which is not.
+
+  fact fx_goal_is_intent { relation: statement args: [fx_goal, intent] }
+  fact fx_meaning_is_definition { relation: statement args: [fx_meaning, definition] }
+  fact fx_orphan_is_intent { relation: statement args: [fx_orphan, intent] }
+  fact fx_meaning_refines_goal { relation: refines args: [fx_meaning, fx_goal] }
+  fact fx_meaning_proposed { relation: proposed args: [fx_meaning] }
+  fact fx_orphan_proposed { relation: proposed args: [fx_orphan] }
+
+  fact fx_chosen_decision { relation: decision args: [fx_chosen] }
+  fact fx_forgotten_decision { relation: decision args: [fx_forgotten] }
+  fact fx_chosen_governs { relation: governs args: [fx_chosen, fx_goal] }
+  fact fx_forgotten_governs { relation: governs args: [fx_forgotten, fx_goal] }
+
+  fact fx_base_change { relation: change args: [fx_base] }
+  fact fx_next_change { relation: change args: [fx_next] }
+  fact fx_extra_change { relation: change args: [fx_extra] }
+  fact fx_shipped_change { relation: change args: [fx_shipped] }
+  fact fx_loop_a_change { relation: change args: [fx_loop_a] }
+  fact fx_loop_b_change { relation: change args: [fx_loop_b] }
+  fact fx_early_change { relation: change args: [fx_early] }
+
+  fact fx_base_serves { relation: serves args: [fx_base, fx_goal] }
+  fact fx_next_serves { relation: serves args: [fx_next, fx_meaning] }
+  fact fx_shipped_serves { relation: serves args: [fx_shipped, fx_goal] }
+  fact fx_loop_a_serves { relation: serves args: [fx_loop_a, fx_goal] }
+  fact fx_loop_b_serves { relation: serves args: [fx_loop_b, fx_goal] }
+  fact fx_early_serves { relation: serves args: [fx_early, fx_meaning] }
+
+  fact fx_next_follows { relation: follows args: [fx_next, fx_chosen] }
+
+  fact fx_next_after_base { relation: after args: [fx_next, fx_base] }
+  fact fx_extra_after_next { relation: after args: [fx_extra, fx_next] }
+  fact fx_shipped_after_extra { relation: after args: [fx_shipped, fx_extra] }
+  fact fx_loop_a_after_b { relation: after args: [fx_loop_a, fx_loop_b] }
+  fact fx_loop_b_after_a { relation: after args: [fx_loop_b, fx_loop_a] }
+
+  fact fx_base_touches { relation: touches args: [fx_base, "src/kept.rs"] }
+  fact fx_base_creates { relation: creates args: [fx_base, "src/built.rs"] }
+  fact fx_next_touches { relation: touches args: [fx_next, "src/gone.rs"] }
+  fact fx_next_creates { relation: creates args: [fx_next, "src/future.rs"] }
+  fact fx_shipped_creates { relation: creates args: [fx_shipped, "src/promised.rs"] }
+
+  fact fx_base_done { relation: done args: [fx_base] }
+  fact fx_shipped_done { relation: done args: [fx_shipped] }
+  fact fx_early_done { relation: done args: [fx_early] }
+
+  fact fx_kept_present { relation: anchor_present args: ["src/kept.rs"] }
+  fact fx_built_present { relation: anchor_present args: ["src/built.rs"] }
+
+  fact fx_standings { relation: standings_evaluated args: [fx_head] }
+  fact fx_goal_verified { relation: verified args: [fx_goal] }
+
+  // ---- the checker's self-test ----
+
+  expect fx_one_change_serves_nothing { query: "change_serves_nothing(C)" count: 1 }
+  expect fx_it_is_extra { query: "change_serves_nothing(fx_extra)" count: 1 }
+  expect fx_one_unserved_proposal { query: "unserved_proposal(S)" count: 1 }
+  expect fx_it_is_orphan { query: "unserved_proposal(fx_orphan)" count: 1 }
+  expect fx_one_uncited_decision { query: "uncited_decision(D)" count: 1 }
+  expect fx_it_is_forgotten { query: "uncited_decision(fx_forgotten)" count: 1 }
+  expect fx_two_changes_loop { query: "cyclic_order(C)" count: 2 }
+  expect fx_one_missing_anchor { query: "missing_anchor(C, A)" count: 1 }
+  expect fx_it_is_gone { query: "missing_anchor(fx_next, \"src/gone.rs\")" count: 1 }
+  expect fx_one_unbuilt { query: "unbuilt(C, A)" count: 1 }
+  expect fx_it_is_promised { query: "unbuilt(fx_shipped, \"src/promised.rs\")" count: 1 }
+  expect fx_three_blocked { query: "blocked(C, E)" count: 3 }
+  expect fx_extra_waits_on_next { query: "blocked(fx_extra, fx_next)" count: 1 }
+  expect fx_one_ready { query: "ready(C)" count: 1 }
+  expect fx_next_is_ready { query: "ready(fx_next)" count: 1 }
+  expect fx_one_unverified_done { query: "unverified_done(C, S)" count: 1 }
+  expect fx_it_is_early { query: "unverified_done(fx_early, fx_meaning)" count: 1 }
+
+  // ============================================================== stress
+
+  mutation every_rule_is_load_bearing { operator: drop_rule }
+
+  // The fixture holds one plan with standings evaluated, so dropping the
+  // guard on them changes no answer here; dropping the standings themselves
+  // does. That a catalog without approvals adds no standings, so its done
+  // changes pass, is checked by the plan tests.
+  mutation every_condition_is_load_bearing {
+    operator: drop_condition
+    except: ["a_done_change_serves_verified_statements.evaluated"]
+  }
+
+  mutation standings_turn_the_check_on {
+    operator: drop_fact
+    relation: standings_evaluated
+  }
+}

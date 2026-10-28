@@ -1,0 +1,23 @@
+
+running 1 test
+test fails ... FAILED
+
+failures:
+
+---- fails stdout ----
+
+thread 'fails' (11259006) panicked at tests/probe.rs:6:5:
+assertion `left == right` failed: channel cli
+  left: 1
+ right: 2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    fails
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running tests/probe.rs (target/debug/deps/probe-fd9b57a38729d9ee)
+error: test failed, to rerun pass `--test probe`

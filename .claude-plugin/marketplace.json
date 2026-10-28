@@ -1,0 +1,28 @@
+{
+  "name": "stele",
+  "description": "The Stele plugin marketplace.",
+  "owner": {
+    "name": "Morten Lochmann"
+  },
+  "plugins": [
+    {
+      "name": "stele",
+      "source": "./plugins/stele",
+      "description": "Answer questions about code from deterministic facts, and check code and typed specifications.",
+      "author": {
+        "name": "Morten Lochmann"
+      },
+      "homepage": "https://github.com/MortenHusted/stele",
+      "repository": "https://github.com/MortenHusted/stele",
+      "license": "MIT",
+      "category": "development",
+      "keywords": [
+        "code-facts",
+        "static-analysis",
+        "specification",
+        "mutation-testing",
+        "software-development"
+      ]
+    }
+  ]
+}

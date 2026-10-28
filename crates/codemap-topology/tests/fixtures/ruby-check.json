@@ -1,0 +1,326 @@
+{
+  "spec": "https___example_test_synthetic_topology_git",
+  "status": "incomplete",
+  "asserted": 16,
+  "derived": 5,
+  "facts": [
+    {
+      "relation": "call_census",
+      "args": [
+        "Ambiguous",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_0",
+        "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+      ],
+      "why": "call_census(Ambiguous, 0)  (conf 1.000, prov [\"call_census_0\", \"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Candidate",
+        "1"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_1",
+        "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+      ],
+      "why": "call_census(Candidate, 1)  (conf 1.000, prov [\"call_census_1\", \"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "ExternalCrate",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_2",
+        "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+      ],
+      "why": "call_census(ExternalCrate, 0)  (conf 1.000, prov [\"call_census_2\", \"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Failed",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_3",
+        "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+      ],
+      "why": "call_census(Failed, 0)  (conf 1.000, prov [\"call_census_3\", \"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Observed",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_4",
+        "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+      ],
+      "why": "call_census(Observed, 0)  (conf 1.000, prov [\"call_census_4\", \"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Resolved",
+        "1"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_5",
+        "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+      ],
+      "why": "call_census(Resolved, 1)  (conf 1.000, prov [\"call_census_5\", \"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "StandardLibrary",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_6",
+        "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+      ],
+      "why": "call_census(StandardLibrary, 0)  (conf 1.000, prov [\"call_census_6\", \"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Unmapped",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_7",
+        "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+      ],
+      "why": "call_census(Unmapped, 0)  (conf 1.000, prov [\"call_census_7\", \"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "calls",
+      "args": [
+        "ruby:function:app/controllers/demo.rb#entry",
+        "ruby:function:app/controllers/demo.rb#work"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "app/controllers/demo.rb:4",
+        "calls_0"
+      ],
+      "why": "calls(ruby:function:app/controllers/demo.rb#entry, ruby:function:app/controllers/demo.rb#work)  (conf 1.000, prov [\"app/controllers/demo.rb:4\", \"calls_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "coverage_admitted",
+      "args": [
+        "policy:entry-point/ruby"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "coverage_input_0",
+        "policy:observed-call-coverage/v1"
+      ],
+      "why": "coverage_admitted(policy:entry-point/ruby)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n  ↳ via observed_coverage_is_admitted\n    coverage_input(policy:entry-point/ruby, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "coverage_input",
+      "args": [
+        "policy:entry-point/ruby",
+        "2",
+        "500",
+        "500",
+        "1",
+        "0",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "coverage_input_0",
+        "policy:observed-call-coverage/v1"
+      ],
+      "why": "coverage_input(policy:entry-point/ruby, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "ruby:function:app/controllers/demo.rb#entry",
+        "app/controllers/demo.rb"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "app/controllers/demo.rb:2",
+        "defines_0"
+      ],
+      "why": "defines(ruby:function:app/controllers/demo.rb#entry, app/controllers/demo.rb)  (conf 1.000, prov [\"app/controllers/demo.rb:2\", \"defines_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "ruby:function:app/controllers/demo.rb#unused",
+        "app/controllers/demo.rb"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "app/controllers/demo.rb:21",
+        "defines_1"
+      ],
+      "why": "defines(ruby:function:app/controllers/demo.rb#unused, app/controllers/demo.rb)  (conf 1.000, prov [\"app/controllers/demo.rb:21\", \"defines_1\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "defines",
+      "args": [
+        "ruby:function:app/controllers/demo.rb#work",
+        "app/controllers/demo.rb"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "app/controllers/demo.rb:11",
+        "defines_2"
+      ],
+      "why": "defines(ruby:function:app/controllers/demo.rb#work, app/controllers/demo.rb)  (conf 1.000, prov [\"app/controllers/demo.rb:11\", \"defines_2\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "entry_point",
+      "args": [
+        "ruby:function:app/controllers/demo.rb#entry"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "entry_point_0"
+      ],
+      "why": "entry_point(ruby:function:app/controllers/demo.rb#entry)  (conf 1.000, prov [\"entry_point_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live",
+      "args": [
+        "ruby:function:app/controllers/demo.rb#entry"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "entry_point_0"
+      ],
+      "why": "live(ruby:function:app/controllers/demo.rb#entry)  (conf 1.000, prov [\"entry_point_0\"])\n  ↳ via an_entry_point_is_live\n    entry_point(ruby:function:app/controllers/demo.rb#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live",
+      "args": [
+        "ruby:function:app/controllers/demo.rb#work"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "app/controllers/demo.rb:4",
+        "calls_0",
+        "entry_point_0"
+      ],
+      "why": "live(ruby:function:app/controllers/demo.rb#work)  (conf 1.000, prov [\"app/controllers/demo.rb:4\", \"calls_0\", \"entry_point_0\"])\n  ↳ via a_call_from_live_code_is_live\n    live(ruby:function:app/controllers/demo.rb#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ via an_entry_point_is_live\n        entry_point(ruby:function:app/controllers/demo.rb#entry)  (conf 1.000, prov [\"entry_point_0\"])\n          ↳ asserted (base fact)\n    calls(ruby:function:app/controllers/demo.rb#entry, ruby:function:app/controllers/demo.rb#work)  (conf 1.000, prov [\"app/controllers/demo.rb:4\", \"calls_0\"])\n      ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "live_total",
+      "args": [
+        "2"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [],
+      "why": "live_total(2)  (conf 1.000, prov [])\n  ↳ via live_symbols_are_counted\n    __agg:live_total:3(ruby:function:app/controllers/demo.rb#entry)  (conf 1.000, prov [\"entry_point_0\"])\n      ↳ via live_symbols_are_counted\n        live(ruby:function:app/controllers/demo.rb#entry)  (conf 1.000, prov [\"entry_point_0\"])\n          ↳ via an_entry_point_is_live\n            entry_point(ruby:function:app/controllers/demo.rb#entry)  (conf 1.000, prov [\"entry_point_0\"])\n              ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "production_file",
+      "args": [
+        "app/controllers/demo.rb"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "policy:file-layout/ruby",
+        "production_file_0"
+      ],
+      "why": "production_file(app/controllers/demo.rb)  (conf 1.000, prov [\"policy:file-layout/ruby\", \"production_file_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "snapshot_identity",
+      "args": [
+        "f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373",
+        "https://example.test/synthetic-topology.git",
+        "synthetic-commit",
+        "synthetic-tree",
+        "policy:entry-point/ruby"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373",
+        "snapshot_identity_0"
+      ],
+      "why": "snapshot_identity(f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373, https://example.test/synthetic-topology.git, synthetic-commit, synthetic-tree, policy:entry-point/ruby)  (conf 1.000, prov [\"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\", \"snapshot_identity_0\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "unused_production_symbol",
+      "args": [
+        "ruby:function:app/controllers/demo.rb#unused",
+        "policy:entry-point/ruby"
+      ],
+      "origin": "derived",
+      "confidence": 1.0,
+      "provenance": [
+        "app/controllers/demo.rb:21",
+        "coverage_input_0",
+        "defines_1",
+        "policy:file-layout/ruby",
+        "policy:observed-call-coverage/v1",
+        "production_file_0"
+      ],
+      "why": "unused_production_symbol(ruby:function:app/controllers/demo.rb#unused, policy:entry-point/ruby)  (conf 1.000, prov [\"app/controllers/demo.rb:21\", \"coverage_input_0\", \"defines_1\", \"policy:file-layout/ruby\", \"policy:observed-call-coverage/v1\", \"production_file_0\"])\n  ↳ via shipped_without_observed_reach\n    coverage_admitted(policy:entry-point/ruby)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n      ↳ via observed_coverage_is_admitted\n        coverage_input(policy:entry-point/ruby, 2, 500, 500, 1, 0, 0)  (conf 1.000, prov [\"coverage_input_0\", \"policy:observed-call-coverage/v1\"])\n          ↳ asserted (base fact)\n    defines(ruby:function:app/controllers/demo.rb#unused, app/controllers/demo.rb)  (conf 1.000, prov [\"app/controllers/demo.rb:21\", \"defines_1\"])\n      ↳ asserted (base fact)\n    production_file(app/controllers/demo.rb)  (conf 1.000, prov [\"policy:file-layout/ruby\", \"production_file_0\"])\n      ↳ asserted (base fact)\n"
+    }
+  ],
+  "expectations": [
+    {
+      "id": "coverage_is_admitted",
+      "query": "coverage_admitted(P)",
+      "expected_count": 1,
+      "actual_count": 1,
+      "satisfied": true,
+      "found": [
+        "P=policy:entry-point/ruby"
+      ]
+    },
+    {
+      "id": "no_observed_unreached_symbols",
+      "query": "unused_production_symbol(S, _)",
+      "expected_count": 0,
+      "actual_count": 1,
+      "satisfied": false,
+      "found": [
+        "S=ruby:function:app/controllers/demo.rb#unused"
+      ]
+    }
+  ]
+}

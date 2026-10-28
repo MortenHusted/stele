@@ -1,0 +1,760 @@
+{
+  "basis": "reviewer_declared",
+  "callers": [
+    {
+      "body_sha256": "8e3c811334b8db81240eab86d27fc584ca0fa58bf07599460ae2a0bd5d318a71",
+      "path": "crates/cli/src/escape.rs",
+      "span": {
+        "end_byte": 825,
+        "end_col": 1,
+        "end_line": 28,
+        "start_byte": 747,
+        "start_col": 0,
+        "start_line": 26
+      },
+      "symbol_key": "rust:crates/cli/src/escape.rs#escape"
+    },
+    {
+      "body_sha256": "ada785b9fa406c2066934ef04a1679335582173d34711f43efbfa22f37ced2dc",
+      "path": "crates/cli/src/escape.rs",
+      "span": {
+        "end_byte": 1041,
+        "end_col": 1,
+        "end_line": 35,
+        "start_byte": 941,
+        "start_col": 0,
+        "start_line": 33
+      },
+      "symbol_key": "rust:crates/cli/src/escape.rs#escape_os"
+    },
+    {
+      "body_sha256": "8dd4e02b5ab05ffc26875f171cee61120b8c71cf500729336e42ef00e6478a86",
+      "path": "crates/cli/src/escape.rs",
+      "span": {
+        "end_byte": 2107,
+        "end_col": 1,
+        "end_line": 69,
+        "start_byte": 2041,
+        "start_col": 0,
+        "start_line": 67
+      },
+      "symbol_key": "rust:crates/cli/src/escape.rs#unescape"
+    },
+    {
+      "body_sha256": "1566e27384da687c604d752b6dc441dfb87fd7fd3b5fa3b864ca99758910aa79",
+      "path": "crates/cli/src/escape.rs",
+      "span": {
+        "end_byte": 2434,
+        "end_col": 1,
+        "end_line": 79,
+        "start_byte": 2345,
+        "start_col": 0,
+        "start_line": 77
+      },
+      "symbol_key": "rust:crates/cli/src/escape.rs#unescape_os"
+    },
+    {
+      "body_sha256": "fd59378c958a9bf223e858d4f887755904357cabad3d705995ca200e97e3d453",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 1992,
+        "end_col": 1,
+        "end_line": 59,
+        "start_byte": 1625,
+        "start_col": 0,
+        "start_line": 51
+      },
+      "symbol_key": "rust:crates/cli/src/pattern.rs#pattern_from_os"
+    },
+    {
+      "body_sha256": "ced760ddd081594e31ced96dd6efa65b3937ea930fa3868efc73f22334412f59",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 2581,
+        "end_col": 1,
+        "end_line": 74,
+        "start_byte": 2341,
+        "start_col": 0,
+        "start_line": 67
+      },
+      "symbol_key": "rust:crates/cli/src/pattern.rs#pattern_from_bytes"
+    },
+    {
+      "body_sha256": "fd04e925b85d91b4643e32e269162e6240eaa8183d5156dd26db1ff83dc85e1a",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 3349,
+        "end_col": 1,
+        "end_line": 96,
+        "start_byte": 2879,
+        "start_col": 0,
+        "start_line": 82
+      },
+      "symbol_key": "rust:crates/cli/src/pattern.rs#patterns_from_path"
+    },
+    {
+      "body_sha256": "758a24d68639e926e3a978ade5ca0fa7481d4bab509ba97b23c109ec51ed3865",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 3908,
+        "end_col": 1,
+        "end_line": 110,
+        "start_byte": 3660,
+        "start_col": 0,
+        "start_line": 104
+      },
+      "symbol_key": "rust:crates/cli/src/pattern.rs#patterns_from_stdin"
+    },
+    {
+      "body_sha256": "deb6099f939e1e3cd2edbcd8cc381793f8220e17e6c9c1edab0196a3cc3f2ff8",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 5270,
+        "end_col": 1,
+        "end_line": 158,
+        "start_byte": 4706,
+        "start_col": 0,
+        "start_line": 141
+      },
+      "symbol_key": "rust:crates/cli/src/pattern.rs#patterns_from_reader"
+    },
+    {
+      "body_sha256": "f0ee0ef33b1b2fd654093d1e425a3cdbae250425085309c289e9c55cbbd6c468",
+      "path": "crates/core/flags/hiargs.rs",
+      "span": {
+        "end_byte": 41631,
+        "end_col": 5,
+        "end_line": 1048,
+        "start_byte": 38477,
+        "start_col": 4,
+        "start_line": 980
+      },
+      "symbol_key": "rust:crates/core/flags/hiargs.rs#Patterns::from_low_args"
+    },
+    {
+      "body_sha256": "19974a269401dcaae23910d541e5425c6c9fcd2772421e5f021c6e376e385267",
+      "path": "crates/cli/src/decompress.rs",
+      "span": {
+        "end_byte": 8824,
+        "end_col": 5,
+        "end_line": 244,
+        "start_byte": 8019,
+        "start_col": 4,
+        "start_line": 221
+      },
+      "symbol_key": "rust:crates/cli/src/decompress.rs#DecompressionReaderBuilder::build"
+    },
+    {
+      "body_sha256": "3ff5f0ffc79d92a2131b6f57329e60c2553d940f27900b1c76db6484053ad977",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 8955,
+        "end_col": 5,
+        "end_line": 243,
+        "start_byte": 7747,
+        "start_col": 4,
+        "start_line": 218
+      },
+      "symbol_key": "rust:crates/cli/src/process.rs#CommandReader::close"
+    },
+    {
+      "body_sha256": "1fc4f3659cd662b0d98fef6741e92173c007bce38874beb45214f6f6dab9fae8",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 11143,
+        "end_col": 1,
+        "end_line": 316,
+        "start_byte": 10896,
+        "start_col": 0,
+        "start_line": 310
+      },
+      "symbol_key": "rust:crates/cli/src/process.rs#stderr_to_command_error"
+    }
+  ],
+  "commit": "e89fff89ac9af12e8d4ce9d5fd07beb408ca730f",
+  "contract": "stele-rust-selected-callers/v1",
+  "definition_only_sites": [
+    {
+      "callee": "rust:crates/cli/src/process.rs#io::Error::from",
+      "caller": "rust:crates/cli/src/process.rs#CommandReader::close",
+      "path": "crates/cli/src/process.rs",
+      "reason": "Static From trait conversion: source identifies the owned implementation, but textDocument/definition may return the standard trait declaration. This site is outside required recall. Any emitted owned edge must target this exact implementation; otherwise retain and report its noncanonical category. No implementation-search fallback or name matching is permitted.",
+      "span": {
+        "end_byte": 8938,
+        "end_col": 36,
+        "end_line": 241,
+        "start_byte": 8918,
+        "start_col": 16,
+        "start_line": 241
+      }
+    }
+  ],
+  "expected_edges": [
+    {
+      "callee": "rust:crates/cli/src/escape.rs#escape",
+      "caller": "rust:crates/cli/src/escape.rs#escape_os",
+      "path": "crates/cli/src/escape.rs",
+      "span": {
+        "end_byte": 1039,
+        "end_col": 53,
+        "end_line": 34,
+        "start_byte": 990,
+        "start_col": 4,
+        "start_line": 34
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/escape.rs#unescape",
+      "caller": "rust:crates/cli/src/escape.rs#unescape_os",
+      "path": "crates/cli/src/escape.rs",
+      "span": {
+        "end_byte": 2432,
+        "end_col": 39,
+        "end_line": 78,
+        "start_byte": 2397,
+        "start_col": 4,
+        "start_line": 78
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/escape.rs#escape_os",
+      "caller": "rust:crates/cli/src/pattern.rs#pattern_from_os",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 1968,
+        "end_col": 58,
+        "end_line": 57,
+        "start_byte": 1950,
+        "start_col": 40,
+        "start_line": 57
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/escape.rs#escape",
+      "caller": "rust:crates/cli/src/pattern.rs#pattern_from_bytes",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 2531,
+        "end_col": 33,
+        "end_line": 71,
+        "start_byte": 2516,
+        "start_col": 18,
+        "start_line": 71
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/pattern.rs#patterns_from_reader",
+      "caller": "rust:crates/cli/src/pattern.rs#patterns_from_path",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 3205,
+        "end_col": 30,
+        "end_line": 90,
+        "start_byte": 3179,
+        "start_col": 4,
+        "start_line": 90
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/pattern.rs#patterns_from_reader",
+      "caller": "rust:crates/cli/src/pattern.rs#patterns_from_stdin",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 3810,
+        "end_col": 32,
+        "end_line": 107,
+        "start_byte": 3782,
+        "start_col": 4,
+        "start_line": 107
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/pattern.rs#pattern_from_bytes",
+      "caller": "rust:crates/cli/src/pattern.rs#patterns_from_reader",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 4959,
+        "end_col": 38,
+        "end_line": 146,
+        "start_byte": 4935,
+        "start_col": 14,
+        "start_line": 146
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/pattern.rs#patterns_from_stdin",
+      "caller": "rust:crates/core/flags/hiargs.rs#Patterns::from_low_args",
+      "path": "crates/core/flags/hiargs.rs",
+      "span": {
+        "end_byte": 41239,
+        "end_col": 67,
+        "end_line": 1035,
+        "start_byte": 41207,
+        "start_col": 35,
+        "start_line": 1035
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/pattern.rs#patterns_from_path",
+      "caller": "rust:crates/core/flags/hiargs.rs#Patterns::from_low_args",
+      "path": "crates/core/flags/hiargs.rs",
+      "span": {
+        "end_byte": 41460,
+        "end_col": 71,
+        "end_line": 1040,
+        "start_byte": 41424,
+        "start_col": 35,
+        "start_line": 1040
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/decompress.rs#DecompressionMatcher::command",
+      "caller": "rust:crates/cli/src/decompress.rs#DecompressionReaderBuilder::build",
+      "path": "crates/cli/src/decompress.rs",
+      "span": {
+        "end_byte": 8222,
+        "end_col": 54,
+        "end_line": 226,
+        "start_byte": 8196,
+        "start_col": 28,
+        "start_line": 226
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/decompress.rs#DecompressionReader::new_passthru",
+      "caller": "rust:crates/cli/src/decompress.rs#DecompressionReaderBuilder::build",
+      "path": "crates/cli/src/decompress.rs",
+      "span": {
+        "end_byte": 8288,
+        "end_col": 58,
+        "end_line": 227,
+        "start_byte": 8249,
+        "start_col": 19,
+        "start_line": 227
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/process.rs#CommandReaderBuilder::build",
+      "caller": "rust:crates/cli/src/decompress.rs#DecompressionReaderBuilder::build",
+      "path": "crates/cli/src/decompress.rs",
+      "span": {
+        "end_byte": 8375,
+        "end_col": 50,
+        "end_line": 231,
+        "start_byte": 8339,
+        "start_col": 14,
+        "start_line": 231
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/decompress.rs#DecompressionReader::new_passthru",
+      "caller": "rust:crates/cli/src/decompress.rs#DecompressionReaderBuilder::build",
+      "path": "crates/cli/src/decompress.rs",
+      "span": {
+        "end_byte": 8794,
+        "end_col": 55,
+        "end_line": 241,
+        "start_byte": 8755,
+        "start_col": 16,
+        "start_line": 241
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/process.rs#StderrReader::read_to_end",
+      "caller": "rust:crates/cli/src/process.rs#CommandReader::close",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 8306,
+        "end_col": 47,
+        "end_line": 230,
+        "start_byte": 8281,
+        "start_col": 22,
+        "start_line": 230
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/process.rs#CommandError::is_empty",
+      "caller": "rust:crates/cli/src/process.rs#CommandReader::close",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 8854,
+        "end_col": 42,
+        "end_line": 238,
+        "start_byte": 8840,
+        "start_col": 28,
+        "start_line": 238
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/process.rs#CommandError::stderr",
+      "caller": "rust:crates/cli/src/process.rs#stderr_to_command_error",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 11091,
+        "end_col": 44,
+        "end_line": 313,
+        "start_byte": 11064,
+        "start_col": 17,
+        "start_line": 313
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/process.rs#CommandError::io",
+      "caller": "rust:crates/cli/src/process.rs#stderr_to_command_error",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 11134,
+        "end_col": 41,
+        "end_line": 314,
+        "start_byte": 11113,
+        "start_col": 20,
+        "start_line": 314
+      }
+    }
+  ],
+  "files": {
+    "crates/cli/src/decompress.rs": "eaceb58ab4c650f0f9f62de1181fd6611b9e6b5b162816546760d49514045b37",
+    "crates/cli/src/escape.rs": "b3ac4121dd2d81be59f22f39bb9e4e473775c2631cc33b063715059ba63ed180",
+    "crates/cli/src/pattern.rs": "22b94d38be203aa3c252bf010cce238349f39cb5c494991ac57b52de1dab722f",
+    "crates/cli/src/process.rs": "1452fb92570a07c3c5135dc9efc293a30edd3322580cc93d0b342107c2593e3f",
+    "crates/core/flags/hiargs.rs": "1652876799a15ee6467e8b7d89546cefc078d1873c8413bedb21db4bc12d9f2d",
+    "crates/globset/src/lib.rs": "7e34c24673ee164d779de7d0efdaf97f19176f9e0bfc71e0842345ef76f0a38a"
+  },
+  "forbidden_edges": [
+    {
+      "callee": "rust:crates/cli/src/pattern.rs#InvalidPatternError::valid_up_to",
+      "caller": "rust:crates/cli/src/pattern.rs#pattern_from_bytes",
+      "path": "crates/cli/src/pattern.rs",
+      "reason": "Receiver is std::str::Utf8Error, not the same-spelling in-repository method.",
+      "span": {
+        "end_byte": 2571,
+        "end_col": 38,
+        "end_line": 72,
+        "start_byte": 2554,
+        "start_col": 21,
+        "start_line": 72
+      }
+    },
+    {
+      "callee": "rust:crates/globset/src/lib.rs#escape",
+      "caller": "rust:crates/cli/src/pattern.rs#pattern_from_bytes",
+      "path": "crates/cli/src/pattern.rs",
+      "reason": "Imported grep_cli escape, not the same-spelling globset function.",
+      "span": {
+        "end_byte": 2531,
+        "end_col": 33,
+        "end_line": 71,
+        "start_byte": 2516,
+        "start_col": 18,
+        "start_line": 71
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/process.rs#StderrReader::read_to_end",
+      "caller": "rust:crates/cli/src/process.rs#stderr_to_command_error",
+      "path": "crates/cli/src/process.rs",
+      "reason": "Receiver is std::process::ChildStderr implementing std::io::Read, not StderrReader.",
+      "span": {
+        "end_byte": 11044,
+        "end_col": 40,
+        "end_line": 312,
+        "start_byte": 11014,
+        "start_col": 10,
+        "start_line": 312
+      }
+    },
+    {
+      "callee": "rust:crates/cli/src/decompress.rs#DecompressionReaderBuilder::build",
+      "caller": "rust:crates/cli/src/decompress.rs#DecompressionReaderBuilder::build",
+      "path": "crates/cli/src/decompress.rs",
+      "reason": "Receiver is CommandReaderBuilder, not the surrounding DecompressionReaderBuilder.",
+      "span": {
+        "end_byte": 8375,
+        "end_col": 50,
+        "end_line": 231,
+        "start_byte": 8339,
+        "start_col": 14,
+        "start_line": 231
+      }
+    }
+  ],
+  "noncanonical_sites": [
+    {
+      "caller": "rust:crates/core/flags/hiargs.rs#Patterns::from_low_args",
+      "path": "crates/core/flags/hiargs.rs",
+      "reason": "Call targets a local closure binding, not a named function or method definition.",
+      "span": {
+        "end_byte": 40827,
+        "end_col": 54,
+        "end_line": 1027,
+        "start_byte": 40819,
+        "start_col": 46,
+        "start_line": 1027
+      }
+    },
+    {
+      "caller": "rust:crates/core/flags/hiargs.rs#Patterns::from_low_args",
+      "path": "crates/core/flags/hiargs.rs",
+      "reason": "Call targets a local closure binding, not a named function or method definition.",
+      "span": {
+        "end_byte": 41279,
+        "end_col": 36,
+        "end_line": 1036,
+        "start_byte": 41271,
+        "start_col": 28,
+        "start_line": 1036
+      }
+    },
+    {
+      "caller": "rust:crates/core/flags/hiargs.rs#Patterns::from_low_args",
+      "path": "crates/core/flags/hiargs.rs",
+      "reason": "Call targets a local closure binding, not a named function or method definition.",
+      "span": {
+        "end_byte": 41500,
+        "end_col": 36,
+        "end_line": 1041,
+        "start_byte": 41492,
+        "start_col": 28,
+        "start_line": 1041
+      }
+    }
+  ],
+  "scope": "Exact required in-repository call sites for 13 complete production named callers: escaping, pattern loading, workspace re-exports, receiver methods and associated functions. Static From trait conversion is separately labelled under the unchanged definition-only policy, excluded from required recall, and forbids every other owned target. No application-wide recall claim.",
+  "status": "Frozen from public source and syntax-only anchors before rust-analyzer queries; expected edges are test labels, not observed canonical facts.",
+  "targets": [
+    {
+      "body_sha256": "28291aa3edd39e32c7d3c631f84b73ea07f3acd7790664bdeddb92d573140d67",
+      "path": "crates/cli/src/decompress.rs",
+      "span": {
+        "end_byte": 6702,
+        "end_col": 5,
+        "end_line": 187,
+        "start_byte": 6355,
+        "start_col": 4,
+        "start_line": 179
+      },
+      "symbol_key": "rust:crates/cli/src/decompress.rs#DecompressionMatcher::command"
+    },
+    {
+      "body_sha256": "c89770595ac7f0a5c4b69c82f5678630532f2c0ba0130bad60eb55696cccc592",
+      "path": "crates/cli/src/decompress.rs",
+      "span": {
+        "end_byte": 13862,
+        "end_col": 5,
+        "end_line": 364,
+        "start_byte": 13692,
+        "start_col": 4,
+        "start_line": 361
+      },
+      "symbol_key": "rust:crates/cli/src/decompress.rs#DecompressionReader::new_passthru"
+    },
+    {
+      "body_sha256": "19974a269401dcaae23910d541e5425c6c9fcd2772421e5f021c6e376e385267",
+      "path": "crates/cli/src/decompress.rs",
+      "span": {
+        "end_byte": 8824,
+        "end_col": 5,
+        "end_line": 244,
+        "start_byte": 8019,
+        "start_col": 4,
+        "start_line": 221
+      },
+      "symbol_key": "rust:crates/cli/src/decompress.rs#DecompressionReaderBuilder::build"
+    },
+    {
+      "body_sha256": "8e3c811334b8db81240eab86d27fc584ca0fa58bf07599460ae2a0bd5d318a71",
+      "path": "crates/cli/src/escape.rs",
+      "span": {
+        "end_byte": 825,
+        "end_col": 1,
+        "end_line": 28,
+        "start_byte": 747,
+        "start_col": 0,
+        "start_line": 26
+      },
+      "symbol_key": "rust:crates/cli/src/escape.rs#escape"
+    },
+    {
+      "body_sha256": "ada785b9fa406c2066934ef04a1679335582173d34711f43efbfa22f37ced2dc",
+      "path": "crates/cli/src/escape.rs",
+      "span": {
+        "end_byte": 1041,
+        "end_col": 1,
+        "end_line": 35,
+        "start_byte": 941,
+        "start_col": 0,
+        "start_line": 33
+      },
+      "symbol_key": "rust:crates/cli/src/escape.rs#escape_os"
+    },
+    {
+      "body_sha256": "8dd4e02b5ab05ffc26875f171cee61120b8c71cf500729336e42ef00e6478a86",
+      "path": "crates/cli/src/escape.rs",
+      "span": {
+        "end_byte": 2107,
+        "end_col": 1,
+        "end_line": 69,
+        "start_byte": 2041,
+        "start_col": 0,
+        "start_line": 67
+      },
+      "symbol_key": "rust:crates/cli/src/escape.rs#unescape"
+    },
+    {
+      "body_sha256": "c694d3f04fd856e2615a4fe34769b8ed5f92f41adbfa903ec54e1232f25da149",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 636,
+        "end_col": 5,
+        "end_line": 22,
+        "start_byte": 569,
+        "start_col": 4,
+        "start_line": 20
+      },
+      "symbol_key": "rust:crates/cli/src/pattern.rs#InvalidPatternError::valid_up_to"
+    },
+    {
+      "body_sha256": "ced760ddd081594e31ced96dd6efa65b3937ea930fa3868efc73f22334412f59",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 2581,
+        "end_col": 1,
+        "end_line": 74,
+        "start_byte": 2341,
+        "start_col": 0,
+        "start_line": 67
+      },
+      "symbol_key": "rust:crates/cli/src/pattern.rs#pattern_from_bytes"
+    },
+    {
+      "body_sha256": "fd04e925b85d91b4643e32e269162e6240eaa8183d5156dd26db1ff83dc85e1a",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 3349,
+        "end_col": 1,
+        "end_line": 96,
+        "start_byte": 2879,
+        "start_col": 0,
+        "start_line": 82
+      },
+      "symbol_key": "rust:crates/cli/src/pattern.rs#patterns_from_path"
+    },
+    {
+      "body_sha256": "deb6099f939e1e3cd2edbcd8cc381793f8220e17e6c9c1edab0196a3cc3f2ff8",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 5270,
+        "end_col": 1,
+        "end_line": 158,
+        "start_byte": 4706,
+        "start_col": 0,
+        "start_line": 141
+      },
+      "symbol_key": "rust:crates/cli/src/pattern.rs#patterns_from_reader"
+    },
+    {
+      "body_sha256": "758a24d68639e926e3a978ade5ca0fa7481d4bab509ba97b23c109ec51ed3865",
+      "path": "crates/cli/src/pattern.rs",
+      "span": {
+        "end_byte": 3908,
+        "end_col": 1,
+        "end_line": 110,
+        "start_byte": 3660,
+        "start_col": 0,
+        "start_line": 104
+      },
+      "symbol_key": "rust:crates/cli/src/pattern.rs#patterns_from_stdin"
+    },
+    {
+      "body_sha256": "9149a46835f9292bd0fe9e3a7f74d898fa536f5042ae7db8b5ad4b20461b16a7",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 566,
+        "end_col": 5,
+        "end_line": 25,
+        "start_byte": 449,
+        "start_col": 4,
+        "start_line": 23
+      },
+      "symbol_key": "rust:crates/cli/src/process.rs#CommandError::io"
+    },
+    {
+      "body_sha256": "19befbfd51e5a3203d8ab16923d213e7cffc311d6f59c30f1accd1a15cfe62e5",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 1024,
+        "end_col": 5,
+        "end_line": 38,
+        "start_byte": 850,
+        "start_col": 4,
+        "start_line": 33
+      },
+      "symbol_key": "rust:crates/cli/src/process.rs#CommandError::is_empty"
+    },
+    {
+      "body_sha256": "01c519c30a53f168f1a45b5d5125cd8f5ba9b037c3fbe6a242f1ba9656cd50b1",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 769,
+        "end_col": 5,
+        "end_line": 30,
+        "start_byte": 646,
+        "start_col": 4,
+        "start_line": 28
+      },
+      "symbol_key": "rust:crates/cli/src/process.rs#CommandError::stderr"
+    },
+    {
+      "body_sha256": "92ae43fa19c04ea57484b97ce48bb502e67a75d87cc45b4829bcc3f80f3ebe6d",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 3626,
+        "end_col": 5,
+        "end_line": 118,
+        "start_byte": 3107,
+        "start_col": 4,
+        "start_line": 104
+      },
+      "symbol_key": "rust:crates/cli/src/process.rs#CommandReaderBuilder::build"
+    },
+    {
+      "body_sha256": "db48cc1f36938172682491d9e296c3aa52e2fd1da7c39eeede905a75ef65dc07",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 10892,
+        "end_col": 5,
+        "end_line": 307,
+        "start_byte": 10413,
+        "start_col": 4,
+        "start_line": 295
+      },
+      "symbol_key": "rust:crates/cli/src/process.rs#StderrReader::read_to_end"
+    },
+    {
+      "body_sha256": "5a174b955bf842647e6562312f9be3e6bedf81d35d74e6e5550f147cd5828f0f",
+      "path": "crates/cli/src/process.rs",
+      "span": {
+        "end_byte": 2253,
+        "end_col": 5,
+        "end_line": 79,
+        "start_byte": 1995,
+        "start_col": 4,
+        "start_line": 72
+      },
+      "symbol_key": "rust:crates/cli/src/process.rs#io::Error::from"
+    },
+    {
+      "body_sha256": "691262065952382b87298c3245c6a6f3fe79fdbc495a4ac5f008bb40be3d5090",
+      "path": "crates/globset/src/lib.rs",
+      "span": {
+        "end_byte": 35597,
+        "end_col": 1,
+        "end_line": 1132,
+        "start_byte": 35094,
+        "start_col": 0,
+        "start_line": 1115
+      },
+      "symbol_key": "rust:crates/globset/src/lib.rs#escape"
+    }
+  ]
+}

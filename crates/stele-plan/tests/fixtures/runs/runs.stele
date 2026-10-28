@@ -1,0 +1,20 @@
+// Written by stele intent record; read by fixed path, never imported.
+run {
+  example: open_exits_one
+  digest: "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  digest_version: 1
+  channel: cli
+  source: "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+  base: "3bf8c7d"
+  outcome: fail
+  diff: "diff --git a/src/walk.rs b/src/walk.rs\n--- a/src/walk.rs\n+++ b/src/walk.rs\n@@ -1 +1 @@\n-    1\n+    0\n"
+}
+run {
+  example: open_exits_one
+  digest: "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  digest_version: 1
+  channel: library
+  source: "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+  base: "3bf8c7d9e0a1b2c3d4e5f60718293a4b5c6d7e8f"
+  outcome: pass
+}

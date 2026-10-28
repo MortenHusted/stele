@@ -1,0 +1,13 @@
+[build.env]
+# Host Cargo wrappers such as sccache are not available inside the build image.
+passthrough = ["RUSTC_WRAPPER=", "CARGO_ENCODED_RUSTFLAGS", "CFLAGS", "CXXFLAGS", "CC_SHELL_ESCAPED_FLAGS"]
+
+# One image for both targets: see the Dockerfile for the glibc floor and why
+# cross's stock images cannot build ruby-prism-sys.
+[target.x86_64-unknown-linux-gnu.dockerfile]
+file = "docker/release-linux.Dockerfile"
+context = "docker"
+
+[target.aarch64-unknown-linux-gnu.dockerfile]
+file = "docker/release-linux.Dockerfile"
+context = "docker"

@@ -1,0 +1,196 @@
+{
+  "policy": "cc-sloc-clones-form/php/1",
+  "files": {
+    "src/measured.php": {
+      "loc": 167,
+      "sloc": 142,
+      "blank": 20,
+      "comment": 5
+    }
+  },
+  "callables": {
+    "src/measured.php": {
+      "straight": {
+        "cc": 1,
+        "loc": 4,
+        "sloc": 4,
+        "rules": "base",
+        "form": {
+          "params": 2,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "$a, $b; no control structure; + is an operator"
+        }
+      },
+      "nestedIfs": {
+        "cc": 4,
+        "loc": 13,
+        "sloc": 13,
+        "rules": "base; if; nested if; elseif",
+        "form": {
+          "params": 1,
+          "nesting": 2,
+          "chain": 0,
+          "rules": "$x; if (1) > if (2); elseif and else are clauses of the outer if, at 1"
+        }
+      },
+      "logic": {
+        "cc": 6,
+        "loc": 8,
+        "sloc": 8,
+        "rules": "base; &&; ||; and; or; xor",
+        "form": {
+          "params": 3,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "$a, $b, $c; boolean operators are not dispatches"
+        }
+      },
+      "coalesce": {
+        "cc": 4,
+        "loc": 6,
+        "sloc": 6,
+        "rules": "base; ??; ??; ternary",
+        "form": {
+          "params": 2,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "$name, $opts; ?? and the ternary are expressions, not levels; $opts['mode'] is a subscript, strtoupper a bare call"
+        }
+      },
+      "loops": {
+        "cc": 5,
+        "loc": 17,
+        "sloc": 17,
+        "rules": "base; foreach; for; while; do",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "$items; foreach, for, while, do each one level, none inside another"
+        }
+      },
+      "matching": {
+        "cc": 4,
+        "loc": 8,
+        "sloc": 8,
+        "rules": "base; match arm; match arm; match default arm",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "$code; match is one level, arms add nothing"
+        }
+      },
+      "switching": {
+        "cc": 3,
+        "loc": 11,
+        "sloc": 11,
+        "rules": "base; case; case (default is not a decision)",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 0,
+          "rules": "$kind; switch is one level, cases add nothing"
+        }
+      },
+      "guarded": {
+        "cc": 3,
+        "loc": 10,
+        "sloc": 10,
+        "rules": "base; catch; catch",
+        "form": {
+          "params": 1,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "$fn; try is not a level; $fn() is a call on a variable"
+        }
+      },
+      "withClosure": {
+        "cc": 4,
+        "loc": 10,
+        "sloc": 10,
+        "rules": "base; if inside the closure counts here; && inside the closure; ternary inside the arrow function",
+        "form": {
+          "params": 1,
+          "nesting": 2,
+          "chain": 0,
+          "rules": "$rows; closure (1) > if (2); the arrow function is 1 and its ternary adds nothing; array_filter and array_map are bare calls"
+        }
+      },
+      "commented": {
+        "cc": 1,
+        "loc": 7,
+        "sloc": 4,
+        "rules": "base; two comment-only lines and one blank line are not source",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "no parameters, no control structure, no dispatch"
+        }
+      },
+      "bump": {
+        "cc": 2,
+        "loc": 7,
+        "sloc": 7,
+        "rules": "base; if",
+        "form": {
+          "params": 1,
+          "nesting": 1,
+          "chain": 1,
+          "rules": "$by; if is one level; $this->n is one hop"
+        }
+      },
+      "make": {
+        "cc": 1,
+        "loc": 5,
+        "sloc": 4,
+        "rules": "base; one block-comment-only line is not source",
+        "form": {
+          "params": 0,
+          "nesting": 0,
+          "chain": 0,
+          "rules": "new self() is no dispatch"
+        }
+      },
+      "__construct": {
+        "cc": 1,
+        "loc": 4,
+        "sloc": 4,
+        "rules": "base; a promoted constructor; lines 133-136",
+        "form": {
+          "params": 3,
+          "nesting": 0,
+          "chain": 1,
+          "rules": "private int $a and public readonly string $b are promoted parameters, int ...$rest is variadic: 3; $this->a is one hop"
+        }
+      },
+      "deep": {
+        "cc": 4,
+        "loc": 15,
+        "sloc": 15,
+        "rules": "base; foreach; if; if inside the closure counts here; lines 143-157",
+        "form": {
+          "params": 1,
+          "nesting": 4,
+          "chain": 0,
+          "rules": "$rows; foreach (1) > if (2) > closure (3) > if (4); count and array_filter are bare calls"
+        }
+      },
+      "chains": {
+        "cc": 1,
+        "loc": 8,
+        "sloc": 8,
+        "rules": "base; ?-> is not a decision; lines 159-166",
+        "form": {
+          "params": 4,
+          "nesting": 0,
+          "chain": 3,
+          "rules": "$id, $row, $items, $s; $this->repo->find($id)->items() is 3, $row?->owner?->name is 2, Str::of($s)->upper() is 2, $items[0]->name is 1 through the subscript"
+        }
+      }
+    }
+  },
+  "counted": " Form measures (params, nesting, chain) hand-counted on 2026-09-16 before the counters ran, under cc-sloc-clones-form/php/1; PHP has no ivars."
+}

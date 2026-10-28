@@ -1,0 +1,33 @@
+# Hand-labelled call-impact ground truth for the codemap Rust adapter.
+#
+# In syntax-only mode (P1) every call site is recorded as an observation
+# only; zero canonical `calls` edges are emitted. These labels are the
+# expected targets for the future P2 semantic-resolution phase.
+
+[[call]]
+file = "src/caller.rs"
+raw_name = "add"
+kind = "receiver-qualified"
+target = "callee::Calculator::add"
+syntax_mode = "observation-only"
+
+[[call]]
+file = "src/caller.rs"
+raw_name = "free_sum"
+kind = "free"
+target = "callee::free_sum"
+syntax_mode = "observation-only"
+
+[[call]]
+file = "src/caller.rs"
+raw_name = "println"
+kind = "macro"
+target = "std::macros::println"
+syntax_mode = "observation-only"
+
+[[call]]
+file = "src/caller.rs"
+raw_name = "free_sum"
+kind = "macro-argument"
+target = "callee::free_sum"
+syntax_mode = "observation-only"

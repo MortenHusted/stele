@@ -1,0 +1,95 @@
+{
+  "basis": "reviewer_declared",
+  "source_sha256": "94cd15254f0957fb21979082c8fc5639f8c5f5f1a165dd3c8a5495afe5ae661c",
+  "nodes": {
+    "AbsoluteSpace": "Module",
+    "AbsoluteSpace::OtherTop": "Class",
+    "AbsoluteSpace::OtherTop::self.ping": "Method",
+    "Base": "Class",
+    "Base::base_marker": "Method",
+    "Feature": "Module",
+    "Feature::root_marker": "Method",
+    "GlobalModule": "Module",
+    "GlobalModule::run_module": "Method",
+    "Outer": "Class",
+    "Outer::Base": "Class",
+    "Outer::Base::base_marker": "Method",
+    "Outer::Feature": "Module",
+    "Outer::Feature::lexical_marker": "Method",
+    "Outer::Top": "Class",
+    "Outer::Top::decoy_marker": "Method",
+    "Top": "Class",
+    "Top::Inner": "Class",
+    "Top::Inner::run_inner": "Method",
+    "Top::OwnFeature": "Module",
+    "Top::OwnFeature::own_marker": "Method",
+    "Top::run": "Method"
+  },
+  "heritage": [
+    [
+      "Implements",
+      "AbsoluteSpace::OtherTop",
+      "Feature"
+    ],
+    [
+      "Implements",
+      "GlobalModule",
+      "Outer::Feature"
+    ],
+    [
+      "Implements",
+      "Top",
+      "Feature"
+    ],
+    [
+      "Implements",
+      "Top",
+      "Outer::Feature"
+    ],
+    [
+      "Implements",
+      "Top",
+      "Top::OwnFeature"
+    ],
+    [
+      "Implements",
+      "Top::Inner",
+      "Feature"
+    ],
+    [
+      "Inherits",
+      "Top",
+      "Outer::Base"
+    ]
+  ],
+  "calls": [
+    [
+      "GlobalModule::run_module",
+      "Outer::Feature::lexical_marker"
+    ],
+    [
+      "Top::Inner::run_inner",
+      "Feature::root_marker"
+    ],
+    [
+      "Top::run",
+      "AbsoluteSpace::OtherTop::self.ping"
+    ],
+    [
+      "Top::run",
+      "Feature::root_marker"
+    ],
+    [
+      "Top::run",
+      "Outer::Base::base_marker"
+    ],
+    [
+      "Top::run",
+      "Outer::Feature::lexical_marker"
+    ],
+    [
+      "Top::run",
+      "Top::OwnFeature::own_marker"
+    ]
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "contract": "codemap-linux-file-mapping-controls/v1",
+  "parser": {
+    "ordinary_maps": "accept",
+    "spaces_in_path": "accept",
+    "truncated_report": "reject",
+    "malformed_range": "reject",
+    "overlapping_ranges": "reject",
+    "unsorted_ranges": "reject",
+    "bad_permissions": "reject",
+    "bad_device": "reject",
+    "bad_inode": "reject",
+    "file_without_inode": "reject",
+    "relative_path": "reject",
+    "deleted_path": "reject",
+    "escaped_path": "reject",
+    "oversized_report": "reject"
+  },
+  "live": {
+    "static_fixture": "accept",
+    "private_text_changed_disk_unchanged": "reject",
+    "writable_executable_file": "reject",
+    "extra_mapped_data": "reject",
+    "deleted_mapped_data": "reject",
+    "hardlink_mapped_alias": "reject",
+    "missing_required_library": "reject",
+    "replaced_pinned_path": "reject",
+    "changed_pinned_bytes": "reject",
+    "unreadable_memory": "reject",
+    "executable_outside_load": "reject"
+  }
+}

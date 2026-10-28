@@ -1,0 +1,9 @@
+// What Stele is for. This root imports every file of the catalog; plans in
+// plans/ import this root and cite its statements.
+catalog stele {
+  use "./channels.stele" as channels
+  use "./facts.stele" as facts
+  use "./specs.stele" as specs
+  use "./plans.stele" as plans
+  use "./agents.stele" as agents
+}

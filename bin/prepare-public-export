@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'rbconfig'
+def setup_error(message)
+  warn message
+  exit 2
+end
+
+if RbConfig::CONFIG['prefix'].start_with?('/System/Library/Frameworks/Ruby.framework')
+  candidates = ['mise', '/opt/homebrew/bin/mise', File.expand_path('~/.local/bin/mise')].map do |mise|
+    begin
+      IO.popen([mise, 'which', 'ruby'], err: File::NULL) { |io| io.read }.strip
+    rescue Errno::ENOENT
+      nil
+    end
+  end
+  candidates << File.expand_path('~/.local/share/mise/installs/ruby/latest/bin/ruby')
+  mise_ruby = candidates.find { |path| path && !path.empty? && File.executable?(path) }
+  setup_error 'export-review: prepare a mise Ruby before running this command' unless mise_ruby
+  exec mise_ruby, File.expand_path(__FILE__), *ARGV
+end
+
+def install_and_require(*gem_names)
+  missing = gem_names.reject do |name|
+    require name
+    true
+  rescue LoadError
+    false
+  end
+  return if missing.empty?
+
+  setup_error "Missing gems: #{missing.join(', ')}; prepare dependencies before scripted use" unless ARGV.empty? && $stdin.tty?
+  puts "Missing gems: #{missing.join(', ')}. Would you like to install them? (y/n)"
+  setup_error "#{missing.join(', ')} required for this script. Exiting." unless $stdin.gets.to_s.chomp.downcase == "y"
+  system("gem", "install", *missing) or setup_error('gem install failed')
+  Gem.clear_paths
+  missing.each { |name| require name }
+end
+
+install_and_require "tty-option", "tty-prompt", "tty-command"
+
+require_relative 'prepare-public-export.d/export'
+
+class CuratedExportCommand
+  include TTY::Option
+  usage do
+    program 'prepare-public-export'
+    no_command
+    desc 'Build a local single-root export from pinned tracked inputs and scan it plus unpacked artifacts. Never publishes or approves terms.'
+    example 'bin/prepare-public-export --repo /local/source --source-commit FULL_SHA --include-list publication/files.json --license terms/LICENSE --notice terms/NOTICE --deny-list /private/deny.txt --scanner-archive /local/gitleaks.tar.gz --out /private/new-export /local/unpacked-release'
+  end
+  %i[repo source_commit include_list license notice deny_list scanner_archive out].each do |key|
+    option(key) { long "--#{key.to_s.tr('_', '-')} VALUE"; desc "#{key.to_s.tr('_', ' ').capitalize} (required)" }
+  end
+  argument(:artifacts) { arity zero_or_more; desc 'Explicit unpacked artifact directories; omit only for a source-only review' }
+  flag(:help) { short '-h'; long '--help'; desc 'Show help; exits 0 scans clean, 1 findings, 2 incomplete' }
+end
+
+command = CuratedExportCommand.new
+command.parse
+unless command.params.valid?
+  warn command.help
+  exit 2
+end
+if command.params[:help]
+  puts command.help
+  exit 0
+end
+if ARGV.empty? && !$stdin.tty?
+  warn command.help
+  exit 2
+end
+options = command.params.to_h
+keys = %i[repo source_commit include_list license notice deny_list scanner_archive out]
+if ARGV.empty? && $stdin.tty?
+  prompt = TTY::Prompt.new
+  keys.each { |key| options[key] = prompt.ask("#{key}:", required: true) }
+end
+begin
+  keys.each { |key| raise ArgumentError, "--#{key.to_s.tr('_', '-')} is required" unless options[key] }
+  result = CuratedExport.new.run(**options.slice(*keys), artifacts: Array(options[:artifacts]))
+  puts JSON.generate(result)
+  exit(result.fetch('scans_clean') ? 0 : 1)
+rescue ArgumentError => error
+  warn "prepare-public-export: #{error.message}"
+  exit 2
+rescue StandardError => error
+  warn "prepare-public-export: incomplete export (#{error.class}); no clean result"
+  exit 2
+end

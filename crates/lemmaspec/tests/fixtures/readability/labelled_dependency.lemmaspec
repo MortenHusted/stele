@@ -1,0 +1,26 @@
+// Can the release be published, and what is holding it up?
+spec labelled_dependency {
+  notes { text: "Keep the dependency mutation when updating the release policy." }
+  symbol release { label: "Publish release" source: "plan.md#publish" }
+  symbol review { label: "Review changes" source: "plan.md#review" }
+  relation depends_on {
+    args: [symbol, symbol]
+    roles: [item, dependency]
+    reads: "{item} depends on {dependency}"
+  }
+  relation unfinished { args: [symbol] roles: [item] reads: "{item} is not complete" }
+  relation blocked {
+    args: [symbol, symbol]
+    roles: [item, dependency]
+    reads: "{item} is blocked by {dependency}"
+  }
+  fact needs_review { relation: depends_on args: [release, review] provenance: ["plan.md#dependency"] }
+  fact review_pending { relation: unfinished args: [review] }
+  // Work must wait until its required dependency is complete.
+  rule dependency_blocks {
+    derive: "blocked(Item, Dependency)"
+    when: ["depends_on(Item, Dependency)", "unfinished(Dependency)"]
+  }
+  // The release can proceed only when none of its required work remains unfinished.
+  expect ready { query: "blocked(release, Dependency)" count: 0 }
+}
