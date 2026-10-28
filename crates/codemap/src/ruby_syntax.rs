@@ -105,6 +105,9 @@ pub struct RawFile {
     pub measures: Vec<RawMeasure>,
     pub file_lines: LineCounts,
     pub line_classes: Vec<LineClass>,
+    /// Known or possible constructor changes; None means an unknown receiver.
+    pub constructor_overrides: Vec<(Option<String>, Vec<String>)>,
+    pub uncertain_instance_methods: Vec<String>,
 }
 
 /// Extract structural observations from a single Ruby source file.
@@ -138,6 +141,8 @@ pub fn extract_file(_rel_path: &str, source: &[u8]) -> Result<RawFile> {
         parse_errors,
         measures: walker.measures,
         file_lines: count_lines(&classes, 1, u32::MAX),
+        constructor_overrides: walker.constructor_overrides,
+        uncertain_instance_methods: walker.uncertain_instance_methods,
         line_classes: classes,
     })
 }
@@ -159,8 +164,9 @@ struct Walker<'a> {
     /// Enclosing `def` chain: `true` for singleton defs (`def self.x`).
     /// Empty outside any method (class/module bodies, top level).
     def_stack: Vec<bool>,
-    /// Depth inside `class << expr` singleton-class blocks.
-    singleton_class_depth: usize,
+    singleton_receivers: Vec<Option<String>>,
+    constructor_overrides: Vec<(Option<String>, Vec<String>)>,
+    uncertain_instance_methods: Vec<String>,
 }
 
 impl<'a> Walker<'a> {
@@ -177,7 +183,9 @@ impl<'a> Walker<'a> {
             scope_stack: Vec::new(),
             parent_stack: Vec::new(),
             def_stack: Vec::new(),
-            singleton_class_depth: 0,
+            singleton_receivers: Vec::new(),
+            constructor_overrides: Vec::new(),
+            uncertain_instance_methods: Vec::new(),
         }
     }
 
@@ -251,6 +259,7 @@ impl<'a> Walker<'a> {
             return;
         }
         let name = constant_str(&call_name);
+        self.observe_constructor_change(node, &name);
         match name.as_str() {
             "require" | "require_relative" | "load" | "autoload" => {
                 if let Some(arguments) = node.arguments() {
@@ -272,6 +281,18 @@ impl<'a> Walker<'a> {
                     None | Some(Node::SelfNode { .. }) => self.scope_stack.last().cloned(),
                     _ => None,
                 };
+                if node.arguments().is_none_or(|args| {
+                    args.arguments().iter().any(|arg| {
+                        !matches!(
+                            arg,
+                            Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. }
+                        )
+                    })
+                }) {
+                    let receiver = self.mutation_receiver(node.receiver());
+                    self.constructor_overrides
+                        .push((receiver, self.scope_stack.clone()));
+                }
                 if let Some(arguments) = node.arguments() {
                     for arg in &arguments.arguments() {
                         if matches!(
@@ -308,6 +329,77 @@ impl<'a> Walker<'a> {
     }
 
     // ── helpers ──
+
+    fn observe_constructor_change(&mut self, node: &CallNode<'_>, name: &str) {
+        let arguments: Vec<_> = node
+            .arguments()
+            .map(|args| args.arguments().iter().collect())
+            .unwrap_or_default();
+        let mut forwarded = name.to_owned();
+        let mut index = 0;
+        while matches!(forwarded.as_str(), "send" | "public_send" | "__send__") {
+            let Some(method) = arguments.get(index).and_then(literal_method_name) else {
+                return;
+            };
+            forwarded = method;
+            index += 1;
+        }
+        let method = arguments.get(index).and_then(literal_method_name);
+        let constructor_method = method.as_deref().is_none_or(|method| {
+            matches!(
+                method,
+                "new" | "included" | "prepended" | "extended" | "inherited"
+            )
+        });
+        let singleton_definition = forwarded == "define_singleton_method";
+        let instance_self = self.def_stack.last() == Some(&false)
+            && self.singleton_receivers.is_empty()
+            && matches!(node.receiver(), None | Some(Node::SelfNode { .. }));
+        if (singleton_definition && (constructor_method || instance_self))
+            || matches!(
+                forwarded.as_str(),
+                "define_method"
+                    | "alias_method"
+                    | "undef_method"
+                    | "remove_method"
+                    | "class_eval"
+                    | "module_eval"
+                    | "instance_eval"
+                    | "eval"
+            )
+        {
+            self.constructor_overrides.push((
+                self.mutation_receiver(node.receiver()),
+                self.scope_stack.clone(),
+            ));
+        } else if singleton_definition
+            && !matches!(
+                node.receiver(),
+                None | Some(
+                    Node::SelfNode { .. }
+                        | Node::ConstantReadNode { .. }
+                        | Node::ConstantPathNode { .. }
+                )
+            )
+            && let Some(method) = method
+        {
+            self.uncertain_instance_methods.push(method);
+        }
+    }
+
+    fn mutation_receiver(&self, receiver: Option<Node<'_>>) -> Option<String> {
+        match receiver {
+            None | Some(Node::SelfNode { .. }) => self
+                .singleton_receivers
+                .last()
+                .cloned()
+                .unwrap_or_else(|| self.scope_stack.last().map(|name| format!("::{name}"))),
+            Some(receiver @ (Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. })) => {
+                Some(collapse_whitespace(self.node_text(&receiver)))
+            }
+            _ => None,
+        }
+    }
 
     fn node_text(&self, node: &Node<'_>) -> &str {
         let loc = node.location();
@@ -351,16 +443,47 @@ impl<'pr> Visit<'pr> for Walker<'_> {
 
     fn visit_singleton_class_node(&mut self, node: &SingletonClassNode<'pr>) {
         // No definition node: methods inside attach to the enclosing scope
-        // (documented omission). The depth counter marks calls inside as
+        // (documented omission). The receiver stack marks calls inside as
         // singleton-context, where implicit self is not instance-verifiable.
-        self.singleton_class_depth += 1;
+        let receiver = match node.expression() {
+            Node::SelfNode { .. } => self.scope_stack.last().map(|name| format!("::{name}")),
+            receiver @ (Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. }) => {
+                Some(collapse_whitespace(self.node_text(&receiver)))
+            }
+            _ => None,
+        };
+        self.singleton_receivers.push(receiver);
         visit_singleton_class_node(self, node);
-        self.singleton_class_depth -= 1;
+        self.singleton_receivers.pop();
     }
 
     fn visit_def_node(&mut self, node: &DefNode<'pr>) {
         let def_name = node.name();
         let base = constant_str(&def_name);
+        let instance_singleton = self.def_stack.last() == Some(&false)
+            && matches!(node.receiver(), Some(Node::SelfNode { .. }));
+        if instance_singleton
+            || !self.singleton_receivers.is_empty()
+            || matches!(
+                base.as_str(),
+                "new" | "included" | "prepended" | "extended" | "inherited"
+            )
+        {
+            let receiver = match node.receiver() {
+                Some(Node::SelfNode { .. }) => {
+                    Some(self.scope_stack.last().map(|name| format!("::{name}")))
+                }
+                Some(
+                    receiver @ (Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. }),
+                ) => Some(Some(collapse_whitespace(self.node_text(&receiver)))),
+                Some(_) => Some(None),
+                None => self.singleton_receivers.last().cloned(),
+            };
+            if let Some(receiver) = receiver {
+                self.constructor_overrides
+                    .push((receiver, self.scope_stack.clone()));
+            }
+        }
         let is_singleton = node
             .receiver()
             .is_some_and(|receiver| matches!(receiver, Node::SelfNode { .. }));
@@ -410,7 +533,7 @@ impl Walker<'_> {
         match node.receiver() {
             None | Some(Node::SelfNode { .. }) => {
                 let in_instance_def = self.def_stack.last() == Some(&false);
-                if in_instance_def && self.singleton_class_depth == 0 {
+                if in_instance_def && self.singleton_receivers.is_empty() {
                     ReceiverShape::ImplicitSelf
                 } else {
                     ReceiverShape::Other
@@ -419,8 +542,38 @@ impl Walker<'_> {
             Some(receiver @ (Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. })) => {
                 ReceiverShape::Constant(collapse_whitespace(self.node_text(&receiver)))
             }
+            Some(receiver @ Node::CallNode { .. }) => {
+                let receiver = receiver.as_call_node().unwrap();
+                if receiver.name().as_slice() != b"new" {
+                    return ReceiverShape::Other;
+                }
+                match receiver.receiver() {
+                    Some(
+                        class @ (Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. }),
+                    ) => ReceiverShape::Constructed {
+                        class_name: collapse_whitespace(self.node_text(&class)),
+                        constructor_start: receiver.message_loc().map_or_else(
+                            || receiver.location().start_offset(),
+                            |loc| loc.start_offset(),
+                        ),
+                    },
+                    _ => ReceiverShape::Other,
+                }
+            }
             _ => ReceiverShape::Other,
         }
+    }
+}
+
+fn literal_method_name(node: &Node<'_>) -> Option<String> {
+    match node {
+        Node::SymbolNode { .. } => {
+            Some(String::from_utf8_lossy(node.as_symbol_node().unwrap().unescaped()).into_owned())
+        }
+        Node::StringNode { .. } => {
+            Some(String::from_utf8_lossy(node.as_string_node().unwrap().unescaped()).into_owned())
+        }
+        _ => None,
     }
 }
 

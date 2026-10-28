@@ -4,7 +4,7 @@
 //! Mirrors [`crate::rust_analyzer`] in shape, but the truth boundary is
 //! enforced differently: ruby-lsp only supplies candidate locations. A
 //! `calls` edge is emitted when **codemap's own static model** verifies the
-//! receiver→target relation (constant receiver or implicit self, target
+//! receiver→target relation (constant receiver, implicit self or verified construction, target
 //! owner inside the receiver's `inherits`/`implements` closure).
 //! ruby-lsp's name-guess answers for untyped receivers are never trusted.
 //!
@@ -319,6 +319,9 @@ pub struct PolicyModel {
     /// Every emitted `Method`/`Function` node id. A canonical edge's `from`
     /// must be one of these: a call enclosed by a callable definition.
     callable_ids: HashSet<String>,
+    constructor_classes: HashSet<String>,
+    blocked_constructors: HashSet<String>,
+    uncertain_instance_methods: HashSet<String>,
 }
 
 impl PolicyModel {
@@ -367,6 +370,25 @@ impl PolicyModel {
                 owners.insert(node.id.clone(), owner);
             }
         }
+        let blocked_constructors = nodes
+            .iter()
+            .filter_map(|node| {
+                if node.kind != NodeKind::Method {
+                    return None;
+                }
+                let owner = owners.get(&node.id).cloned()?;
+                [
+                    "::self.new",
+                    "::self.included",
+                    "::self.prepended",
+                    "::self.extended",
+                    "::self.inherited",
+                ]
+                .iter()
+                .any(|suffix| node.id.ends_with(suffix))
+                .then_some(owner)
+            })
+            .collect();
         Self {
             class_ids,
             superclasses,
@@ -374,7 +396,89 @@ impl PolicyModel {
             singleton_mixins,
             owners,
             callable_ids,
+            constructor_classes: nodes
+                .iter()
+                .filter(|node| node.kind == NodeKind::Type(TypeKind::Class))
+                .map(|node| node.id.clone())
+                .collect(),
+            blocked_constructors,
+            uncertain_instance_methods: HashSet::new(),
         }
+    }
+
+    /// A missing heritage edge is uncertainty, not evidence of a default constructor.
+    pub fn verify_constructor_sources(
+        &mut self,
+        sources: &BTreeMap<&str, &[u8]>,
+        definitions: &DefinitionIndex,
+    ) -> Result<()> {
+        for (path, source) in sources {
+            let raw = crate::ruby_syntax::extract_file(path, source)?;
+            self.uncertain_instance_methods
+                .extend(raw.uncertain_instance_methods);
+            if raw.parse_errors != 0 {
+                self.blocked_constructors
+                    .extend(self.constructor_classes.iter().cloned());
+            }
+            for inherit in raw.inherits {
+                if let Resolution::Unique(child) =
+                    definitions.resolve_constant(&inherit.class_name, &[])
+                {
+                    let complete = matches!(definitions.resolve_constant(&inherit.superclass, &inherit.scope),
+                        Resolution::Unique(parent) if parent.kind == NodeKind::Type(TypeKind::Class)
+                            && self.superclasses.get(&child.node_id) == Some(&parent.node_id));
+                    if !complete {
+                        self.blocked_constructors.insert(child.node_id);
+                    }
+                }
+            }
+            for mixin in raw.mixins {
+                let Some(receiver) = mixin.receiver_name else {
+                    self.blocked_constructors
+                        .extend(self.constructor_classes.iter().cloned());
+                    continue;
+                };
+                if let Resolution::Unique(class) = definitions.resolve_constant(&receiver, &[]) {
+                    let providers = if mixin.mixin == crate::ruby_syntax::MixinKind::Extend {
+                        &self.singleton_mixins
+                    } else {
+                        &self.instance_mixins
+                    };
+                    let complete = matches!(definitions.resolve_constant(&mixin.target, &mixin.scope),
+                        Resolution::Unique(module) if module.kind == NodeKind::Module
+                            && providers.get(&class.node_id).is_some_and(|mixins| mixins.contains(&module.node_id)));
+                    if !complete {
+                        self.blocked_constructors.insert(class.node_id);
+                    }
+                }
+            }
+            for (receiver, scope) in raw.constructor_overrides {
+                if let Some(receiver) = receiver {
+                    if let Resolution::Unique(class) =
+                        definitions.resolve_constant(&receiver, &scope)
+                    {
+                        self.blocked_constructors.insert(class.node_id);
+                    }
+                } else {
+                    self.blocked_constructors
+                        .extend(self.constructor_classes.iter().cloned());
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn default_constructor_receiver(&self, id: &str, method: &str) -> bool {
+        !self.uncertain_instance_methods.contains(method)
+            && self.constructor_classes.contains(id)
+            && self
+                .instance_ancestors(id)
+                .iter()
+                .all(|ancestor| !self.blocked_constructors.contains(ancestor))
+            && self.singleton_ancestors(id).iter().all(|ancestor| {
+                !self.blocked_constructors.contains(ancestor)
+                    && !self.singleton_mixins.contains_key(ancestor)
+            })
     }
 
     pub fn contains_class(&self, id: &str) -> bool {
@@ -431,9 +535,9 @@ impl PolicyModel {
     ///   *instance* ancestry. The walker already records `ImplicitSelf`
     ///   exclusively inside instance-method bodies.
     /// - Constant receiver (`C.m`): singleton methods only (`self.`-named),
-    ///   owner inside the receiver's *singleton* ancestry. Instance methods
-    ///   reached through a constant would require `C.new`, which is a
-    ///   different, unverifiable call shape.
+    ///   owner inside the receiver's *singleton* ancestry.
+    /// - Direct construction (`C.new.m`): instance methods only, after the
+    ///   constructor provider and source heritage have been verified.
     pub fn admit(&self, receiver_class: &str, shape: &ReceiverShape, target: &str) -> bool {
         if !self.class_ids.contains(receiver_class) {
             return false;
@@ -443,7 +547,7 @@ impl PolicyModel {
                 .is_some_and(|rest| !rest.contains("::"))
         });
         let ancestors = match shape {
-            ReceiverShape::ImplicitSelf => {
+            ReceiverShape::ImplicitSelf | ReceiverShape::Constructed { .. } => {
                 if singleton_target {
                     return false;
                 }
@@ -521,6 +625,7 @@ pub struct PendingRubyCall {
 /// number of lanes that asked never reaches the emitted bytes.
 pub fn admit_definition(
     result: DefinitionResult,
+    constructor_result: Option<&DefinitionResult>,
     model: &PolicyModel,
     ctx: &ResolveContext<'_>,
     pending: &PendingRubyCall,
@@ -533,10 +638,11 @@ pub fn admit_definition(
     // The regime is decided by codemap's syntax model, never by the
     // resolver: untyped receivers stay observations whatever the server
     // answers.
-    let verifiable = matches!(
-        call.receiver,
-        ReceiverShape::Constant(_) | ReceiverShape::ImplicitSelf
-    );
+    let verifiable = match call.receiver {
+        ReceiverShape::Constant(_) | ReceiverShape::ImplicitSelf => true,
+        ReceiverShape::Constructed { .. } => constructor_result.is_some_and(default_new_provider),
+        _ => false,
+    };
 
     let locations = match result {
         DefinitionResult::Empty => Vec::new(),
@@ -736,10 +842,46 @@ fn receiver_class_id(
                 _ => None,
             }
         }
+        ReceiverShape::Constructed { class_name, .. } => {
+            match ctx.def_index.resolve_constant(class_name, &call.scope) {
+                Resolution::Unique(def)
+                    if model.default_constructor_receiver(&def.node_id, &call.raw_name) =>
+                {
+                    Some(def.node_id)
+                }
+                _ => None,
+            }
+        }
         #[allow(clippy::match_same_arms)] // PHP-only shapes vs unknown receiver
         ReceiverShape::Parent | ReceiverShape::Declared(_) => None,
         ReceiverShape::Other => None,
     }
+}
+
+/// Default Class#new in the pinned public RBS 4.1.2 source. The provider
+/// declaration is required in addition to a unique destination and source
+/// heritage checks; a resolver's name-only suggestion cannot establish it.
+fn default_new_provider(result: &DefinitionResult) -> bool {
+    let DefinitionResult::Locations(locations) = result else {
+        return false;
+    };
+    if locations.len() != 1 {
+        return false;
+    }
+    let location = &locations[0];
+    let path = PathBuf::from(crate::lsp::path_from_uri(&location.uri));
+    if !path.ends_with("rbs-4.1.2/core/class.rbs")
+        || location.start_line != 164
+        || location.end_line != 164
+        || location.start_character != 2
+        || location.end_character != 63
+    {
+        return false;
+    }
+    std::fs::read(path).is_ok_and(|source| {
+        crate::schema::sha256_hex(&source)
+            == "36c7659b5c6a936881a49ca4d1aade1c47198bf93ac33ded7118fb45e6e80ef6"
+    })
 }
 
 /// Emitted node id of the innermost enclosing class/module for a scope
@@ -860,6 +1002,62 @@ fn wait_indexed(
 mod tests {
     use super::*;
     use crate::schema::{EXTRACTOR_VERSION, FactSource, Provenance};
+
+    #[test]
+    #[ignore = "requires the pinned Ruby-LSP operator bundle"]
+    fn constructor_provider_requires_the_pinned_class_new_declaration() {
+        let Availability::Present(bundle) = detect() else {
+            panic!("pinned Ruby-LSP operator is required");
+        };
+        let root = tempfile::tempdir().unwrap();
+        let source = "class Widget; def perform; 1; end; end\nWidget.new.perform\n";
+        std::fs::write(root.path().join("app.rb"), source).unwrap();
+        let client = Client::spawn(root.path(), &bundle).unwrap();
+        client.open_document("app.rb", source).unwrap();
+        client.wait_indexed(Duration::from_secs(120)).unwrap();
+        let answer = client.definition("app.rb", 1, 7).unwrap();
+        client.shutdown();
+        assert!(
+            default_new_provider(&answer),
+            "the real default provider must qualify: {answer:?}"
+        );
+        assert!(!default_new_provider(&DefinitionResult::Empty));
+        assert!(!default_new_provider(&DefinitionResult::Locations(
+            Vec::new()
+        )));
+        let DefinitionResult::Locations(locations) = answer else {
+            unreachable!()
+        };
+        let location = locations[0].clone();
+        assert!(!default_new_provider(&DefinitionResult::Locations(vec![
+            location.clone(),
+            location.clone()
+        ])));
+        let mut wrong_range = location.clone();
+        wrong_range.start_line += 1;
+        assert!(!default_new_provider(&DefinitionResult::Locations(vec![
+            wrong_range
+        ])));
+        let bytes = std::fs::read(crate::lsp::path_from_uri(&location.uri)).unwrap();
+        let directory = root.path().join("rbs-4.1.2/core");
+        std::fs::create_dir_all(&directory).unwrap();
+        let wrong_file = directory.join("module.rbs");
+        std::fs::write(&wrong_file, &bytes).unwrap();
+        let mut substituted = location.clone();
+        substituted.uri = uri_from_path(&wrong_file);
+        assert!(!default_new_provider(&DefinitionResult::Locations(vec![
+            substituted
+        ])));
+        let drifted = directory.join("class.rbs");
+        let mut drifted_bytes = bytes;
+        drifted_bytes.extend_from_slice(b"\n# changed provider\n");
+        std::fs::write(&drifted, drifted_bytes).unwrap();
+        let mut drifted_location = location;
+        drifted_location.uri = uri_from_path(&drifted);
+        assert!(!default_new_provider(&DefinitionResult::Locations(vec![
+            drifted_location
+        ])));
+    }
 
     fn prov() -> Provenance {
         Provenance {
@@ -1297,6 +1495,7 @@ mod tests {
                         end_line: line,
                         end_character: character,
                     }]),
+                    None,
                     &model,
                     &context,
                     &pending,
@@ -1314,6 +1513,7 @@ mod tests {
             assert_eq!(
                 admit_definition(
                     DefinitionResult::Empty,
+                    None,
                     &model,
                     &context,
                     &pending,
@@ -1341,6 +1541,7 @@ mod tests {
                             end_line: line,
                             end_character: character,
                         }]),
+                        None,
                         &model,
                         &context,
                         &pending,
@@ -1486,11 +1687,12 @@ mod tests {
                 vec![owned.clone(), alias, external.clone()],
                 CallSiteCategory::Candidate,
             ),
-            (vec![owned, external], CallSiteCategory::Candidate),
+            (vec![owned.clone(), external], CallSiteCategory::Candidate),
         ] {
             let mut edges = Vec::new();
             let category = admit_definition(
                 DefinitionResult::Locations(locations),
+                None,
                 &model,
                 &ctx,
                 &pending,
@@ -1502,6 +1704,34 @@ mod tests {
                 edges.len(),
                 usize::from(expected == CallSiteCategory::Resolved)
             );
+        }
+        // A unique destination alone does not prove a constructor's return type.
+        let single_index = DefinitionIndex::from_nodes(&nodes[..3]);
+        let constructor_context = ResolveContext {
+            def_index: &single_index,
+            ..ctx
+        };
+        let mut constructor_call = pending;
+        constructor_call.call.receiver = ReceiverShape::Constructed {
+            class_name: "A".into(),
+            constructor_start: 0,
+        };
+        let absent = DefinitionResult::Empty;
+        for provider in [None, Some(&absent)] {
+            let mut edges = Vec::new();
+            assert_eq!(
+                admit_definition(
+                    DefinitionResult::Locations(vec![owned.clone()]),
+                    provider,
+                    &model,
+                    &constructor_context,
+                    &constructor_call,
+                    &mut HashSet::new(),
+                    &mut edges,
+                ),
+                CallSiteCategory::Candidate
+            );
+            assert_eq!(edges.len(), 0);
         }
     }
 }

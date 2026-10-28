@@ -1,6 +1,6 @@
 //! R2 Ruby semantic call-impact gate: ruby-lsp must produce exactly the
 //! labelled in-repository call graph admitted by codemap's static model
-//! (constant-receiver and implicit-self shapes only, target owner inside
+//! (constant-receiver, implicit-self and verified constructor shapes, target owner inside
 //! the receiver's `inherits`/`implements` closure), while every guess-regime
 //! and unverified call stays a non-canonical observation.
 //!

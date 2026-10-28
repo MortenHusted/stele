@@ -70,9 +70,17 @@ unsupported shapes.
   under an operator-installed, hash-pinned tool bundle
   (`CODEMAP_RUBY_TOOL_BUNDLE`, `BUNDLE_FROZEN` — no network, no worktree
   writes) and emits a `calls` edge only when codemap's own static model
-  verifies the receiver→target relation (constant-receiver or implicit-self
-  shape, target owner inside the receiver's verified ancestry, call enclosed
-  by an emitted callable); everything else stays a categorized observation.
+  verifies the receiver→target relation (constant-receiver, implicit-self or
+  verified direct-constructor shape, target owner inside the receiver's
+  verified ancestry, call enclosed by an emitted callable); everything else
+  stays a categorized observation.
+  Direct construction (`Widget.new(...).perform`) additionally requires the
+  pinned default `Class#new` definition and complete source constructor ancestry;
+  overrides, reflective constructor definitions, evaluated code,
+  constructor-affecting inheritance/inclusion hooks, external or
+  unresolved heritage, class extensions, modules,
+  and ambiguous reopened classes stay unverified. Assigned variables and
+  arbitrary factory/chained return types are not inferred.
   ruby-lsp answers one request at a time, so definitions resolve over a
   pool of servers (capped at four) whose answers fold in request order;
 - Tree-sitter PHP extraction (structural, plus semantic `calls` under the
@@ -154,6 +162,29 @@ unsupported shapes.
   cannot load the workspace).
 
 ## Install
+
+On Apple Silicon macOS, install the prebuilt bundle with Homebrew:
+
+```sh
+brew install mortenhusted/tap/stele
+```
+
+The formula retains the license, dependency notices and build receipt under
+`$(brew --prefix stele)/share/stele`. It also includes the pinned Ruby resolver
+Gemfiles. To prepare verified Ruby calls, use a separate writable tool directory
+and a Ruby installation with Bundler 4.0.18:
+
+```sh
+mkdir -p "$HOME/.local/share/stele/ruby"
+cp "$(brew --prefix stele)/share/stele/ruby/"Gemfile* "$HOME/.local/share/stele/ruby/"
+BUNDLE_GEMFILE="$HOME/.local/share/stele/ruby/Gemfile" bundle _4.0.18_ config set --local path ./gems
+BUNDLE_GEMFILE="$HOME/.local/share/stele/ruby/Gemfile" BUNDLE_FROZEN=true bundle _4.0.18_ install
+export CODEMAP_RUBY_TOOL_BUNDLE="$HOME/.local/share/stele/ruby/Gemfile"
+```
+
+This tool bundle belongs outside the application and uses its own dependencies;
+extraction does not boot Rails. Other language resolvers are prepared separately
+as described under Development.
 
 Get a prebuilt bundle from [Releases](https://github.com/MortenHusted/stele/releases),
 or build from source with the toolchain pinned in `rust-toolchain.toml`.

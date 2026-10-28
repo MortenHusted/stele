@@ -6,7 +6,6 @@
   },
   "homepage": "https://github.com/MortenHusted/stele",
   "repository": "https://github.com/MortenHusted/stele",
-  "license": "MIT",
   "keywords": [
     "code-facts",
     "static-analysis",

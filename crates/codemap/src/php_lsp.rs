@@ -545,7 +545,7 @@ impl PolicyModel {
             ReceiverShape::Parent | ReceiverShape::Declared(_) => {
                 self.instance_ancestors(receiver_class)
             }
-            ReceiverShape::Other => return false,
+            ReceiverShape::Other | ReceiverShape::Constructed { .. } => return false,
         };
         self.owners
             .get(target)
@@ -792,7 +792,7 @@ fn receiver_class_id(
                 _ => None,
             }
         }
-        ReceiverShape::Other => None,
+        ReceiverShape::Other | ReceiverShape::Constructed { .. } => None,
     }
 }
 

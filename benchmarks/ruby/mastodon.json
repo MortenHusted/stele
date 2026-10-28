@@ -9,7 +9,7 @@
   "minimum_files_exclusive": 1000,
   "oracle": {
     "path": "crates/codemap/tests/fixtures/ruby_calls/expected.json",
-    "sha256": "b4ce89efbd3ca40ad845a2b7bb52e5eb92479be26f6441d9cad30c1b88cf7ded",
+    "sha256": "2cc0ea5294d405027067e6bb2e427229cb12c4a0b159d95df3ca749232bb15d8",
     "test_target": "ruby_semantic_calls",
     "test_name": "ruby_semantic_mode_matches_the_labelled_call_oracle"
   },
@@ -35,6 +35,10 @@
     "byte_identical_independent_checkouts": true
   },
   "runtime_tests": [
+    {
+      "test_target": "ruby_constructor_calls",
+      "test_name": "constructor_chains_require_default_new_and_unambiguous_instance_targets"
+    },
     {
       "test_target": "code_ruby_bundle_unavailable",
       "package": "stele",

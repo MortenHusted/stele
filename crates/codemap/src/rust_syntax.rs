@@ -101,9 +101,8 @@ pub struct RawImpl {
 }
 
 /// Receiver shape of a call site, recorded for the semantic edge policy.
-/// Ruby semantic resolution admits only [`ReceiverShape::Constant`] and
-/// [`ReceiverShape::ImplicitSelf`] call shapes for codemap-side
-/// verification; every other shape is guess regime and never becomes a
+/// Ruby semantic resolution admits constant, implicit-self and verified
+/// direct-constructor call shapes. Every other shape is guess regime and never becomes a
 /// canonical edge. Rust extraction records [`ReceiverShape::Other`] —
 /// rust-analyzer infers receivers itself, so the shape is irrelevant.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -114,6 +113,12 @@ pub enum ReceiverShape {
     /// Constant receiver (`User.find`, `Greeter.create`), recorded as
     /// written (`User`, `Admin::User`).
     Constant(String),
+    /// Ruby instance returned by a direct constant-receiver construction.
+    /// The `new` site must separately resolve to the default Class#new provider.
+    Constructed {
+        class_name: String,
+        constructor_start: usize,
+    },
     /// `parent::m()` — resolved through the verified superclass of the
     /// enclosing class. PHP-only: policy maps this to the enclosing
     /// class's `inherits` target before admitting.

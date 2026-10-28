@@ -1,4 +1,6 @@
 /target
+/.worktrees/
+/scripts/worktrees
 **/*.rs.bk
 Cargo.lock.bak
 *.snap.new

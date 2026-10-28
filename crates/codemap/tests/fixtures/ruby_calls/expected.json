@@ -6,7 +6,8 @@
     ["ruby:lib/inherit.rb#Caller::constant_inherited", "ruby:lib/inherit.rb#Parent::self.make"],
     ["ruby:lib/inherit.rb#Sub::inherited_call", "ruby:lib/callee.rb#Worker::receiver_method"],
     ["ruby:lib/callee.rb#Billing::Invoice::build", "ruby:lib/callee.rb#Billing::Report::self.compile"],
-    ["ruby:lib/callee.rb#Recursive::descend", "ruby:lib/callee.rb#Recursive::descend"]
+    ["ruby:lib/callee.rb#Recursive::descend", "ruby:lib/callee.rb#Recursive::descend"],
+    ["ruby:lib/caller.rb#run2", "ruby:lib/callee.rb#Worker::receiver_method"]
   ],
   "external_observations": ["dump"],
   "standard_library_observations": ["attr_accessor", "new", "parse"],
