@@ -21,8 +21,9 @@ Seven noncanonical sites must remain excluded. Every labelled site must appear
 exactly once as an observation, whose category agrees with edge admission.
 This is selected-caller coverage, without application-wide precision or recall.
 
-R2 admits implicit-self instance calls within the receiver's instance ancestry
-and constant-receiver singleton calls within its singleton ancestry. A host
+R2 admits implicit-self instance calls within the receiver's instance ancestry,
+constant-receiver singleton calls within its singleton ancestry, and verified
+direct construction as described below. A host
 method called from an included concern (`Account#deleted?`) and a method reached
 through an untyped response (`Request::ClientLimit#body_with_limit`) are known
 runtime targets that R2 cannot verify. Their explicit exclusions describe
@@ -65,9 +66,11 @@ PATH="/local/ruby-4.0.7/bin:/local/rust-1.99.0/bin:$PATH" bin/public-corpus-benc
 
 `--bundle` takes the operator directory; the runner passes its `Gemfile` to
 `CODEMAP_RUBY_TOOL_BUNDLE`. It builds Stele, requires an exact named passing
-witness for the original seven-edge R2 fixture, and executes both CLI refusal
+witness for the eight-edge R2 fixture (the original seven plus the reviewed
+`Sub.new.receiver_method` edge), and executes both CLI refusal
 tests (absent bundle and drifted lockfile), plus the qualified-superclass R2
-regression and the pinned absolute-body provider witness. It then creates two independent
+regression, the constructor-chain positive/refusal oracle and the pinned
+absolute-body provider witness. It then creates two independent
 source clones, forbids syntax calls, validates semantic snapshots, requires
 more than 1,000 Ruby files and nonempty canonical calls, checks source pins and
 selected labels, and requires byte-identical output with one and three
@@ -123,3 +126,42 @@ at exact sites. A provider update must revisit that witness. No missing answer
 is replaced with a guessed edge. This provider omission does not affect the
 selected public application's call labels; its nested absolute body has no
 implicit call sites.
+
+Extractor 0.5.6 admits a direct `Widget.new(...).perform` only when Ruby-LSP
+supplies a unique in-repository instance-method target within the class's
+verified instance ancestry, and the inner `new` separately resolves to the
+default `Class#new` declaration. That provider is pinned to public RBS 4.1.2
+`core/class.rbs`, SHA-256
+`36c7659b5c6a936881a49ca4d1aade1c47198bf93ac33ded7118fb45e6e80ef6`,
+at its exact declaration range. Custom/inherited/extended constructors,
+unresolved or external heritage providers, all class extensions, module receivers and
+ambiguous reopened classes remain observations. Source parse errors or a
+constructor/mixin receiver whose class cannot be established disable new
+constructor admission; existing call regimes are unaffected. `initialize` may
+return another value, but the default `Class#new` still returns its allocated
+instance. Local variables, arbitrary factories, and further chained return
+types are not inferred; runtime metaprogramming is outside this static profile.
+The separately prepared native provider test also rejects missing/multiple
+answers and wrong provider files, ranges or bytes. The frozen Mastodon
+application oracle is unchanged.
+
+Class extensions remain excluded even when their immediate module is known:
+that module can contribute `new` through its own include/prepend ancestry.
+This profile does not infer that full constructor lookup chain.
+Constructor uncertainty also propagates through included/prepended modules;
+explicit `included`, `prepended`, `extended` or `inherited` hooks stay unverified.
+That includes source declarations nested in a concern-style inclusion block.
+Reflective definitions of constructor or callback methods and evaluated code
+also make their receivers uncertain. A dynamic method name or receiver cannot
+establish that the constructor stayed unchanged. Literal non-constructor method
+names do not add that uncertainty. Native controls retain reflective factories,
+evaluated factories and constructor aliases as noncanonical cases.
+The profile also refuses instance singleton replacements, including those
+installed during initialization, and literal reflective operations forwarded
+through `send`, `public_send` or `__send__`. A known method name mutated on an
+untyped instance receiver prevents constructor edges to that method; it does
+not prevent edges to unaffected method names.
+
+```sh
+cargo test --locked -p codemap --lib ruby_lsp::tests::constructor_provider_requires_the_pinned_class_new_declaration -- --ignored --exact
+```

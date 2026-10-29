@@ -1,6 +1,6 @@
 {
   "name": "stele",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "Answer questions about code from deterministic facts, and check code and typed specifications.",
   "author": {
     "name": "Morten Lochmann",
@@ -9,7 +9,6 @@
   },
   "homepage": "https://github.com/MortenHusted/stele",
   "repository": "https://github.com/MortenHusted/stele",
-  "license": "MIT",
   "keywords": [
     "code-facts",
     "static-analysis",

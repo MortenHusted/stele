@@ -1677,7 +1677,7 @@ fn resolve_rust_implementations(
 
 /// Resolve every Ruby call site via ruby-lsp and emit `calls` edges only
 /// when codemap's static model verifies the receiver→target relation
-/// (constant receiver or implicit self; target owner inside the receiver's
+/// (constant receiver, implicit self or verified construction; target owner inside the receiver's
 /// `inherits`/`implements` closure). Every other call site is reported as
 /// a categorized observation — guess-regime sites with in-repo name
 /// candidates are `Candidate`s — never canonical edges.
@@ -1742,7 +1742,8 @@ fn resolve_calls_semantic_ruby(
     // The policy model is codemap's own static verification layer, built
     // from the emitted structural facts; ruby-lsp answers are candidate
     // material only.
-    let model = ruby_lsp::PolicyModel::build(nodes, edges);
+    let mut model = ruby_lsp::PolicyModel::build(nodes, edges);
+    model.verify_constructor_sources(file_sources, def_index)?;
     let ctx = ruby_lsp::ResolveContext {
         workspace_root: &workspace_root,
         identity,
@@ -1785,9 +1786,33 @@ fn resolve_calls_semantic_ruby(
         .collect();
     let answers =
         lsp::definition_batch(&requests, &lanes).context("ruby-lsp definition requests failed")?;
+    let constructor_answers: BTreeMap<_, _> = pending
+        .iter()
+        .zip(&answers)
+        .filter(|(site, _)| site.call.raw_name == "new")
+        .map(|(site, answer)| {
+            (
+                (site.rel_path.as_str(), site.call.name_start_byte),
+                answer.clone(),
+            )
+        })
+        .collect();
     for (site, answer) in pending.iter().zip(answers) {
-        let category =
-            ruby_lsp::admit_definition(answer, &model, &ctx, site, &mut emitted_edge_ids, edges);
+        let constructor = match &site.call.receiver {
+            rust_syntax::ReceiverShape::Constructed {
+                constructor_start, ..
+            } => constructor_answers.get(&(site.rel_path.as_str(), *constructor_start)),
+            _ => None,
+        };
+        let category = ruby_lsp::admit_definition(
+            answer,
+            constructor,
+            &model,
+            &ctx,
+            site,
+            &mut emitted_edge_ids,
+            edges,
+        );
         call_sites.push(CallSite {
             rel_path: site.rel_path.clone(),
             span: site.call.span,
