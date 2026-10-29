@@ -823,6 +823,29 @@ explicit operator runtime profile. Runtime execution witnesses and semantic
 acceptance are established by the guarded extractor and existing benchmark,
 separately from this preparation step.
 
+### Rust scope and diagnostics
+
+Rust extraction inventories tracked `.rs` files, including snippets and files
+outside Cargo workspace members. `[workspace].exclude` does not remove those
+files from a snapshot. Parse errors still make absence checks inconclusive;
+`stele code report --file snapshot.json` lists affected paths and counts from
+`report.parse_error_files`. Older snapshots may carry only the aggregate count.
+
+The checker's Rust layout policy recognizes `tests`, `benches`, and `examples`
+directories anywhere in a path, plus `_test.rs` and `_tests.rs` suffixes, before
+`src`. This is a naming convention, not Cargo cfg evaluation. Test-file callers
+remain in the evidence graph to expose production code reached only by tests.
+Inline `test`/`tests` modules retain their existing exclusion policy. Slop
+reports still use explicit repository-relative directory-prefix exclusions;
+they do not automatically exclude inline tests or these file-name conventions.
+
+Semantic extraction excludes root `.worktrees`, `.git`, and `target` trees from
+rust-analyzer indexing and disables unused native diagnostics. This does not
+change the tracked source inventory or skip test call-site requests. Source
+placed under those administrative paths is outside this indexing profile.
+Cross-file trait implementations still require semantic mode; syntax mode
+admits only its documented unambiguous same-file subset.
+
 ## Architecture
 
 | Module | Owns | Must not own |

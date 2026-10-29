@@ -391,6 +391,8 @@ fn initialization_params(root_uri: &str, target_triple: &str) -> Value {
                 "noDefaultFeatures": false,
                 "target": target_triple
             },
+            "files": { "exclude": [".worktrees", ".git", "target"] },
+            "diagnostics": { "enable": false },
             "procMacro": { "enable": policy.proc_macros_enabled },
             // The key is `checkOnSave`; there is no `check.enable` setting,
             // so disabling checks must use this exact name or rust-analyzer
@@ -523,6 +525,23 @@ mod tests {
         assert_eq!(
             classify_location(&in_loc, &files),
             CallSiteCategory::Resolved
+        );
+    }
+
+    #[test]
+    fn indexing_excludes_administrative_trees_without_disabling_workspace_reload() {
+        let params = initialization_params("file:///repo", "test-target");
+        assert_eq!(
+            params.pointer("/initializationOptions/files/exclude"),
+            Some(&json!([".worktrees", ".git", "target"]))
+        );
+        assert_eq!(
+            params.pointer("/initializationOptions/diagnostics/enable"),
+            Some(&json!(false))
+        );
+        assert_eq!(
+            params.pointer("/initializationOptions/cargo/autoreload"),
+            Some(&json!(true))
         );
     }
 
