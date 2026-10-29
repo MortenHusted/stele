@@ -235,39 +235,44 @@ impl Relation {
     /// full scan when nothing is bound. Indexes are maintained eagerly on
     /// insert/remove, so this needs only `&self`.
     pub fn lookup(&self, bound: &[Option<Value>]) -> Vec<usize> {
-        let mut best: Option<(usize, usize)> = None; // (size, pos)
-        for (pos, b) in bound.iter().enumerate() {
-            if let Some(v) = b {
-                let size = self
-                    .idx
-                    .get(&pos)
-                    .and_then(|m| m.get(v))
-                    .map(|s| s.len())
-                    .unwrap_or(0);
-                if size == 0 {
-                    return Vec::new(); // bound to a value with no facts
-                }
-                if best.map(|(s, _)| size < s).unwrap_or(true) {
-                    best = Some((size, pos));
-                }
-            }
-        }
-        match best {
-            Some((_, pos)) => {
-                let v = bound[pos].unwrap();
-                self.idx[&pos][&v]
-                    .iter()
-                    .copied()
-                    .filter(|&id| {
-                        bound
-                            .iter()
-                            .zip(&self.rows[id].key)
-                            .all(|(b, v)| b.as_ref().map(|bv| bv == v).unwrap_or(true))
-                    })
-                    .collect()
-            }
+        match self.lookup_bucket(bound) {
+            Some(bucket) => bucket
+                .iter()
+                .copied()
+                .filter(|&id| {
+                    bound
+                        .iter()
+                        .zip(&self.rows[id].key)
+                        .all(|(b, v)| b.as_ref().map(|bv| bv == v).unwrap_or(true))
+                })
+                .collect(),
             None => (0..self.rows.len()).collect(),
         }
+    }
+
+    pub(crate) fn candidate_count(&self, bound: &[Option<Value>]) -> usize {
+        self.lookup_bucket(bound)
+            .map_or(self.rows.len(), <[usize]>::len)
+    }
+
+    fn lookup_bucket(&self, bound: &[Option<Value>]) -> Option<&[usize]> {
+        let mut best: Option<&[usize]> = None;
+        for (pos, value) in bound.iter().enumerate() {
+            if let Some(value) = value {
+                let bucket = self
+                    .idx
+                    .get(&pos)
+                    .and_then(|m| m.get(value))
+                    .map_or(&[][..], Vec::as_slice);
+                if bucket.is_empty() {
+                    return Some(bucket);
+                }
+                if best.is_none_or(|previous| bucket.len() < previous.len()) {
+                    best = Some(bucket);
+                }
+            }
+        }
+        best
     }
 
     pub fn get(&self, args: &[Value]) -> Option<&StoredFact> {

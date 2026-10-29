@@ -23,24 +23,21 @@ pub use stratify::StratError;
 /// whole environment per candidate.
 struct Env {
     map: HashMap<String, Value>,
-    ann: Ann,
-    body_keys: Vec<Key>,
+    body_keys: Vec<(usize, Key, Ann)>,
     trail: Vec<(String, Option<Value>)>,
 }
 
-/// A backtrack point: trail length, body-key length, annotation snapshot.
+/// A backtrack point: trail length and body-key length.
 #[derive(Clone)]
 struct Mark {
     trail: usize,
     body: usize,
-    ann: Ann,
 }
 
 impl Env {
     fn new() -> Self {
         Env {
             map: HashMap::new(),
-            ann: Ann::unit(),
             body_keys: Vec::new(),
             trail: Vec::new(),
         }
@@ -55,7 +52,6 @@ impl Env {
         Mark {
             trail: self.trail.len(),
             body: self.body_keys.len(),
-            ann: self.ann.clone(),
         }
     }
 
@@ -72,7 +68,6 @@ impl Env {
             }
         }
         self.body_keys.truncate(m.body);
-        self.ann = m.ann.clone();
     }
 
     fn lookup(&self, t: &Term) -> Option<Value> {
@@ -119,6 +114,8 @@ pub struct Engine {
     retracted: BTreeSet<String>,
     /// Whether to record streaming `feed` events (disabled in one-shot batch mode).
     record_feed: bool,
+    #[cfg(test)]
+    join_candidates: usize,
 }
 
 impl Default for Engine {
@@ -146,6 +143,8 @@ impl Engine {
             epoch: 0,
             retracted: BTreeSet::new(),
             record_feed: true,
+            #[cfg(test)]
+            join_candidates: 0,
         }
     }
 
@@ -979,8 +978,7 @@ impl Engine {
                     continue;
                 }
             };
-            env.ann = Ann::unit().join(&ann);
-            env.body_keys.push((atom.pred.clone(), k));
+            env.body_keys.push((0, (atom.pred.clone(), k), ann));
             self.solve_rest(clause, 0, Some(ai), &mut env, out);
             env.undo(&outer);
         }
@@ -990,7 +988,14 @@ impl Engine {
         let mut env = Env::new();
         let mut out = Vec::new();
         let impossible_skip = usize::MAX;
-        if self.solve_all(clause, 0, impossible_skip, &mut env, &mut out) {
+        if self.solve_all(
+            clause,
+            0,
+            impossible_skip,
+            &mut env,
+            &mut out,
+            &mut (0..clause.body.len()).collect::<Vec<_>>(),
+        ) {
             let _ = out;
             Some(env)
         } else {
@@ -1009,7 +1014,14 @@ impl Engine {
         env: &mut Env,
         out: &mut Vec<Emission>,
     ) -> bool {
-        self.solve_all(clause, i, skip.unwrap_or(usize::MAX), env, out)
+        self.solve_all(
+            clause,
+            i,
+            skip.unwrap_or(usize::MAX),
+            env,
+            out,
+            &mut (0..clause.body.len()).collect::<Vec<_>>(),
+        )
     }
 
     fn solve_all(
@@ -1019,6 +1031,41 @@ impl Engine {
         skip: usize,
         env: &mut Env,
         out: &mut Vec<Emission>,
+        order: &mut [usize],
+    ) -> bool {
+        // Reorder only consecutive positive atoms. Negation and builtins
+        // retain their binding order and cannot be crossed by a join.
+        let next = (i..order.len())
+            .take_while(|&j| matches!(clause.body[order[j]], Lit::Pos(_)))
+            .filter(|&j| order[j] != skip)
+            .min_by_key(|&j| {
+                let Lit::Pos(atom) = &clause.body[order[j]] else {
+                    unreachable!()
+                };
+                let bound = self.resolve_bound(&atom.args, env);
+                self.relations
+                    .get(&atom.pred)
+                    .map_or(0, |rel| rel.candidate_count(&bound))
+            });
+        let next = next.unwrap_or(i);
+        if i < order.len() {
+            order.swap(i, next);
+        }
+        let any = self.solve_literal(clause, i, skip, env, out, order);
+        if i < order.len() {
+            order.swap(i, next);
+        }
+        any
+    }
+
+    fn solve_literal(
+        &mut self,
+        clause: &Clause,
+        i: usize,
+        skip: usize,
+        env: &mut Env,
+        out: &mut Vec<Emission>,
+        order: &mut [usize],
     ) -> bool {
         if i == clause.body.len() {
             if let Some(k) = self.emit_head(clause, env) {
@@ -1027,16 +1074,20 @@ impl Engine {
             }
             return false;
         }
-        if i == skip {
-            return self.solve_all(clause, i + 1, skip, env, out);
+        if order[i] == skip {
+            return self.solve_all(clause, i + 1, skip, env, out, order);
         }
-        match &clause.body[i] {
+        match &clause.body[order[i]] {
             Lit::Pos(atom) => {
                 let bound = self.resolve_bound(&atom.args, env);
                 let ids = match self.relations.get(&atom.pred) {
                     Some(rel) => rel.lookup(&bound),
                     None => Vec::new(),
                 };
+                #[cfg(test)]
+                {
+                    self.join_candidates += ids.len();
+                }
                 let mut any = false;
                 for id in ids {
                     let mark = env.mark();
@@ -1052,9 +1103,9 @@ impl Engine {
                         }
                     };
                     if let Some((k, ann)) = matched {
-                        env.ann = env.ann.join(&ann);
-                        env.body_keys.push((atom.pred.clone(), k));
-                        if self.solve_all(clause, i + 1, skip, env, out) {
+                        env.body_keys
+                            .push((order[i] + 1, (atom.pred.clone(), k), ann));
+                        if self.solve_all(clause, i + 1, skip, env, out, order) {
                             any = true;
                         }
                     }
@@ -1068,13 +1119,13 @@ impl Engine {
                 if self.matches_any(atom, env) {
                     return false;
                 }
-                self.solve_all(clause, i + 1, skip, env, out)
+                self.solve_all(clause, i + 1, skip, env, out, order)
             }
             Lit::Now(t) => match t {
-                Term::Wildcard => self.solve_all(clause, i + 1, skip, env, out),
+                Term::Wildcard => self.solve_all(clause, i + 1, skip, env, out, order),
                 Term::Int(v) => {
                     if *v == self.now {
-                        self.solve_all(clause, i + 1, skip, env, out)
+                        self.solve_all(clause, i + 1, skip, env, out, order)
                     } else {
                         false
                     }
@@ -1082,12 +1133,12 @@ impl Engine {
                 Term::Agg(..) => false, // aggregates never appear in bodies
                 Term::Var(v) => match env.map.get(v) {
                     Some(Value::Int(x)) if *x == self.now => {
-                        self.solve_all(clause, i + 1, skip, env, out)
+                        self.solve_all(clause, i + 1, skip, env, out, order)
                     }
                     Some(_) => false,
                     None => {
                         env.bind(v, Value::Int(self.now));
-                        self.solve_all(clause, i + 1, skip, env, out)
+                        self.solve_all(clause, i + 1, skip, env, out, order)
                     }
                 },
                 Term::Sym(_) => false,
@@ -1100,7 +1151,7 @@ impl Engine {
                     match (av, self.resolve_term(bt, env)) {
                         (Some(av), Some(bv)) => {
                             return if cmp_holds(*op, av, bv) {
-                                self.solve_all(clause, i + 1, skip, env, out)
+                                self.solve_all(clause, i + 1, skip, env, out, order)
                             } else {
                                 false
                             };
@@ -1108,7 +1159,7 @@ impl Engine {
                         (None, Some(bv)) => {
                             if let Term::Var(v) = a {
                                 env.bind(v, bv);
-                                return self.solve_all(clause, i + 1, skip, env, out);
+                                return self.solve_all(clause, i + 1, skip, env, out, order);
                             }
                             return false;
                         }
@@ -1120,7 +1171,7 @@ impl Engine {
                     match (av, coeff) {
                         (Some(av), 0) => {
                             return if cmp_holds(*op, av, Value::Int(c)) {
-                                self.solve_all(clause, i + 1, skip, env, out)
+                                self.solve_all(clause, i + 1, skip, env, out, order)
                             } else {
                                 false
                             };
@@ -1131,7 +1182,14 @@ impl Engine {
                                 if let (Some(ai), Some(v)) = (av.as_int(), var) {
                                     if let Some(diff) = ai.checked_sub(c) {
                                         env.bind(&v, Value::Int(diff));
-                                        return self.solve_all(clause, i + 1, skip, env, out);
+                                        return self.solve_all(
+                                            clause,
+                                            i + 1,
+                                            skip,
+                                            env,
+                                            out,
+                                            order,
+                                        );
                                     }
                                 }
                             }
@@ -1139,7 +1197,7 @@ impl Engine {
                         (None, 0) => {
                             if let Term::Var(v) = a {
                                 env.bind(v, Value::Int(c));
-                                return self.solve_all(clause, i + 1, skip, env, out);
+                                return self.solve_all(clause, i + 1, skip, env, out, order);
                             }
                         }
                         _ => {}
@@ -1244,18 +1302,23 @@ impl Engine {
             };
             args.push(v);
         }
+        let mut body_keys = env.body_keys.clone();
+        body_keys.sort_by_key(|(position, _, _)| *position);
+        let ann = body_keys
+            .iter()
+            .fold(Ann::unit(), |ann, (_, _, next)| ann.join(next));
         let support = Support::Rule {
             rule: clause
                 .name
                 .clone()
                 .unwrap_or_else(|| format!("rule/{}", clause.head.pred)),
-            body: env.body_keys.clone(),
+            body: body_keys.into_iter().map(|(_, key, _)| key).collect(),
         };
         let rel = self.relations.entry(clause.head.pred.clone()).or_default();
         let outcome = rel.insert(
             args.clone(),
             StoredFact {
-                ann: env.ann.clone(),
+                ann,
                 supports: vec![support],
             },
         );
@@ -1579,5 +1642,79 @@ fn cmp_holds(op: CmpOp, a: Value, b: Value) -> bool {
         CmpOp::Ge => a >= b,
         CmpOp::Eq => a == b,
         CmpOp::Ne => a != b,
+    }
+}
+
+#[cfg(test)]
+mod join_tests {
+    use super::*;
+
+    #[test]
+    fn join_scheduling_preserves_proof_and_confidence_order() {
+        let mut engine = Engine::new();
+        engine
+            .install_program("out(X,Y) :- a(X), b(Y), c(X,Y).")
+            .unwrap();
+        let x = Value::Int(1);
+        let y = Value::Int(3);
+        engine.declare("a", &[x], Ann::base(0.2, ["a"]));
+        engine.declare("a", &[Value::Int(2)], Ann::unit());
+        engine.declare("b", &[y], Ann::base(0.1, ["b"]));
+        engine.declare("c", &[x, y], Ann::base(0.3, ["c"]));
+        let clause = engine.clauses[0].clone();
+        let delta = HashMap::from([("b".to_string(), BTreeSet::from([vec![y]]))]);
+        engine.fire_delta_version(&clause, 1, &delta, &mut Vec::new());
+        let fact = engine.relations["out"].get(&[x, y]).unwrap();
+        let expected = Ann::unit()
+            .join(&Ann::base(0.1, ["b"]))
+            .join(&Ann::base(0.2, ["a"]))
+            .join(&Ann::base(0.3, ["c"]));
+        assert_eq!(fact.ann, expected);
+        let Support::Rule { body, .. } = &fact.supports[0] else {
+            panic!("expected rule support")
+        };
+        assert_eq!(
+            body,
+            &vec![
+                ("b".to_string(), vec![y]),
+                ("a".to_string(), vec![x]),
+                ("c".to_string(), vec![x, y]),
+            ]
+        );
+    }
+
+    #[test]
+    fn connected_joins_avoid_cartesian_scans_for_every_delta_seed() {
+        let mut engine = Engine::new();
+        engine.install_program(
+            "reaches(File) :- defines(Caller, CallerFile), production_file(CallerFile), defines(Callee, File), calls(Caller, Callee)."
+        ).unwrap();
+        let size = 200;
+        for i in 0..size {
+            engine.declare(
+                "defines",
+                &[Value::Int(i), Value::Int(i + size)],
+                Ann::unit(),
+            );
+            engine.declare("production_file", &[Value::Int(i + size)], Ann::unit());
+            engine.declare(
+                "calls",
+                &[Value::Int(i), Value::Int((i + 1) % size)],
+                Ann::unit(),
+            );
+        }
+        let started = std::time::Instant::now();
+        engine.run();
+        eprintln!(
+            "join candidates: {}; elapsed: {:?}",
+            engine.join_candidates,
+            started.elapsed()
+        );
+        assert_eq!(engine.query("reaches", &[]).len(), size as usize);
+        assert!(
+            engine.join_candidates <= 20 * size as usize,
+            "connected joins scanned {} candidates for {size} symbols",
+            engine.join_candidates
+        );
     }
 }
