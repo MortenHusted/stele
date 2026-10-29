@@ -61,6 +61,7 @@ fn minimal_snapshot() -> Snapshot {
             files_scanned: 1,
             files_skipped: 0,
             parse_errors: 0,
+            parse_error_files: BTreeMap::new(),
             node_counts: BTreeMap::from([("file".into(), 1)]),
             edge_counts: BTreeMap::new(),
             call_sites_by_category: BTreeMap::new(),
@@ -490,4 +491,50 @@ fn duplicate_edge_id_is_rejected() {
         validate(&snap).is_err(),
         "duplicate edge id must fail validation"
     );
+}
+
+#[test]
+fn parse_error_locations_must_be_known_positive_and_match_total() {
+    let mut snapshot = minimal_snapshot();
+    snapshot.report.parse_errors = 2;
+    validate(&snapshot).unwrap();
+    let path = snapshot.files[0].rel_path.clone();
+    snapshot.report.parse_error_files.insert(path.clone(), 2);
+    validate(&snapshot).unwrap();
+    for entries in [
+        BTreeMap::from([("unknown.rs".into(), 2)]),
+        BTreeMap::from([(path.clone(), 0)]),
+        BTreeMap::from([(path.clone(), 1)]),
+        BTreeMap::from([(path, usize::MAX)]),
+    ] {
+        snapshot.report.parse_error_files = entries;
+        assert!(validate(&snapshot).is_err());
+    }
+}
+
+#[test]
+fn zero_parse_error_location_is_invalid_even_when_total_matches() {
+    let mut snapshot = minimal_snapshot();
+    let path = snapshot.files[0].rel_path.clone();
+    snapshot.report.parse_error_files.insert(path, 0);
+    assert!(validate(&snapshot).is_err());
+}
+
+#[test]
+fn parse_error_location_sum_rejects_overflow_without_panicking() {
+    let mut snapshot = minimal_snapshot();
+    let mut second = snapshot.files[0].clone();
+    second.rel_path = "b.rs".into();
+    snapshot.files.push(second);
+    snapshot.report.files_scanned += 1;
+    validate(&snapshot).unwrap();
+    snapshot.report.parse_errors = 2;
+    snapshot.report.parse_error_files = BTreeMap::from([("a.rs".into(), 1), ("b.rs".into(), 1)]);
+    validate(&snapshot).unwrap();
+    snapshot.report.parse_errors = 0;
+    snapshot
+        .report
+        .parse_error_files
+        .insert("a.rs".into(), usize::MAX);
+    assert!(validate(&snapshot).is_err());
 }

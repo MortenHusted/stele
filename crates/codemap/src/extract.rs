@@ -569,6 +569,7 @@ pub fn build_snapshot(
     let mut nodes: Vec<Node> = Vec::new();
     let mut edges: Vec<Edge> = Vec::new();
     let mut parse_errors = 0usize;
+    let mut parse_error_files = BTreeMap::new();
     let files_skipped = 0usize;
     let mut impl_obs: Vec<(String, String, rust_syntax::RawImpl)> = Vec::new();
     let mut mixin_obs: Vec<(String, String, ruby_syntax::RawMixin)> = Vec::new();
@@ -627,6 +628,9 @@ pub fn build_snapshot(
                 let raw = rust_syntax::extract_file(rel_path, bytes)
                     .with_context(|| format!("extraction failed for {rel_path}"))?;
                 parse_errors += raw.parse_errors;
+                if raw.parse_errors > 0 {
+                    parse_error_files.insert(rel_path.clone(), raw.parse_errors);
+                }
                 let def_ids = assign_and_push(
                     &raw.defs,
                     &raw.imports,
@@ -1114,7 +1118,7 @@ pub fn build_snapshot(
         .source_files
         .len()
         .saturating_sub(files_with_bytes.len());
-    let report = build_report(
+    let mut report = build_report(
         &files,
         &nodes,
         &edges,
@@ -1123,6 +1127,8 @@ pub fn build_snapshot(
         parse_errors,
         observations,
     );
+
+    report.parse_error_files = parse_error_files;
 
     let snapshot = Snapshot {
         identity,
@@ -2176,6 +2182,7 @@ pub fn build_report(
         files_scanned: files.len(),
         files_skipped,
         parse_errors,
+        parse_error_files: BTreeMap::new(),
         node_counts,
         edge_counts,
         call_sites_by_category,

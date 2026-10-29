@@ -56,6 +56,10 @@ fn id(kind: NodeKind, rel_path: &str, scope: &[&str], name: &str) -> String {
 /// Build the fixture snapshot. `dirty` marks the identity as a
 /// working-tree extraction.
 pub fn rust_snapshot(dirty: bool) -> Snapshot {
+    rust_snapshot_with_test_file(dirty, "tests/it.rs")
+}
+
+pub fn rust_snapshot_with_test_file(dirty: bool, test_file: &str) -> Snapshot {
     let identity = SnapshotIdentity::build(
         Language::Rust,
         RepoIdentity {
@@ -100,7 +104,7 @@ pub fn rust_snapshot(dirty: bool) -> Snapshot {
     fixture.node(f, "src/view.rs", &[], "render", 1);
     fixture.node(f, "src/dead.rs", &[], "unused", 1);
     fixture.node(f, "src/probe.rs", &[], "probe_target", 1);
-    fixture.node(f, "tests/it.rs", &[], "it_probes", 1);
+    fixture.node(f, test_file, &[], "it_probes", 1);
     fixture.node(f, "build.rs", &[], "main", 1);
 
     fixture.call(&main_id(), &run_id(), "src/main.rs", 3);
@@ -110,7 +114,12 @@ pub fn rust_snapshot(dirty: bool) -> Snapshot {
     fixture.call(&helper_id(), &helper_id(), "src/core.rs", 7);
     fixture.call(&checks_run_id(), &run_id(), "src/core.rs", 22);
     fixture.call(&checks_run_id(), &dead_fn_id(), "src/core.rs", 23);
-    fixture.call(&it_probes_id(), &probe_target_id(), "tests/it.rs", 2);
+    fixture.call(
+        &id(f, test_file, &[], "it_probes"),
+        &probe_target_id(),
+        test_file,
+        2,
+    );
 
     fixture.finish()
 }
@@ -538,6 +547,7 @@ impl Fixture {
                 files_scanned: files.len(),
                 files_skipped: 0,
                 parse_errors: 0,
+                parse_error_files: BTreeMap::new(),
                 node_counts,
                 edge_counts,
                 call_sites_by_category: BTreeMap::new(),
@@ -606,6 +616,7 @@ pub fn report_for(snapshot: &Snapshot) -> Report {
         files_scanned: snapshot.files.len(),
         files_skipped: 0,
         parse_errors: 0,
+        parse_error_files: BTreeMap::new(),
         node_counts,
         edge_counts,
         call_sites_by_category: snapshot.call_sites.iter().fold(

@@ -610,6 +610,7 @@ fn build_for(
             files_scanned: records.len(),
             files_skipped: 0,
             parse_errors: 0,
+            parse_error_files: BTreeMap::new(),
             node_counts,
             edge_counts,
             call_sites_by_category: BTreeMap::new(),

@@ -1474,6 +1474,12 @@ fn print_report(s: &crate::Snapshot) -> Result<()> {
         r.files_skipped,
         r.parse_errors
     );
+    for (path, count) in &r.parse_error_files {
+        outputln!("  {path}: {count} parse errors");
+    }
+    if r.parse_errors > 0 && r.parse_error_files.is_empty() {
+        outputln!("  parse error locations unavailable in this snapshot");
+    }
     outputln!("nodes:");
     for (k, v) in &r.node_counts {
         outputln!("  {k:>12} {v}");
