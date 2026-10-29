@@ -101,6 +101,9 @@ pub enum Command {
         file: Option<PathBuf>,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language when extracting --path; --file carries its own language.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         #[arg(long, default_value = "off")]
         calls: CallsMode,
     },
@@ -118,6 +121,9 @@ pub enum Command {
         file: Option<PathBuf>,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language when extracting --path; --file carries its own language.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         #[arg(long, default_value = "off")]
         calls: CallsMode,
     },
@@ -131,6 +137,9 @@ pub enum Command {
         file: Option<PathBuf>,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language when extracting --path; --file carries its own language.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         #[arg(long, default_value = "off")]
         calls: CallsMode,
     },
@@ -142,6 +151,9 @@ pub enum Command {
         file: Option<PathBuf>,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language when extracting --path; --file carries its own language.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         #[arg(long, default_value = "off")]
         calls: CallsMode,
     },
@@ -152,6 +164,9 @@ pub enum Command {
         file: Option<PathBuf>,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language when extracting --path; --file carries its own language.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         #[arg(long, default_value = "off")]
         calls: CallsMode,
     },
@@ -163,6 +178,9 @@ pub enum Command {
         file: Option<PathBuf>,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language when extracting --path; --file carries its own language.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         #[arg(long, default_value = "off")]
         calls: CallsMode,
     },
@@ -175,6 +193,9 @@ pub enum Command {
         head: String,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language for both commits.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         /// Also print non-authoritative churn hotspots.
         #[arg(long, default_value_t = 10)]
         top: usize,
@@ -237,6 +258,9 @@ pub enum Command {
         file: Option<PathBuf>,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language when extracting --path; --file carries its own language.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         #[arg(long, default_value = "off")]
         calls: CallsMode,
     },
@@ -261,6 +285,9 @@ pub enum Command {
         file: Option<PathBuf>,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language when extracting --path; --file carries its own language.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         #[arg(long, default_value = "off")]
         calls: CallsMode,
     },
@@ -272,6 +299,9 @@ pub enum Command {
         file: Option<PathBuf>,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language when extracting --path; --file carries its own language.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         #[arg(long, default_value = "off")]
         calls: CallsMode,
     },
@@ -283,6 +313,9 @@ pub enum Command {
         file: Option<PathBuf>,
         #[arg(long, default_value = ".")]
         path: PathBuf,
+        /// Source language when extracting --path; --file carries its own language.
+        #[arg(long, value_enum, default_value = "rust")]
+        language: LanguageArg,
         #[arg(long, default_value = "off")]
         calls: CallsMode,
     },
@@ -560,7 +593,8 @@ fn run(cli: Cli) -> Result<()> {
             file,
             path,
             calls,
-        } => run_context(&query, file.as_deref(), &path, calls),
+            language,
+        } => run_context(&query, file.as_deref(), &path, calls, language),
         Command::Impact {
             query,
             direction,
@@ -569,6 +603,7 @@ fn run(cli: Cli) -> Result<()> {
             file,
             path,
             calls,
+            language,
         } => run_impact(
             &query,
             &direction,
@@ -577,6 +612,7 @@ fn run(cli: Cli) -> Result<()> {
             file.as_deref(),
             &path,
             calls,
+            language,
         ),
         Command::Trace {
             from,
@@ -585,32 +621,37 @@ fn run(cli: Cli) -> Result<()> {
             file,
             path,
             calls,
-        } => run_trace(&from, &to, &kinds, file.as_deref(), &path, calls),
+            language,
+        } => run_trace(&from, &to, &kinds, file.as_deref(), &path, calls, language),
         Command::Search {
             needle,
             file,
             path,
             calls,
-        } => run_search(&needle, file.as_deref(), &path, calls),
+            language,
+        } => run_search(&needle, file.as_deref(), &path, calls, language),
         Command::Structure {
             root,
             file,
             path,
             calls,
-        } => run_structure(root.as_deref(), file.as_deref(), &path, calls),
+            language,
+        } => run_structure(root.as_deref(), file.as_deref(), &path, calls, language),
         Command::Cycles {
             kinds,
             file,
             path,
             calls,
-        } => run_cycles(&kinds, file.as_deref(), &path, calls),
+            language,
+        } => run_cycles(&kinds, file.as_deref(), &path, calls, language),
         Command::Diff {
             base,
             head,
             path,
             top,
             calls,
-        } => run_diff(&base, &head, &path, top, calls),
+            language,
+        } => run_diff(&base, &head, &path, top, calls, language),
         Command::History {
             tip,
             path,
@@ -641,6 +682,7 @@ fn run(cli: Cli) -> Result<()> {
             file,
             path,
             calls,
+            language,
         } => run_hotspots(
             top,
             diff_base.as_deref(),
@@ -648,6 +690,7 @@ fn run(cli: Cli) -> Result<()> {
             file.as_deref(),
             &path,
             calls,
+            language,
         ),
         Command::Refactor {
             hub_threshold,
@@ -658,6 +701,7 @@ fn run(cli: Cli) -> Result<()> {
             file,
             path,
             calls,
+            language,
         } => run_refactor(
             hub_threshold,
             god_size,
@@ -667,19 +711,22 @@ fn run(cli: Cli) -> Result<()> {
             file.as_deref(),
             &path,
             calls,
+            language,
         ),
         Command::Clusters {
             rounds,
             file,
             path,
             calls,
-        } => run_clusters(rounds, file.as_deref(), &path, calls),
+            language,
+        } => run_clusters(rounds, file.as_deref(), &path, calls, language),
         Command::Processes {
             max_steps,
             file,
             path,
             calls,
-        } => run_processes(max_steps, file.as_deref(), &path, calls),
+            language,
+        } => run_processes(max_steps, file.as_deref(), &path, calls, language),
     }
 }
 
@@ -723,6 +770,7 @@ fn nav_snapshot(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<crate::Snapshot> {
     if let Some(f) = file {
         return crate::load_snapshot(f);
@@ -732,9 +780,7 @@ fn nav_snapshot(
         calls_required: matches!(calls, CallsMode::Required),
         measures: false,
         twins: false,
-        // Navigation over freshly extracted trees is Rust-only until the
-        // Ruby adapter lands; snapshot files carry their own language.
-        language: crate::schema::Language::Rust,
+        language: language.into(),
     })
 }
 
@@ -780,8 +826,9 @@ fn run_context(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
-    let snap = nav_snapshot(file, path, calls)?;
+    let snap = nav_snapshot(file, path, calls, language)?;
     let g = crate::Graph::from_snapshot(&snap);
     let id = resolve_to_id(&g, query)?;
     let ctx = g.context(&id).expect("resolved node has context");
@@ -806,6 +853,7 @@ fn run_context(
     Ok(())
 }
 
+#[allow(clippy::too_many_arguments)]
 fn run_impact(
     query: &str,
     direction: &str,
@@ -814,8 +862,9 @@ fn run_impact(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
-    let snap = nav_snapshot(file, path, calls)?;
+    let snap = nav_snapshot(file, path, calls, language)?;
     let g = crate::Graph::from_snapshot(&snap);
     let id = resolve_to_id(&g, query)?;
     let dir = match direction {
@@ -854,8 +903,9 @@ fn run_trace(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
-    let snap = nav_snapshot(file, path, calls)?;
+    let snap = nav_snapshot(file, path, calls, language)?;
     let g = crate::Graph::from_snapshot(&snap);
     let from_id = resolve_to_id(&g, from)?;
     let to_id = resolve_to_id(&g, to)?;
@@ -880,8 +930,9 @@ fn run_search(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
-    let snap = nav_snapshot(file, path, calls)?;
+    let snap = nav_snapshot(file, path, calls, language)?;
     let g = crate::Graph::from_snapshot(&snap);
     let hits = g.search(needle);
     if hits.is_empty() {
@@ -902,8 +953,9 @@ fn run_structure(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
-    let snap = nav_snapshot(file, path, calls)?;
+    let snap = nav_snapshot(file, path, calls, language)?;
     let g = crate::Graph::from_snapshot(&snap);
     let root_id = if let Some(r) = &root {
         resolve_to_id(&g, r)?
@@ -938,8 +990,9 @@ fn run_cycles(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
-    let snap = nav_snapshot(file, path, calls)?;
+    let snap = nav_snapshot(file, path, calls, language)?;
     let g = crate::Graph::from_snapshot(&snap);
     let ks = parse_kinds(kinds)?;
     let cyc = g.cycles(&ks);
@@ -970,12 +1023,13 @@ fn run_diff(
     path: &std::path::Path,
     top: usize,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
     let at = |commitish: &str| {
         if matches!(calls, CallsMode::Required) {
-            crate::extract_at_commit_semantic(path, commitish, crate::schema::Language::Rust)
+            crate::extract_at_commit_semantic(path, commitish, language.into())
         } else {
-            crate::extract_at_commit(path, commitish, crate::schema::Language::Rust)
+            crate::extract_at_commit(path, commitish, language.into())
         }
     };
     let base_snap = at(base).with_context(|| format!("extract at {base}"))?;
@@ -1213,11 +1267,12 @@ fn maybe_diff(
     base: Option<&str>,
     head: Option<&str>,
     path: &std::path::Path,
+    language: crate::schema::Language,
 ) -> Result<Option<DiffInputs>> {
     match (base, head) {
         (Some(b), Some(h)) => {
-            let base = crate::extract_at_commit(path, b, crate::schema::Language::Rust)?;
-            let head = crate::extract_at_commit(path, h, crate::schema::Language::Rust)?;
+            let base = crate::extract_at_commit(path, b, language)?;
+            let head = crate::extract_at_commit(path, h, language)?;
             let diff = crate::SnapshotDiff::between(&base, &head);
             Ok(Some(DiffInputs { base, diff }))
         }
@@ -1233,10 +1288,11 @@ fn run_hotspots(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
-    let snap = nav_snapshot(file, path, calls)?;
+    let snap = nav_snapshot(file, path, calls, language)?;
     let g = crate::Graph::from_snapshot(&snap);
-    let d = maybe_diff(diff_base, diff_head, path)?;
+    let d = maybe_diff(diff_base, diff_head, path, snap.identity.language)?;
     let hot = crate::hotspots(&g, d.as_ref().map(|inputs| &inputs.diff), top);
     if hot.is_empty() {
         println!("no hotspots");
@@ -1263,10 +1319,11 @@ fn run_refactor(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
-    let snap = nav_snapshot(file, path, calls)?;
+    let snap = nav_snapshot(file, path, calls, language)?;
     let g = crate::Graph::from_snapshot(&snap);
-    let d = maybe_diff(diff_base, diff_head, path)?;
+    let d = maybe_diff(diff_base, diff_head, path, snap.identity.language)?;
     let base_graph = d
         .as_ref()
         .map(|inputs| crate::Graph::from_snapshot(&inputs.base));
@@ -1294,8 +1351,9 @@ fn run_clusters(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
-    let snap = nav_snapshot(file, path, calls)?;
+    let snap = nav_snapshot(file, path, calls, language)?;
     let g = crate::Graph::from_snapshot(&snap);
     let cs = crate::clusters(&g, rounds);
     if cs.is_empty() {
@@ -1322,8 +1380,9 @@ fn run_processes(
     file: Option<&std::path::Path>,
     path: &std::path::Path,
     calls: CallsMode,
+    language: LanguageArg,
 ) -> Result<()> {
-    let snap = nav_snapshot(file, path, calls)?;
+    let snap = nav_snapshot(file, path, calls, language)?;
     let g = crate::Graph::from_snapshot(&snap);
     let has_calls = snap.edges.iter().any(|e| e.kind == crate::EdgeKind::Calls);
     if !has_calls {
