@@ -40,6 +40,10 @@
       "test_name": "constructor_chains_require_default_new_and_unambiguous_instance_targets"
     },
     {
+      "test_target": "ruby_block_ownership",
+      "test_name": "unknown_blocks_cannot_prove_method_ownership_or_self_context"
+    },
+    {
       "test_target": "code_ruby_bundle_unavailable",
       "package": "stele",
       "test_name": "ruby_calls_required_fails_when_the_tool_bundle_is_absent"

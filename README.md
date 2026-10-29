@@ -309,8 +309,12 @@ stele code search <needle>                       # find symbols by name
 stele code structure [root]                      # containment tree
 stele code cycles --kinds calls                  # SCCs = refactor signals
 
+# Source-backed queries accept --language; the default is rust.
+# With --file, the snapshot carries its own language.
+
 # ── Cross-commit structural diff (deterministic; unique to codemap) ──
 stele code diff <base> <head> [--top N]          # exact node/edge delta + churn hotspots
+stele code diff HEAD~1 HEAD --path path/to/ruby-app --language ruby
 
 # ── Cross-commit history: the structural change stream ──
 stele code history --path <repo> --out <dir>     # walk commits, emit transitions + metric moves
@@ -482,6 +486,10 @@ Run-once code can be left out of what a report is held to with
 gate then read the files in scope, and the all-files erosion with its
 counts prints on the line above, with how much the scope left out. A
 prefix that matches no file is refused, so a typo cannot widen the scope.
+For an engine under `engines/shop/`, exclude its tests with
+`--exclude engines/shop/test/`; `--exclude test/` covers only the root test directory.
+Clone groups and their introduced/removed lists describe the whole repository;
+clone-line ratios and twin pairs use the selected scope.
 Twin pairs (`--twins`) print as their own count beside the clone figure,
 never inside it, near pairs (edited copies) before exact ones, with both
 callables located and a note when the pair already sits in a clone group;
