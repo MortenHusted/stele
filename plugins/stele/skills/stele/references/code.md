@@ -24,7 +24,7 @@ stele code report --file snapshot.json
   edges, so call questions have no answer from it. Verified calls need
   rust-analyzer for Rust, or the language's tool bundle for Ruby, PHP and
   Go (Stele's README, section Development). Without the resolver,
-  extraction exits 2. Rust needs the rust-analyzer component of the
+  extraction exits 1. Rust needs the rust-analyzer component of the
   toolchain the repository pins; a rustup proxy on `PATH` is not enough.
 - Extraction refuses a dirty worktree so a snapshot always names its commit.
   `--dirty` reads the working tree as it is; the snapshot is marked dirty

@@ -96,6 +96,13 @@ definition's claim, in a package's `tests/*.rs`, and tag them:
 fn greets_ada_by_name() { ... }
 ```
 
+Standalone Ruby projects can instead tag tracked `test/**/*_test.rb` methods
+in direct `Minitest::Test` subclasses with Ruby `# intent: example ...`
+comments. Use `--runner minitest` on every recording command below and follow
+the [catalog guide](../stele/references/catalog.md#standalone-minitest) for
+supported runtimes and forms. The runner is explicit and Unix-only; it refuses
+Rails roots. Do not boot Rails or prepare a database through this workflow.
+
 A test that merely calls the code is not an example, and an `#[ignore]`
 test cannot be one: it records as `skip`, which never counts. A tagged
 test should drive the channel it names, not only the code behind it; a
