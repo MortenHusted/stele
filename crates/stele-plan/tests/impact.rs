@@ -89,7 +89,14 @@ fn example(id: &str, statement: &str, file: &str) -> Example {
         id: id.into(),
         statement: statement.into(),
         channels: vec!["cli".into()],
-        package: "demo".into(),
+        execution: stele_plan::examples::Execution::Cargo {
+            package: "demo".into(),
+            target: std::path::Path::new(file)
+                .file_stem()
+                .unwrap()
+                .to_string_lossy()
+                .into_owned(),
+        },
         file: file.into(),
         test: id.into(),
         line: 1,

@@ -59,9 +59,11 @@ pub struct Run {
     /// For a failing run only: the tracked-file diff against `base`, without
     /// the two ledgers.
     pub diff: Option<String>,
+    /// Absent records retain legacy Cargo interpretation.
+    pub runner: Option<String>,
 }
 
-const FIELDS: [&str; 8] = [
+const FIELDS: [&str; 9] = [
     "example",
     "digest",
     "digest_version",
@@ -70,6 +72,7 @@ const FIELDS: [&str; 8] = [
     "base",
     "outcome",
     "diff",
+    "runner",
 ];
 
 /// The source identity of an explicitly tagged baseline, or `None` for a
@@ -163,6 +166,7 @@ pub fn parse(source: &str, path: &str) -> Result<Vec<Run>, String> {
             base,
             outcome,
             diff,
+            runner: fields.get("runner").map(string).transpose()?,
         });
     }
     Ok(runs)
@@ -209,6 +213,11 @@ fn render(run: &Run) -> String {
         quote(&run.base),
         run.outcome.as_str(),
     );
+    if let Some(runner) = &run.runner {
+        text.push_str("  runner: ");
+        text.push_str(&quote(runner));
+        text.push('\n');
+    }
     if let Some(diff) = &run.diff {
         text.push_str("  diff: ");
         text.push_str(&quote(diff));

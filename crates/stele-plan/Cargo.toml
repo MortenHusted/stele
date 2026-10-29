@@ -13,12 +13,14 @@ codemap-graph = { workspace = true }
 lemmaspec = { path = "../lemmaspec" }
 proc-macro2 = { version = "1", default-features = false, features = ["span-locations"] }
 quote = { version = "1", default-features = false }
+ruby-prism = "1.9.0"
 serde_json = { workspace = true }
 sha2 = { workspace = true }
 syn = { version = "3", default-features = false, features = ["full", "parsing", "printing"] }
-
-[dev-dependencies]
 tempfile = "3"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
 
 [lints]
 workspace = true

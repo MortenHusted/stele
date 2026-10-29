@@ -83,6 +83,12 @@ pub struct Approval {
 
 #[derive(clap::Args, Debug)]
 pub struct Recording {
+    /// Execution provider. Minitest requires Unix and standalone direct subclasses;
+    /// selected examples must all belong to this provider. No Rails boot,
+    /// Bundler evaluation or dependency installation. New Minitest ledger
+    /// entries require a reader supporting the minitest/1 receipt profile.
+    #[arg(long, value_enum, default_value = "cargo")]
+    runner: Provider,
     /// Run only this example.
     #[arg(long)]
     example: Option<String>,
@@ -95,6 +101,12 @@ pub struct Recording {
     source_baseline: Option<String>,
     #[command(flatten)]
     catalog: CatalogArg,
+}
+
+#[derive(clap::ValueEnum, Debug, Clone, Copy)]
+pub enum Provider {
+    Cargo,
+    Minitest,
 }
 
 #[derive(clap::Args, Debug)]
@@ -183,11 +195,13 @@ fn run(command: IntentCommand) -> Result<ExitCode> {
             example,
             channel,
             source_baseline,
+            runner,
             catalog,
         }) => record(
             &catalog,
             &Selection { example, channel },
             source_baseline.as_deref(),
+            runner,
         )?,
         IntentCommand::Report(reporting) => return write_report(reporting),
         IntentCommand::Checker { out } => write(out.as_deref(), INTENT_CHECKER)?,
@@ -327,14 +341,10 @@ fn record(
     catalog: &CatalogArg,
     selection: &Selection,
     source_baseline: Option<&str>,
+    provider: Provider,
 ) -> Result<()> {
     let (base, root) = catalog.locate()?;
-    let statements =
-        stele_plan::load_catalog(&DirReader(base.clone()), &root).map_err(anyhow::Error::msg)?;
-    let packages = examples::packages(&base).map_err(anyhow::Error::msg)?;
-    let examples = examples::scan(&base, &packages, &statements)
-        .map_err(anyhow::Error::msg)?
-        .examples;
+    let catalog_path = root.clone();
     let root = base.join(root);
     let repo = Repo::of_catalog(root.parent().unwrap_or(&base)).map_err(anyhow::Error::msg)?;
     let baseline = source_baseline
@@ -344,13 +354,17 @@ fn record(
     let source: &dyn recorder::Source = baseline
         .as_ref()
         .map_or(&repo as &dyn recorder::Source, |baseline| baseline);
-    let mut runner = CargoTest {
-        dir: repo.root.clone(),
+    let mut runner: Box<dyn recorder::Runner> = match provider {
+        Provider::Cargo => Box::new(CargoTest {
+            dir: repo.root.clone(),
+        }),
+        Provider::Minitest => Box::new(stele_plan::minitest::Minitest::new(repo.root.clone())),
     };
-    let runs = recorder::record(
-        &examples,
+    let runs = recorder::record_catalog(
+        &base,
+        &catalog_path,
         selection,
-        &mut runner,
+        runner.as_mut(),
         source,
         &root.with_file_name(RUNS_FILE),
     )

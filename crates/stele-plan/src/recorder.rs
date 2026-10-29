@@ -1,6 +1,5 @@
-//! Running examples through `cargo test` and appending one run per example
-//! and channel to the run ledger. This is the only place that runs project
-//! code.
+//! Shared selection, source capture and append-only recording. Each execution
+//! adapter owns its outcome classification; Cargo remains the default.
 
 use std::{
     path::{Path, PathBuf},
@@ -9,7 +8,7 @@ use std::{
 
 use crate::{
     digest::DIGEST_VERSION,
-    examples::Example,
+    examples::{Example, Execution},
     identity::Repo,
     runs::{self, Outcome, Run},
 };
@@ -24,9 +23,18 @@ pub struct RunOutput {
     pub output: String,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ExecutionResult {
+    pub outcome: Outcome,
+    pub runner: Option<String>,
+}
+
 pub trait Runner {
+    /// Refuse incompatible selected examples before any execution starts.
+    fn validate(&self, example: &Example) -> Result<(), String>;
+
     /// Run `example`'s test once, on `channel`.
-    fn run(&mut self, example: &Example, channel: &str) -> Result<RunOutput, String>;
+    fn run(&mut self, example: &Example, channel: &str) -> Result<ExecutionResult, String>;
 }
 
 /// Runs each example from the repository root as `cargo test --locked -p
@@ -38,9 +46,12 @@ pub struct CargoTest {
 
 impl CargoTest {
     pub fn command(&self, example: &Example, channel: &str) -> Command {
+        let Execution::Cargo { package, .. } = &example.execution else {
+            panic!("CargoTest requires a Cargo example")
+        };
         let mut command = Command::new("cargo");
         command
-            .args(["test", "--locked", "-p", &example.package])
+            .args(["test", "--locked", "-p", package])
             .args(["--test", example.target(), "--", "--exact", &example.test])
             .env(CHANNEL_VAR, channel)
             .current_dir(&self.dir);
@@ -49,19 +60,32 @@ impl CargoTest {
 }
 
 impl Runner for CargoTest {
-    fn run(&mut self, example: &Example, channel: &str) -> Result<RunOutput, String> {
+    fn validate(&self, example: &Example) -> Result<(), String> {
+        if matches!(example.execution, Execution::Cargo { .. }) {
+            Ok(())
+        } else {
+            Err(format!("example {} requires --runner minitest", example.id))
+        }
+    }
+
+    fn run(&mut self, example: &Example, channel: &str) -> Result<ExecutionResult, String> {
+        self.validate(example)?;
         let output = self
             .command(example, channel)
             .stdin(Stdio::null())
             .output()
             .map_err(|e| format!("cannot run cargo test in {}: {e}", self.dir.display()))?;
-        Ok(RunOutput {
+        let ran = RunOutput {
             success: output.status.success(),
             output: format!(
                 "{}{}",
                 String::from_utf8_lossy(&output.stdout),
                 String::from_utf8_lossy(&output.stderr)
             ),
+        };
+        Ok(ExecutionResult {
+            outcome: classify_cargo(&ran),
+            runner: None,
         })
     }
 }
@@ -152,11 +176,15 @@ pub fn record(
         return Ok(Vec::new());
     }
     let identity = source.identity()?;
+    for (example, _) in &selected {
+        runner.validate(example)?;
+    }
     let base = source.base()?;
     let mut failure_diff = None;
     let mut recorded = Vec::new();
     for (example, channel) in selected {
-        let outcome = classify(&runner.run(example, channel)?);
+        let result = runner.run(example, channel)?;
+        let outcome = result.outcome;
         let diff = if outcome == Outcome::Fail {
             if failure_diff.is_none() {
                 failure_diff = Some(source.diff_against(&base)?);
@@ -174,6 +202,7 @@ pub fn record(
             base: base.clone(),
             outcome,
             diff,
+            runner: result.runner,
         });
     }
     let after = source.identity()?;
@@ -229,7 +258,7 @@ fn select<'a>(
 /// test that passed, failed or was ignored and the exit status agrees;
 /// otherwise error, which covers a build failure (no summary line) and a
 /// path matching no test.
-fn classify(ran: &RunOutput) -> Outcome {
+pub fn classify_cargo(ran: &RunOutput) -> Outcome {
     let Some(summary) = ran
         .output
         .lines()
@@ -256,4 +285,43 @@ fn classify(ran: &RunOutput) -> Outcome {
         (true, Some(0), Some(0), Some(1)) => Outcome::Skip,
         _ => Outcome::Error,
     }
+}
+
+/// Capture source identity before discovery and keep that identity through
+/// selection, execution and append. Read-only discovery never invokes Ruby.
+pub fn record_catalog(
+    root: &Path,
+    catalog: &str,
+    selection: &Selection,
+    runner: &mut dyn Runner,
+    source: &dyn Source,
+    ledger: &Path,
+) -> Result<Vec<Run>, String> {
+    struct Captured<'a> {
+        source: &'a dyn Source,
+        identity: String,
+    }
+    impl Source for Captured<'_> {
+        fn identity(&self) -> Result<String, String> {
+            let actual = self.source.identity()?;
+            if actual != self.identity {
+                return Err("the source changed since discovery; no runs were recorded".into());
+            }
+            Ok(actual)
+        }
+        fn base(&self) -> Result<String, String> {
+            self.source.base()
+        }
+        fn diff_against(&self, base: &str) -> Result<String, String> {
+            self.source.diff_against(base)
+        }
+    }
+    let captured = Captured {
+        source,
+        identity: source.identity()?,
+    };
+    let statements = crate::load_catalog(&crate::DirReader(root.into()), catalog)?;
+    let examples = crate::examples::scan(root, &crate::examples::packages(root)?, &statements)?;
+    captured.identity()?;
+    record(&examples.examples, selection, runner, &captured, ledger)
 }

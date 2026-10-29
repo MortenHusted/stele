@@ -151,7 +151,14 @@ fn example(
             .iter()
             .map(|channel| (*channel).to_string())
             .collect(),
-        package: "fixture".into(),
+        execution: stele_plan::examples::Execution::Cargo {
+            package: "fixture".into(),
+            target: std::path::Path::new(file)
+                .file_stem()
+                .unwrap()
+                .to_string_lossy()
+                .into_owned(),
+        },
         file: file.into(),
         test: test.into(),
         line,
@@ -547,7 +554,10 @@ fn each_package_s_tests_yield_examples_of_that_package() {
         .map(|example| {
             (
                 example.id.as_str(),
-                example.package.as_str(),
+                match &example.execution {
+                    stele_plan::examples::Execution::Cargo { package, .. } => package.as_str(),
+                    stele_plan::examples::Execution::Minitest { .. } => unreachable!(),
+                },
                 example.file.as_str(),
                 example.target(),
                 example.test.as_str(),
@@ -574,4 +584,32 @@ fn each_package_s_tests_yield_examples_of_that_package() {
         ]
     );
     assert!(Path::new(&dir.path().join(&scanned.examples[0].file)).is_file());
+}
+
+#[test]
+fn standalone_minitest_examples_are_discovered() {
+    let root = tempfile::tempdir().unwrap();
+    std::process::Command::new("git")
+        .args(["init", "-q"])
+        .current_dir(root.path())
+        .status()
+        .unwrap();
+    std::fs::create_dir(root.path().join("test")).unwrap();
+    std::fs::write(root.path().join("test/value_test.rb"), "class ValueTest < Minitest::Test\n  # intent: example ruby_value exemplifies walk_exit_status on cli\n  def test_value\n    assert true\n  end\nend\n").unwrap();
+    std::process::Command::new("git")
+        .args(["add", "."])
+        .current_dir(root.path())
+        .status()
+        .unwrap();
+    let found = scan(root.path(), &[], &catalog()).unwrap();
+    assert_eq!(found.examples.len(), 1);
+    assert_eq!(found.examples[0].test, "ValueTest#test_value");
+}
+
+#[test]
+fn cargo_example_keeps_its_historical_digest() {
+    assert_eq!(
+        digest(EXAMPLE),
+        "sha256:3b319e2070432b4b06a9cd6e8d9bac233ba9e0ee4f287fec49005737e498ddda"
+    );
 }

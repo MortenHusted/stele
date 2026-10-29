@@ -373,7 +373,6 @@ fn statements(inputs: &Inputs, found: &Found) -> String {
 /// current text, and the source identity the passing one ran at.
 fn latest_runs(inputs: &Inputs, example: &Example, channel: &str) -> String {
     let runs: Vec<_> = inputs
-        .ledger
         .evaluated_runs()
         .filter(|run| {
             run.example == example.id && run.channel == channel && run.digest == example.digest

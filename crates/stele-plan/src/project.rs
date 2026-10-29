@@ -100,6 +100,21 @@ impl Inputs {
         })
     }
 
+    /// Runs whose digest version and execution provider match. Legacy
+    /// unstamped records keep Cargo semantics; they cannot verify Ruby.
+    pub fn evaluated_runs(&self) -> impl Iterator<Item = &Run> {
+        self.ledger.evaluated_runs().filter(|run| {
+            self.examples
+                .examples
+                .iter()
+                .find(|example| example.id == run.example)
+                .map_or_else(
+                    || run.runner.is_none(),
+                    |example| crate::minitest::compatible_run(example, run),
+                )
+        })
+    }
+
     /// Log entries with their positions, counted from 1 in file order, that
     /// were recorded under the current digest version.
     pub fn evaluated_entries(&self) -> impl Iterator<Item = (usize, &Entry)> {
@@ -162,7 +177,7 @@ pub fn project(inputs: &Inputs, target: &str, code: Option<&Code>) -> Result<Art
         }
         judged.push(entry.item.clone());
     }
-    let runs: Vec<&Run> = inputs.ledger.evaluated_runs().collect();
+    let runs: Vec<&Run> = inputs.evaluated_runs().collect();
     if !runs.is_empty() {
         let basis = inputs.cited(&inputs.ledger.path, inputs.ledger.path.clone());
         for run in runs {

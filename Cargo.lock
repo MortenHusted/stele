@@ -658,8 +658,10 @@ version = "0.5.7"
 dependencies = [
  "codemap-graph",
  "lemmaspec",
+ "libc",
  "proc-macro2",
  "quote",
+ "ruby-prism",
  "serde_json",
  "sha2",
  "syn 3.0.3",
