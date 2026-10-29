@@ -173,8 +173,12 @@ reopenings into a single runtime class.
 
 Methods declared inside arbitrary call blocks retain lexical declarations and
 metrics, but their runtime owners are unverified. They cannot be canonical call
-targets, and implicit or explicit `self` calls inside those blocks remain
-observations. An explicit class or module body establishes a fresh context.
+targets. Implicit or explicit `self` calls in those method bodies, and in
+explicit eval/exec rebinding blocks, remain observations. Ordinary yielding
+blocks retain the existing R2 enclosing-self regime; this does not prove that
+an arbitrary block consumer preserves self. An explicit class or module body
+establishes a fresh context. Mixin calls inside arbitrary call blocks have
+unverified receivers and do not produce canonical heritage edges.
 The gate includes a synthetic redirected-definition and rebound-self oracle.
 This does not infer ActiveSupport::Concern class methods.
 

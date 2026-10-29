@@ -8,7 +8,7 @@ mod common;
 
 #[test]
 #[ignore = "requires the pinned Ruby-LSP operator bundle"]
-fn unknown_blocks_cannot_prove_method_ownership_or_self_context() {
+fn block_owned_methods_and_explicit_rebinding_cannot_prove_calls() {
     let repo = common::make_repo_with(&[(
         "ownership.rb".into(),
         include_str!("fixtures/ruby_block_ownership/ownership.rb").into(),
@@ -56,6 +56,22 @@ fn unknown_blocks_cannot_prove_method_ownership_or_self_context() {
                 "Driver::accepted_after_block".into(),
                 "Driver::helper".into()
             ),
+            (
+                "Driver::accepted_yielding_block".into(),
+                "Driver::helper".into()
+            ),
+            (
+                "Driver::accepted_yielded_response".into(),
+                "Driver::helper".into()
+            ),
+            (
+                "Driver::accepted_yielded_response".into(),
+                "YieldSource::self.perform".into()
+            ),
+            (
+                "EvalDeclared::accepted".into(),
+                "EvalDeclared::helper".into()
+            ),
         ]),
         "block ownership and self context need proof independent of lexical nesting"
     );
@@ -77,4 +93,36 @@ fn unknown_blocks_cannot_prove_method_ownership_or_self_context() {
             "retain lexical method measures {name}"
         );
     }
+}
+
+#[test]
+fn block_mixins_have_no_verified_implicit_receiver_even_with_reopened_binding() {
+    let repo = common::make_repo_with(&[
+        ("first.rb".into(), "module Feature; end\nclass ReopenedEval; end\nclass ActualReceiver; end\n".into()),
+        ("second.rb".into(), "class ReopenedEval\n  ActualReceiver.class_eval do\n    include Feature\n    self.prepend Feature\n    extend Feature\n    class ExplicitReceiver\n      include Feature\n    end\n  end\nend\nmodule OrdinaryYield\n  def self.scope; yield; end\n  scope do\n    include Feature\n  end\nend\n".into()),
+    ]).unwrap();
+    let snapshot = extract(&ExtractOptions {
+        path: repo,
+        language: Language::Ruby,
+        calls_required: false,
+        measures: false,
+        twins: false,
+    })
+    .unwrap();
+    let heritage: Vec<_> = snapshot
+        .edges
+        .iter()
+        .filter(|edge| matches!(edge.kind, EdgeKind::Implements | EdgeKind::Extends))
+        .collect();
+    assert_eq!(
+        heritage.len(),
+        1,
+        "unmodeled block mixins cannot use their lexical scope as runtime receiver"
+    );
+    assert!(
+        heritage[0]
+            .from
+            .ends_with("#ReopenedEval::ExplicitReceiver")
+    );
+    assert!(heritage[0].to.ends_with("#Feature"));
 }

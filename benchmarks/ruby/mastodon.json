@@ -41,7 +41,7 @@
     },
     {
       "test_target": "ruby_block_ownership",
-      "test_name": "unknown_blocks_cannot_prove_method_ownership_or_self_context"
+      "test_name": "block_owned_methods_and_explicit_rebinding_cannot_prove_calls"
     },
     {
       "test_target": "code_ruby_bundle_unavailable",

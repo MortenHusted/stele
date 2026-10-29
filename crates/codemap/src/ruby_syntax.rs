@@ -74,7 +74,7 @@ pub struct RawMixin {
     /// Module reference as written (`Foo` or `Foo::Bar`).
     pub target: String,
     /// Enclosing class/module for implicit or explicit-self mixin calls.
-    /// Other receivers remain unknown. Resolution requires `Some`.
+    /// Call blocks and other receivers remain unknown. Resolution requires `Some`.
     pub receiver_name: Option<String>,
     /// Fully qualified lexical entries at the mixin call, innermost last.
     pub scope: Vec<String>,
@@ -172,6 +172,8 @@ struct Walker<'a> {
     uncertain_instance_methods: Vec<String>,
     unverified_method_owners: Vec<usize>,
     unmodeled_block_depth: usize,
+    unverified_self_context: bool,
+    rebinding_block_start: Option<usize>,
 }
 
 impl<'a> Walker<'a> {
@@ -193,6 +195,8 @@ impl<'a> Walker<'a> {
             uncertain_instance_methods: Vec::new(),
             unverified_method_owners: Vec::new(),
             unmodeled_block_depth: 0,
+            unverified_self_context: false,
+            rebinding_block_start: None,
         }
     }
 
@@ -251,8 +255,10 @@ impl<'a> Walker<'a> {
         self.scope_stack.push(qualified_name);
         self.parent_stack.push(idx);
         let enclosing_blocks = std::mem::replace(&mut self.unmodeled_block_depth, 0);
+        let enclosing_self = std::mem::replace(&mut self.unverified_self_context, false);
         recurse(self);
         self.unmodeled_block_depth = enclosing_blocks;
+        self.unverified_self_context = enclosing_self;
         // Scope must unwind exactly to the pre-entry depth.
         self.scope_stack.truncate(loc_start);
         self.parent_stack
@@ -287,7 +293,9 @@ impl<'a> Walker<'a> {
                     _ => MixinKind::Prepend,
                 };
                 let receiver_name = match node.receiver() {
-                    None | Some(Node::SelfNode { .. }) => self.scope_stack.last().cloned(),
+                    None | Some(Node::SelfNode { .. }) if self.unmodeled_block_depth == 0 => {
+                        self.scope_stack.last().cloned()
+                    }
                     _ => None,
                 };
                 if node.arguments().is_none_or(|args| {
@@ -518,7 +526,10 @@ impl<'pr> Visit<'pr> for Walker<'_> {
         // Methods do not extend the scope chain; nested definitions keep the
         // enclosing class/module as their lexical parent.
         self.def_stack.push(is_singleton);
+        let enclosing_self = self.unverified_self_context;
+        self.unverified_self_context |= self.unmodeled_block_depth > 0;
         visit_def_node(self, node);
+        self.unverified_self_context = enclosing_self;
         self.def_stack.pop();
     }
 
@@ -526,12 +537,31 @@ impl<'pr> Visit<'pr> for Walker<'_> {
         self.visit_call(node);
         // Always continue traversal: arguments and receivers of routed or
         // skipped calls can contain real call sites.
+        let enclosing_rebinding = self.rebinding_block_start;
+        self.rebinding_block_start = if matches!(
+            node.name().as_slice(),
+            b"instance_eval"
+                | b"instance_exec"
+                | b"class_eval"
+                | b"class_exec"
+                | b"module_eval"
+                | b"module_exec"
+        ) {
+            node.block().map(|block| block.location().start_offset())
+        } else {
+            None
+        };
         visit_call_node(self, node);
+        self.rebinding_block_start = enclosing_rebinding;
     }
 
     fn visit_block_node(&mut self, node: &ruby_prism::BlockNode<'pr>) {
         self.unmodeled_block_depth += 1;
+        let enclosing_self = self.unverified_self_context;
+        self.unverified_self_context |=
+            self.rebinding_block_start == Some(node.location().start_offset());
         ruby_prism::visit_block_node(self, node);
+        self.unverified_self_context = enclosing_self;
         self.unmodeled_block_depth -= 1;
     }
 
@@ -547,15 +577,16 @@ impl Walker<'_> {
     /// body. In class/module bodies, singleton defs, and `class << self`
     /// blocks, `self` is the singleton — codemap's static model does not
     /// verify that regime, so those calls are `Other` (observations).
-    /// Call blocks may rebind `self`; their lexical context is insufficient
-    /// until an explicit class/module body establishes its own context.
+    /// Ordinary yielding blocks retain the legacy R2 enclosing-self regime;
+    /// this does not prove an arbitrary block consumer preserves self.
+    /// Explicit eval/exec blocks and block-owned method bodies are unverified.
     fn receiver_shape(&self, node: &CallNode<'_>) -> ReceiverShape {
         match node.receiver() {
             None | Some(Node::SelfNode { .. }) => {
                 let in_instance_def = self.def_stack.last() == Some(&false);
                 if in_instance_def
                     && self.singleton_receivers.is_empty()
-                    && self.unmodeled_block_depth == 0
+                    && !self.unverified_self_context
                 {
                     ReceiverShape::ImplicitSelf
                 } else {
@@ -1040,7 +1071,14 @@ mod tests {
             [
                 &ReceiverShape::Other,
                 &ReceiverShape::Other,
-                &ReceiverShape::ImplicitSelf
+                &ReceiverShape::ImplicitSelf,
+                &ReceiverShape::ImplicitSelf,
+                &ReceiverShape::ImplicitSelf,
+                &ReceiverShape::Other,
+                &ReceiverShape::Other,
+                &ReceiverShape::Other,
+                &ReceiverShape::Other,
+                &ReceiverShape::Other
             ]
         );
         assert!(raw.calls.iter().any(|call| call.raw_name == "helper"
@@ -1051,6 +1089,19 @@ mod tests {
         for index in raw.unverified_method_owners {
             assert!(raw.measures.iter().any(|measure| measure.def == index));
         }
+    }
+
+    #[test]
+    fn block_mixins_keep_unknown_receivers_until_explicit_class_scope() {
+        let raw = extract(
+            "module Lexical\n  Other.class_eval do\n    include Feature\n    self.prepend Feature\n    extend Feature\n    class Explicit\n      include Feature\n    end\n  end\nend\n",
+        );
+        let receivers: Vec<_> = raw
+            .mixins
+            .iter()
+            .map(|mixin| mixin.receiver_name.as_deref())
+            .collect();
+        assert_eq!(receivers, [None, None, None, Some("Lexical::Explicit")]);
     }
 
     #[test]

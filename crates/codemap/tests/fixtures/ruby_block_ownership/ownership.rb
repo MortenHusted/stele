@@ -129,4 +129,50 @@ class Driver
     Object.new.instance_eval { :unrelated }
     helper
   end
+
+  def accepted_yielding_block
+    [1].any? { helper }
+  end
+
+  def accepted_yielded_response
+    YieldSource.perform { self.helper }
+  end
+
+  def rejected_instance_exec
+    Object.new.instance_exec { helper }
+  end
+
+  def rejected_class_eval
+    Module.new.class_eval { helper }
+  end
+
+  def rejected_class_exec
+    Module.new.class_exec { helper }
+  end
+
+  def rejected_module_eval
+    Module.new.module_eval { self.helper }
+  end
+
+  def rejected_module_exec
+    Module.new.module_exec { self.helper }
+  end
+end
+
+class YieldSource
+  def self.perform
+    yield
+  end
+end
+
+Object.new.instance_eval do
+  class EvalDeclared
+    def helper
+      :explicit_context
+    end
+
+    def accepted
+      helper
+    end
+  end
 end
