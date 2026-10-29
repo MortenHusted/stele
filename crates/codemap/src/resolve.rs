@@ -24,6 +24,7 @@ pub struct DefinitionRef {
     pub kind: NodeKind,
     pub scope: Vec<String>,
     pub rel_path: String,
+    pub span: crate::schema::Span,
     /// For Rust lexical proofs, excludes declarations inside callable bodies.
     pub module_item: bool,
 }
@@ -77,6 +78,7 @@ impl DefinitionIndex {
                 // receiver-aware disambiguation pass.
                 scope: scope_from_symbol_key(&n.symbol_key),
                 rel_path: n.provenance.rel_path.clone(),
+                span: n.provenance.span,
                 module_item: !callable_spans
                     .get(n.provenance.rel_path.as_str())
                     .is_some_and(|spans| {
@@ -135,6 +137,16 @@ impl DefinitionIndex {
             }
         }
         Resolution::Unknown
+    }
+
+    fn ruby_declaration(&self, qualified: &str, prov: &Provenance) -> Option<DefinitionRef> {
+        let mut declarations = self.by_qualified.get(qualified)?.iter().filter(|def| {
+            def.rel_path == prov.rel_path
+                && def.span.start_byte <= prov.span.start_byte
+                && prov.span.end_byte <= def.span.end_byte
+        });
+        let declaration = declarations.next()?;
+        declarations.next().is_none().then(|| declaration.clone())
     }
 
     /// Look up a PHP qualified name (`App\Model::User`) against the
@@ -215,8 +227,9 @@ fn scope_from_symbol_key(key: &str) -> Vec<String> {
 
 /// Attempt to build a mixin edge from a raw Ruby mixin observation.
 ///
-/// Returns `Some(edge)` only when the receiving class/module and the mixin
-/// target both resolve to unique in-repository definitions. The edge kind
+/// Returns `Some(edge)` only when the receiving class/module is identified
+/// by its source declaration and the mixin target resolves to a unique
+/// in-repository definition. The edge kind
 /// carries the mixin flavor: `include`/`prepend` become `Implements`
 /// (instance-method ancestry); `extend` becomes `Extends` (singleton-method
 /// ancestry), so the semantic edge policy can tell the regimes apart.
@@ -226,9 +239,7 @@ pub fn resolve_mixin(
     prov: &Provenance,
 ) -> Option<Edge> {
     let receiver_name = mixin.receiver_name.as_deref()?;
-    let Resolution::Unique(from) = index.resolve_qualified_with_sep(receiver_name) else {
-        return None;
-    };
+    let from = index.ruby_declaration(receiver_name, prov)?;
     let Resolution::Unique(to) = index.resolve_constant(&mixin.target, &mixin.scope) else {
         return None;
     };
@@ -260,15 +271,14 @@ pub fn resolve_mixin(
 }
 
 /// Attempt to build an `inherits` edge from a raw Ruby superclass
-/// observation. Same uniqueness discipline as [`resolve_mixin`].
+/// observation. Same source-binding and target uniqueness discipline as
+/// [`resolve_mixin`].
 pub fn resolve_inherits(
     inherit: &crate::ruby_syntax::RawInherit,
     index: &DefinitionIndex,
     prov: &Provenance,
 ) -> Option<Edge> {
-    let Resolution::Unique(from) = index.resolve_qualified_with_sep(&inherit.class_name) else {
-        return None;
-    };
+    let from = index.ruby_declaration(&inherit.class_name, prov)?;
     let Resolution::Unique(to) = index.resolve_constant(&inherit.superclass, &inherit.scope) else {
         return None;
     };

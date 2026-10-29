@@ -166,6 +166,128 @@ fn heritage_edges_require_exact_lexical_class_and_module_constants() {
 }
 
 #[test]
+fn reopened_receivers_bind_heritage_to_the_exact_source_declaration() {
+    let first = "class Base; end\nmodule Feature; end\nmodule Priority; end\nmodule ClassFeature; end\nclass Host < Base\n  include Feature\nend\nmodule Group\n  include Feature\nend\nclass Local < Base\n  include Feature\nend\nclass Local\n  prepend Priority\n  extend ClassFeature\nend\n";
+    let second = "class Host\n  prepend Priority\n  extend ClassFeature\nend\nmodule Group\n  extend ClassFeature\nend\n";
+    let repo = common::make_repo_with(&[
+        ("first.rb".into(), first.into()),
+        ("second.rb".into(), second.into()),
+    ])
+    .unwrap();
+    let options = ExtractOptions {
+        path: repo,
+        language: Language::Ruby,
+        calls_required: false,
+        measures: false,
+        twins: false,
+    };
+    let snapshot = extract(&options).unwrap();
+    let node = |id: &str| snapshot.nodes.iter().find(|node| node.id == id).unwrap();
+    let actual: BTreeSet<_> = snapshot
+        .edges
+        .iter()
+        .filter(|edge| {
+            matches!(
+                edge.kind,
+                EdgeKind::Inherits | EdgeKind::Implements | EdgeKind::Extends
+            )
+        })
+        .map(|edge| {
+            let from = node(&edge.from);
+            assert_eq!(from.provenance.rel_path, edge.provenance.rel_path);
+            assert!(from.provenance.span.start_byte <= edge.provenance.span.start_byte);
+            assert!(edge.provenance.span.end_byte <= from.provenance.span.end_byte);
+            (
+                format!("{:?}", edge.kind),
+                from.provenance.rel_path.as_str(),
+                from.provenance.span.start_byte,
+                node(&edge.to).name.as_str(),
+            )
+        })
+        .collect();
+    let local_reopened = first.rfind("class Local").unwrap();
+    let expected: BTreeSet<_> = [
+        (
+            EdgeKind::Inherits,
+            "first.rb",
+            first.find("class Host").unwrap(),
+            "Base",
+        ),
+        (
+            EdgeKind::Implements,
+            "first.rb",
+            first.find("class Host").unwrap(),
+            "Feature",
+        ),
+        (
+            EdgeKind::Implements,
+            "first.rb",
+            first.find("module Group").unwrap(),
+            "Feature",
+        ),
+        (
+            EdgeKind::Inherits,
+            "first.rb",
+            first.find("class Local").unwrap(),
+            "Base",
+        ),
+        (
+            EdgeKind::Implements,
+            "first.rb",
+            first.find("class Local").unwrap(),
+            "Feature",
+        ),
+        (EdgeKind::Implements, "first.rb", local_reopened, "Priority"),
+        (
+            EdgeKind::Extends,
+            "first.rb",
+            local_reopened,
+            "ClassFeature",
+        ),
+        (EdgeKind::Implements, "second.rb", 0, "Priority"),
+        (EdgeKind::Extends, "second.rb", 0, "ClassFeature"),
+        (
+            EdgeKind::Extends,
+            "second.rb",
+            second.find("module Group").unwrap(),
+            "ClassFeature",
+        ),
+    ]
+    .into_iter()
+    .map(|(kind, path, start, target)| (format!("{kind:?}"), path, start, target))
+    .collect();
+    assert_eq!(actual, expected);
+    assert_eq!(snapshot, extract(&options).unwrap());
+}
+
+#[test]
+fn reopened_receivers_do_not_disambiguate_heritage_targets() {
+    let repo = common::make_repo_with(&[
+        (
+            "first.rb".into(),
+            "class Base; end\nmodule Feature; end\nclass Host < Base\n  include Feature\n  prepend Missing\n  extend External::Feature\n  include Base\nend\nclass WrongKind < Feature; end\n".into(),
+        ),
+        (
+            "second.rb".into(),
+            "class Base; end\nmodule Feature; end\nclass Host; end\nclass WrongKind; end\n".into(),
+        ),
+    ])
+    .unwrap();
+    let snapshot = extract(&ExtractOptions {
+        path: repo,
+        language: Language::Ruby,
+        calls_required: false,
+        measures: false,
+        twins: false,
+    })
+    .unwrap();
+    assert!(!snapshot.edges.iter().any(|edge| matches!(
+        edge.kind,
+        EdgeKind::Inherits | EdgeKind::Implements | EdgeKind::Extends
+    )));
+}
+
+#[test]
 #[ignore = "requires the pinned Ruby-LSP operator bundle"]
 fn inherited_r2_call_requires_the_qualified_superclass_edge() {
     let repo = common::make_repo_with(&[("app.rb".into(), SOURCE.into())]).unwrap();
