@@ -176,6 +176,7 @@ impl Project {
             .iter()
             .flat_map(|example| {
                 example.channels.iter().map(|channel| Run {
+                    runner: None,
                     example: example.id.clone(),
                     digest: example.digest.clone(),
                     digest_version: DIGEST_VERSION,
@@ -676,6 +677,7 @@ fn approvals_and_runs_recorded_under_another_digest_version_are_listed_and_not_e
     runs::append(
         &project.dir().join(LEDGER),
         &[Run {
+            runner: None,
             example: "open_exits_one".into(),
             digest,
             digest_version: DIGEST_VERSION - 1,

@@ -1,8 +1,8 @@
-//! Examples: `#[test]` functions in the `tests/*.rs` files of the
-//! repository's Cargo packages, each tagged with the statement it exemplifies
-//! and the channels it runs on.
+//! Examples: tagged Cargo integration tests and tracked standalone Minitest
+//! tests, each naming the statement it exemplifies and its channels. Discovery
+//! never executes Ruby.
 
-use std::{collections::BTreeMap, ffi::OsStr, fs, io, path::Path, process::Command};
+use std::{collections::BTreeMap, fs, io, path::Path, process::Command};
 
 use syn::{Attribute, Expr, ExprLit, Item, ItemFn, ItemMod, Lit, Meta};
 
@@ -26,24 +26,37 @@ pub struct Example {
     pub statement: String,
     /// Sorted.
     pub channels: Vec<String>,
-    /// The package the test belongs to.
-    pub package: String,
+    /// The provider-specific execution candidate.
+    pub execution: Execution,
     /// The test file, by its `/`-separated path from the repository root.
     pub file: String,
-    /// `module::function` inside the file, as `cargo test -- --exact` takes it.
+    /// Exact provider selector: `module::function` or `Class#method`.
     pub test: String,
     /// The tag's line in the file.
     pub line: usize,
     pub digest: String,
 }
 
+/// A source-addressed execution candidate; discovery never executes Ruby.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Execution {
+    Cargo {
+        package: String,
+        target: String,
+    },
+    Minitest {
+        class: String,
+        method: String,
+        definition_line: usize,
+    },
+}
+
 impl Example {
-    /// The test target, the file's stem, as `cargo test --test` takes it.
     pub fn target(&self) -> &str {
-        Path::new(&self.file)
-            .file_stem()
-            .and_then(OsStr::to_str)
-            .unwrap_or_default()
+        match &self.execution {
+            Execution::Cargo { target, .. } => target,
+            Execution::Minitest { .. } => &self.test,
+        }
     }
 }
 
@@ -136,7 +149,8 @@ struct Found {
 /// Scan the `*.rs` files directly inside each package's `tests` directory,
 /// in path order; a package without one has no examples. Tag problems become
 /// issues. An unreadable file, a parse error or two tags claiming one
-/// example ID fail, with locations given as `path:line` from `root`.
+/// example ID fail, with locations given as `path:line` from `root`. Tracked
+/// `test/**/*_test.rb` candidates share the same admission and ID namespace.
 pub fn scan(
     root: &Path,
     packages: &[Package],
@@ -162,6 +176,7 @@ pub fn scan(
             admit(&collected, found, catalog, &mut claimed, &mut scan)?;
         }
     }
+    crate::minitest::scan(root, catalog, &mut claimed, &mut scan)?;
     Ok(scan)
 }
 
@@ -243,7 +258,14 @@ fn admit(
         id,
         statement,
         channels,
-        package: collected.package.into(),
+        execution: Execution::Cargo {
+            package: collected.package.into(),
+            target: Path::new(&collected.file)
+                .file_stem()
+                .unwrap()
+                .to_string_lossy()
+                .into_owned(),
+        },
         file: collected.file.clone(),
         test: found.test.clone(),
         line: found.line,
@@ -322,7 +344,7 @@ fn doc_lines(attributes: &[Attribute]) -> Vec<(usize, String)> {
     lines
 }
 
-fn parse_tag(tag: &str) -> Option<(String, String, Vec<String>)> {
+pub(crate) fn parse_tag(tag: &str) -> Option<(String, String, Vec<String>)> {
     let words: Vec<&str> = tag.split_whitespace().collect();
     let [
         "intent:",
@@ -356,7 +378,7 @@ fn is_identifier(word: &str) -> bool {
         && word.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
 }
 
-fn cannot_exemplify(
+pub(crate) fn cannot_exemplify(
     catalog: &BTreeMap<String, Statement>,
     statement: &str,
     channels: &[String],

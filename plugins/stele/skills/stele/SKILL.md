@@ -64,7 +64,9 @@ project. Only when working on Stele's own source, run the checkout with
 - **Verified calls need the language's resolver.** Call-graph questions and
   the architecture and symbols checks use rust-analyzer for Rust, and the
   ruby-lsp, phpactor or gopls bundle for Ruby, PHP or Go. Without it Stele
-  exits 2 instead of guessing. For Rust, a `rust-analyzer` on `PATH` that is
+  refuses to guess. Resolver-required `stele code extract` fails with exit 1;
+  `stele check` extraction or setup failures exit 2. Read stderr to distinguish
+  these errors from a check finding. For Rust, a `rust-analyzer` on `PATH` that is
   only a rustup proxy is not enough: the component must be installed for
   the toolchain the repository pins (`rustup component add rust-analyzer`);
   suggest that to the user rather than running it. `stele check` has no

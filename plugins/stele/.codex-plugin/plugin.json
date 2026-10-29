@@ -1,6 +1,6 @@
 {
   "name": "stele",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "Answer questions about code from deterministic facts, and check code and typed specifications.",
   "author": {
     "name": "Morten Lochmann",

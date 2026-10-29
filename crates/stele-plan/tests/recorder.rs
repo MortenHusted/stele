@@ -15,7 +15,9 @@ use stele_plan::{
     digest::DIGEST_VERSION,
     examples::Example,
     identity::Repo,
-    recorder::{CargoTest, RunOutput, Runner, Selection, Source, SourceBaseline, record},
+    recorder::{
+        CargoTest, ExecutionResult, RunOutput, Runner, Selection, Source, SourceBaseline, record,
+    },
     runs::{self, Outcome, Run},
 };
 
@@ -53,9 +55,16 @@ impl FakeRunner {
 }
 
 impl Runner for FakeRunner {
-    fn run(&mut self, example: &Example, channel: &str) -> Result<RunOutput, String> {
+    fn validate(&self, _: &Example) -> Result<(), String> {
+        Ok(())
+    }
+
+    fn run(&mut self, example: &Example, channel: &str) -> Result<ExecutionResult, String> {
         self.calls.push((
-            example.package.clone(),
+            match &example.execution {
+                stele_plan::examples::Execution::Cargo { package, .. } => package.clone(),
+                stele_plan::examples::Execution::Minitest { .. } => unreachable!(),
+            },
             example.target().into(),
             example.test.clone(),
             channel.into(),
@@ -63,6 +72,10 @@ impl Runner for FakeRunner {
         self.outputs
             .get(&example.test)
             .cloned()
+            .map(|ran| ExecutionResult {
+                outcome: stele_plan::recorder::classify_cargo(&ran),
+                runner: None,
+            })
             .ok_or_else(|| format!("no canned output for {}", example.test))
     }
 }
@@ -109,7 +122,10 @@ fn example(id: &str, test: &str, channels: &[&str]) -> Example {
             .iter()
             .map(|channel| (*channel).to_string())
             .collect(),
-        package: "walker".into(),
+        execution: stele_plan::examples::Execution::Cargo {
+            package: "walker".into(),
+            target: "cli".into(),
+        },
         file: "crates/walker/tests/cli.rs".into(),
         test: test.into(),
         line: 1,
@@ -119,6 +135,7 @@ fn example(id: &str, test: &str, channels: &[&str]) -> Example {
 
 fn expected(example: &str, channel: &str, outcome: Outcome) -> Run {
     Run {
+        runner: None,
         example: example.into(),
         digest: format!("sha256:{example}"),
         digest_version: DIGEST_VERSION,
@@ -423,6 +440,7 @@ fn the_ledger_reader_rejects_malformed_entries_with_their_location() {
     assert_eq!(
         runs::parse(valid, LEDGER).unwrap(),
         [Run {
+            runner: None,
             example: "a".into(),
             digest: "sha256:d".into(),
             digest_version: 1,

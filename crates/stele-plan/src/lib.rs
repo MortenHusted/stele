@@ -25,6 +25,7 @@ pub mod examples;
 pub mod identity;
 pub mod impact;
 mod load;
+pub mod minitest;
 pub mod project;
 pub mod recorder;
 pub mod report;

@@ -16,7 +16,7 @@ exception narrowing those, is verified.
 
 ## Examples
 
-An example is a `#[test]` in a package's `tests/*.rs`, tagged with the
+A Cargo example is a `#[test]` in a package's `tests/*.rs`, tagged with the
 statement it exemplifies and the channels it runs on:
 
 ```rust
@@ -40,7 +40,7 @@ stele intent record --example greets_ada    # after a deliberate break: expect `
 stele intent record                         # on a clean tree: expect `pass`
 ```
 
-`record` runs each example with `cargo test --locked -p <package>`, once
+The default Cargo runner executes `cargo test --locked -p <package>`, once
 per channel, and appends to `intent/runs.stele`. A passing run counts
 only at the source identity it was recorded at: any change to a tracked
 file needs green recorded again. A failing run keeps the diff of its
@@ -55,6 +55,58 @@ identity, and its observed failure patches must reproduce their recorded
 source identities when applied to that baseline. Do not rewrite existing
 commit-based observations into source-based ones. The two ledgers are outside
 source identity, so adding their evidence does not create a self-reference.
+
+## Standalone Minitest
+
+Use `--runner minitest` explicitly on Unix. Discovery parses tracked
+`test/**/*_test.rb` without running Ruby. The initial profile accepts direct
+`Minitest::Test` subclasses with ordinary `def test_*` methods; class-body DSLs,
+conditional definitions, reopened classes and symlinked tests are refused.
+Selected examples must all belong to the chosen runner.
+
+For a catalog statement `returns_value` with channel `cli`, a test can read:
+
+```ruby
+require "minitest/autorun"
+require_relative "../lib/value"
+
+class ValueTest < Minitest::Test
+  # intent: example checks_value exemplifies returns_value on cli
+  def test_returns_value
+    assert_equal 7, value
+  end
+end
+```
+
+Prepare a Ruby runtime separately. Native verification uses Ruby 4.0.9.
+The receipt profile accepts Minitest gem/runtime pairs `6.0.6`/`6.0.6` and
+`5.27.0`/`5.26.2`; the published 5.27.0 gem reports the older runtime constant,
+so both identities are retained. A separate gem directory keeps this runtime
+independent of the extractor's Ruby-LSP tool bundle:
+
+```sh
+export GEM_HOME="$HOME/.local/share/stele/minitest-gems"
+export GEM_PATH="$GEM_HOME"
+gem install minitest --version 6.0.6 --no-document
+stele intent record --runner minitest --example checks_value
+```
+
+The runner selects exactly `ValueTest#test_returns_value` and validates a
+structured completion receipt, runtime identities and source location. Only
+assertion failures count as useful red evidence. Boot errors, missing tests,
+malformed receipts, runtime errors and timeouts are errors; skips supply no red
+or green evidence. A timeout kills the run's owned Unix process group.
+
+Ruby example approval covers the normalized whole test file. Changing that file
+requires approval again; historical Cargo digests and unstamped Cargo ledgers
+retain their meaning. Minitest runs add a runner stamp and require a reader
+supporting the `minitest/1` profile. New examples remain unapproved until their
+owner explicitly approves them.
+
+This executes trusted project tests. Tests may load helpers and external gems;
+those runtime inputs are not source-addressed repository facts. It is not a
+sandbox. Rails roots are refused before execution; there is no Rails boot,
+Bundler invocation, dependency installation or database preparation in `record`.
 
 ## Approvals
 

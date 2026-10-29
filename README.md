@@ -255,6 +255,14 @@ and `stele intent impact main` lists the statements a change touches.
 The skill's `references/plans.md` and `references/catalog.md` describe
 the formats.
 
+Standalone Ruby projects can record examples with
+`stele intent record --runner minitest --example <id>`. This is explicit Unix
+execution of tracked `test/**/*_test.rb` methods in direct `Minitest::Test`
+subclasses. Cargo remains the default runner. Rails execution needs a separate
+profile; the standalone runner refuses Rails roots and performs no Bundler or
+database setup. See [the catalog guide](plugins/stele/skills/stele/references/catalog.md#standalone-minitest)
+for supported runtimes and example tags.
+
 ## Usage
 
 ```sh
