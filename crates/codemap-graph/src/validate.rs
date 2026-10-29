@@ -72,7 +72,7 @@ pub fn validate(snapshot: &Snapshot) -> Result<()> {
     validate_profiled_census(snapshot, &mut errors);
     validate_measures(snapshot, &mut errors);
     validate_twins(snapshot, &mut errors);
-    validate_report(snapshot, &mut errors);
+    validate_report(snapshot, &files_by_path, &mut errors);
 
     if errors.is_empty() {
         Ok(())
@@ -1080,7 +1080,26 @@ fn validate_clone_memberships(
     }
 }
 
-fn validate_report(snapshot: &Snapshot, errors: &mut Vec<String>) {
+fn validate_report(
+    snapshot: &Snapshot,
+    files_by_path: &HashMap<&str, &FileRecord>,
+    errors: &mut Vec<String>,
+) {
+    let parse_files = &snapshot.report.parse_error_files;
+    if !parse_files.is_empty() {
+        for (path, count) in parse_files {
+            if *count == 0 || !files_by_path.contains_key(path.as_str()) {
+                errors.push(format!("invalid parse error file record: {path}"));
+            }
+        }
+        if parse_files
+            .values()
+            .try_fold(0usize, |total, count| total.checked_add(*count))
+            != Some(snapshot.report.parse_errors)
+        {
+            errors.push("per-file parse errors do not match report total".to_string());
+        }
+    }
     if snapshot.report.files_scanned != snapshot.files.len() {
         errors.push(format!(
             "report files_scanned {} does not match {} file records",
@@ -1597,6 +1616,7 @@ mod tests {
                 files_scanned: 1,
                 files_skipped: 0,
                 parse_errors: 0,
+                parse_error_files: std::collections::BTreeMap::new(),
                 node_counts,
                 edge_counts: std::collections::BTreeMap::new(),
                 call_sites_by_category: std::collections::BTreeMap::new(),

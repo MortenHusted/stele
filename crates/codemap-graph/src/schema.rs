@@ -1158,6 +1158,11 @@ pub struct Report {
     pub files_scanned: usize,
     pub files_skipped: usize,
     pub parse_errors: usize,
+    /// Positive parser error counts by recorded source path, populated by Rust.
+    /// Older snapshots and other adapters may have only the total; an absent
+    /// map means locations are unknown.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub parse_error_files: BTreeMap<String, usize>,
     pub node_counts: BTreeMap<String, usize>,
     pub edge_counts: BTreeMap<String, usize>,
     pub call_sites_by_category: BTreeMap<String, usize>,
