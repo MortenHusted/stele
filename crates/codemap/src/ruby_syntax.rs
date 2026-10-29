@@ -108,6 +108,8 @@ pub struct RawFile {
     /// Known or possible constructor changes; None means an unknown receiver.
     pub constructor_overrides: Vec<(Option<String>, Vec<String>)>,
     pub uncertain_instance_methods: Vec<String>,
+    /// Lexical method definition indices whose runtime owner depends on a call block.
+    pub unverified_method_owners: Vec<usize>,
 }
 
 /// Extract structural observations from a single Ruby source file.
@@ -143,6 +145,7 @@ pub fn extract_file(_rel_path: &str, source: &[u8]) -> Result<RawFile> {
         file_lines: count_lines(&classes, 1, u32::MAX),
         constructor_overrides: walker.constructor_overrides,
         uncertain_instance_methods: walker.uncertain_instance_methods,
+        unverified_method_owners: walker.unverified_method_owners,
         line_classes: classes,
     })
 }
@@ -167,6 +170,8 @@ struct Walker<'a> {
     singleton_receivers: Vec<Option<String>>,
     constructor_overrides: Vec<(Option<String>, Vec<String>)>,
     uncertain_instance_methods: Vec<String>,
+    unverified_method_owners: Vec<usize>,
+    unmodeled_block_depth: usize,
 }
 
 impl<'a> Walker<'a> {
@@ -186,6 +191,8 @@ impl<'a> Walker<'a> {
             singleton_receivers: Vec::new(),
             constructor_overrides: Vec::new(),
             uncertain_instance_methods: Vec::new(),
+            unverified_method_owners: Vec::new(),
+            unmodeled_block_depth: 0,
         }
     }
 
@@ -243,7 +250,9 @@ impl<'a> Walker<'a> {
 
         self.scope_stack.push(qualified_name);
         self.parent_stack.push(idx);
+        let enclosing_blocks = std::mem::replace(&mut self.unmodeled_block_depth, 0);
         recurse(self);
+        self.unmodeled_block_depth = enclosing_blocks;
         // Scope must unwind exactly to the pre-entry depth.
         self.scope_stack.truncate(loc_start);
         self.parent_stack
@@ -496,6 +505,9 @@ impl<'pr> Visit<'pr> for Walker<'_> {
         // semantic resolution can locate call sites inside it.
         let loc = node.location();
         let def = self.push_definition(NodeKind::Method, &name, &loc);
+        if self.unmodeled_block_depth > 0 {
+            self.unverified_method_owners.push(def);
+        }
         let span = self.defs[def].span;
         self.measures.push(RawMeasure {
             def,
@@ -517,6 +529,12 @@ impl<'pr> Visit<'pr> for Walker<'_> {
         visit_call_node(self, node);
     }
 
+    fn visit_block_node(&mut self, node: &ruby_prism::BlockNode<'pr>) {
+        self.unmodeled_block_depth += 1;
+        ruby_prism::visit_block_node(self, node);
+        self.unmodeled_block_depth -= 1;
+    }
+
     fn visit_program_node(&mut self, node: &ruby_prism::ProgramNode<'pr>) {
         visit_program_node(self, node);
     }
@@ -529,11 +547,16 @@ impl Walker<'_> {
     /// body. In class/module bodies, singleton defs, and `class << self`
     /// blocks, `self` is the singleton — codemap's static model does not
     /// verify that regime, so those calls are `Other` (observations).
+    /// Call blocks may rebind `self`; their lexical context is insufficient
+    /// until an explicit class/module body establishes its own context.
     fn receiver_shape(&self, node: &CallNode<'_>) -> ReceiverShape {
         match node.receiver() {
             None | Some(Node::SelfNode { .. }) => {
                 let in_instance_def = self.def_stack.last() == Some(&false);
-                if in_instance_def && self.singleton_receivers.is_empty() {
+                if in_instance_def
+                    && self.singleton_receivers.is_empty()
+                    && self.unmodeled_block_depth == 0
+                {
                     ReceiverShape::ImplicitSelf
                 } else {
                     ReceiverShape::Other
@@ -978,6 +1001,56 @@ mod tests {
         assert_eq!(user.scope, vec!["Repo".to_string()]);
         let save = f.defs.iter().find(|d| d.name == "save").unwrap();
         assert_eq!(save.scope, vec!["Repo".to_string(), "User".to_string()]);
+    }
+
+    #[test]
+    fn call_blocks_preserve_lexical_defs_without_proving_owners_or_self() {
+        let raw = extract(include_str!(
+            "../tests/fixtures/ruby_block_ownership/ownership.rb"
+        ));
+        assert_eq!(raw.parse_errors, 0);
+        let unverified: Vec<_> = raw
+            .unverified_method_owners
+            .iter()
+            .map(|index| raw.defs[*index].name.as_str())
+            .collect();
+        assert_eq!(
+            unverified,
+            [
+                "routed",
+                "misplaced",
+                "unverified",
+                "self.unverified_singleton"
+            ]
+        );
+        assert!(
+            raw.calls
+                .iter()
+                .filter(|call| call.raw_name == "lexical_helper")
+                .all(|call| call.receiver == ReceiverShape::Other)
+        );
+        let driver_helpers: Vec<_> = raw
+            .calls
+            .iter()
+            .filter(|call| call.raw_name == "helper" && call.scope == ["Driver"])
+            .map(|call| &call.receiver)
+            .collect();
+        assert_eq!(
+            driver_helpers,
+            [
+                &ReceiverShape::Other,
+                &ReceiverShape::Other,
+                &ReceiverShape::ImplicitSelf
+            ]
+        );
+        assert!(raw.calls.iter().any(|call| call.raw_name == "helper"
+            && call.scope == ["Yielding", "Yielding::Explicit"]
+            && call.receiver == ReceiverShape::ImplicitSelf));
+        assert!(raw.calls.iter().any(|call| call.raw_name == "value"
+            && call.receiver == ReceiverShape::Constant("Utility".into())));
+        for index in raw.unverified_method_owners {
+            assert!(raw.measures.iter().any(|measure| measure.def == index));
+        }
     }
 
     #[test]

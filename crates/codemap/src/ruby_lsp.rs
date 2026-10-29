@@ -339,6 +339,7 @@ pub struct PolicyModel {
     constructor_classes: HashSet<String>,
     blocked_constructors: HashSet<String>,
     uncertain_instance_methods: HashSet<String>,
+    unverified_method_owners: HashSet<String>,
 }
 
 impl PolicyModel {
@@ -420,17 +421,24 @@ impl PolicyModel {
                 .collect(),
             blocked_constructors,
             uncertain_instance_methods: HashSet::new(),
+            unverified_method_owners: HashSet::new(),
         }
     }
 
-    /// A missing heritage edge is uncertainty, not evidence of a default constructor.
-    pub fn verify_constructor_sources(
+    /// Verify runtime method owners and constructor sources independently of LSP answers.
+    pub fn verify_ruby_source_contexts(
         &mut self,
         sources: &BTreeMap<&str, &[u8]>,
         definitions: &DefinitionIndex,
+        node_index: &NodeIndex,
     ) -> Result<()> {
         for (path, source) in sources {
             let raw = crate::ruby_syntax::extract_file(path, source)?;
+            for def in &raw.unverified_method_owners {
+                if let Some(id) = node_index.find(path, raw.defs[*def].span.start_byte) {
+                    self.unverified_method_owners.insert(id.to_owned());
+                }
+            }
             self.uncertain_instance_methods
                 .extend(raw.uncertain_instance_methods);
             if raw.parse_errors != 0 {
@@ -556,7 +564,9 @@ impl PolicyModel {
     /// - Direct construction (`C.new.m`): instance methods only, after the
     ///   constructor provider and source heritage have been verified.
     pub fn admit(&self, receiver_class: &str, shape: &ReceiverShape, target: &str) -> bool {
-        if !self.class_ids.contains(receiver_class) {
+        if !self.class_ids.contains(receiver_class)
+            || self.unverified_method_owners.contains(target)
+        {
             return false;
         }
         let singleton_target = target.rsplit("::").next().is_some_and(|name| {
