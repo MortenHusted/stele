@@ -202,11 +202,12 @@ pub struct ChangeReport {
     pub added_callables: usize,
     pub removed_callables: usize,
     pub moved_callables: usize,
-    /// Clone groups in the head that the base did not carry (by content
+    /// Repository-wide clone groups, regardless of report scope.
+    /// Groups in the head that the base did not carry (by content
     /// id), heaviest first. Listed next to `moved_callables`: a callable
     /// `infer_moves` paired is a move, never a clone. Absent without clone measures.
     pub clone_groups_introduced: Option<Vec<CloneDelta>>,
-    /// Clone groups the base carried and the head does not; absent without clone measures.
+    /// Repository-wide groups the base carried and the head does not; absent without clone measures.
     pub clone_groups_removed: Option<usize>,
     /// [`policy::RATIO_NEVER_ALONE`]: the reason an improved erosion is not
     /// to be read alone, when there is one.
