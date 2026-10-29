@@ -4,6 +4,7 @@
 //! or performs transport. All commands are local and write only requested
 //! local output.
 
+use std::io::Write;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -11,6 +12,32 @@ use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 
 use crate::{ExtractOptions, extract, extract_worktree, to_json};
+
+macro_rules! outputln {
+    ($($arg:tt)*) => {
+        write_stdout(format_args!($($arg)*))?
+    };
+}
+
+#[derive(Debug)]
+struct StdoutError(std::io::Error);
+
+impl std::fmt::Display for StdoutError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "write stdout: {}", self.0)
+    }
+}
+
+impl std::error::Error for StdoutError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(&self.0)
+    }
+}
+
+fn write_stdout(args: std::fmt::Arguments<'_>) -> Result<()> {
+    writeln!(std::io::stdout().lock(), "{args}").map_err(StdoutError)?;
+    Ok(())
+}
 
 /// Standalone, deterministic, source-addressed Rust code-architecture extractor.
 #[derive(Parser, Debug)]
@@ -379,6 +406,12 @@ impl From<LanguageArg> for crate::schema::Language {
 pub fn dispatch(command: Command) -> ExitCode {
     match run(Cli { command }) {
         Ok(()) => ExitCode::SUCCESS,
+        Err(e)
+            if e.downcast_ref::<StdoutError>()
+                .is_some_and(|error| error.0.kind() == std::io::ErrorKind::BrokenPipe) =>
+        {
+            ExitCode::SUCCESS
+        }
         Err(e) => {
             eprintln!("stele code: {e:#}");
             ExitCode::FAILURE
@@ -563,7 +596,7 @@ fn run(cli: Cli) -> Result<()> {
             let json = to_json(&snapshot)?;
             match out {
                 Some(p) => std::fs::write(&p, &json)?,
-                None => println!("{json}"),
+                None => outputln!("{json}"),
             }
             if let Some(progress) = progress {
                 progress.finish();
@@ -574,7 +607,7 @@ fn run(cli: Cli) -> Result<()> {
             let bytes = std::fs::read_to_string(&file)?;
             let snapshot: crate::Snapshot = serde_json::from_str(&bytes)?;
             crate::validate(&snapshot)?;
-            println!(
+            outputln!(
                 "ok: {} nodes, {} edges",
                 snapshot.nodes.len(),
                 snapshot.edges.len()
@@ -584,7 +617,7 @@ fn run(cli: Cli) -> Result<()> {
         Command::Report { file } => {
             let bytes = std::fs::read_to_string(&file)?;
             let snapshot: crate::Snapshot = serde_json::from_str(&bytes)?;
-            print_report(&snapshot);
+            print_report(&snapshot)?;
             Ok(())
         }
         Command::Locate { query, file, json } => run_locate(&query, &file, json),
@@ -736,18 +769,18 @@ fn run_locate(query: &str, file: &std::path::Path, json: bool) -> Result<()> {
     let snapshot = crate::load_snapshot(file)?;
     let result = codemap_graph::Graph::from_snapshot(&snapshot).locate(query)?;
     if json {
-        println!("{}", serde_json::to_string_pretty(&result)?);
+        outputln!("{}", serde_json::to_string_pretty(&result)?);
     } else {
-        println!("Snapshot: {}", result.snapshot_id);
-        println!("Location: {}", result.query);
-        println!("Executable classification: unsupported (declaration spans only)");
+        outputln!("Snapshot: {}", result.snapshot_id);
+        outputln!("Location: {}", result.query);
+        outputln!("Executable classification: unsupported (declaration spans only)");
         if result.definitions.is_empty() {
-            println!("Containing definitions: none");
+            outputln!("Containing definitions: none");
         } else {
-            println!("Containing definitions:");
+            outputln!("Containing definitions:");
             for node in result.definitions {
                 let span = node.provenance.span;
-                println!(
+                outputln!(
                     "  {} {} [{}] {}:{}:{}-{}:{} (end exclusive; columns from 0)",
                     node.kind,
                     node.name,
@@ -832,22 +865,22 @@ fn run_context(
     let g = crate::Graph::from_snapshot(&snap);
     let id = resolve_to_id(&g, query)?;
     let ctx = g.context(&id).expect("resolved node has context");
-    println!("{}  {}  ({})", ctx.kind, ctx.name, ctx.symbol_key);
-    println!("file: {}", ctx.rel_path);
+    outputln!("{}  {}  ({})", ctx.kind, ctx.name, ctx.symbol_key);
+    outputln!("file: {}", ctx.rel_path);
     if let Some(c) = &ctx.container {
-        println!("contained by: {c}");
+        outputln!("contained by: {c}");
     }
-    println!("fan-in: {}  fan-out: {}", ctx.fan_in, ctx.fan_out);
+    outputln!("fan-in: {}  fan-out: {}", ctx.fan_in, ctx.fan_out);
     if !ctx.incoming.is_empty() {
-        println!("incoming:");
+        outputln!("incoming:");
         for (k, from, rel) in &ctx.incoming {
-            println!("  {k:<10} <- {from}  [{rel}]");
+            outputln!("  {k:<10} <- {from}  [{rel}]");
         }
     }
     if !ctx.outgoing.is_empty() {
-        println!("outgoing:");
+        outputln!("outgoing:");
         for (k, to, rel) in &ctx.outgoing {
-            println!("  {k:<10} -> {to}  [{rel}]");
+            outputln!("  {k:<10} -> {to}  [{rel}]");
         }
     }
     Ok(())
@@ -877,7 +910,7 @@ fn run_impact(
     } else {
         ks.iter().map(|k| k.tag()).collect::<Vec<_>>().join(",")
     };
-    println!("impact of {id}  direction={direction}  depth={depth}  kinds={label}");
+    outputln!("impact of {id}  direction={direction}  depth={depth}  kinds={label}");
     let mut by_depth: std::collections::BTreeMap<u32, Vec<&crate::ImpactNode>> =
         std::collections::BTreeMap::new();
     let imp = g.impact(&id, dir, &ks, depth);
@@ -885,13 +918,13 @@ fn run_impact(
         by_depth.entry(n.depth).or_default().push(n);
     }
     for (d, nodes) in &by_depth {
-        println!("  depth {d}:");
+        outputln!("  depth {d}:");
         for n in nodes {
-            println!("    [{:<9}] {}", n.via.tag(), n.node);
+            outputln!("    [{:<9}] {}", n.via.tag(), n.node);
         }
     }
     if imp.is_empty() {
-        println!("  (no transitive impact)");
+        outputln!("  (no transitive impact)");
     }
     Ok(())
 }
@@ -912,10 +945,10 @@ fn run_trace(
     let ks = parse_kinds(kinds)?;
     match g.trace(&from_id, &to_id, &ks) {
         Some(path_nodes) => {
-            println!("trace ({} hops):", path_nodes.len().saturating_sub(1));
+            outputln!("trace ({} hops):", path_nodes.len().saturating_sub(1));
             for (i, n) in path_nodes.iter().enumerate() {
                 let arrow = if i == 0 { "" } else { " -> " };
-                println!("{arrow}{n}");
+                outputln!("{arrow}{n}");
             }
         }
         None => {
@@ -936,13 +969,16 @@ fn run_search(
     let g = crate::Graph::from_snapshot(&snap);
     let hits = g.search(needle);
     if hits.is_empty() {
-        println!("no symbols matching '{needle}'");
+        outputln!("no symbols matching '{needle}'");
         return Ok(());
     }
     for n in hits {
-        println!(
+        outputln!(
             "{}  {}  [{}]  {}",
-            n.kind, n.name, n.provenance.rel_path, n.symbol_key
+            n.kind,
+            n.name,
+            n.provenance.rel_path,
+            n.symbol_key
         );
     }
     Ok(())
@@ -966,23 +1002,24 @@ fn run_structure(
             .filter(|n| matches!(n.kind, crate::NodeKind::File))
             .collect();
         for f in files {
-            print_subtree(&g, &f.id, 0);
+            print_subtree(&g, &f.id, 0)?;
         }
         return Ok(());
     };
-    print_subtree(&g, &root_id, 0);
+    print_subtree(&g, &root_id, 0)?;
     Ok(())
 }
 
-fn print_subtree(g: &crate::Graph, id: &str, indent: usize) {
+fn print_subtree(g: &crate::Graph, id: &str, indent: usize) -> Result<()> {
     let node = g.snapshot().nodes.iter().find(|n| n.id == id);
     if let Some(n) = node {
         let pad = "  ".repeat(indent);
-        println!("{pad}{} {}", n.kind, n.name);
+        outputln!("{pad}{} {}", n.kind, n.name);
         for child in g.children(id) {
-            print_subtree(g, &child.id, indent + 1);
+            print_subtree(g, &child.id, indent + 1)?;
         }
     }
+    Ok(())
 }
 
 fn run_cycles(
@@ -997,21 +1034,21 @@ fn run_cycles(
     let ks = parse_kinds(kinds)?;
     let cyc = g.cycles(&ks);
     if cyc.is_empty() {
-        println!(
+        outputln!(
             "no cycles over [{}]",
             if ks.is_empty() { "all" } else { &kinds }
         );
         return Ok(());
     }
-    println!(
+    outputln!(
         "{} cycle(s) over [{}] (refactor candidates):",
         cyc.len(),
         if ks.is_empty() { "all" } else { &kinds }
     );
     for (i, comp) in cyc.iter().enumerate() {
-        println!("  cycle {} ({} nodes):", i + 1, comp.len());
+        outputln!("  cycle {} ({} nodes):", i + 1, comp.len());
         for n in comp {
-            println!("    {n}");
+            outputln!("    {n}");
         }
     }
     Ok(())
@@ -1036,7 +1073,7 @@ fn run_diff(
     let head_snap = at(head).with_context(|| format!("extract at {head}"))?;
     let d = crate::SnapshotDiff::between(&base_snap, &head_snap);
     let s = d.summary();
-    println!(
+    outputln!(
         "diff {base}..{head}  +{an} -{rn} ~{cn} nodes  +{ae} -{re} edges",
         an = s.added_nodes,
         rn = s.removed_nodes,
@@ -1045,19 +1082,19 @@ fn run_diff(
         re = s.removed_edges,
     );
     if !d.added_nodes.is_empty() {
-        println!("added nodes:");
+        outputln!("added nodes:");
         for n in &d.added_nodes {
-            println!("  + {}", crate::diff_node_display(n));
+            outputln!("  + {}", crate::diff_node_display(n));
         }
     }
     if !d.removed_nodes.is_empty() {
-        println!("removed nodes:");
+        outputln!("removed nodes:");
         for n in &d.removed_nodes {
-            println!("  - {}", crate::diff_node_display(n));
+            outputln!("  - {}", crate::diff_node_display(n));
         }
     }
     if !d.changed_nodes.is_empty() {
-        println!("changed nodes:");
+        outputln!("changed nodes:");
         for c in &d.changed_nodes {
             let flags = match (c.span_moved, c.file_hash_changed) {
                 (true, true) => "span+hash",
@@ -1065,28 +1102,31 @@ fn run_diff(
                 (false, true) => "hash",
                 _ => "?",
             };
-            println!("  ~ {} [{}] ({})", c.name, c.rel_path, flags);
+            outputln!("  ~ {} [{}] ({})", c.name, c.rel_path, flags);
         }
     }
     if !d.added_edges.is_empty() {
-        println!("added edges:");
+        outputln!("added edges:");
         for e in &d.added_edges {
-            println!("  + {}", crate::diff_edge_display(e));
+            outputln!("  + {}", crate::diff_edge_display(e));
         }
     }
     if !d.removed_edges.is_empty() {
-        println!("removed edges:");
+        outputln!("removed edges:");
         for e in &d.removed_edges {
-            println!("  - {}", crate::diff_edge_display(e));
+            outputln!("  - {}", crate::diff_edge_display(e));
         }
     }
     let hot = d.hotspots(top);
     if !hot.is_empty() {
-        println!("churn hotspots (non-authoritative, top {top}):");
+        outputln!("churn hotspots (non-authoritative, top {top}):");
         for h in &hot {
-            println!(
+            outputln!(
                 "  {}  +{} -{} (total {})",
-                h.node, h.added_edges, h.removed_edges, h.total_change
+                h.node,
+                h.added_edges,
+                h.removed_edges,
+                h.total_change
             );
         }
     }
@@ -1138,7 +1178,7 @@ fn run_history(
     };
     let mut progress = std::io::stderr();
     let summary = crate::walk_history(&options, &mut progress)?;
-    println!(
+    outputln!(
         "history {} commits  {} transitions  {} metric moves  {}.{:03}s  -> {}",
         summary.commits,
         summary.transitions,
@@ -1295,14 +1335,20 @@ fn run_hotspots(
     let d = maybe_diff(diff_base, diff_head, path, snap.identity.language)?;
     let hot = crate::hotspots(&g, d.as_ref().map(|inputs| &inputs.diff), top);
     if hot.is_empty() {
-        println!("no hotspots");
+        outputln!("no hotspots");
         return Ok(());
     }
-    println!("hotspots (non-authoritative, top {top}); score = coupling × (churn+1):");
+    outputln!("hotspots (non-authoritative, top {top}); score = coupling × (churn+1):");
     for h in &hot {
-        println!(
+        outputln!(
             "  {} {}  fan-in={} fan-out={} size={}B churn={} score={}",
-            h.kind, h.node, h.fan_in, h.fan_out, h.size_bytes, h.churn, h.score
+            h.kind,
+            h.node,
+            h.fan_in,
+            h.fan_out,
+            h.size_bytes,
+            h.churn,
+            h.score
         );
     }
     Ok(())
@@ -1336,12 +1382,12 @@ fn run_refactor(
         god_cc,
     );
     if sigs.is_empty() {
-        println!("no refactor signals");
+        outputln!("no refactor signals");
         return Ok(());
     }
-    println!("refactor signals (non-authoritative):");
+    outputln!("refactor signals (non-authoritative):");
     for s in &sigs {
-        println!("  [{:?}] {}  — {}", s.kind, s.node, s.detail);
+        outputln!("  [{:?}] {}  — {}", s.kind, s.node, s.detail);
     }
     Ok(())
 }
@@ -1357,19 +1403,19 @@ fn run_clusters(
     let g = crate::Graph::from_snapshot(&snap);
     let cs = crate::clusters(&g, rounds);
     if cs.is_empty() {
-        println!("no clusters");
+        outputln!("no clusters");
         return Ok(());
     }
-    println!("clusters (non-authoritative, seeded label propagation):");
+    outputln!("clusters (non-authoritative, seeded label propagation):");
     for c in &cs {
-        println!(
+        outputln!(
             "  {} ({} members, cohesion {:.2}):",
             c.label,
             c.members.len(),
             c.cohesion
         );
         for m in &c.members {
-            println!("    {m}");
+            outputln!("    {m}");
         }
     }
     Ok(())
@@ -1394,50 +1440,55 @@ fn run_processes(
     }
     let procs = crate::processes(&g, max_steps);
     if procs.is_empty() {
-        println!("no processes detected (no symbols with zero in-repo callers)");
+        outputln!("no processes detected (no symbols with zero in-repo callers)");
         return Ok(());
     }
-    println!("processes (non-authoritative, traced from entry points):");
+    outputln!("processes (non-authoritative, traced from entry points):");
     for p in &procs {
-        println!("  entry {} ({} steps):", p.entry, p.steps.len());
+        outputln!("  entry {} ({} steps):", p.entry, p.steps.len());
         for s in &p.steps {
-            println!("    {s}");
+            outputln!("    {s}");
         }
     }
     Ok(())
 }
 
-fn print_report(s: &crate::Snapshot) {
+fn print_report(s: &crate::Snapshot) -> Result<()> {
     let r = &s.report;
-    println!("snapshot: {}", s.identity.snapshot_id);
-    println!(
+    outputln!("snapshot: {}", s.identity.snapshot_id);
+    outputln!(
         "repository: {} (canonical={})",
-        s.identity.repository.id, s.identity.repository.is_canonical
+        s.identity.repository.id,
+        s.identity.repository.is_canonical
     );
-    println!("commit: {}", s.identity.commit_sha);
-    println!("tree:   {}", s.identity.tree_sha);
-    println!(
+    outputln!("commit: {}", s.identity.commit_sha);
+    outputln!("tree:   {}", s.identity.tree_sha);
+    outputln!(
         "schema: {}  extractor: {}",
-        s.identity.schema_version, s.identity.extractor_version
+        s.identity.schema_version,
+        s.identity.extractor_version
     );
-    println!(
+    outputln!(
         "files:  scanned={} skipped={} parse_errors={}",
-        r.files_scanned, r.files_skipped, r.parse_errors
+        r.files_scanned,
+        r.files_skipped,
+        r.parse_errors
     );
-    println!("nodes:");
+    outputln!("nodes:");
     for (k, v) in &r.node_counts {
-        println!("  {k:>12} {v}");
+        outputln!("  {k:>12} {v}");
     }
-    println!("edges:");
+    outputln!("edges:");
     for (k, v) in &r.edge_counts {
-        println!("  {k:>12} {v}");
+        outputln!("  {k:>12} {v}");
     }
     if !r.call_sites_by_category.is_empty() {
-        println!("call sites (observations, not canonical edges):");
+        outputln!("call sites (observations, not canonical edges):");
         for (k, v) in &r.call_sites_by_category {
-            println!("  {k:>12} {v}");
+            outputln!("  {k:>12} {v}");
         }
     }
+    Ok(())
 }
 
 #[cfg(test)]
