@@ -53,10 +53,13 @@ use crate::schema::{
 
 /// Whether ruby-lsp is available to the extractor. `Present` carries the
 /// tool-bundle Gemfile path whose lockfile satisfied the canonical pin set.
+/// `Absent` means no bundle was configured; `Unavailable` preserves why a
+/// configured bundle could not be used.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Availability {
     Present(PathBuf),
     Absent,
+    Unavailable(String),
 }
 
 /// Identity of the Ruby semantic environment, captured once per extraction
@@ -95,29 +98,32 @@ pub fn detect() -> Availability {
     };
     let gemfile = PathBuf::from(explicit);
     let lockfile = gemfile.with_extension("lock");
-    let Ok(lock) = std::fs::read_to_string(&lockfile) else {
-        return Availability::Absent;
+    let lock = match std::fs::read_to_string(&lockfile) {
+        Ok(lock) => lock,
+        Err(error) => {
+            return Availability::Unavailable(format!(
+                "cannot read configured CODEMAP_RUBY_TOOL_BUNDLE lockfile {}: {error}",
+                lockfile.display()
+            ));
+        }
     };
-    if lockfile_matches_canonical(&lock) && probe_bundle(&gemfile) {
-        Availability::Present(gemfile)
-    } else {
-        Availability::Absent
+    if !lockfile_matches_canonical(&lock) {
+        return Availability::Unavailable(format!(
+            "configured CODEMAP_RUBY_TOOL_BUNDLE lockfile {} does not match Stele's canonical toolchain/ruby/Gemfile.lock",
+            lockfile.display()
+        ));
+    }
+    match bundle_version(&gemfile, ["exec", "ruby-lsp", "--version"]) {
+        Ok(_) => Availability::Present(gemfile),
+        Err(error) => Availability::Unavailable(format!(
+            "configured CODEMAP_RUBY_TOOL_BUNDLE {} failed: {error:#}",
+            gemfile.display()
+        )),
     }
 }
 
 fn lockfile_matches_canonical(operator_lock: &str) -> bool {
     canonical_lockfile_sha256() == crate::schema::sha256_hex(operator_lock.as_bytes())
-}
-
-/// Verify the bundle can launch ruby-lsp. `--version` exits before any LSP
-/// or indexing work: no application code executes and the worktree is
-/// untouched.
-fn probe_bundle(gemfile: &Path) -> bool {
-    bounded_probe(
-        bundle_command(gemfile, &["exec", "ruby-lsp", "--version"]),
-        PROBE_TIMEOUT,
-    )
-    .is_ok_and(|out| out.status.success() && !out.stdout.is_empty())
 }
 
 /// Probe deadline. A stalled Bundler or Ruby process must not hang
@@ -156,10 +162,21 @@ pub fn capture_identity(tool_bundle: &Path) -> Result<RubyToolIdentity> {
 }
 
 fn bundle_version(gemfile: &Path, args: [&str; 3]) -> Result<String> {
-    let out = bounded_probe(bundle_command(gemfile, &args), PROBE_TIMEOUT)
-        .context("spawn bundle version probe")?;
+    probe_bundle_version(bundle_command(gemfile, &args), PROBE_TIMEOUT)
+        .with_context(|| format!("bundle {}", args.join(" ")))
+}
+
+fn probe_bundle_version(command: Command, timeout: Duration) -> Result<String> {
+    let out = bounded_probe(command, timeout).context("run bundle version probe")?;
     if !out.status.success() {
-        bail!("bundle {} failed", args.join(" "));
+        bail!(
+            "bundle version probe failed ({}): {}",
+            out.status,
+            String::from_utf8_lossy(&out.stderr).trim()
+        );
+    }
+    if out.stdout.is_empty() {
+        bail!("bundle version probe returned no version output");
     }
     Ok(String::from_utf8_lossy(&out.stdout)
         .lines()
@@ -1002,6 +1019,39 @@ fn wait_indexed(
 mod tests {
     use super::*;
     use crate::schema::{EXTRACTOR_VERSION, FactSource, Provenance};
+
+    #[test]
+    fn bundle_version_probe_preserves_launch_failure() {
+        let tmp = tempfile::tempdir().unwrap();
+        let error = probe_bundle_version(
+            Command::new(tmp.path().join("missing-bundle")),
+            Duration::from_millis(100),
+        )
+        .unwrap_err();
+        let io_error = error.downcast_ref::<std::io::Error>().unwrap();
+        assert_eq!(io_error.kind(), std::io::ErrorKind::NotFound);
+        assert!(format!("{error:#}").contains("run bundle version probe"));
+    }
+
+    #[test]
+    fn bundle_version_probe_preserves_deadline_failure() {
+        let mut command = Command::new("sleep");
+        command.arg("30");
+        let start = std::time::Instant::now();
+        let error = probe_bundle_version(command, Duration::from_millis(100)).unwrap_err();
+        let io_error = error.downcast_ref::<std::io::Error>().unwrap();
+        assert_eq!(io_error.kind(), std::io::ErrorKind::TimedOut);
+        assert!(format!("{error:#}").contains("exceeded 100ms"));
+        assert!(start.elapsed() < Duration::from_secs(5));
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn bundle_version_probe_rejects_empty_output() {
+        let error =
+            probe_bundle_version(Command::new("true"), Duration::from_millis(100)).unwrap_err();
+        assert!(error.to_string().contains("no version output"));
+    }
 
     #[test]
     #[ignore = "requires the pinned Ruby-LSP operator bundle"]

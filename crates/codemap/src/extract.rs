@@ -453,6 +453,9 @@ pub fn build_snapshot(
     {
         match ruby_lsp::detect() {
             ruby_lsp::Availability::Present(bundle) => Some(ruby_lsp::capture_identity(&bundle)?),
+            ruby_lsp::Availability::Unavailable(reason) => {
+                bail!("ruby-lsp tool bundle is unavailable: {reason}");
+            }
             ruby_lsp::Availability::Absent => {
                 bail!(
                     "no ruby-lsp tool bundle is available, and call edges are never \
