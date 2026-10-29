@@ -633,3 +633,33 @@ fn unresolved_dispatcher_and_missing_or_rejected_admission_never_pass_absence_ch
         );
     }
 }
+
+#[test]
+fn nested_test_callers_remain_evidence_without_becoming_production_findings() {
+    for path in ["src/service/tests/check.rs", "src/service/check_tests.rs"] {
+        let snapshot = common::rust_snapshot_with_test_file(false, path);
+        let evidence = project(&snapshot, &architecture_options()).unwrap();
+        assert!(
+            fact_lines(&evidence, "test_file")
+                .iter()
+                .any(|line| line.contains(path))
+        );
+        assert!(
+            !fact_lines(&evidence, "production_file")
+                .iter()
+                .any(|line| line.contains(path))
+        );
+        let (_, report) = check(Checker::Architecture, &evidence);
+        assert_eq!(
+            found(&report, "no_observed_test_only_production_files"),
+            vec!["F=src/probe.rs".to_string()]
+        );
+        let evidence = project(&snapshot, &options(Checker::Symbols)).unwrap();
+        let (_, report) = check(Checker::Symbols, &evidence);
+        assert!(
+            !found(&report, "no_observed_unreached_symbols")
+                .iter()
+                .any(|row| row.contains(path))
+        );
+    }
+}

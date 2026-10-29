@@ -73,7 +73,7 @@ fn in_rust_test_module(symbol_key: &str) -> bool {
         .any(|segment| segment == "tests" || segment == "test")
 }
 
-/// Whether a file ships in the artifact or exists only to test it.
+/// File roles under the named conventional-layout policy, not Cargo configuration.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FileClass {
     Production,
@@ -83,8 +83,11 @@ pub enum FileClass {
     Unclassified,
 }
 
-/// Classify a file by the first directory on its path that is a marker for
-/// the language's conventional layout.
+/// Classify a file under the language's conventional layout.
+/// Rust test/benchmark/example directories anywhere on the path, and
+/// `_test.rs` / `_tests.rs` suffixes, take priority over `src`. These are
+/// naming conventions; they do not establish which cfgs Cargo compiles.
+/// Other languages use the first marker directory unless stated below.
 ///
 /// Matching on segments rather than a path prefix keeps workspaces
 /// (`crates/x/src/lib.rs`) classified. Go tests live next to the code they
@@ -101,6 +104,17 @@ pub fn classify_file(language: Language, rel_path: &str) -> FileClass {
         // directory name cannot decide that C++ code is dead.
         Language::Cpp | Language::JsTs | Language::Python => return FileClass::Unclassified,
     };
+    if language == Language::Rust {
+        let (directories, file_name) = rel_path.rsplit_once('/').unwrap_or(("", rel_path));
+        if directories
+            .split('/')
+            .any(|segment| test.contains(&segment))
+            || file_name.ends_with("_test.rs")
+            || file_name.ends_with("_tests.rs")
+        {
+            return FileClass::Test;
+        }
+    }
     let Some((directories, _file_name)) = rel_path.rsplit_once('/') else {
         return if language == Language::Go && is_go_test_file(rel_path) {
             FileClass::Test
@@ -289,6 +303,37 @@ mod tests {
             rust,
             &node(rust, f, "src/a.rs", &[], "tests")
         ));
+    }
+
+    #[test]
+    fn nested_rust_test_files_have_test_layout() {
+        let rust = Language::Rust;
+        for path in [
+            "src/service/tests/check.rs",
+            "crates/widget/src/tests/nested/check.rs",
+            "src/service/benches/measure.rs",
+            "src/service/examples/demo.rs",
+            "src/service/parser_test.rs",
+            "src/service/parser_tests.rs",
+            "parser_tests.rs",
+        ] {
+            assert_eq!(classify_file(rust, path), FileClass::Test, "{path}");
+            assert!(
+                is_shipped_definition(rust, &node(rust, NodeKind::Function, path, &[], "helper")),
+                "{path}"
+            );
+        }
+        for path in [
+            "src/service/latest.rs",
+            "src/contest/run.rs",
+            "src/test_support.rs",
+        ] {
+            assert_eq!(classify_file(rust, path), FileClass::Production, "{path}");
+            assert!(
+                is_shipped_definition(rust, &node(rust, NodeKind::Function, path, &[], "helper")),
+                "{path}"
+            );
+        }
     }
 
     #[test]
