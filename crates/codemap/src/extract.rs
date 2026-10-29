@@ -453,6 +453,9 @@ pub fn build_snapshot(
     {
         match ruby_lsp::detect() {
             ruby_lsp::Availability::Present(bundle) => Some(ruby_lsp::capture_identity(&bundle)?),
+            ruby_lsp::Availability::Unavailable(reason) => {
+                bail!("ruby-lsp tool bundle is unavailable: {reason}");
+            }
             ruby_lsp::Availability::Absent => {
                 bail!(
                     "no ruby-lsp tool bundle is available, and call edges are never \
@@ -1743,7 +1746,7 @@ fn resolve_calls_semantic_ruby(
     // from the emitted structural facts; ruby-lsp answers are candidate
     // material only.
     let mut model = ruby_lsp::PolicyModel::build(nodes, edges);
-    model.verify_constructor_sources(file_sources, def_index)?;
+    model.verify_ruby_source_contexts(file_sources, def_index, &node_index)?;
     let ctx = ruby_lsp::ResolveContext {
         workspace_root: &workspace_root,
         identity,

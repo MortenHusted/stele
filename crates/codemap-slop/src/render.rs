@@ -271,6 +271,12 @@ pub fn snapshot_text(report: &SnapshotReport) -> String {
         "{}",
         verbosity_line("clones", s.verbosity_clone, s.clones.as_ref(), s.loc)
     );
+    if !report.scope.is_all_files() && s.clones.is_some() {
+        let _ = writeln!(
+            out,
+            "clone groups and largest group cover all files; verbosity_clone uses in-scope lines"
+        );
+    }
     match &report.all_files {
         Some(all) => {
             let _ = writeln!(
@@ -606,6 +612,12 @@ fn clone_lines(out: &mut String, report: &ChangeReport) {
         report.moved_callables,
         clone_definition()
     );
+    if !report.scope.is_all_files() {
+        let _ = writeln!(
+            out,
+            "clone groups and introduced/removed occurrences cover all files; verbosity_clone uses in-scope lines"
+        );
+    }
     for group in introduced {
         let _ = writeln!(
             out,

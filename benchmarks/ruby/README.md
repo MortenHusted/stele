@@ -165,3 +165,31 @@ not prevent edges to unaffected method names.
 ```sh
 cargo test --locked -p codemap --lib ruby_lsp::tests::constructor_provider_requires_the_pinned_class_new_declaration -- --ignored --exact
 ```
+
+Source-side heritage references bind to the containing declaration in their own
+file and span, so a separate reopening does not discard its superclass or mixins.
+Targets still require an unambiguous language-aware identity; this does not merge
+reopenings into a single runtime class.
+
+Methods declared inside arbitrary call blocks retain lexical declarations and
+metrics, but their runtime owners are unverified. They cannot be canonical call
+targets. Implicit or explicit `self` calls in those method bodies, and in
+explicit eval/exec rebinding blocks, remain observations. Ordinary yielding
+blocks retain the existing R2 enclosing-self regime; this does not prove that
+an arbitrary block consumer preserves self. An explicit class or module body
+establishes a fresh context. Mixin calls inside arbitrary call blocks have
+unverified receivers and do not produce canonical heritage edges.
+The gate includes a synthetic redirected-definition and rebound-self oracle.
+This does not infer ActiveSupport::Concern class methods.
+
+A configured Ruby tool bundle that fails probing reports the attempted Gemfile
+and the subprocess failure, including stderr or timeout. Check that the
+Ruby executable used by Stele matches the one that installed the native gems;
+setting the bundle path alone cannot repair an incompatible Ruby runtime.
+
+The built-in architecture checker selects physical files containing shipped
+callable definitions. A Rails host file containing only a class declaration,
+includes, associations and scopes is not a logical selector for methods in its
+concerns. Select the files that define those methods, or write an explicit
+hierarchy specification; a declaration-only host is refused rather than
+reported clean from an empty call set. Call-coverage admission still applies.
