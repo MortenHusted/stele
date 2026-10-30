@@ -427,7 +427,7 @@ fn wait_for_quiescent(rx: &mpsc::Receiver<Value>, timeout: Duration) -> Result<(
             .map_or(deadline, |quiet| quiet.min(deadline))
             .saturating_duration_since(now);
         if remaining.is_zero() {
-            bail!("rust-analyzer quiescence timed out");
+            bail!("rust-analyzer quiescence timed out after {timeout:?}");
         }
         match rx.recv_timeout(remaining) {
             Ok(msg) => {
@@ -457,7 +457,7 @@ fn wait_for_quiescent(rx: &mpsc::Receiver<Value>, timeout: Duration) -> Result<(
                 if quiet_deadline.is_some() {
                     return Ok(());
                 }
-                bail!("rust-analyzer quiescence timed out");
+                bail!("rust-analyzer quiescence timed out after {timeout:?}");
             }
             Err(mpsc::RecvTimeoutError::Disconnected) => {
                 bail!("rust-analyzer stdout reader disconnected before quiescence");
@@ -639,6 +639,22 @@ mod tests {
         let (quiescent_tx, quiescent_rx) = mpsc::channel::<Value>();
         drop(quiescent_tx);
         assert!(wait_for_quiescent(&quiescent_rx, Duration::from_millis(10)).is_err());
+    }
+
+    #[test]
+    fn a_silent_server_fails_the_wait_naming_the_limit() {
+        let (tx, rx) = mpsc::channel::<Value>();
+        tx.send(json!({
+            "method": "experimental/serverStatus",
+            "params": { "quiescent": false }
+        }))
+        .expect("send indexing status");
+        let error = wait_for_quiescent(&rx, Duration::from_millis(10)).expect_err("timed out");
+        assert_eq!(
+            error.to_string(),
+            "rust-analyzer quiescence timed out after 10ms"
+        );
+        drop(tx);
     }
 
     #[test]
