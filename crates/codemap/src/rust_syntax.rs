@@ -187,6 +187,7 @@ pub struct RawFile {
     pub imports: Vec<RawImport>,
     pub impls: Vec<RawImpl>,
     pub calls: Vec<RawCall>,
+    /// Error and missing nodes anywhere in the syntax tree.
     pub parse_errors: usize,
     /// One entry per callable def (function, method, macro).
     pub measures: Vec<RawMeasure>,
@@ -212,9 +213,9 @@ pub fn extract_file(rel_path: &str, source: &[u8]) -> Result<RawFile> {
         .context("tree-sitter parse returned None")?;
     let root = tree.root_node();
 
-    let mut errors = 0usize;
+    let parse_errors = syntax_errors(root);
     let mut walker = Walker::new(rel_path, source);
-    walker.walk(root, &mut errors, None, &[], None);
+    walker.walk(root, None, &[], None);
     for implementation in &mut walker.impls {
         implementation.local_scope = walker.defs.iter().any(|definition| {
             matches!(definition.kind, NodeKind::Function | NodeKind::Method)
@@ -264,7 +265,7 @@ pub fn extract_file(rel_path: &str, source: &[u8]) -> Result<RawFile> {
         imports: walker.imports,
         impls: walker.impls,
         calls: walker.calls,
-        parse_errors: errors,
+        parse_errors,
         measures,
         file_lines,
         line_classes: classes,
@@ -306,54 +307,25 @@ impl<'a> Walker<'a> {
     fn walk(
         &mut self,
         node: Node,
-        errors: &mut usize,
         parent_idx: Option<usize>,
         mod_stack: &[String],
         impl_type: Option<&str>,
     ) {
-        if node.is_error() || node.is_missing() {
-            *errors += 1;
-        }
-
         match node.kind() {
-            "mod_item" => self.walk_mod(node, errors, parent_idx, mod_stack),
-            "struct_item" => self.walk_type(
-                node,
-                TypeKind::Struct,
-                errors,
-                parent_idx,
-                mod_stack,
-                impl_type,
-            ),
-            "enum_item" => self.walk_type(
-                node,
-                TypeKind::Enum,
-                errors,
-                parent_idx,
-                mod_stack,
-                impl_type,
-            ),
-            "union_item" => self.walk_type(
-                node,
-                TypeKind::Union,
-                errors,
-                parent_idx,
-                mod_stack,
-                impl_type,
-            ),
-            "type_item" => self.walk_type(
-                node,
-                TypeKind::TypeAlias,
-                errors,
-                parent_idx,
-                mod_stack,
-                impl_type,
-            ),
-            "trait_item" => self.walk_trait(node, errors, parent_idx, mod_stack),
-            "function_item" => self.walk_function(node, errors, parent_idx, mod_stack, impl_type),
-            "impl_item" => self.walk_impl(node, errors, parent_idx, mod_stack),
+            "mod_item" => self.walk_mod(node, parent_idx, mod_stack),
+            "struct_item" => {
+                self.walk_type(node, TypeKind::Struct, parent_idx, mod_stack, impl_type);
+            }
+            "enum_item" => self.walk_type(node, TypeKind::Enum, parent_idx, mod_stack, impl_type),
+            "union_item" => self.walk_type(node, TypeKind::Union, parent_idx, mod_stack, impl_type),
+            "type_item" => {
+                self.walk_type(node, TypeKind::TypeAlias, parent_idx, mod_stack, impl_type);
+            }
+            "trait_item" => self.walk_trait(node, parent_idx, mod_stack),
+            "function_item" => self.walk_function(node, parent_idx, mod_stack, impl_type),
+            "impl_item" => self.walk_impl(node, parent_idx, mod_stack),
             "use_declaration" => self.walk_use(node, mod_stack),
-            "macro_definition" => self.walk_macro(node, errors, parent_idx, mod_stack),
+            "macro_definition" => self.walk_macro(node, parent_idx, mod_stack),
             "call_expression" => self.walk_call(node),
             "macro_invocation" => self.walk_macro_call(node),
             _ => {}
@@ -377,19 +349,13 @@ impl<'a> Walker<'a> {
             let count = node.child_count();
             for i in 0..count {
                 if let Some(child) = node.child(i) {
-                    self.walk(child, errors, parent_idx, mod_stack, impl_type);
+                    self.walk(child, parent_idx, mod_stack, impl_type);
                 }
             }
         }
     }
 
-    fn walk_mod(
-        &mut self,
-        node: Node,
-        errors: &mut usize,
-        parent_idx: Option<usize>,
-        mod_stack: &[String],
-    ) {
+    fn walk_mod(&mut self, node: Node, parent_idx: Option<usize>, mod_stack: &[String]) {
         let name = self.field_text(node, "name").unwrap_or_default();
         let span = ts_span(node);
         let idx = self.defs.len();
@@ -409,7 +375,7 @@ impl<'a> Walker<'a> {
             let count = body.child_count();
             for i in 0..count {
                 if let Some(child) = body.child(i) {
-                    self.walk(child, errors, Some(idx), &new_stack, None);
+                    self.walk(child, Some(idx), &new_stack, None);
                 }
             }
         }
@@ -419,7 +385,6 @@ impl<'a> Walker<'a> {
         &mut self,
         node: Node,
         subtype: TypeKind,
-        errors: &mut usize,
         parent_idx: Option<usize>,
         mod_stack: &[String],
         impl_type: Option<&str>,
@@ -447,19 +412,13 @@ impl<'a> Walker<'a> {
             let count = body.child_count();
             for i in 0..count {
                 if let Some(child) = body.child(i) {
-                    self.walk(child, errors, parent_idx, mod_stack, impl_type);
+                    self.walk(child, parent_idx, mod_stack, impl_type);
                 }
             }
         }
     }
 
-    fn walk_trait(
-        &mut self,
-        node: Node,
-        errors: &mut usize,
-        parent_idx: Option<usize>,
-        mod_stack: &[String],
-    ) {
+    fn walk_trait(&mut self, node: Node, parent_idx: Option<usize>, mod_stack: &[String]) {
         let name = self.field_text(node, "name").unwrap_or_default();
         let span = ts_span(node);
         if let Some(name) = node.child_by_field_name("name") {
@@ -478,7 +437,7 @@ impl<'a> Walker<'a> {
             let count = body.child_count();
             for i in 0..count {
                 if let Some(child) = body.child(i) {
-                    self.walk(child, errors, parent_idx, mod_stack, None);
+                    self.walk(child, parent_idx, mod_stack, None);
                 }
             }
         }
@@ -487,7 +446,6 @@ impl<'a> Walker<'a> {
     fn walk_function(
         &mut self,
         node: Node,
-        errors: &mut usize,
         parent_idx: Option<usize>,
         mod_stack: &[String],
         impl_type: Option<&str>,
@@ -522,19 +480,13 @@ impl<'a> Walker<'a> {
                     // module/file, not the function, to keep containment
                     // at the module granularity. The function is not pushed
                     // onto the module stack.
-                    self.walk(child, errors, parent_idx, mod_stack, None);
+                    self.walk(child, parent_idx, mod_stack, None);
                 }
             }
         }
     }
 
-    fn walk_impl(
-        &mut self,
-        node: Node,
-        errors: &mut usize,
-        parent_idx: Option<usize>,
-        mod_stack: &[String],
-    ) {
+    fn walk_impl(&mut self, node: Node, parent_idx: Option<usize>, mod_stack: &[String]) {
         let trait_name = node.child_by_field_name("trait").and_then(|n| self.text(n));
         let type_name = self.field_text(node, "type").unwrap_or_default();
         self.impls.push(RawImpl {
@@ -561,7 +513,7 @@ impl<'a> Walker<'a> {
             let count = body.child_count();
             for i in 0..count {
                 if let Some(child) = body.child(i) {
-                    self.walk(child, errors, parent_idx, mod_stack, Some(&type_name));
+                    self.walk(child, parent_idx, mod_stack, Some(&type_name));
                 }
             }
         }
@@ -578,13 +530,7 @@ impl<'a> Walker<'a> {
         }
     }
 
-    fn walk_macro(
-        &mut self,
-        node: Node,
-        _errors: &mut usize,
-        parent_idx: Option<usize>,
-        mod_stack: &[String],
-    ) {
+    fn walk_macro(&mut self, node: Node, parent_idx: Option<usize>, mod_stack: &[String]) {
         let name = self.field_text(node, "name").unwrap_or_default();
         let span = ts_span(node);
         // A macro body is token trees: no expression nodes, so the count is
@@ -943,6 +889,28 @@ const fn is_named_definition(kind: &str) -> bool {
     )
 }
 
+/// Count the error and missing nodes of the whole tree. The walk covers
+/// every node, not only the ones extraction visits, so a broken signature
+/// or struct body still counts.
+fn syntax_errors(root: Node) -> usize {
+    let mut count = 0;
+    let mut cursor = root.walk();
+    loop {
+        let node = cursor.node();
+        if node.is_error() || node.is_missing() {
+            count += 1;
+        }
+        if node.has_error() && cursor.goto_first_child() {
+            continue;
+        }
+        while !cursor.goto_next_sibling() {
+            if !cursor.goto_parent() {
+                return count;
+            }
+        }
+    }
+}
+
 fn ts_span(node: Node) -> Span {
     Span::from_ts(
         node.start_byte(),
@@ -1086,6 +1054,14 @@ mod tests {
             "expected parse errors, got {}",
             f.parse_errors
         );
+    }
+
+    /// A missing `)` in a signature and a missing `}` in a struct body both
+    /// sit outside the bodies extraction walks, and both count.
+    #[test]
+    fn parse_errors_count_the_whole_tree() {
+        let f = extract("fn ok() {}\nfn broken( {}\nstruct Missing {\n");
+        assert_eq!(f.parse_errors, 2);
     }
 
     #[test]
