@@ -827,9 +827,15 @@ separately from this preparation step.
 
 Rust extraction inventories tracked `.rs` files, including snippets and files
 outside Cargo workspace members. `[workspace].exclude` does not remove those
-files from a snapshot. Parse errors still make absence checks inconclusive;
+files from a snapshot. Parse errors still make absence checks inconclusive.
+They count every error and missing node in each file's syntax tree.
 `stele code report --file snapshot.json` lists affected paths and counts from
-`report.parse_error_files`. Older snapshots may carry only the aggregate count.
+`report.parse_error_files`, and where each file's first error starts from
+`report.first_parse_errors`. Older snapshots may carry only the aggregate
+count or no locations. The pinned tree-sitter-rust grammar rejects some valid
+Rust, such as an attribute on a field of a struct pattern, and files meant
+only for `include!` in expression position are not modules, so both report
+parse errors.
 
 The checker's Rust layout policy recognizes `tests`, `benches`, and `examples`
 directories anywhere in a path, plus `_test.rs` and `_tests.rs` suffixes, before

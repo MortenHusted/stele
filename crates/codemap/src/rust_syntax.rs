@@ -189,6 +189,8 @@ pub struct RawFile {
     pub calls: Vec<RawCall>,
     /// Error and missing nodes anywhere in the syntax tree.
     pub parse_errors: usize,
+    /// The first of those nodes in source order.
+    pub first_parse_error: Option<Span>,
     /// One entry per callable def (function, method, macro).
     pub measures: Vec<RawMeasure>,
     /// Line classes of the whole file.
@@ -213,7 +215,7 @@ pub fn extract_file(rel_path: &str, source: &[u8]) -> Result<RawFile> {
         .context("tree-sitter parse returned None")?;
     let root = tree.root_node();
 
-    let parse_errors = syntax_errors(root);
+    let (parse_errors, first_parse_error) = syntax_errors(root);
     let mut walker = Walker::new(rel_path, source);
     walker.walk(root, None, &[], None);
     for implementation in &mut walker.impls {
@@ -266,6 +268,7 @@ pub fn extract_file(rel_path: &str, source: &[u8]) -> Result<RawFile> {
         impls: walker.impls,
         calls: walker.calls,
         parse_errors,
+        first_parse_error,
         measures,
         file_lines,
         line_classes: classes,
@@ -889,23 +892,25 @@ const fn is_named_definition(kind: &str) -> bool {
     )
 }
 
-/// Count the error and missing nodes of the whole tree. The walk covers
-/// every node, not only the ones extraction visits, so a broken signature
-/// or struct body still counts.
-fn syntax_errors(root: Node) -> usize {
+/// Count the error and missing nodes of the whole tree and find the first
+/// in source order. The walk covers every node, not only the ones
+/// extraction visits, so a broken signature or struct body still counts.
+fn syntax_errors(root: Node) -> (usize, Option<Span>) {
     let mut count = 0;
+    let mut first = None;
     let mut cursor = root.walk();
     loop {
         let node = cursor.node();
         if node.is_error() || node.is_missing() {
             count += 1;
+            first.get_or_insert_with(|| ts_span(node));
         }
         if node.has_error() && cursor.goto_first_child() {
             continue;
         }
         while !cursor.goto_next_sibling() {
             if !cursor.goto_parent() {
-                return count;
+                return (count, first);
             }
         }
     }
@@ -1062,6 +1067,30 @@ mod tests {
     fn parse_errors_count_the_whole_tree() {
         let f = extract("fn ok() {}\nfn broken( {}\nstruct Missing {\n");
         assert_eq!(f.parse_errors, 2);
+    }
+
+    #[test]
+    fn the_first_parse_error_is_the_earliest_error_node() {
+        let clean = extract("fn ok() {}\n");
+        assert_eq!((clean.parse_errors, clean.first_parse_error), (0, None));
+
+        let f = extract("fn ok() {}\nfn broken( {}\nstruct Missing {\n");
+        let first = f.first_parse_error.expect("first parse error");
+        assert_eq!((first.start_line, first.start_col), (2, 10));
+    }
+
+    /// rustc accepts this with or without the feature, but the pinned
+    /// tree-sitter-rust 0.24.2 grammar has no attributes in `field_pattern`,
+    /// so the struct pattern becomes an error node. A grammar that accepts
+    /// it fails this test and should be re-pinned.
+    #[test]
+    fn an_attribute_on_a_struct_pattern_field_is_a_known_grammar_gap() {
+        let f = extract(
+            "pub enum Shape {\n    Square {\n        side: u32,\n        #[cfg(feature = \"labels\")]\n        label: String,\n    },\n}\n\npub fn area(shape: Shape) -> u32 {\n    match shape {\n        Shape::Square {\n            side,\n            #[cfg(feature = \"labels\")]\n            label,\n        } => side * side,\n    }\n}\n",
+        );
+        assert!(f.parse_errors > 0);
+        let first = f.first_parse_error.expect("first parse error");
+        assert_eq!((first.start_line, first.start_col), (11, 8));
     }
 
     #[test]

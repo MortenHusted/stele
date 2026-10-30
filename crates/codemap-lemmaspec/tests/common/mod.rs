@@ -548,6 +548,7 @@ impl Fixture {
                 files_skipped: 0,
                 parse_errors: 0,
                 parse_error_files: BTreeMap::new(),
+                first_parse_errors: BTreeMap::new(),
                 node_counts,
                 edge_counts,
                 call_sites_by_category: BTreeMap::new(),
@@ -617,6 +618,7 @@ pub fn report_for(snapshot: &Snapshot) -> Report {
         files_skipped: 0,
         parse_errors: 0,
         parse_error_files: BTreeMap::new(),
+        first_parse_errors: BTreeMap::new(),
         node_counts,
         edge_counts,
         call_sites_by_category: snapshot.call_sites.iter().fold(
