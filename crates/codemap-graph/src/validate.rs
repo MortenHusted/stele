@@ -1100,6 +1100,20 @@ fn validate_report(
             errors.push("per-file parse errors do not match report total".to_string());
         }
     }
+    let first_errors = &snapshot.report.first_parse_errors;
+    if !first_errors.is_empty() {
+        if !first_errors.keys().eq(parse_files.keys()) {
+            errors.push("first parse errors do not name the parse error files".to_string());
+        }
+        for (path, span) in first_errors {
+            let within = files_by_path
+                .get(path.as_str())
+                .is_some_and(|file| (span.start_byte..=file.byte_len).contains(&span.end_byte));
+            if !within {
+                errors.push(format!("first parse error lies outside its file: {path}"));
+            }
+        }
+    }
     if snapshot.report.files_scanned != snapshot.files.len() {
         errors.push(format!(
             "report files_scanned {} does not match {} file records",
@@ -1617,6 +1631,7 @@ mod tests {
                 files_skipped: 0,
                 parse_errors: 0,
                 parse_error_files: std::collections::BTreeMap::new(),
+                first_parse_errors: std::collections::BTreeMap::new(),
                 node_counts,
                 edge_counts: std::collections::BTreeMap::new(),
                 call_sites_by_category: std::collections::BTreeMap::new(),

@@ -1163,6 +1163,10 @@ pub struct Report {
     /// map means locations are unknown.
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub parse_error_files: BTreeMap<String, usize>,
+    /// Span of the first parser error node in each file of
+    /// `parse_error_files`, in source order. Absent in older snapshots.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    pub first_parse_errors: BTreeMap<String, Span>,
     pub node_counts: BTreeMap<String, usize>,
     pub edge_counts: BTreeMap<String, usize>,
     pub call_sites_by_category: BTreeMap<String, usize>,

@@ -62,6 +62,7 @@ fn minimal_snapshot() -> Snapshot {
             files_skipped: 0,
             parse_errors: 0,
             parse_error_files: BTreeMap::new(),
+            first_parse_errors: BTreeMap::new(),
             node_counts: BTreeMap::from([("file".into(), 1)]),
             edge_counts: BTreeMap::new(),
             call_sites_by_category: BTreeMap::new(),
@@ -510,6 +511,42 @@ fn parse_error_locations_must_be_known_positive_and_match_total() {
         snapshot.report.parse_error_files = entries;
         assert!(validate(&snapshot).is_err());
     }
+}
+
+#[test]
+fn first_parse_errors_must_name_exactly_the_parse_error_files() {
+    let mut snapshot = minimal_snapshot();
+    let path = snapshot.files[0].rel_path.clone();
+    let span = Span::from_ts(0, 0, (0, 0), (0, 0));
+    snapshot.report.parse_errors = 1;
+    snapshot.report.parse_error_files.insert(path.clone(), 1);
+    validate(&snapshot).unwrap();
+    snapshot
+        .report
+        .first_parse_errors
+        .insert(path.clone(), span);
+    validate(&snapshot).unwrap();
+    snapshot
+        .report
+        .first_parse_errors
+        .insert("other.rs".into(), span);
+    assert!(validate(&snapshot).is_err());
+    snapshot.report.first_parse_errors.remove("other.rs");
+    let past_the_end = snapshot.files[0].byte_len + 1;
+    snapshot.report.first_parse_errors.insert(
+        path.clone(),
+        Span::from_ts(past_the_end, past_the_end, (0, 0), (0, 0)),
+    );
+    assert!(validate(&snapshot).is_err());
+    snapshot.report.first_parse_errors.insert(path, span);
+    snapshot
+        .report
+        .first_parse_errors
+        .insert("other.rs".into(), span);
+    snapshot.report.parse_error_files.clear();
+    snapshot.report.parse_errors = 0;
+    snapshot.report.first_parse_errors.remove("other.rs");
+    assert!(validate(&snapshot).is_err());
 }
 
 #[test]

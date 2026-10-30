@@ -1475,7 +1475,14 @@ fn print_report(s: &crate::Snapshot) -> Result<()> {
         r.parse_errors
     );
     for (path, count) in &r.parse_error_files {
-        outputln!("  {path}: {count} parse errors");
+        match r.first_parse_errors.get(path) {
+            Some(first) => outputln!(
+                "  {path}: {count} parse errors; first at {}:{} (columns from 0)",
+                first.start_line,
+                first.start_col
+            ),
+            None => outputln!("  {path}: {count} parse errors"),
+        }
     }
     if r.parse_errors > 0 && r.parse_error_files.is_empty() {
         outputln!("  parse error locations unavailable in this snapshot");
