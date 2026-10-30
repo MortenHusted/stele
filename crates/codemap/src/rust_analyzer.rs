@@ -564,19 +564,53 @@ mod tests {
     }
 
     #[test]
-    fn the_client_owns_file_watching_and_accepts_only_the_watch_registration() {
+    fn initialization_advertises_client_side_file_watching() {
         let params = initialization_params("file:///repo", "test-target");
         assert_eq!(
             params.pointer("/capabilities/workspace/didChangeWatchedFiles/dynamicRegistration"),
             Some(&json!(true)),
             "without it rust-analyzer installs its own watcher before reporting quiescence"
         );
+    }
 
-        let register = json!({"jsonrpc": "2.0", "id": 0, "method": "client/registerCapability", "params": {"registrations": [{"id": "workspace/didChangeWatchedFiles", "method": "workspace/didChangeWatchedFiles"}]}});
-        assert_eq!(server_request_reply(&register), Some(Value::Null));
-        let other =
-            json!({"jsonrpc": "2.0", "id": 1, "method": "workspace/configuration", "params": {}});
-        assert_eq!(server_request_reply(&other), None);
+    #[test]
+    fn the_watch_registration_alone_gets_a_null_reply() {
+        let mut stream = Vec::new();
+        for request in [
+            json!({"jsonrpc": "2.0", "id": 0, "method": "client/registerCapability", "params": {"registrations": [{"id": "workspace/didChangeWatchedFiles", "method": "workspace/didChangeWatchedFiles"}]}}),
+            json!({"jsonrpc": "2.0", "id": 1, "method": "workspace/configuration", "params": {}}),
+        ] {
+            crate::lsp::write_message(&mut stream, &request).expect("frame request");
+        }
+        let (unsolicited_tx, unsolicited_rx) = mpsc::channel();
+        let stdin = std::sync::Mutex::new(Vec::new());
+        let hook: ServerRequestHook = Box::new(server_request_reply);
+
+        crate::lsp::reader_loop(
+            std::io::Cursor::new(stream),
+            &std::sync::Mutex::new(std::collections::HashMap::new()),
+            &unsolicited_tx,
+            Some(&hook),
+            &stdin,
+        );
+
+        let sent = stdin.into_inner().expect("stdin");
+        let mut reader = std::io::BufReader::new(&sent[..]);
+        let reply = crate::lsp::read_message(&mut reader)
+            .expect("reply")
+            .expect("payload");
+        assert_eq!(reply, json!({"jsonrpc": "2.0", "id": 0, "result": null}));
+        assert!(
+            crate::lsp::read_message(&mut reader)
+                .expect("eof")
+                .is_none(),
+            "only the registration is answered"
+        );
+        assert_eq!(
+            unsolicited_rx.try_iter().count(),
+            2,
+            "both requests still reach the indexing wait"
+        );
     }
 
     #[test]
