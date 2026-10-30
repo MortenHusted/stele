@@ -21,8 +21,8 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 
 use crate::lsp::{
-    DefinitionLocation, DefinitionRequest, DefinitionResult, DefinitionSource, Transport,
-    document_uri, parse_definition_response, path_from_uri, uri_from_path,
+    DefinitionLocation, DefinitionRequest, DefinitionResult, DefinitionSource, ServerRequestHook,
+    Transport, document_uri, parse_definition_response, path_from_uri, uri_from_path,
 };
 use crate::schema::{CallSiteCategory, RustAnalyzerPolicy};
 
@@ -259,7 +259,8 @@ impl Client {
     pub fn spawn(workspace_root: &Path, target_triple: &str) -> Result<Self> {
         let mut command = rust_analyzer_command();
         command.current_dir(workspace_root);
-        let transport = Transport::spawn("rust-analyzer", &mut command, None)?;
+        let hook: ServerRequestHook = Box::new(server_request_reply);
+        let transport = Transport::spawn("rust-analyzer", &mut command, Some(hook))?;
         let root_uri = uri_from_path(workspace_root);
         let client = Self {
             transport,
@@ -368,6 +369,15 @@ fn initialization_params(root_uri: &str, target_triple: &str) -> Value {
             "textDocument": {
                 "definition": { "linkSupport": true }
             },
+            // The extracted tree is pinned, so the client owns file watching
+            // and never reports a change. Without this, rust-analyzer runs
+            // its own watcher and reports quiescence only after watching
+            // every directory; on macOS each watch re-creates the FSEvents
+            // stream, so a tree of a few thousand directories stays silent
+            // for a minute or more.
+            "workspace": {
+                "didChangeWatchedFiles": { "dynamicRegistration": true }
+            },
             "experimental": {
                 "serverStatusNotification": true
             }
@@ -454,6 +464,14 @@ fn wait_for_quiescent(rx: &mpsc::Receiver<Value>, timeout: Duration) -> Result<(
             }
         }
     }
+}
+
+/// Accept the file-watch registration that client-side watching makes
+/// rust-analyzer request. Other server requests stay unanswered, as before.
+/// Runs on the transport's reader thread.
+fn server_request_reply(request: &Value) -> Option<Value> {
+    (request.get("method").and_then(Value::as_str) == Some("client/registerCapability"))
+        .then_some(Value::Null)
 }
 
 // ───────────────────────── classification + mapping ─────────────────────────
@@ -543,6 +561,22 @@ mod tests {
             params.pointer("/initializationOptions/cargo/autoreload"),
             Some(&json!(true))
         );
+    }
+
+    #[test]
+    fn the_client_owns_file_watching_and_accepts_only_the_watch_registration() {
+        let params = initialization_params("file:///repo", "test-target");
+        assert_eq!(
+            params.pointer("/capabilities/workspace/didChangeWatchedFiles/dynamicRegistration"),
+            Some(&json!(true)),
+            "without it rust-analyzer installs its own watcher before reporting quiescence"
+        );
+
+        let register = json!({"jsonrpc": "2.0", "id": 0, "method": "client/registerCapability", "params": {"registrations": [{"id": "workspace/didChangeWatchedFiles", "method": "workspace/didChangeWatchedFiles"}]}});
+        assert_eq!(server_request_reply(&register), Some(Value::Null));
+        let other =
+            json!({"jsonrpc": "2.0", "id": 1, "method": "workspace/configuration", "params": {}});
+        assert_eq!(server_request_reply(&other), None);
     }
 
     #[test]
