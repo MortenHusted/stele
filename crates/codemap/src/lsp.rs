@@ -522,7 +522,7 @@ fn wait_for_response(
 /// answer it, and the answer is written back before the message is
 /// forwarded. Everything the callers are not waiting on by id goes to the
 /// unsolicited channel.
-fn reader_loop<R: Read, W: Write>(
+pub fn reader_loop<R: Read, W: Write>(
     stdout: R,
     pending: &Pending,
     unsolicited: &mpsc::Sender<Value>,
