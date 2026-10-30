@@ -843,6 +843,8 @@ Semantic extraction excludes root `.worktrees`, `.git`, and `target` trees from
 rust-analyzer indexing and disables unused native diagnostics. This does not
 change the tracked source inventory or skip test call-site requests. Source
 placed under those administrative paths is outside this indexing profile.
+The client owns file watching and reports no changes, so rust-analyzer starts
+no watcher of its own over the pinned tree.
 Cross-file trait implementations still require semantic mode; syntax mode
 admits only its documented unambiguous same-file subset.
 

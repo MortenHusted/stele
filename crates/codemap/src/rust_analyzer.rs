@@ -21,8 +21,8 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 
 use crate::lsp::{
-    DefinitionLocation, DefinitionRequest, DefinitionResult, DefinitionSource, Transport,
-    document_uri, parse_definition_response, path_from_uri, uri_from_path,
+    DefinitionLocation, DefinitionRequest, DefinitionResult, DefinitionSource, ServerRequestHook,
+    Transport, document_uri, parse_definition_response, path_from_uri, uri_from_path,
 };
 use crate::schema::{CallSiteCategory, RustAnalyzerPolicy};
 
@@ -259,7 +259,8 @@ impl Client {
     pub fn spawn(workspace_root: &Path, target_triple: &str) -> Result<Self> {
         let mut command = rust_analyzer_command();
         command.current_dir(workspace_root);
-        let transport = Transport::spawn("rust-analyzer", &mut command, None)?;
+        let hook: ServerRequestHook = Box::new(server_request_reply);
+        let transport = Transport::spawn("rust-analyzer", &mut command, Some(hook))?;
         let root_uri = uri_from_path(workspace_root);
         let client = Self {
             transport,
@@ -368,6 +369,15 @@ fn initialization_params(root_uri: &str, target_triple: &str) -> Value {
             "textDocument": {
                 "definition": { "linkSupport": true }
             },
+            // The extracted tree is pinned, so the client owns file watching
+            // and never reports a change. Without this, rust-analyzer runs
+            // its own watcher and reports quiescence only after watching
+            // every directory; on macOS each watch re-creates the FSEvents
+            // stream, so a tree of a few thousand directories stays silent
+            // for a minute or more.
+            "workspace": {
+                "didChangeWatchedFiles": { "dynamicRegistration": true }
+            },
             "experimental": {
                 "serverStatusNotification": true
             }
@@ -417,7 +427,7 @@ fn wait_for_quiescent(rx: &mpsc::Receiver<Value>, timeout: Duration) -> Result<(
             .map_or(deadline, |quiet| quiet.min(deadline))
             .saturating_duration_since(now);
         if remaining.is_zero() {
-            bail!("rust-analyzer quiescence timed out");
+            bail!("rust-analyzer quiescence timed out after {timeout:?}");
         }
         match rx.recv_timeout(remaining) {
             Ok(msg) => {
@@ -447,13 +457,21 @@ fn wait_for_quiescent(rx: &mpsc::Receiver<Value>, timeout: Duration) -> Result<(
                 if quiet_deadline.is_some() {
                     return Ok(());
                 }
-                bail!("rust-analyzer quiescence timed out");
+                bail!("rust-analyzer quiescence timed out after {timeout:?}");
             }
             Err(mpsc::RecvTimeoutError::Disconnected) => {
                 bail!("rust-analyzer stdout reader disconnected before quiescence");
             }
         }
     }
+}
+
+/// Accept the file-watch registration that client-side watching makes
+/// rust-analyzer request. Other server requests stay unanswered, as before.
+/// Runs on the transport's reader thread.
+fn server_request_reply(request: &Value) -> Option<Value> {
+    (request.get("method").and_then(Value::as_str) == Some("client/registerCapability"))
+        .then_some(Value::Null)
 }
 
 // ───────────────────────── classification + mapping ─────────────────────────
@@ -546,6 +564,22 @@ mod tests {
     }
 
     #[test]
+    fn the_client_owns_file_watching_and_accepts_only_the_watch_registration() {
+        let params = initialization_params("file:///repo", "test-target");
+        assert_eq!(
+            params.pointer("/capabilities/workspace/didChangeWatchedFiles/dynamicRegistration"),
+            Some(&json!(true)),
+            "without it rust-analyzer installs its own watcher before reporting quiescence"
+        );
+
+        let register = json!({"jsonrpc": "2.0", "id": 0, "method": "client/registerCapability", "params": {"registrations": [{"id": "workspace/didChangeWatchedFiles", "method": "workspace/didChangeWatchedFiles"}]}});
+        assert_eq!(server_request_reply(&register), Some(Value::Null));
+        let other =
+            json!({"jsonrpc": "2.0", "id": 1, "method": "workspace/configuration", "params": {}});
+        assert_eq!(server_request_reply(&other), None);
+    }
+
+    #[test]
     fn initialization_disables_code_execution_and_network_fetches() {
         let policy = RustAnalyzerPolicy::fixed();
         let params = initialization_params("file:///repo", "test-target");
@@ -605,6 +639,22 @@ mod tests {
         let (quiescent_tx, quiescent_rx) = mpsc::channel::<Value>();
         drop(quiescent_tx);
         assert!(wait_for_quiescent(&quiescent_rx, Duration::from_millis(10)).is_err());
+    }
+
+    #[test]
+    fn a_silent_server_fails_the_wait_naming_the_limit() {
+        let (tx, rx) = mpsc::channel::<Value>();
+        tx.send(json!({
+            "method": "experimental/serverStatus",
+            "params": { "quiescent": false }
+        }))
+        .expect("send indexing status");
+        let error = wait_for_quiescent(&rx, Duration::from_millis(10)).expect_err("timed out");
+        assert_eq!(
+            error.to_string(),
+            "rust-analyzer quiescence timed out after 10ms"
+        );
+        drop(tx);
     }
 
     #[test]
