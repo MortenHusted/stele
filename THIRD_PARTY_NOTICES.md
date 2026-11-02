@@ -73,6 +73,10 @@ Portions of LemmaSpec are modified from Lemmalog 0.2.0 at commit
 
 Source: <https://github.com/JordyZomer/lemmalog/tree/74d428a2497066795f6328946457f22d713fcbd5>
 
+`crates/lemmaspec/src/ast.rs` also follows upstream commit
+[`b8e24db`](https://github.com/JordyZomer/lemmalog/commit/b8e24dbd80df61b7c6f1757dd77342a6228a6f84)
+in parsing `_Name` as a variable.
+
 ```text
 MIT License
 

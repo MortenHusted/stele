@@ -41,8 +41,9 @@ Stele, with the `.lemmaspec` extension, still read.
 Run `stele spec syntax` rather than guessing the grammar. The boundaries
 that matter most:
 
-- Variables begin with an uppercase letter; lowercase or quoted values are
-  symbols.
+- Variables begin with an uppercase letter, or with `_` and then an uppercase
+  letter (`_Name`); lowercase or quoted values are symbols. `_` alone is a
+  wildcard, and is the don't-care inside a negated atom.
 - Every relation a fact, rule or expectation uses must be declared.
 - One relation cannot be both asserted directly and derived.
 - `count`, `min` and `max` are available in rule heads, as in

@@ -20,5 +20,8 @@ The LemmaSpec engine in crates/lemmaspec includes files modified from Lemmalog 0
 Upstream source:
 https://github.com/JordyZomer/lemmalog/tree/74d428a2497066795f6328946457f22d713fcbd5
 
+crates/lemmaspec/src/ast.rs also follows upstream commit
+b8e24dbd80df61b7c6f1757dd77342a6228a6f84 in parsing `_Name` as a variable.
+
 Lemmalog is Copyright (c) 2026 Jordy and licensed under the MIT License.
 Its unmodified license notice is reproduced in THIRD_PARTY_NOTICES.md.

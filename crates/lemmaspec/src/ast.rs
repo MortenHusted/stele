@@ -16,7 +16,8 @@
 //! ```
 //!
 //! `!` is negation-as-absence, restricted by the engine to strictly lower
-//! strata. Variables start with uppercase.
+//! strata. Variables start with uppercase, or with `_` and then uppercase
+//! (`_Y`, Prolog's named don't-care); `_foo` is a constant.
 
 use crate::intern::{AggFn, Term};
 
@@ -323,10 +324,9 @@ impl Parser {
                 if s == "_" {
                     Ok(Term::Wildcard)
                 } else if s
-                    .chars()
-                    .next()
-                    .map(|c| c.is_ascii_uppercase())
-                    .unwrap_or(false)
+                    .strip_prefix('_')
+                    .unwrap_or(&s)
+                    .starts_with(|c: char| c.is_ascii_uppercase())
                 {
                     Ok(Term::Var(s))
                 }

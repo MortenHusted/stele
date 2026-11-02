@@ -66,6 +66,37 @@ fn rejects_rule_type_mismatch() {
 }
 
 #[test]
+fn named_dont_care_is_a_variable() {
+    let source = r#"
+spec named_dont_care {
+  relation depends_on { args: [symbol, symbol] }
+  relation has_dependency { args: [symbol] }
+
+  fact release_needs_tests {
+    relation: depends_on
+    args: [release, tests]
+  }
+
+  rule find_dependent {
+    derive: "has_dependency(Item)"
+    when: ["depends_on(Item, _Dependency)"]
+  }
+
+  expect release_has_dependency { query: "has_dependency(release)" count: 1 }
+}
+"#;
+    let report = walk_artifact(source).expect("walk named don't-care");
+    assert_eq!(report.status, "clean");
+
+    let negated = source.replace(
+        r#"when: ["depends_on(Item, _Dependency)"]"#,
+        r#"when: ["has_dependency(Item)", "!depends_on(Item, _Dependency)"]"#,
+    );
+    let error = walk_artifact(&negated).expect_err("a negated `_Name` is unbound");
+    assert!(error.to_string().contains("unsafe rule"), "{error}");
+}
+
+#[test]
 fn repeated_walk_is_byte_stable() {
     let first = serde_json::to_vec_pretty(&walk_artifact(EXAMPLE).unwrap()).unwrap();
     let second = serde_json::to_vec_pretty(&walk_artifact(EXAMPLE).unwrap()).unwrap();

@@ -266,6 +266,26 @@ fn wildcards_and_program_facts() {
 }
 
 #[test]
+fn underscore_prefixed_variables_parse_as_variables() {
+    // Lemmalog issue #6: `_Y` (Prolog's named don't-care) parsed as a
+    // constant, so a rule using one silently derived nothing.
+    let mut e = Engine::new();
+    e.install_program(
+        "link(n0, m0).\n\
+         link(n1, m1).\n\
+         interior(X) :- link(X, _Y).\n\
+         tagged(X) :- link(X, _foo).",
+    )
+    .unwrap();
+    e.run();
+    assert_eq!(e.query("interior", &[None]).len(), 2, "_Y is a variable");
+    assert!(
+        e.query("tagged", &[None]).is_empty(),
+        "_foo stays a constant"
+    );
+}
+
+#[test]
 fn merge_keeps_max_confidence_and_union_prov() {
     let mut e = Engine::new();
     let x = e.sym("x");
