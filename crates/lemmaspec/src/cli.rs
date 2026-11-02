@@ -118,7 +118,8 @@ Artifact rules:
   - must_fail names the exact expectation that kills a mutant; omit it for any failure
 
 Logic expressions:
-  - variables start with uppercase; `_` is a wildcard
+  - variables start with uppercase or with `_` then uppercase (`_Name`);
+    `_` alone is a wildcard and is the don't-care inside `!atom(...)`
   - symbols may be bare identifiers or quoted strings; integers may be negative
   - bodies support atoms, `!atom(...)`, and <, =<, >, >=, =, \=
   - the right side of a comparison supports integer + and - expressions
