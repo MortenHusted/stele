@@ -155,17 +155,15 @@ fn plugin_manifests_carry_this_version() {
         let text = std::fs::read_to_string(plugin.join(path)).expect("read manifest");
         serde_json::from_str(&text).expect("parse manifest")
     };
-    assert_eq!(
-        manifest(".codex-plugin/plugin.json")["version"],
-        env!("CARGO_PKG_VERSION")
-    );
-    // Claude Code keeps a pinned version until the string changes; without
-    // one it tracks the commit, so a skill fix reaches agents before a release.
-    assert!(
-        manifest(".claude-plugin/plugin.json")
-            .get("version")
-            .is_none()
-    );
+    // Claude Code and Codex keep a pinned version until the string changes,
+    // so agents take a skill change with the release whose binary ships it.
+    for path in [".codex-plugin/plugin.json", ".claude-plugin/plugin.json"] {
+        assert_eq!(
+            manifest(path)["version"],
+            env!("CARGO_PKG_VERSION"),
+            "{path}"
+        );
+    }
     let marketplace = std::fs::read_to_string(plugin.join("../../.claude-plugin/marketplace.json"))
         .expect("read marketplace");
     assert!(!marketplace.contains("\"version\""), "{marketplace}");

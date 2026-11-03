@@ -231,6 +231,11 @@ claude plugin marketplace add MortenHusted/stele && claude plugin install stele@
 codex plugin marketplace add MortenHusted/stele && codex plugin add stele@stele
 ```
 
+The plugin carries the release version, so Claude Code and Codex update it
+only when a release lands. In Claude Code, turn on auto-update for the
+`stele` marketplace (`/plugin`, Marketplaces, stele, Enable auto-update) to
+take each release without a manual step.
+
 Agents that read plain `SKILL.md` collections, such as Cursor and Pi, take
 them with `npx skills add MortenHusted/stele --skill stele --skill
 stele-onboard`. Antigravity loads `plugins/stele` from a checkout as a
