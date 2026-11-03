@@ -236,6 +236,20 @@ only when a release lands. In Claude Code, turn on auto-update for the
 `stele` marketplace (`/plugin`, Marketplaces, stele, Enable auto-update) to
 take each release without a manual step.
 
+A Homebrew install carries the same marketplace for its own release. Add
+that one instead, and the skills always match the installed binary:
+
+```sh
+claude plugin marketplace add "$(brew --prefix stele)/share/stele/marketplace" && claude plugin install stele@stele
+codex plugin marketplace add "$(brew --prefix stele)/share/stele/marketplace" && codex plugin add stele@stele
+```
+
+Claude Code reads that plugin in place, so `brew upgrade` moves it with the
+binary. Codex copies it: run `codex plugin add stele@stele` after an
+upgrade. Codex also records the versioned Cellar path, so set the `source`
+of `[marketplaces.stele]` in `~/.codex/config.toml` back to the `brew
+--prefix` path.
+
 Agents that read plain `SKILL.md` collections, such as Cursor and Pi, take
 them with `npx skills add MortenHusted/stele --skill stele --skill
 stele-onboard`. Antigravity loads `plugins/stele` from a checkout as a
