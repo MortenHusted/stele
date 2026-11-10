@@ -5,8 +5,24 @@ use crate::{
     digest::sha256,
     examples::{Example, ExampleIssue, Execution, Scan, cannot_exemplify, parse_tag},
 };
-use ruby_prism::Node;
+use ruby_prism::{Location, Node};
 use std::{collections::BTreeMap, fs, path::Path, process::Command};
+
+/// A Prism location's byte offsets as `usize`, to index the source with.
+trait Offsets {
+    fn start_offset(&self) -> usize;
+    fn end_offset(&self) -> usize;
+}
+
+impl Offsets for Location<'_> {
+    fn start_offset(&self) -> usize {
+        self.start() as usize
+    }
+
+    fn end_offset(&self) -> usize {
+        self.end() as usize
+    }
+}
 
 struct Candidate {
     class: String,
@@ -161,7 +177,7 @@ fn read_test(
         return Err(format!(
             "{file}:{}: invalid Ruby: {}",
             line(&source, error.location().start_offset()),
-            error.message()
+            String::from_utf8_lossy(error.message())
         ));
     }
     let tags: BTreeMap<usize, String> = parsed

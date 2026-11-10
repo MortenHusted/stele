@@ -112,6 +112,22 @@ pub struct RawFile {
     pub unverified_method_owners: Vec<usize>,
 }
 
+/// A Prism location's byte offsets as `usize`, the unit every span here uses.
+trait Offsets {
+    fn start_offset(&self) -> usize;
+    fn end_offset(&self) -> usize;
+}
+
+impl Offsets for Location<'_> {
+    fn start_offset(&self) -> usize {
+        self.start() as usize
+    }
+
+    fn end_offset(&self) -> usize {
+        self.end() as usize
+    }
+}
+
 /// Extract structural observations from a single Ruby source file.
 ///
 /// The `Result` mirrors [`crate::rust_syntax::extract_file`] so the two
@@ -1269,6 +1285,20 @@ mod tests {
             f.parse_errors > 0,
             "expected parse errors, got {}",
             f.parse_errors
+        );
+    }
+
+    /// Prism 2.1.0 rejects a command call with a `do` block as the only
+    /// argument of a parenthesised call. Ruby 3.4 accepts it, Prism 1.9.0
+    /// parsed it, and the fix landed upstream after 2.1.0. A file using it
+    /// is therefore counted as a parse error. When this assertion fails, a
+    /// fixed Prism is linked: delete the test and the README's note.
+    #[test]
+    fn prism_2_1_0_rejects_a_do_block_command_call_as_the_only_argument() {
+        assert!(extract("foo(bar baz do end)\n").parse_errors > 0);
+        assert_eq!(
+            extract("foo(bar(baz) { })\nfoo bar baz do end\n").parse_errors,
+            0
         );
     }
 

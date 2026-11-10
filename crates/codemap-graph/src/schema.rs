@@ -253,7 +253,7 @@ pub struct ToolVersions {
     /// `tree-sitter-rust` grammar version (Rust snapshots).
     #[serde(default, skip_serializing_if = "is_empty_string")]
     pub tree_sitter_rust: String,
-    /// Ruby parser identity (e.g. `prism 1.9.0`); empty for non-Ruby
+    /// Ruby parser identity (e.g. `prism 2.1.0`); empty for non-Ruby
     /// snapshots.
     #[serde(default, skip_serializing_if = "is_empty_string")]
     pub ruby_parser: String,
@@ -654,7 +654,7 @@ pub const TREE_SITTER_VERSION: &str = "0.25";
 pub const TREE_SITTER_RUST_VERSION: &str = "0.24.2";
 /// Ruby is parsed by Prism (the `CRuby` reference parser), not tree-sitter;
 /// the identity records the parser rather than a grammar.
-pub const RUBY_PARSER_PRISM_VERSION: &str = "prism 1.9.0";
+pub const RUBY_PARSER_PRISM_VERSION: &str = "prism 2.1.0";
 /// Pinned tree-sitter-php grammar crate version.
 pub const TREE_SITTER_PHP_VERSION: &str = "0.24.2";
 /// Pinned tree-sitter-go grammar crate version.

@@ -62,8 +62,11 @@ unsupported shapes.
   `require`/`require_relative`/`load`/`autoload` imports with `ImportRef`
   placeholders, `inherits` edges from superclasses, `implements` edges from
   `include`/`prepend`, and `extends` edges from `extend`, each resolved only
-  when both sides map to unique in-repository definitions. Prism (the
-  `CRuby` reference parser, via the official `ruby-prism` bindings) tracks
+  when both sides map to unique in-repository definitions. Prism 2.1.0 (the
+  `CRuby` reference parser, via the official `ruby-prism` bindings; that
+  release reports a parse error for a command call with a `do` block as the
+  only argument of a parenthesised call, `foo(bar baz do end)`, which Ruby
+  3.4 accepts) tracks
   local scope at parse time, so bare paren-less method calls (`params`,
   route helpers, chained receivers) are captured as observations; attribute
   writes and operator calls are excluded. A receiver-less call made outside

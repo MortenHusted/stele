@@ -2436,7 +2436,7 @@ mod tests {
         .expect("ruby extraction");
 
         assert_eq!(snapshot.identity.language, Language::Ruby);
-        assert_eq!(snapshot.identity.tools.ruby_parser, "prism 1.9.0");
+        assert_eq!(snapshot.identity.tools.ruby_parser, "prism 2.1.0");
         assert_eq!(snapshot.identity.tools.tree_sitter_rust, "");
         assert_eq!(snapshot.identity.tools.tree_sitter, "");
         // Only the ruby file is inventoried; every id is ruby-namespaced.
