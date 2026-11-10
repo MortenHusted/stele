@@ -26,6 +26,12 @@ plan ruby_rails_facts {
     rejected: "A separate ERB adapter: a template's references to Ruby classes and helpers would cross snapshots and could not be related. Reading ERB's tag syntax with a scanner of our own: it found the same call sites as Herb, but Herb also reads the markup, which later facts need. Herb beside a different Prism: its crate compiles its own Prism, and with ruby-prism 1.9.0 the two collided at link time; on the same Prism release one copy serves both."
   }
 
+  decision templates_have_a_public_corpus {
+    governs: [intent.answers_from_facts]
+    text: "Templates and the policies over class bodies and templates are held by a pinned public application with ERB views, through labels written from its source: exact call sites of selected templates, relations that must and must not exist, and a frozen census."
+    rejected: "The call corpus alone: its views are not ERB, so nothing held what a template contributes. Labels taken from an extraction: they would agree with the extractor by construction."
+  }
+
   change map_shows_structure {
     follows: [map_draws_counted_exact_edges, entries_without_absence]
     serves: [intent.answers_from_facts, intent.fails_closed]
@@ -145,5 +151,23 @@ plan ruby_rails_facts {
     ]
     state: done
     text: "Read templates with Herb in process, parse their Ruby as a method body so yield is valid, refuse a template Herb cannot read, and name the reader in the snapshot's tool identity."
+  }
+  change templates_gated_on_a_public_corpus {
+    after: [herb_reads_templates]
+    follows: [templates_have_a_public_corpus, conventions_are_policies]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap-lemmaspec/src/association.rs#associations",
+      "bin/public-corpus-benchmark",
+      "bin/public-corpus-benchmark.d/gate.rb",
+    ]
+    creates: [
+      "benchmarks/ruby/fizzy.json",
+      "benchmarks/ruby/fizzy-templates-oracle.json",
+      "bin/public-corpus-benchmark.d/template_oracle.rb",
+      "bin/public-corpus-benchmark.d/test/template_oracle_test.rb",
+    ]
+    state: done
+    text: "Pin a public ERB application, verify its templates' call sites and selected policy relations against labels written from its source, and follow a module a concern includes in its included block."
   }
 }

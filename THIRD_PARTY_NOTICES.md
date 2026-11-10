@@ -41,11 +41,11 @@ the upstream lockfile and is not copied into this repository.
 
 ## Public Rust, Ruby and C++ benchmark labels
 
-The public ripgrep, Mastodon and double-conversion descriptors and oracles under
+The public ripgrep, Mastodon, Fizzy and double-conversion descriptors and oracles under
 `benchmarks/rust`, `benchmarks/ruby` and `benchmarks/cpp` identify exact upstream
 commits. These independently authored labels record names and source locations;
 complete application sources are obtained separately. Upstream notices are
-retained as `LICENSE.ripgrep`, `LICENSE.mastodon` and
+retained as `LICENSE.ripgrep`, `LICENSE.mastodon`, `LICENSE.fizzy` and
 `LICENSE.double-conversion` beside the descriptors.
 
 ## Parser crate notice supplements

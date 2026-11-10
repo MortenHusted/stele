@@ -221,3 +221,53 @@ includes, associations and scopes is not a logical selector for methods in its
 concerns. Select the files that define those methods, or write an explicit
 hierarchy specification; a declaration-only host is refused rather than
 reported clean from an empty call set. Call-coverage admission still applies.
+
+## Fizzy: templates and policy relations
+
+`fizzy.json` pins basecamp/fizzy at
+`2de1de32b0e8ebb4f33600189365375aaf080464` (tag `fizzy@2de1de3`). Mastodon's
+views are mostly HAML; Fizzy's are ERB, so it is the corpus for templates and
+for the policies that read class bodies and templates. Fizzy is under the
+O'Saasy licence, preserved as `LICENSE.fizzy`. The oracle holds paths, line
+numbers, call names, node identifiers and file hashes, and no source text.
+Fetch the source separately and retain its notices.
+
+`fizzy-templates-oracle.json` was written by reading the public source at the
+pin, before comparing with any extraction. It fixes:
+
+- **Call sites of twelve templates, exactly.** Layouts with `yield`, a text
+  layout with no call at all, partials using block parameters and
+  `block_given?`, a Turbo Stream template, text mailer templates, a JSON
+  template, a form with a multi-line tag and `defined?`, and a template of
+  the engine under `saas/`. A missing site and an invented one both fail, and
+  in a semantic snapshot each site must be `Unsupported`.
+- **Required relations.** What selected `render` calls name, including a
+  partial reached from the engine's views root; which action a template is
+  named for; and associations by name, by `class_name:`, in the owner's
+  namespace, through another association, handed on by a concern, handed on
+  by a concern that includes another in its `included do`, and polymorphic
+  ones through `as:`.
+- **Forbidden relations and declarations that must relate nothing.** A
+  `turbo_stream.before(partial:)` is not a render; a partial found only
+  through the mailer's appended view path stays unrelated; interpolated
+  partial names and a render of a partial the application does not have
+  relate nothing; concerns the engine includes with an explicit receiver
+  hand on nothing.
+- **A census.** The number of templates, zero templates with parse errors,
+  and each policy's relation count and unresolved counts by reason. These are
+  frozen observations: a change in them is a change to review, not a claim
+  that every relation is right.
+
+Run it with the same operator as the Mastodon gate:
+
+```sh
+bin/public-corpus-benchmark --language ruby --corpus fizzy --repo /local/fizzy --bundle /local/ruby-operator --out /local/new-fizzy-results
+```
+
+The gate builds Stele, runs the synthetic call oracle and the template
+resolver test, extracts two independent checkouts with one and three
+definition workers, requires byte-identical snapshots, asks `stele topology`
+for the policy relations, and verifies both checkouts against the oracle.
+`--corpus` selects a further declared corpus of a language; without it the
+gate uses the language's default one, here Mastodon. This is selected-template
+and selected-relation coverage, without application-wide precision or recall.

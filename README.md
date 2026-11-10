@@ -30,6 +30,7 @@ caller or translation-unit oracle is not application-wide precision or recall.
 | --- | --- | --- |
 | Rust | ripgrep | [Prepared rust-analyzer and selected callers](benchmarks/rust/README.md) |
 | Ruby | Mastodon | [Verified receiver ancestry and selected callers](benchmarks/ruby/README.md) |
+| Ruby templates and policies | Fizzy | [Exact call sites of selected templates and selected policy relations](benchmarks/ruby/README.md#fizzy-templates-and-policy-relations) |
 | PHP | monica | [Synthetic precision and real-application identity/determinism](#public-php-and-go-corpus-gates) |
 | Go | lazygit | [Callable-target controls and real-application identity/determinism](#public-php-and-go-corpus-gates) |
 | C++ | double-conversion | [Selected translation units with declared unsupported sites](benchmarks/cpp/README.md) |
