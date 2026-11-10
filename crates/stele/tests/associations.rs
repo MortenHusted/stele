@@ -9,7 +9,7 @@ use codemap::schema::{Language, Snapshot};
 use codemap::{ExtractOptions, extract};
 use codemap_lemmaspec::association::{Associations, associations};
 
-const FILES: [(&str, &str); 11] = [
+const FILES: [(&str, &str); 12] = [
     (
         "app/models/person.rb",
         r#"
@@ -102,6 +102,11 @@ end
     ),
     ("app/models/profile.rb", "class Profile; end\n"),
     ("lib/core_ext.rb", "class Profile\n  def extra; end\nend\n"),
+    // A concern that includes another in its own `included do`.
+    (
+        "app/models/entry/commentable.rb",
+        "module Entry::Commentable\n  included do\n    include ::Remarkable\n  end\nend\nmodule Remarkable\n  included do\n    has_many :messages\n  end\nend\nclass Entry\n  include Commentable\nend\n",
+    ),
     ("app/models/duplicate.rb", "class Duplicate; end\n"),
     ("lib/duplicate.rb", "class Duplicate; end\n"),
     (
@@ -172,7 +177,7 @@ fn relations(snapshot: &Snapshot, derived: &Associations) -> BTreeSet<Relation> 
 
 /// (owner, declaration, rule, class reached, through, declaring module).
 #[rustfmt::skip]
-const RELATED: [(&str, &str, &str, &str, &str, &str); 24] = [
+const RELATED: [(&str, &str, &str, &str, &str, &str); 25] = [
     // The association's own name, as written or as a singular of it.
     ("Person", "has_many :invoices", "inferred", "Invoice", "", ""),
     ("Person", "has_many :categories", "inferred", "Category", "", ""),
@@ -205,6 +210,8 @@ const RELATED: [(&str, &str, &str, &str, &str, &str); 24] = [
     // A module's declaration belongs to each class that includes it.
     ("Person", "has_many :tags", "inferred", "Tag", "", "Taggable"),
     ("Billing::Invoice", "has_many :tags", "inferred", "Tag", "", "Taggable"),
+    // …and to each class including a concern that includes it in turn.
+    ("Entry", "has_many :messages", "inferred", "Message", "", "Remarkable"),
 ];
 
 /// (reason, file, macro, association name or `?`).

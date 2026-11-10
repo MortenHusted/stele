@@ -13,7 +13,9 @@
 //! exactly one of them names a class. A class defined in several files is
 //! one class only when exactly one of those files is where an autoloader
 //! would look for it. A `with_options` block gives its options to the
-//! declarations inside it.
+//! declarations inside it. A declaration in a module belongs to each class
+//! that includes the module, also through a module that includes it in its
+//! own `included do … end`.
 //!
 //! The policy reads every class body. Another library's macros of the same
 //! names, a serializer's `has_one :object` for one, are read the same way
@@ -35,6 +37,8 @@ const TO_MANY: [&str; 2] = ["has_many", "has_and_belongs_to_many"];
 const DELEGATED_TYPE: &str = "delegated_type";
 /// `with_options key: value do … end` gives its options to the calls inside.
 const WITH_OPTIONS: &str = "with_options";
+/// A concern's `included do … end` block runs in each class that includes it.
+const INCLUDED: &str = "included";
 /// How far up a superclass chain an inherited association is looked for.
 const MAX_ANCESTORS: usize = 32;
 
@@ -201,13 +205,27 @@ fn written(literal: &Literal) -> Option<&str> {
 pub(crate) type Classes<'a> = HashMap<String, Vec<&'a Node>>;
 
 pub(crate) fn classes(snapshot: &Snapshot) -> Classes<'_> {
-    let mut classes = Classes::new();
+    of_kind(snapshot, NodeKind::Type(TypeKind::Class))
+}
+
+fn of_kind(snapshot: &Snapshot, kind: NodeKind) -> Classes<'_> {
+    let mut found = Classes::new();
     for node in &snapshot.nodes {
-        if node.kind == NodeKind::Type(TypeKind::Class) {
-            classes.entry(key(qualified(node))).or_default().push(node);
+        if node.kind == kind {
+            found.entry(key(qualified(node))).or_default().push(node);
         }
     }
-    classes
+    found
+}
+
+/// The namespaces a constant is looked up under from inside `owner`,
+/// outermost first, ending with the owner itself.
+fn namespaces(owner: &Node) -> Vec<String> {
+    let name = key(qualified(owner));
+    name.match_indices("::")
+        .map(|(end, _)| name[..end].to_string())
+        .chain(std::iter::once(name.clone()))
+        .collect()
 }
 
 /// What a written constant names among the classes on record.
@@ -302,7 +320,49 @@ impl<'a> Index<'a> {
                 _ => {}
             }
         }
+        index.includes_handed_on(snapshot);
         index
+    }
+
+    /// A concern that includes another module inside its `included do … end`
+    /// includes it into each class that includes the concern. The extractor
+    /// leaves that include unresolved, because the block's receiver is not
+    /// the module; here the module's includers count as the other module's.
+    fn includes_handed_on(&mut self, snapshot: &'a Snapshot) {
+        let modules = of_kind(snapshot, NodeKind::Module);
+        let mut blocks: HashMap<&str, Vec<&CallSite>> = HashMap::new();
+        for site in &snapshot.call_sites {
+            if site.raw_name == INCLUDED {
+                blocks.entry(site.rel_path.as_str()).or_default().push(site);
+            }
+        }
+        for site in &snapshot.call_sites {
+            let Some(written) = site
+                .raw_name
+                .strip_prefix("include ")
+                .or_else(|| site.raw_name.strip_prefix("prepend "))
+            else {
+                continue;
+            };
+            let inside = blocks.get(site.rel_path.as_str()).is_some_and(|blocks| {
+                blocks.iter().any(|block| {
+                    block.span.start_byte < site.span.start_byte
+                        && site.span.end_byte <= block.span.end_byte
+                })
+            });
+            let Some(concern) = self
+                .body(site)
+                .filter(|body| inside && body.kind == NodeKind::Module)
+            else {
+                continue;
+            };
+            if let Named::One(module) = named(&modules, written, &namespaces(concern)) {
+                self.includers
+                    .entry(module.id.as_str())
+                    .or_default()
+                    .push(concern.id.as_str());
+            }
+        }
     }
 
     /// The class or module whose body holds the call: the smallest one
@@ -379,12 +439,7 @@ impl<'a> Index<'a> {
     /// class resolves a constant: under the owner, under each of its
     /// namespaces, then at the top level.
     fn class(&self, owner: &Node, candidates: &[String]) -> Result<&'a Node, Reason> {
-        let name = key(qualified(owner));
-        let scope: Vec<String> = name
-            .match_indices("::")
-            .map(|(end, _)| name[..end].to_string())
-            .chain(std::iter::once(name.clone()))
-            .collect();
+        let scope = namespaces(owner);
         let mut found = BTreeMap::new();
         for candidate in candidates {
             match named(&self.classes, candidate, &scope) {
