@@ -23,6 +23,7 @@
 //! checker's rules, evaluated by `LemmaSpec` with a witness for each
 //! result.
 
+pub mod association;
 pub mod citations;
 pub mod cli;
 pub mod coverage;
