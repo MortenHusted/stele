@@ -59,6 +59,13 @@ in those crates are retained under `publication/third-party/`.
 checksum, upstream commit, source URL and notice content hash. Preserve these
 notices when distributing binaries that include those parsers.
 
+The published `ruby-prism` 2.1.0 and `ruby-prism-sys` 2.1.0 crates omit Prism's
+MIT notice, and the published `herb` 0.11.2 crate omits Herb's. Prism's notice
+from the upstream commit recorded in its crates, and Herb's from its release
+commit (the crate records no commit), are retained the same way and bound in
+the same file. Herb's crate also carries its own copy of Prism's source, under
+that same Prism notice.
+
 ## Gitleaks policy metadata
 
 `toolchain/security/gitleaks-default-paths.json` records the global path
