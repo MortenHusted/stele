@@ -30,6 +30,7 @@ caller or translation-unit oracle is not application-wide precision or recall.
 | --- | --- | --- |
 | Rust | ripgrep | [Prepared rust-analyzer and selected callers](benchmarks/rust/README.md) |
 | Ruby | Mastodon | [Verified receiver ancestry and selected callers](benchmarks/ruby/README.md) |
+| Ruby templates and policies | Fizzy | [Exact call sites of selected templates and selected policy relations](benchmarks/ruby/README.md#fizzy-templates-and-policy-relations) |
 | PHP | monica | [Synthetic precision and real-application identity/determinism](#public-php-and-go-corpus-gates) |
 | Go | lazygit | [Callable-target controls and real-application identity/determinism](#public-php-and-go-corpus-gates) |
 | C++ | double-conversion | [Selected translation units with declared unsupported sites](benchmarks/cpp/README.md) |
@@ -63,10 +64,36 @@ unsupported shapes.
   placeholders, `inherits` edges from superclasses, `implements` edges from
   `include`/`prepend`, and `extends` edges from `extend`, each resolved only
   when both sides map to unique in-repository definitions. Prism (the
-  `CRuby` reference parser, via the official `ruby-prism` bindings) tracks
+  `CRuby` reference parser, via the official `ruby-prism` bindings; the build
+  in use is the one Herb carries, the 2.1.0 release plus the upstream fix
+  for `foo(bar baz do end)`, and a snapshot names it as `ruby_parser`)
+  tracks
   local scope at parse time, so bare paren-less method calls (`params`,
   route helpers, chained receivers) are captured as observations; attribute
-  writes and operator calls are excluded. Semantic mode launches ruby-lsp
+  writes and operator calls are excluded. A receiver-less call made outside
+  any method body (`belongs_to :owner, class_name: "Person"`,
+  `validates :name, presence: true`) keeps its arguments as written on its
+  call site when at least one is a literal: symbols, strings, constant paths,
+  booleans, `nil` and arrays of these, with the keyword where there is one and
+  a placeholder for anything else. They record what the source says, not what
+  the call does, and create no edge. `policy:association/ruby` reads them to
+  relate the classes an association macro names, and `stele topology` draws
+  those relations apart from the snapshot's edges. ERB templates (`*.erb`)
+  are part of the Ruby family. Herb 0.11.2, linked in process, returns a template's Ruby with everything outside
+  its `<% … %>` tags blanked, so the Ruby sits at the template's own byte
+  offsets, and Prism reads it as the body of a method, where `yield` is
+  valid. A snapshot names the reader as `erb_parser`. A template contributes a file node and the call sites
+  of its tags with their literal arguments; it contributes no definition,
+  edge or measure, a tag sequence Prism cannot read as one program is
+  counted under `observations` rather than as a parse error of the Ruby
+  sources, and in semantic mode its call sites are `Unsupported`, because
+  no resolver reads a template. The markup around the tags is not turned
+  into facts. An argument that is a call on a constant, such as
+  `render Card.new(title: t)`, is kept as that constant and method.
+  `policy:template-render/ruby` and `policy:template-owner/ruby` relate a
+  template to what it renders and to the action or class it belongs to.
+  Semantic mode launches
+  ruby-lsp
   under an operator-installed, hash-pinned tool bundle
   (`CODEMAP_RUBY_TOOL_BUNDLE`, `BUNDLE_FROZEN` — no network, no worktree
   writes) and emits a `calls` edge only when codemap's own static model

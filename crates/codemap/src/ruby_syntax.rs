@@ -47,7 +47,7 @@ use ruby_prism::{
 
 use crate::measures::{Form, LineClass, LineCounts, RawMeasure, count_lines, line_classes};
 use crate::rust_syntax::{RawCall, RawDef, RawImport, ReceiverShape};
-use crate::schema::{NodeKind, Span, TypeKind};
+use crate::schema::{CallArgument, Literal, NodeKind, Span, TypeKind};
 
 /// Mixin flavor of a [`RawMixin`] observation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -112,6 +112,22 @@ pub struct RawFile {
     pub unverified_method_owners: Vec<usize>,
 }
 
+/// A Prism location's byte offsets as `usize`, the unit every span here uses.
+trait Offsets {
+    fn start_offset(&self) -> usize;
+    fn end_offset(&self) -> usize;
+}
+
+impl Offsets for Location<'_> {
+    fn start_offset(&self) -> usize {
+        self.start() as usize
+    }
+
+    fn end_offset(&self) -> usize {
+        self.end() as usize
+    }
+}
+
 /// Extract structural observations from a single Ruby source file.
 ///
 /// The `Result` mirrors [`crate::rust_syntax::extract_file`] so the two
@@ -119,7 +135,18 @@ pub struct RawFile {
 /// total (error-tolerant), so the error path is currently unreachable.
 #[allow(clippy::unnecessary_wraps)]
 pub fn extract_file(_rel_path: &str, source: &[u8]) -> Result<RawFile> {
-    let result = ruby_prism::parse(source);
+    Ok(observe(source, &ruby_prism::parse(source)))
+}
+
+/// Extract the observations of a template's Ruby. A template is compiled
+/// into the body of a method, so `yield` and block control flow are valid
+/// in it where a script would not have them.
+pub fn extract_template(source: &[u8]) -> RawFile {
+    let options = ruby_prism::Options::default().partial_script(true).build();
+    observe(source, &ruby_prism::parse_with_options(source, &options))
+}
+
+fn observe(source: &[u8], result: &ruby_prism::ParseResult<'_>) -> RawFile {
     let parse_errors = result.errors().count();
 
     let comments: Vec<_> = result
@@ -134,7 +161,7 @@ pub fn extract_file(_rel_path: &str, source: &[u8]) -> Result<RawFile> {
     let root = result.node();
     walker.visit(&root);
 
-    Ok(RawFile {
+    RawFile {
         defs: walker.defs,
         imports: walker.imports,
         mixins: walker.mixins,
@@ -147,7 +174,7 @@ pub fn extract_file(_rel_path: &str, source: &[u8]) -> Result<RawFile> {
         uncertain_instance_methods: walker.uncertain_instance_methods,
         unverified_method_owners: walker.unverified_method_owners,
         line_classes: classes,
-    })
+    }
 }
 
 struct Walker<'a> {
@@ -340,6 +367,11 @@ impl<'a> Walker<'a> {
                     name_start_byte: name_start,
                     receiver: self.receiver_shape(node),
                     scope: self.scope_stack.clone(),
+                    arguments: if node.receiver().is_none() && self.def_stack.is_empty() {
+                        literal_arguments(node)
+                    } else {
+                        Vec::new()
+                    },
                 });
             }
         }
@@ -616,6 +648,86 @@ impl Walker<'_> {
             }
             _ => ReceiverShape::Other,
         }
+    }
+}
+
+/// The call's arguments as written, or none when no argument is a literal.
+fn literal_arguments(node: &CallNode<'_>) -> Vec<CallArgument> {
+    let Some(arguments) = node.arguments() else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    for argument in &arguments.arguments() {
+        let Some(hash) = argument.as_keyword_hash_node() else {
+            out.push(CallArgument {
+                keyword: None,
+                value: literal(&argument),
+            });
+            continue;
+        };
+        for element in &hash.elements() {
+            let pair = element.as_assoc_node();
+            let keyword = pair
+                .as_ref()
+                .and_then(|pair| pair.key().as_symbol_node())
+                .map(|key| String::from_utf8_lossy(key.unescaped()).into_owned());
+            out.push(match (pair, keyword) {
+                (Some(pair), Some(keyword)) => CallArgument {
+                    keyword: Some(keyword),
+                    value: literal(&pair.value()),
+                },
+                // `**options` and non-symbol keys name no keyword.
+                _ => CallArgument {
+                    keyword: None,
+                    value: Literal::Other,
+                },
+            });
+        }
+    }
+    if out.iter().any(|argument| argument.value.is_literal()) {
+        out
+    } else {
+        Vec::new()
+    }
+}
+
+fn literal(node: &Node<'_>) -> Literal {
+    match node {
+        Node::SymbolNode { .. } => Literal::Symbol(
+            String::from_utf8_lossy(node.as_symbol_node().unwrap().unescaped()).into_owned(),
+        ),
+        Node::StringNode { .. } => Literal::String(
+            String::from_utf8_lossy(node.as_string_node().unwrap().unescaped()).into_owned(),
+        ),
+        Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. } => Literal::Constant(
+            collapse_whitespace(&String::from_utf8_lossy(node.location().as_slice())),
+        ),
+        Node::CallNode { .. } => {
+            let call = node.as_call_node().unwrap();
+            match call.receiver() {
+                Some(
+                    receiver @ (Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. }),
+                ) => Literal::ConstantCall {
+                    constant: collapse_whitespace(&String::from_utf8_lossy(
+                        receiver.location().as_slice(),
+                    )),
+                    method: constant_str(&call.name()),
+                },
+                _ => Literal::Other,
+            }
+        }
+        Node::TrueNode { .. } => Literal::Boolean(true),
+        Node::FalseNode { .. } => Literal::Boolean(false),
+        Node::NilNode { .. } => Literal::Nil,
+        Node::ArrayNode { .. } => Literal::Array(
+            node.as_array_node()
+                .unwrap()
+                .elements()
+                .iter()
+                .map(|element| literal(&element))
+                .collect(),
+        ),
+        _ => Literal::Other,
     }
 }
 
@@ -1184,6 +1296,20 @@ mod tests {
             f.parse_errors > 0,
             "expected parse errors, got {}",
             f.parse_errors
+        );
+    }
+
+    /// Two crates carry Prism under the same symbols: `ruby-prism-sys` the
+    /// 2.1.0 release, Herb that release plus the upstream fix for a command
+    /// call with a `do` block as the only argument of a parenthesised call.
+    /// The linker keeps one copy for both. This construct tells them apart,
+    /// and the copy in use must be the fixed one the snapshot identity names.
+    #[test]
+    fn the_linked_prism_is_the_build_the_identity_names() {
+        assert_eq!(extract("foo(bar baz do end)\n").parse_errors, 0);
+        assert_eq!(
+            format!("prism {}", herb::prism_version()),
+            crate::schema::RUBY_PARSER_PRISM_VERSION
         );
     }
 

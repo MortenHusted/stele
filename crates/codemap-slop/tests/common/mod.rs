@@ -152,6 +152,7 @@ pub fn head_with_call_sites() -> Snapshot {
             },
             raw_name: raw_name.to_string(),
             category,
+            arguments: Vec::new(),
         }
     };
     snapshot.call_sites = vec![

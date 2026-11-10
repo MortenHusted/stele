@@ -144,7 +144,8 @@ pub fn validate(
         matches!(report.status.as_str(), "clean" | "incomplete"),
         "unsupported liveness report status"
     );
-    validate_selection(snapshot, report, selection)?;
+    validate_selection(snapshot, selection)?;
+    validate_selected_facts(report, selection)?;
     validate_report_members(report)?;
     validate_identity(snapshot, report, selection)?;
     let coverage = validate_coverage(snapshot, report, selection)?;
@@ -265,11 +266,8 @@ fn validate_identity(
     Ok(())
 }
 
-fn validate_selection(
-    snapshot: &Snapshot,
-    report: &CheckReport,
-    selection: &Selection,
-) -> Result<()> {
+/// The checks a selection must pass on its own, with no report to bind it to.
+pub fn validate_selection(snapshot: &Snapshot, selection: &Selection) -> Result<()> {
     ensure!(
         selection.entry_policy
             == format!("policy:entry-point/{}", snapshot.identity.language.tag()),
@@ -294,6 +292,15 @@ fn validate_selection(
                 "unknown or non-callable {relation} selection"
             );
         }
+    }
+    Ok(())
+}
+
+fn validate_selected_facts(report: &CheckReport, selection: &Selection) -> Result<()> {
+    for (relation, expected) in [
+        ("entry_point", &selection.entry_points),
+        ("public_api", &selection.public_api),
+    ] {
         let mut actual = Vec::new();
         for fact in facts(report, relation) {
             asserted(fact)?;
@@ -387,11 +394,14 @@ fn validate_coverage<'a>(
         "coverage provenance differs"
     );
     let census = facts(report, "call_census");
+    // A Ruby census also counts the template sites no resolver reads.
+    let ruby = snapshot.identity.language == codemap_graph::schema::Language::Ruby;
+    let categories = CATEGORIES.into_iter().chain(ruby.then_some("Unsupported"));
     ensure!(
-        census.len() == CATEGORIES.len(),
+        census.len() == CATEGORIES.len() + usize::from(ruby),
         "missing census categories"
     );
-    for category in CATEGORIES {
+    for category in categories {
         let count = snapshot
             .report
             .call_sites_by_category

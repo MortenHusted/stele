@@ -14,6 +14,7 @@
 
 use std::collections::HashMap;
 
+use crate::lookup::Lexical;
 use crate::schema::{Edge, EdgeKind, FactSource, Node, NodeKind, Provenance, TypeKind, edge_id};
 
 /// One definition's identity in the cross-file index.
@@ -114,29 +115,11 @@ impl DefinitionIndex {
     /// `Ambiguous` and never walked outward: the truth boundary forbids
     /// guessing which shadow the writer meant.
     pub fn resolve_constant(&self, receiver: &str, scope: &[String]) -> Resolution {
-        let (receiver, scope) = receiver
-            .strip_prefix("::")
-            .map_or((receiver, scope), |absolute| (absolute, &[][..]));
-        // Try each enclosing-scope prefix innermost-first, then the
-        // written constant at top level (Ruby's constant lookup order).
-        for prefix in scope
-            .iter()
-            .rev()
-            .map(String::as_str)
-            .chain(std::iter::once(""))
-        {
-            let candidate = if prefix.is_empty() {
-                receiver.to_string()
-            } else {
-                format!("{prefix}::{receiver}")
-            };
-            match self.by_qualified.get(&candidate) {
-                Some(refs) if refs.len() == 1 => return Resolution::Unique(refs[0].clone()),
-                Some(refs) if !refs.is_empty() => return Resolution::Ambiguous(refs.clone()),
-                _ => {} // no match at this level: walk outward
-            }
+        match crate::lookup::lexical_constant(&self.by_qualified, receiver, scope) {
+            Lexical::Unique(definition) => Resolution::Unique(definition.clone()),
+            Lexical::Ambiguous(definitions) => Resolution::Ambiguous(definitions.to_vec()),
+            Lexical::Unknown => Resolution::Unknown,
         }
-        Resolution::Unknown
     }
 
     fn ruby_declaration(&self, qualified: &str, prov: &Provenance) -> Option<DefinitionRef> {

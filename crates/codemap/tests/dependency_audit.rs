@@ -67,6 +67,7 @@ fn no_forbidden_runtime_dependencies() {
         "tree-sitter-cpp",
         "tree-sitter-javascript",
         "tree-sitter-typescript",
+        "herb",
         "ruby-prism",
         "tempfile",
         "libc",

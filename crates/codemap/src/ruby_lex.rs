@@ -21,21 +21,19 @@ use std::os::raw::{c_char, c_int};
 
 use crate::clones::Token;
 
-/// `pm_buffer_t` from `prism/util/pm_buffer.h`: length, capacity, value.
+/// `pm_buffer_t` from `prism/buffer.h`, which Prism allocates and frees.
 #[repr(C)]
 struct PmBuffer {
-    length: usize,
-    capacity: usize,
-    value: *mut c_char,
+    _opaque: [u8; 0],
 }
 
 unsafe extern "C" {
-    fn pm_buffer_init(buffer: *mut PmBuffer) -> bool;
+    fn pm_buffer_new() -> *mut PmBuffer;
     fn pm_buffer_value(buffer: *const PmBuffer) -> *mut c_char;
     fn pm_buffer_length(buffer: *const PmBuffer) -> usize;
     fn pm_buffer_free(buffer: *mut PmBuffer);
     fn pm_serialize_lex(buffer: *mut PmBuffer, source: *const u8, size: usize, data: *const c_char);
-    fn pm_token_type_name(token_type: c_int) -> *const c_char;
+    fn pm_token_type(token_type: c_int) -> *const c_char;
 }
 
 /// One token as Prism lexed it: its type name and byte range.
@@ -49,33 +47,24 @@ pub struct LexedToken {
 /// Lex a Ruby source with Prism. Tokens come back in source order; a
 /// source Prism cannot lex at all yields no tokens rather than a guess.
 pub fn lex(source: &[u8]) -> Vec<LexedToken> {
-    let mut buffer = PmBuffer {
-        length: 0,
-        capacity: 0,
-        value: std::ptr::null_mut(),
-    };
-    // SAFETY: `buffer` is a properly laid out `pm_buffer_t`; Prism
-    // initialises it, writes into memory it allocates, and frees it below.
-    // `source` outlives the call and is never written. A null options
-    // pointer means Prism's defaults (`pm_options_read` returns on NULL).
+    // SAFETY: Prism allocates the buffer, writes into memory it owns, and
+    // frees it below. `source` outlives the call and is never written. A
+    // null options pointer means Prism's defaults (`pm_options_read`
+    // returns on NULL).
     let bytes: Vec<u8> = unsafe {
-        if !pm_buffer_init(&raw mut buffer) {
+        let buffer = pm_buffer_new();
+        if buffer.is_null() {
             return Vec::new();
         }
-        pm_serialize_lex(
-            &raw mut buffer,
-            source.as_ptr(),
-            source.len(),
-            std::ptr::null(),
-        );
-        let value = pm_buffer_value(&raw const buffer).cast::<u8>();
-        let length = pm_buffer_length(&raw const buffer);
+        pm_serialize_lex(buffer, source.as_ptr(), source.len(), std::ptr::null());
+        let value = pm_buffer_value(buffer).cast::<u8>();
+        let length = pm_buffer_length(buffer);
         let copied = if value.is_null() {
             Vec::new()
         } else {
             std::slice::from_raw_parts(value, length).to_vec()
         };
-        pm_buffer_free(&raw mut buffer);
+        pm_buffer_free(buffer);
         copied
     };
     decode(&bytes, source.len())
@@ -134,7 +123,7 @@ fn token_type_name(kind: u32) -> &'static str {
     // SAFETY: Prism returns a pointer to a static NUL-terminated string
     // for every value, "UNKNOWN" included; it is never freed.
     unsafe {
-        let name = pm_token_type_name(kind);
+        let name = pm_token_type(kind);
         if name.is_null() {
             "UNKNOWN"
         } else {

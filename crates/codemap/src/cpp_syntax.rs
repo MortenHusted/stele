@@ -691,6 +691,7 @@ impl<'a> Walker<'a> {
             name_start_byte: target.start_byte(),
             receiver: ReceiverShape::Other,
             scope: Vec::new(),
+            arguments: Vec::new(),
         });
     }
 

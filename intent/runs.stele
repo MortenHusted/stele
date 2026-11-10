@@ -2932,3 +2932,1461 @@ run {
   base: "011f4678b6aee9a15f90619ae8e505e8d3781ceb"
   outcome: pass
 }
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b867f265a94e4030fce9efc4ae69fcd344e6bcea0b4f19818592b0c64b15c62d"
+  base: "4829ab825e88ced213114a2557bdf00ddec47b2d"
+  outcome: pass
+}
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:8ce603220d09107870a2e1a0eba97da9c8880da54df3f92f80a1f130a10e7f5c"
+  base: "2d7b82b3d383012c391f0afd86d24844aa5107c7"
+  outcome: pass
+}
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b23e65134acd0d1a806fab38831ba36d39df6f3e10d90154b54fabf4122e7935"
+  base: "45f2df530b0e70c4dc5ed2d9b83bf23a9c166185"
+  outcome: pass
+}
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:eb344d45b167886406984502fc6437ec2f2eb0fe9581e145246d4e8c1ed1a589"
+  base: "71a8596a234b785073cd989950c31409cc776194"
+  outcome: pass
+}
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:b04b40d3b95f996911ee8069a59da1ec15640d98df0f8e51bad3a787fc27791d"
+  base: "267c897021bbfc053eeffcc078604faace73d251"
+  outcome: pass
+}
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:9d9f98c74baa8825c4a97bbcae34aa46e41d90606918745a9f39d7648f57c9b7"
+  base: "70fb1d645f3e83af174625ab400cec6217c66297"
+  outcome: pass
+}
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:86c8f342d00c16e7f26da7cbc2fe12ca3f56fad7df20cde59d8db5fcf7b16dec"
+  base: "357442537d3414f2a2a01545df4dea8e6435ff22"
+  outcome: pass
+}
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:f4641b3cf70875568c89a4d1906ccf1543c412165042770489a9b2800ddcf12d"
+  base: "d720ab182199ab7e7ff60de7b69c78680ab86257"
+  outcome: pass
+}
+run {
+  example: extraction_is_byte_identical
+  digest: "sha256:cf0c36ea7c89f55e9f69b4f7ba2892d8cefba639402d6c171aaab0cbacb1f181"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: installed_skill_is_the_built_copy
+  digest: "sha256:7fc62d2f305a30893fc8834fc1296bdc59de37216aaf7a0762a0e9c41b00d938"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: named_commands_exist
+  digest: "sha256:b04e3916f7c7241a52d55983beaa7b83429fea011e77da7d9752c4fbda86033f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: check_equals_manual_steps
+  digest: "sha256:666c3865c5d446514112e4291bb46dae28c7f8b9b40d70ef0d55935d24688b21"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: check_open_claim_exits_one
+  digest: "sha256:65f0170f2da260949197bc5c238ce31a99e6179da2d98938c94765cd00975cb6"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: check_error_exits_two
+  digest: "sha256:8ac8c39b724afab1113fc8266f1468b46f0227f62ad7759fda26ca8998de207b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: check_refuses_without_resolver
+  digest: "sha256:2152a4db6de9029d66694018fae2620a85665c2fff0159bc65a2153516badf1f"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: impact_lists_touched_and_unmapped
+  digest: "sha256:6efeecf3b6588a7b8567df677c031fff0723fe1013d8c2311cb7e18df834a9e1"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: impact_lists_changed_tests
+  digest: "sha256:7efcd461407763cec8efd6672be4061eab3e947fe71f65ccf7d073824f735fa2"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: impact_shows_standings
+  digest: "sha256:b97632c4a1e695bf6ce81dac581a459f710c7d4adddf9b33727217881474b51d"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: plan_lists_ready_and_blocked
+  digest: "sha256:32bda2fd1511dd8b721438736a53c5b049dc718fdf2cf847aaae18e5f2e44d3b"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: missing_anchor_fails_the_plan
+  digest: "sha256:1009f76043ca736a0ce5a29b76ac904a3aca873f2152a96a4eae66eb766f7cd7"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: plan_error_exits_two
+  digest: "sha256:2a76459f31591a821c9a5ae6a6df2d59cc01b1d525558aae613431047004936e"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: done_needs_verified_statements
+  digest: "sha256:68add2da824576a6c92a0e3b24e7132937b5f2b7467cf3cfaaa5c18fc5e46ebd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: clean_walk_exits_zero
+  digest: "sha256:f57286f7c7e4399d3f39fd097c05c1b733ba266a13b6b8d2efbeeb4ac36ff0dd"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: surviving_mutant_is_reported
+  digest: "sha256:1728723748692a46b3e7f77229797e12e223553f3c773c6035c0b43d7e9e157a"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: open_walk_is_incomplete
+  digest: "sha256:a560987e409fe97a750cacc12b5556c7cbe505c2f69fdaf2a6ed6ed4a97c1649"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}
+run {
+  example: missing_spec_exits_two
+  digest: "sha256:c7e9b57024cc2945cb4f647c45cec70f25dce1a10df3368e8684d4d0964f1a38"
+  digest_version: 1
+  channel: cli
+  source: "sha256:5f68df8648ac8b2c5c69f218353bb0ad376abbdafb5af45fe7ea8ef8f0bdf651"
+  base: "cdc009e0ec6554e612e59db2e343ff6ee6dd7bd8"
+  outcome: pass
+}

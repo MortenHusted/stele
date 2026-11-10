@@ -27,7 +27,8 @@ pub fn categories(language: Language) -> impl Iterator<Item = CallSiteCategory> 
         .filter(move |category| {
             language == Language::Cpp
                 || (language == Language::JsTs && *category != CallSiteCategory::Inactive)
-                || (language == Language::Python && *category == CallSiteCategory::Unsupported)
+                || (matches!(language, Language::Python | Language::Ruby)
+                    && *category == CallSiteCategory::Unsupported)
         }),
     )
 }

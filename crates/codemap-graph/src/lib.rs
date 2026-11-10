@@ -9,6 +9,7 @@
 
 pub mod analysis;
 pub mod diff;
+pub mod lookup;
 pub mod nav;
 pub mod schema;
 pub mod validate;

@@ -1,0 +1,173 @@
+// Ruby and Rails facts: the map shows the structure a snapshot already
+// holds, and framework conventions enter as named policies over exact
+// observations, never as canonical edges.
+// `stele plan check plans/ruby-rails-facts.stele` checks it and says what is next.
+plan ruby_rails_facts {
+  use "../intent/catalog.stele" as intent
+
+  decision map_draws_counted_exact_edges {
+    governs: [intent.answers_from_facts]
+    text: "The map draws exact calls, inheritance and implementation, and an arc between two circles is a count of the exact edges between their members."
+    rejected: "A depends-on relation between directories: a consumer would be deriving a new fact. Calls only: the type hierarchy a snapshot holds stayed invisible."
+  }
+  decision entries_without_absence {
+    governs: [intent.fails_closed]
+    text: "A selection alone marks entry points on the map. Absence markers still need the liveness report that selection is checked against."
+    rejected: "Reading routes.rb statically: it re-implements routing conventions without the framework and needs an oracle of its own."
+  }
+  decision conventions_are_policies {
+    governs: [intent.answers_from_facts]
+    text: "The extractor records the literal arguments of calls made outside any method body as exact observations. A named, versioned policy derives associations and renders from them, and what it cannot resolve is counted, not guessed."
+    rejected: "A canonical association edge: the target class follows from a naming convention, not from the parser, and a new edge kind would change traversal and coupling for every Ruby snapshot."
+  }
+  decision erb_joins_the_ruby_family {
+    governs: [intent.answers_from_facts]
+    text: "ERB templates are part of the Ruby family and share its snapshot, as JSX and TSX share the JS/TS snapshot."
+    rejected: "A separate ERB adapter: a template's references to Ruby classes and helpers would cross snapshots and could not be related. Reading ERB's tag syntax with a scanner of our own: it found the same call sites as Herb, but Herb also reads the markup, which later facts need. Herb beside a different Prism: its crate compiles its own Prism, and with ruby-prism 1.9.0 the two collided at link time; on the same Prism release one copy serves both."
+  }
+
+  decision templates_have_a_public_corpus {
+    governs: [intent.answers_from_facts]
+    text: "Templates and the policies over class bodies and templates are held by a pinned public application with ERB views, through labels written from its source: exact call sites of selected templates, relations that must and must not exist, and a frozen census."
+    rejected: "The call corpus alone: its views are not ERB, so nothing held what a template contributes. Labels taken from an extraction: they would agree with the extractor by construction."
+  }
+
+  change map_shows_structure {
+    follows: [map_draws_counted_exact_edges, entries_without_absence]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap-topology/src/lib.rs#project",
+      "rust:crates/codemap-topology/src/liveness.rs#validate_selection",
+      "crates/codemap-topology/assets/topology-viewer.html",
+      "crates/codemap-topology/VENDORED.md",
+      "crates/codemap-topology/README.md",
+    ]
+    creates: [
+      "rust:crates/codemap-topology/src/lib.rs#Scope",
+      "rust:crates/codemap-topology/src/lib.rs#relation",
+      "rust:crates/codemap-topology/src/lib.rs#exclude",
+    ]
+    state: done
+    text: "Draw inheritance and implementation beside calls, lift edges to the circles on screen and count them, show canonical kinds, leave excluded path prefixes off the map by name, and mark selected entry points without a liveness report."
+  }
+  change record_literal_arguments {
+    after: [map_shows_structure]
+    follows: [conventions_are_policies]
+    serves: [intent.answers_from_facts]
+    touches: [
+      "rust:crates/codemap/src/ruby_syntax.rs#extract_file",
+      "rust:crates/codemap-graph/src/schema.rs#CallSite",
+    ]
+    creates: [
+      "rust:crates/codemap-graph/src/schema.rs#CallArgument",
+      "rust:crates/codemap-graph/src/schema.rs#Literal",
+      "rust:crates/codemap/src/ruby_syntax.rs#literal_arguments",
+      "crates/codemap/tests/ruby_call_arguments.rs",
+    ]
+    state: done
+    text: "Record the literal arguments of receiver-less Ruby calls made outside any method body on their call sites, omitted when there are none."
+  }
+  change derive_associations {
+    after: [record_literal_arguments]
+    follows: [conventions_are_policies]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap/src/resolve.rs#DefinitionIndex::resolve_constant",
+      "rust:crates/codemap-topology/src/lib.rs#project",
+      "crates/codemap-topology/assets/topology-viewer.html",
+    ]
+    creates: [
+      "rust:crates/codemap-lemmaspec/src/association.rs#associations",
+      "rust:crates/codemap-graph/src/lookup.rs#lexical_constant",
+      "rust:crates/codemap-topology/src/lib.rs#PolicyRelation",
+      "rust:crates/stele/src/topology.rs#policies",
+      "crates/stele/tests/associations.rs",
+    ]
+    state: done
+    text: "Derive associations between classes under a named policy: explicit and inferred class names, through: chains, polymorphic targets through their as: declarations, delegated types, and macros a module hands to the classes including it. Draw them on the map under the policy's name and count what stays unresolved."
+  }
+  change templates_join_the_snapshot {
+    after: [record_literal_arguments]
+    follows: [erb_joins_the_ruby_family]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap/src/git.rs#source_globs",
+      "rust:crates/codemap/src/ruby_syntax.rs#extract_file",
+      "rust:crates/codemap-lemmaspec/src/coverage.rs#categories",
+      "AGENTS.md",
+    ]
+    creates: [
+      "rust:crates/codemap/src/erb.rs#ruby",
+      "rust:crates/codemap-graph/src/schema.rs#is_erb_template",
+      "crates/codemap/tests/ruby_templates.rs",
+    ]
+    state: done
+    text: "Inventory ERB templates in the Ruby family, extract their Ruby with byte offsets preserved, and record their call sites; the call resolver leaves them unresolved and says so."
+  }
+  change derive_template_relations {
+    after: [derive_associations, templates_join_the_snapshot]
+    follows: [conventions_are_policies]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap-lemmaspec/src/association.rs#associations",
+      "rust:crates/codemap-graph/src/schema.rs#Literal",
+      "rust:crates/codemap-topology/src/lib.rs#project",
+      "rust:crates/stele/src/topology.rs#policies",
+    ]
+    creates: [
+      "rust:crates/codemap-lemmaspec/src/template.rs#renders",
+      "rust:crates/codemap-lemmaspec/src/template.rs#owners",
+      "crates/stele/tests/templates.rs",
+    ]
+    state: done
+    text: "Derive which partial or component a template renders, and which action or component owns a template, under named policies, and draw them on the map."
+  }
+  change parser_matches_herb {
+    after: [derive_template_relations]
+    follows: [erb_joins_the_ruby_family]
+    serves: [intent.answers_from_facts]
+    touches: [
+      "rust:crates/codemap/src/ruby_lex.rs#lex",
+      "rust:crates/codemap/src/ruby_syntax.rs#extract_file",
+      "crates/codemap/Cargo.toml",
+      "crates/stele-plan/Cargo.toml",
+    ]
+    state: done
+    text: "Move the Ruby parser to Prism 2.1.0, the Prism the Herb crate is built against, so one Prism serves both."
+  }
+  change herb_reads_templates {
+    after: [parser_matches_herb]
+    follows: [erb_joins_the_ruby_family]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap/src/erb.rs#ruby",
+      "rust:crates/codemap-graph/src/schema.rs#ToolVersions",
+      "crates/codemap/Cargo.toml",
+      "publication/dependency-notices.json",
+    ]
+    creates: [
+      "rust:crates/codemap/src/ruby_syntax.rs#extract_template",
+      "publication/third-party/herb.LICENSE",
+    ]
+    state: done
+    text: "Read templates with Herb in process, parse their Ruby as a method body so yield is valid, refuse a template Herb cannot read, and name the reader in the snapshot's tool identity."
+  }
+  change templates_gated_on_a_public_corpus {
+    after: [herb_reads_templates]
+    follows: [templates_have_a_public_corpus, conventions_are_policies]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap-lemmaspec/src/association.rs#associations",
+      "bin/public-corpus-benchmark",
+      "bin/public-corpus-benchmark.d/gate.rb",
+    ]
+    creates: [
+      "benchmarks/ruby/fizzy.json",
+      "benchmarks/ruby/fizzy-templates-oracle.json",
+      "bin/public-corpus-benchmark.d/template_oracle.rb",
+      "bin/public-corpus-benchmark.d/test/template_oracle_test.rb",
+    ]
+    state: done
+    text: "Pin a public ERB application, verify its templates' call sites and selected policy relations against labels written from its source, and follow a module a concern includes in its included block."
+  }
+}

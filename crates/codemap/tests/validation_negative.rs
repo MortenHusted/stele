@@ -122,6 +122,7 @@ fn call_site(category: CallSiteCategory) -> CallSite {
         span: Span::from_ts(0, 1, (0, 0), (0, 1)),
         raw_name: "call".into(),
         category,
+        arguments: Vec::new(),
     }
 }
 
@@ -411,6 +412,7 @@ fn out_of_file_call_site_span_is_rejected() {
         span: Span::from_ts(0, 2, (0, 0), (0, 2)),
         raw_name: "call".into(),
         category: codemap::schema::CallSiteCategory::Observed,
+        arguments: Vec::new(),
     });
     assert!(
         validate(&snap).is_err(),
@@ -426,6 +428,7 @@ fn unknown_call_site_path_is_rejected() {
         span: Span::from_ts(0, 1, (0, 0), (0, 1)),
         raw_name: "call".into(),
         category: codemap::schema::CallSiteCategory::Observed,
+        arguments: Vec::new(),
     });
     assert!(
         validate(&snap).is_err(),
@@ -574,4 +577,24 @@ fn parse_error_location_sum_rejects_overflow_without_panicking() {
         .parse_error_files
         .insert("a.rs".into(), usize::MAX);
     assert!(validate(&snapshot).is_err());
+}
+
+#[test]
+fn call_site_arguments_outside_ruby_are_rejected() {
+    let mut snap = minimal_snapshot();
+    snap.call_sites.push(call_site(CallSiteCategory::Observed));
+    snap.report
+        .call_sites_by_category
+        .insert("Observed".into(), 1);
+    validate(&snap).expect("a call site without arguments validates");
+    snap.call_sites[0]
+        .arguments
+        .push(codemap::schema::CallArgument {
+            keyword: None,
+            value: codemap::schema::Literal::Symbol("name".into()),
+        });
+    assert!(
+        validate(&snap).is_err(),
+        "only Ruby call sites carry arguments"
+    );
 }

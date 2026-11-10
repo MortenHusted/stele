@@ -984,6 +984,7 @@ mod tests {
                 name_start_byte: name_start,
                 receiver: ReceiverShape::Other,
                 scope: Vec::new(),
+                arguments: Vec::new(),
             },
         };
         let at = |character: u32| DefinitionLocation {

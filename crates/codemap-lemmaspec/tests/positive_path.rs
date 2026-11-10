@@ -238,6 +238,7 @@ fn js_ts_positive_paths_preserve_exact_selections_and_reject_syntax() {
         span: provenance.span,
         raw_name: "unused".into(),
         category: CallSiteCategory::Resolved,
+        arguments: Vec::new(),
     });
     snapshot.edges.push(Edge {
         id: edge_id(

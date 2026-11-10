@@ -237,6 +237,7 @@ pub fn positive_path_fixture() -> (Snapshot, positive_path::Options, String) {
             span: provenance.span,
             raw_name: "call".into(),
             category: CallSiteCategory::Resolved,
+            arguments: Vec::new(),
         });
         snapshot.edges.push(Edge {
             id: edge_id(EdgeKind::Calls, from, to, 45),
@@ -357,6 +358,7 @@ pub fn python_snapshot() -> Snapshot {
         span: Span::from_ts(120, 130, (2, 0), (2, 10)),
         raw_name: "unknown".into(),
         category: CallSiteCategory::Unsupported,
+        arguments: Vec::new(),
     });
     fixture.finish()
 }
@@ -502,6 +504,7 @@ impl Fixture {
             span: provenance.span,
             raw_name: to.rsplit('#').next().expect("fixture symbol").to_string(),
             category: CallSiteCategory::Resolved,
+            arguments: Vec::new(),
         });
         self.edges.push(Edge {
             id: edge_id(EdgeKind::Calls, from, to, provenance.span.start_byte),
@@ -662,6 +665,7 @@ pub fn dispatcher_snapshot() -> Snapshot {
             .span,
         raw_name: "callback".into(),
         category: CallSiteCategory::Unmapped,
+        arguments: Vec::new(),
     });
     fixture.finish()
 }

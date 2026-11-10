@@ -41,11 +41,11 @@ the upstream lockfile and is not copied into this repository.
 
 ## Public Rust, Ruby and C++ benchmark labels
 
-The public ripgrep, Mastodon and double-conversion descriptors and oracles under
+The public ripgrep, Mastodon, Fizzy and double-conversion descriptors and oracles under
 `benchmarks/rust`, `benchmarks/ruby` and `benchmarks/cpp` identify exact upstream
 commits. These independently authored labels record names and source locations;
 complete application sources are obtained separately. Upstream notices are
-retained as `LICENSE.ripgrep`, `LICENSE.mastodon` and
+retained as `LICENSE.ripgrep`, `LICENSE.mastodon`, `LICENSE.fizzy` and
 `LICENSE.double-conversion` beside the descriptors.
 
 ## Parser crate notice supplements
@@ -58,6 +58,13 @@ in those crates are retained under `publication/third-party/`.
 `publication/dependency-notices.json` binds each supplement to its exact crate
 checksum, upstream commit, source URL and notice content hash. Preserve these
 notices when distributing binaries that include those parsers.
+
+The published `ruby-prism` 2.1.0 and `ruby-prism-sys` 2.1.0 crates omit Prism's
+MIT notice, and the published `herb` 0.11.2 crate omits Herb's. Prism's notice
+from the upstream commit recorded in its crates, and Herb's from its release
+commit (the crate records no commit), are retained the same way and bound in
+the same file. Herb's crate also carries its own copy of Prism's source, under
+that same Prism notice.
 
 ## Gitleaks policy metadata
 

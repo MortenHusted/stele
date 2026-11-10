@@ -1,0 +1,865 @@
+{
+  "contract": "stele-ruby-templates/v1",
+  "basis": "reviewer_declared",
+  "status": "Labels written from the public source at the pinned commit, before comparison with any extraction; expectations are test labels, not observed canonical facts. The census is a frozen observation of the gate, not a label.",
+  "commit": "2de1de32b0e8ebb4f33600189365375aaf080464",
+  "scope": "exact call sites of selected templates; selected required and forbidden policy relations; declarations that must relate nothing; frozen template and policy census. No application-wide precision or recall claim.",
+  "census": {
+    "templates": 355,
+    "template_parse_errors": 0,
+    "policies": {
+      "policy:association/ruby": {
+        "relations": 202,
+        "unresolved": {
+          "no_class": 1,
+          "no_includer": 3,
+          "no_polymorphic_target": 2
+        }
+      },
+      "policy:template-render/ruby": {
+        "relations": 294,
+        "unresolved": {
+          "dynamic": 5,
+          "no_partial": 3
+        }
+      },
+      "policy:template-owner/ruby": {
+        "relations": 114,
+        "unresolved": {}
+      }
+    }
+  },
+  "files": {
+    "app/controllers/webhooks_controller.rb": "b1b390eb6d5bbeb493c8f969c056a81ec7938c7f1b7450c8dddce02659d2c731",
+    "app/mailers/user_mailer.rb": "5393b4dc6000da4521f4262caa24c6a2738c2c9f3616357d153e71c7fe3d191e",
+    "app/models/board.rb": "46d7d3d5dd8f1de103a798d2d41f6037c7ac6eb7778fcd02ae92e0ea7db43cc5",
+    "app/models/card.rb": "515758dce91ee790cb76ea5593c88d95ac832158d5d0b820c18d41d2ae2a32ad",
+    "app/models/comment.rb": "674a131f71dfd32d2a7a7dd08fa42d55c8a2e2d2071f89d10d9e0ffea60e4942",
+    "app/models/event.rb": "6edad12f4e9aaaa8d12800fa8cbbb6150114b1de010b5bfd5102f80997b4016c",
+    "app/models/mention.rb": "eb504a7f063aafe5cacf8d4bf1571ae5ed7f7b0ae318e384a4f501bfb3343294",
+    "app/models/oauth/client.rb": "1bbcf2532a756d5e0b81ff5c97fa26be1df3df4bfb6fa98c9e8c0e4b08beb9ef",
+    "app/models/reaction.rb": "7ee33730273101abca006d7468ece4957e0f2f5e3b12c8e95e979b326f0519e7",
+    "app/models/tag.rb": "8983e235cb4fd0763c6f9743bffb093b2997bf0a3a241da2d18edebc5dea32f4",
+    "app/models/tagging.rb": "ec1f96160424233711f3b52714e0647db08ccdefd39749e3e04577d2b3eb46de",
+    "app/models/user.rb": "8fac5f515a5dacb9275064eb887ab66532400077f12abb5774539bacc6a06b34",
+    "app/models/webhook.rb": "e3e96282510dba5b421178fba8155aadd7a59bccaeb537339001a14c1f2ebb2c",
+    "app/models/webhook/delinquency_tracker.rb": "a6eb17b698bcbc5d4bb9c067543603d9bfe292d2324eda0693b214efdff847c4",
+    "app/models/webhook/delivery.rb": "eec1d76cd4d878968a39bee34de5c04691fbcb0416a8e91051710cc5446da510",
+    "app/views/boards/show/_column.html.erb": "764136ac060e8c6f6c300bdfc240bda250f92e7ebcb6816bc6584717d3ae8363",
+    "app/views/boards/show/_expander.html.erb": "398fb7d39a35eb349a8964ef1cff3a5db6371e774952f7169314629dcb8ee0c1",
+    "app/views/cards/comments/_new.html.erb": "ac0c21b8c8dc83e477ba5afeb33094573492d3ed098caa4b955d450349e1cdbe",
+    "app/views/cards/display/preview/_assignees.html.erb": "4336f7debda6087212aafd25166fa1f2c1877412f5ecac90fa1c4b229c9dd409",
+    "app/views/cards/display/preview/_people.html.erb": "93035147bb80bc7359b849c2387f014e352579569fa45d2b7aa77ec40b1095c4",
+    "app/views/columns/_refresh_adjacent_columns.turbo_stream.erb": "efe431afa60eaee9cdd1394624b8eecb437a9494e08db7f2728aa6235c06a142",
+    "app/views/columns/left_positions/create.turbo_stream.erb": "9d40a05d8a0584b9684896dcbf95ab3eb314e64643387bcfc3fa82c83a860ea1",
+    "app/views/events/_event.html.erb": "452ab5c4dd9991579bcdf54553fabf8ef546e2d722f7b4ecdd4cb9218ea66b2f",
+    "app/views/layouts/mailer.text.erb": "51353f9de3a26d4b28f7db91152bf56d31cfa9e4bd3c834680772a63cd374698",
+    "app/views/layouts/public.html.erb": "4cb932123abbfd21fc663bd5cee127d0da3db25417b44b5f27fb86d523d991ad",
+    "app/views/layouts/shared/_flash.html.erb": "4c2978a01f878a61504c05511e4b5a3abf4e0a98fe1a076396eca5acda8faa14",
+    "app/views/layouts/shared/_head.html.erb": "37e80720e3f61eb1cda060fb831ba300b6e4c59edc608b4f35da01ded290155d",
+    "app/views/mailers/magic_link_mailer/sign_in_instructions.text.erb": "5625ed0c46b92e79b697824efae7833e07bc637be18193e0c40ece63992165a8",
+    "app/views/mailers/notification/bundle_mailer/_notification.html.erb": "b5ba87f9abda27d4494819cc9b01dde803454efe290df1488783505960921b7c",
+    "app/views/mailers/notification/bundle_mailer/_notification.text.erb": "32e2c6dc244f232bb887d396dc407a0737955275cca7022a05a92d34abe20df0",
+    "app/views/mailers/notification/bundle_mailer/notification.text.erb": "97a383911d5d0c22507b415f5bf6e57e2a83c48f7b4da05f8d0d9402e793897b",
+    "app/views/pwa/manifest.json.erb": "6ae146e80f48f881c0699f0c7007c2a2d461032c52b2fab97963fd663cebefea",
+    "app/views/searches/_form.html.erb": "0a7fee7a91692829d29d320f28675cca30335e9cdcade0a4e5a1616e1098e7d7",
+    "app/views/user_mailer/email_change_confirmation.html.erb": "b5ff811a4e3089a9c1f31b5c2d1b0a4c23dd01050607c677e3ab7814db88c1ac",
+    "app/views/webhooks/_webhook.html.erb": "10e4fa8305891e4ecde4554c74bb455927a5abc50241431198cb4160c343d3b9",
+    "app/views/webhooks/edit.html.erb": "5dc901f150817daf8dc8f70bebde93506d36eccbcbbb421ae57e827dc15a58dd",
+    "app/views/webhooks/index.html.erb": "aafa69f89bc8bf157cce9269e01ad60dce468eb53b358d23414f6eac3bc0a818",
+    "app/views/webhooks/show.html.erb": "4532cc5a94d5dcc9bd2096f511fcd478a80ce174d6c8cec97138148c84af1db7",
+    "saas/app/models/account/storage_limited.rb": "65f36a9e44b091985411646fce68d804bafe7fc55130c92351232bc93a77931c",
+    "saas/app/models/identity/devices.rb": "da31f57418e9fe9d741aa5ebba0982c62bd68a153a5f0a10634c11390efdaec0",
+    "saas/app/models/session/devices.rb": "550488b4c6add04a8d8b222eb692f759d4f2cd1f955ae664bc71788b9f1e29c1",
+    "saas/app/views/cards/comments/saas/_new.html.erb": "d5a61ef996863c3912c1ac125c83eb17b726680c23787b25da7f33192a9ceb8f",
+    "saas/app/views/cards/comments/saas/_storage_limit_exceeded.html.erb": "e525030883c44d94cb148e9733bd627214cc4036457e27152e68780a5447c2ca"
+  },
+  "templates": [
+    {
+      "path": "app/views/boards/show/_expander.html.erb",
+      "sites": [
+        {
+          "line": 2,
+          "name": "count"
+        },
+        {
+          "line": 2,
+          "name": "min"
+        },
+        {
+          "line": 2,
+          "name": "column_id"
+        },
+        {
+          "line": 3,
+          "name": "count"
+        },
+        {
+          "line": 3,
+          "name": "count"
+        },
+        {
+          "line": 5,
+          "name": "title"
+        },
+        {
+          "line": 6,
+          "name": "icon_tag"
+        },
+        {
+          "line": 9,
+          "name": "block_given?"
+        }
+      ]
+    },
+    {
+      "path": "app/views/cards/display/preview/_people.html.erb",
+      "sites": [
+        {
+          "line": 1,
+          "name": "render"
+        },
+        {
+          "line": 1,
+          "name": "card"
+        },
+        {
+          "line": 2,
+          "name": "render"
+        },
+        {
+          "line": 2,
+          "name": "card"
+        }
+      ]
+    },
+    {
+      "path": "app/views/columns/left_positions/create.turbo_stream.erb",
+      "sites": [
+        {
+          "line": 2,
+          "name": "turbo_stream"
+        },
+        {
+          "line": 2,
+          "name": "remove"
+        },
+        {
+          "line": 2,
+          "name": "dom_id"
+        },
+        {
+          "line": 3,
+          "name": "turbo_stream"
+        },
+        {
+          "line": 3,
+          "name": "before"
+        },
+        {
+          "line": 4,
+          "name": "render"
+        }
+      ]
+    },
+    {
+      "path": "app/views/events/_event.html.erb",
+      "sites": [
+        {
+          "line": 1,
+          "name": "cache"
+        },
+        {
+          "line": 1,
+          "name": "event"
+        },
+        {
+          "line": 3,
+          "name": "lookup_context"
+        },
+        {
+          "line": 3,
+          "name": "exists?"
+        },
+        {
+          "line": 3,
+          "name": "event"
+        },
+        {
+          "line": 3,
+          "name": "action"
+        },
+        {
+          "line": 4,
+          "name": "render"
+        },
+        {
+          "line": 4,
+          "name": "event"
+        },
+        {
+          "line": 4,
+          "name": "action"
+        },
+        {
+          "line": 4,
+          "name": "event"
+        },
+        {
+          "line": 6,
+          "name": "render"
+        },
+        {
+          "line": 6,
+          "name": "event"
+        },
+        {
+          "line": 6,
+          "name": "eventable_type"
+        },
+        {
+          "line": 6,
+          "name": "demodulize"
+        },
+        {
+          "line": 6,
+          "name": "underscore"
+        },
+        {
+          "line": 6,
+          "name": "event"
+        }
+      ]
+    },
+    {
+      "path": "app/views/layouts/mailer.text.erb",
+      "sites": []
+    },
+    {
+      "path": "app/views/layouts/public.html.erb",
+      "sites": [
+        {
+          "line": 3,
+          "name": "render"
+        },
+        {
+          "line": 5,
+          "name": "platform"
+        },
+        {
+          "line": 5,
+          "name": "type"
+        },
+        {
+          "line": 10,
+          "name": "link_to"
+        },
+        {
+          "line": 11,
+          "name": "image_tag"
+        },
+        {
+          "line": 19,
+          "name": "render"
+        }
+      ]
+    },
+    {
+      "path": "app/views/mailers/magic_link_mailer/sign_in_instructions.text.erb",
+      "sites": [
+        {
+          "line": 1,
+          "name": "for_sign_in?"
+        },
+        {
+          "line": 7,
+          "name": "code"
+        },
+        {
+          "line": 9,
+          "name": "distance_of_time_in_words"
+        },
+        {
+          "line": 11,
+          "name": "identity"
+        },
+        {
+          "line": 11,
+          "name": "accounts"
+        },
+        {
+          "line": 11,
+          "name": "last"
+        },
+        {
+          "line": 12,
+          "name": "my_passkeys_url"
+        },
+        {
+          "line": 12,
+          "name": "slug"
+        }
+      ]
+    },
+    {
+      "path": "app/views/mailers/notification/bundle_mailer/notification.text.erb",
+      "sites": [
+        {
+          "line": 1,
+          "name": "starts_at"
+        },
+        {
+          "line": 1,
+          "name": "strftime"
+        },
+        {
+          "line": 2,
+          "name": "pluralize"
+        },
+        {
+          "line": 2,
+          "name": "count"
+        },
+        {
+          "line": 2,
+          "name": "account"
+        },
+        {
+          "line": 2,
+          "name": "name"
+        },
+        {
+          "line": 2,
+          "name": "identity"
+        },
+        {
+          "line": 2,
+          "name": "accounts"
+        },
+        {
+          "line": 2,
+          "name": "many?"
+        },
+        {
+          "line": 4,
+          "name": "group_by"
+        },
+        {
+          "line": 4,
+          "name": "card"
+        },
+        {
+          "line": 4,
+          "name": "board"
+        },
+        {
+          "line": 4,
+          "name": "sort_by"
+        },
+        {
+          "line": 4,
+          "name": "name"
+        },
+        {
+          "line": 4,
+          "name": "downcase"
+        },
+        {
+          "line": 4,
+          "name": "each"
+        },
+        {
+          "line": 5,
+          "name": "name"
+        },
+        {
+          "line": 6,
+          "name": "name"
+        },
+        {
+          "line": 6,
+          "name": "length"
+        },
+        {
+          "line": 8,
+          "name": "group_by"
+        },
+        {
+          "line": 8,
+          "name": "each"
+        },
+        {
+          "line": 9,
+          "name": "number"
+        },
+        {
+          "line": 9,
+          "name": "title"
+        },
+        {
+          "line": 10,
+          "name": "render"
+        },
+        {
+          "line": 19,
+          "name": "notifications_settings_url"
+        },
+        {
+          "line": 22,
+          "name": "new_notifications_unsubscribe_url"
+        }
+      ]
+    },
+    {
+      "path": "app/views/pwa/manifest.json.erb",
+      "sites": [
+        {
+          "line": 2,
+          "name": "env"
+        },
+        {
+          "line": 2,
+          "name": "production?"
+        },
+        {
+          "line": 2,
+          "name": "env"
+        },
+        {
+          "line": 2,
+          "name": "compact"
+        },
+        {
+          "line": 2,
+          "name": "join"
+        },
+        {
+          "line": 2,
+          "name": "to_json"
+        },
+        {
+          "line": 2,
+          "name": "html_safe"
+        },
+        {
+          "line": 30,
+          "name": "notifications_path"
+        },
+        {
+          "line": 31,
+          "name": "image_url"
+        },
+        {
+          "line": 36,
+          "name": "root_path"
+        },
+        {
+          "line": 37,
+          "name": "image_url"
+        }
+      ]
+    },
+    {
+      "path": "app/views/searches/_form.html.erb",
+      "sites": [
+        {
+          "line": 1,
+          "name": "form_with"
+        },
+        {
+          "line": 1,
+          "name": "search_path"
+        },
+        {
+          "line": 7,
+          "name": "turbo_action"
+        },
+        {
+          "line": 7,
+          "name": "turbo_action"
+        },
+        {
+          "line": 8,
+          "name": "target_turbo_frame"
+        },
+        {
+          "line": 8,
+          "name": "target_turbo_frame"
+        },
+        {
+          "line": 9,
+          "name": "label"
+        },
+        {
+          "line": 10,
+          "name": "text_field_tag"
+        },
+        {
+          "line": 10,
+          "name": "query_terms"
+        },
+        {
+          "line": 22,
+          "name": "icon_tag"
+        }
+      ]
+    },
+    {
+      "path": "app/views/webhooks/_webhook.html.erb",
+      "sites": [
+        {
+          "line": 2,
+          "name": "link_to"
+        },
+        {
+          "line": 2,
+          "name": "webhook"
+        },
+        {
+          "line": 3,
+          "name": "webhook"
+        },
+        {
+          "line": 3,
+          "name": "name"
+        },
+        {
+          "line": 4,
+          "name": "webhook"
+        },
+        {
+          "line": 4,
+          "name": "created_via_id?"
+        },
+        {
+          "line": 5,
+          "name": "webhook_app_name"
+        },
+        {
+          "line": 5,
+          "name": "webhook"
+        },
+        {
+          "line": 11,
+          "name": "button_to"
+        },
+        {
+          "line": 11,
+          "name": "webhook"
+        },
+        {
+          "line": 13,
+          "name": "icon_tag"
+        },
+        {
+          "line": 14,
+          "name": "webhook"
+        },
+        {
+          "line": 14,
+          "name": "name"
+        }
+      ]
+    },
+    {
+      "path": "saas/app/views/cards/comments/saas/_new.html.erb",
+      "sites": [
+        {
+          "line": 1,
+          "name": "account"
+        },
+        {
+          "line": 1,
+          "name": "exceeding_storage_limit?"
+        },
+        {
+          "line": 1,
+          "name": "identity"
+        },
+        {
+          "line": 1,
+          "name": "staff?"
+        },
+        {
+          "line": 2,
+          "name": "render"
+        },
+        {
+          "line": 4,
+          "name": "render"
+        },
+        {
+          "line": 4,
+          "name": "card"
+        }
+      ]
+    }
+  ],
+  "required": [
+    {
+      "policy": "policy:template-render/ruby",
+      "from": "ruby:file:app/views/layouts/public.html.erb",
+      "to": "ruby:file:app/views/layouts/shared/_head.html.erb",
+      "declaration": "render \"layouts/shared/head\""
+    },
+    {
+      "policy": "policy:template-render/ruby",
+      "from": "ruby:file:app/views/layouts/public.html.erb",
+      "to": "ruby:file:app/views/layouts/shared/_flash.html.erb",
+      "declaration": "render \"layouts/shared/flash\""
+    },
+    {
+      "policy": "policy:template-render/ruby",
+      "from": "ruby:file:app/views/columns/left_positions/create.turbo_stream.erb",
+      "to": "ruby:file:app/views/columns/_refresh_adjacent_columns.turbo_stream.erb",
+      "declaration": "render \"columns/refresh_adjacent_columns\""
+    },
+    {
+      "policy": "policy:template-render/ruby",
+      "from": "ruby:file:saas/app/views/cards/comments/saas/_new.html.erb",
+      "to": "ruby:file:saas/app/views/cards/comments/saas/_storage_limit_exceeded.html.erb",
+      "declaration": "render \"cards/comments/saas/storage_limit_exceeded\""
+    },
+    {
+      "policy": "policy:template-render/ruby",
+      "from": "ruby:file:saas/app/views/cards/comments/saas/_new.html.erb",
+      "to": "ruby:file:app/views/cards/comments/_new.html.erb",
+      "declaration": "render \"cards/comments/new\""
+    },
+    {
+      "policy": "policy:template-render/ruby",
+      "from": "ruby:file:app/views/cards/display/preview/_people.html.erb",
+      "to": "ruby:file:app/views/cards/display/preview/_assignees.html.erb",
+      "declaration": "render \"cards/display/preview/assignees\""
+    },
+    {
+      "policy": "policy:template-owner/ruby",
+      "from": "ruby:method:app/controllers/webhooks_controller.rb#WebhooksController::index",
+      "to": "ruby:file:app/views/webhooks/index.html.erb",
+      "declaration": "def index"
+    },
+    {
+      "policy": "policy:template-owner/ruby",
+      "from": "ruby:method:app/controllers/webhooks_controller.rb#WebhooksController::edit",
+      "to": "ruby:file:app/views/webhooks/edit.html.erb",
+      "declaration": "def edit"
+    },
+    {
+      "policy": "policy:template-owner/ruby",
+      "from": "ruby:method:app/controllers/webhooks_controller.rb#WebhooksController::show",
+      "to": "ruby:file:app/views/webhooks/show.html.erb",
+      "declaration": "def show"
+    },
+    {
+      "policy": "policy:template-owner/ruby",
+      "from": "ruby:method:app/mailers/user_mailer.rb#UserMailer::email_change_confirmation",
+      "to": "ruby:file:app/views/user_mailer/email_change_confirmation.html.erb",
+      "declaration": "def email_change_confirmation"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/comment.rb#Comment",
+      "to": "ruby:type:app/models/card.rb#Card",
+      "declaration": "belongs_to :card"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/comment.rb#Comment",
+      "to": "ruby:type:app/models/user.rb#User",
+      "declaration": "belongs_to :creator"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/comment.rb#Comment",
+      "to": "ruby:type:app/models/reaction.rb#Reaction",
+      "declaration": "has_many :reactions"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/mention.rb#Mention",
+      "to": "ruby:type:app/models/user.rb#User",
+      "declaration": "belongs_to :mentioner"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/event.rb#Event",
+      "to": "ruby:type:app/models/board.rb#Board",
+      "declaration": "belongs_to :board"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/event.rb#Event",
+      "to": "ruby:type:app/models/webhook/delivery.rb#Webhook::Delivery",
+      "declaration": "has_many :webhook_deliveries"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/webhook.rb#Webhook",
+      "to": "ruby:type:app/models/webhook/delivery.rb#Webhook::Delivery",
+      "declaration": "has_many :deliveries"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/webhook.rb#Webhook",
+      "to": "ruby:type:app/models/webhook/delinquency_tracker.rb#Webhook::DelinquencyTracker",
+      "declaration": "has_one :delinquency_tracker"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/webhook.rb#Webhook",
+      "to": "ruby:type:app/models/oauth/client.rb#Oauth::Client",
+      "declaration": "belongs_to :created_via"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/webhook/delivery.rb#Webhook::Delivery",
+      "to": "ruby:type:app/models/webhook.rb#Webhook",
+      "declaration": "belongs_to :webhook"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/tagging.rb#Tagging",
+      "to": "ruby:type:app/models/tag.rb#Tag",
+      "declaration": "belongs_to :tag"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/tag.rb#Tag",
+      "to": "ruby:type:app/models/card.rb#Card",
+      "declaration": "has_many :cards"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/board.rb#Board",
+      "to": "ruby:type:app/models/card.rb#Card",
+      "declaration": "has_many :cards"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/card.rb#Card",
+      "to": "ruby:type:app/models/tagging.rb#Tagging",
+      "declaration": "has_many :taggings"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/card.rb#Card",
+      "to": "ruby:type:app/models/tag.rb#Tag",
+      "declaration": "has_many :tags"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/board.rb#Board",
+      "to": "ruby:type:app/models/tag.rb#Tag",
+      "declaration": "has_many :tags"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/comment.rb#Comment",
+      "to": "ruby:type:app/models/mention.rb#Mention",
+      "declaration": "has_many :mentions"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/card.rb#Card",
+      "to": "ruby:type:app/models/mention.rb#Mention",
+      "declaration": "has_many :mentions"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/comment.rb#Comment",
+      "to": "ruby:type:app/models/user.rb#User",
+      "declaration": "has_many :mentionees"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/mention.rb#Mention",
+      "to": "ruby:type:app/models/card.rb#Card",
+      "declaration": "belongs_to :source"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/mention.rb#Mention",
+      "to": "ruby:type:app/models/comment.rb#Comment",
+      "declaration": "belongs_to :source"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/event.rb#Event",
+      "to": "ruby:type:app/models/card.rb#Card",
+      "declaration": "belongs_to :eventable"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/event.rb#Event",
+      "to": "ruby:type:app/models/comment.rb#Comment",
+      "declaration": "belongs_to :eventable"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/reaction.rb#Reaction",
+      "to": "ruby:type:app/models/comment.rb#Comment",
+      "declaration": "belongs_to :reactable"
+    }
+  ],
+  "forbidden": [
+    {
+      "policy": "policy:template-render/ruby",
+      "from": "ruby:file:app/views/columns/left_positions/create.turbo_stream.erb",
+      "to": "ruby:file:app/views/boards/show/_column.html.erb",
+      "reason": "turbo_stream.before(partial:) is not a render"
+    },
+    {
+      "policy": "policy:template-render/ruby",
+      "from": "ruby:file:app/views/mailers/notification/bundle_mailer/notification.text.erb",
+      "to": "ruby:file:app/views/mailers/notification/bundle_mailer/_notification.text.erb",
+      "reason": "found only through the mailer's appended view path, which is not read"
+    },
+    {
+      "policy": "policy:template-render/ruby",
+      "from": "ruby:file:app/views/mailers/notification/bundle_mailer/notification.text.erb",
+      "to": "ruby:file:app/views/mailers/notification/bundle_mailer/_notification.html.erb",
+      "reason": "found only through the mailer's appended view path, which is not read"
+    },
+    {
+      "policy": "policy:association/ruby",
+      "from": "ruby:type:app/models/event.rb#Event",
+      "to": "ruby:type:app/models/webhook.rb#Webhook",
+      "reason": "has_many :webhook_deliveries names Webhook::Delivery, not Webhook"
+    }
+  ],
+  "unrelated": [
+    {
+      "path": "app/views/cards/display/preview/_people.html.erb",
+      "line": 1,
+      "reason": "renders cards/display/common/people, a partial the application does not have"
+    },
+    {
+      "path": "app/views/events/_event.html.erb",
+      "line": 4,
+      "reason": "the partial name is interpolated"
+    },
+    {
+      "path": "app/views/events/_event.html.erb",
+      "line": 6,
+      "reason": "the partial name is interpolated"
+    },
+    {
+      "path": "app/views/mailers/notification/bundle_mailer/notification.text.erb",
+      "line": 10,
+      "reason": "the partial is found only through the mailer's appended view path"
+    },
+    {
+      "path": "saas/app/models/account/storage_limited.rb",
+      "line": 8,
+      "reason": "included from the engine with an explicit receiver, which is not a readable include"
+    },
+    {
+      "path": "saas/app/models/identity/devices.rb",
+      "reason": "included from the engine with an explicit receiver"
+    },
+    {
+      "path": "saas/app/models/session/devices.rb",
+      "reason": "included from the engine with an explicit receiver"
+    }
+  ]
+}

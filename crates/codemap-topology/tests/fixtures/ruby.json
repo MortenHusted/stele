@@ -2,7 +2,7 @@
   "identity": {
     "schema_version": "codemap.snapshot.v8",
     "language": "ruby",
-    "extractor_version": "0.4.0",
+    "extractor_version": "0.5.11",
     "repository": {
       "id": "https://example.test/synthetic-topology.git",
       "is_canonical": false
@@ -10,14 +10,15 @@
     "commit_sha": "synthetic-commit",
     "tree_sha": "synthetic-tree",
     "tools": {
-      "ruby_parser": "prism 1.9.0",
+      "ruby_parser": "prism 2.1.0+4691667",
+      "erb_parser": "herb 0.11.2",
       "ruby_lsp": "ruby-lsp synthetic",
       "ruby": "ruby synthetic",
       "rbs": "rbs synthetic",
       "ruby_tool_bundle_sha256": "synthetic-bundle"
     },
     "dirty": false,
-    "snapshot_id": "f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+    "snapshot_id": "9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
   },
   "files": [
     {
@@ -47,7 +48,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.5.11",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -72,7 +73,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.5.11",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -97,7 +98,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.5.11",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -122,7 +123,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.5.11",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -147,7 +148,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.5.11",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -172,7 +173,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.5.11",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -195,7 +196,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.5.11",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -218,7 +219,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.5.11",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -241,7 +242,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.5.11",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -264,7 +265,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.5.11",
         "fact_source": "RubyLsp",
         "confidence": 255
       }

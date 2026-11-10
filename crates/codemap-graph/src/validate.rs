@@ -781,9 +781,17 @@ fn validate_file_measures(
             ));
         }
     }
+    // Templates are outside the counting policy: measured, they would
+    // change every total the policy name stands for.
     for node in &snapshot.nodes {
-        if node.kind == NodeKind::File && !measured_files.contains(node.id.as_str()) {
-            errors.push(format!("file {} has no file measure", node.id));
+        let template = snapshot.identity.language == Language::Ruby
+            && crate::schema::is_erb_template(&node.provenance.rel_path);
+        if node.kind == NodeKind::File && measured_files.contains(node.id.as_str()) == template {
+            errors.push(if template {
+                format!("template {} carries a file measure", node.id)
+            } else {
+                format!("file {} has no file measure", node.id)
+            });
         }
     }
 }
@@ -1193,13 +1201,32 @@ fn validate_call_sites(
             || (call_site.category == CallSiteCategory::Unsupported
                 && !matches!(
                     snapshot.identity.language,
-                    Language::Cpp | Language::JsTs | Language::Python
+                    Language::Cpp | Language::JsTs | Language::Python | Language::Ruby
                 ))
             || (call_site.category == CallSiteCategory::Unprofiled
                 && !matches!(snapshot.identity.language, Language::Cpp | Language::JsTs))
         {
             errors.push(format!(
                 "C++ call classification in a non-C++ snapshot at site {index}"
+            ));
+        }
+        // No resolver reads a template: its sites are unsupported once a
+        // snapshot is semantic, and no Ruby source's site ever is.
+        if snapshot.identity.language == Language::Ruby
+            && (call_site.category == CallSiteCategory::Unsupported)
+                != (semantic && crate::schema::is_erb_template(&call_site.rel_path))
+        {
+            errors.push(format!(
+                "call site {index} in {} has the wrong resolver coverage for its file",
+                call_site.rel_path
+            ));
+        }
+        if !call_site.arguments.is_empty()
+            && (snapshot.identity.language != Language::Ruby
+                || !call_site.arguments.iter().any(|a| a.value.is_literal()))
+        {
+            errors.push(format!(
+                "call site {index} carries arguments outside Ruby or without a literal"
             ));
         }
         match call_site.category {
@@ -1247,6 +1274,9 @@ fn validate_call_sites(
 #[allow(clippy::too_many_lines)] // per-language identity gates read as one table
 fn validate_tool_identity(snapshot: &Snapshot, errors: &mut Vec<String>) {
     let tools = &snapshot.identity.tools;
+    if snapshot.identity.language != Language::Ruby && !tools.erb_parser.is_empty() {
+        errors.push("only a ruby snapshot carries an erb_parser identity".into());
+    }
     // Grammar fields must match the snapshot language, and a snapshot may
     // not carry the other language's grammar version.
     match snapshot.identity.language {

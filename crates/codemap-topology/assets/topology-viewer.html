@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="en">
 <!-- Modified by Codemap: identity, provenance, source links, unresolved annotations,
-     and admitted observed-graph absence witnesses. See VENDORED.md and NOTICE. -->
+     admitted observed-graph absence witnesses, structural edge kinds and edges
+     lifted to the circles on screen. See VENDORED.md and NOTICE. -->
 
 <!--
 Codemap topology viewer
@@ -19,8 +20,10 @@ and embedded in the viewer so generated standalone HTML retains them.
 Codemap modifications preserve and display snapshot identity, exact-edge
 provenance, safe source-span links, unresolved call-site annotations, and
 admitted, qualified observed-graph absence witnesses, plus responsive viewport
-fitting and mobile details. Original upstream
-layout, drawing, navigation and inline D3 code are retained.
+fitting and mobile details. They also change edge drawing: inheritance and
+implementation edges are drawn beside calls, edges are lifted to the circles
+on screen and counted, and a lifted edge can be selected. Original upstream
+layout, node drawing, navigation and inline D3 code are retained.
 
 
                                  Apache License
@@ -327,7 +330,7 @@ THIS SOFTWARE.
     <div class="sub" id="stats"></div>
   </div>
   <div class="panel">
-    <input id="search" type="search" placeholder="Search modules, stores, jobs…" autocomplete="off">
+    <input id="search" type="search" placeholder="Search types, callables, files…" autocomplete="off">
     <div id="results"></div>
   </div>
   <div class="panel toggles" id="toggles"></div>
@@ -342,7 +345,7 @@ THIS SOFTWARE.
 </div>
 
 <aside id="sidebar" class="panel"></aside>
-<div id="hint">scroll to zoom · drag to pan · click a node · double-click to zoom in · Esc to reset</div>
+<div id="hint">scroll to zoom · drag to pan · click a node or an edge · double-click to zoom in · Esc to reset</div>
 <div id="err" class="panel"><p>No topology data found in this file.<br>
 Re-run <code>/modernize-map</code> to regenerate it.</p></div>
 
@@ -390,6 +393,14 @@ const root = d3.hierarchy(DATA.root, d => d.children)
   .sort((a, b) => b.value - a.value);
 d3.pack().size([WORLD, WORLD]).padding(d => Math.max(3, 24 / (d.depth + 1)))(root);
 
+// The canonical kind when the snapshot has one; directories and files are
+// presentation groups and say so.
+function displayKind(d) {
+  const k = d.codemap?.kind;
+  if (k) return String(k.subtype ?? k.kind).toLowerCase();
+  const id = String(d.id ?? "");
+  return id.startsWith("@directory:") ? "directory" : id.startsWith("@file:") ? "file" : null;
+}
 const nodes = [];
 const byId = new Map();
 root.each(d => {
@@ -398,7 +409,7 @@ root.each(d => {
   // flows, and entry points bind to the first occurrence.
   for (let k = 2; byId.has(id); k++) id = `${id}~${k}`;
   const n = { codemap: d.data.codemap || null, id, name: String(d.data.name ?? d.data.id ?? "?"),
-    kind: d.data.kind || "module",
+    kind: d.data.kind || "module", label: displayKind(d.data) || d.data.kind || "module",
     language: d.data.language || null, file: d.data.file || null,
     loc: numLoc(d.data), x: d.x, y: d.y, r: d.r, depth: d.depth,
     parentNode: d.parent ? d.parent.__viz : null,
@@ -406,7 +417,12 @@ root.each(d => {
   d.__viz = n;
   nodes.push(n); byId.set(n.id, n);
 });
+// Pre-order interval per node: `within(a, b)` is "a is b or an ancestor of b".
+{ let i = 0; root.eachBefore(d => { d.__viz.lo = i++; }); }
+root.eachAfter(d => { d.__viz.hi = (d.children || []).reduce((hi, c) => Math.max(hi, c.__viz.hi), d.__viz.lo); });
+const within = (a, b) => b.lo >= a.lo && b.lo <= a.hi;
 nodes.sort((a, b) => b.r - a.r); // painters: parents under children
+nodes.forEach((n, i) => { n.idx = i; });
 if (!nodes.some(n => !n.container)) {
   fail("The topology has no leaf modules to draw.<br>Check <code>topology.json</code> — every domain needs children.");
   throw new Error("empty topology");
@@ -416,29 +432,49 @@ if (!nodes.some(n => !n.container)) {
 const isRevealed = (n, k) => !n.parentNode || n.parentNode.r * k >= REVEAL_R;
 
 const entrySet = new Set((DATA.entryPoints || []).map(String));
-const edges = (DATA.edges || [])
+// Relations a named policy derived join the drawn edges under their own
+// kind, carrying the policy and the declaration in place of edge provenance.
+const policyEdges = (DATA.codemap?.policy_relations || []).map(r => ({
+  source: r.source, target: r.target, kind: r.kind, policy: r.policy,
+  codemap: { source_link: r.source_link, provenance: { rel_path: r.rel_path,
+    span: { start_line: r.start_line, end_line: r.end_line }, policy: r.policy, rule: r.rule,
+    declaration: r.declaration, through: r.through, via: r.via } } }));
+const edges = (DATA.edges || []).concat(policyEdges)
   .filter(e => e && byId.has(String(e.source)) && byId.has(String(e.target)))
   .map(e => ({ ...e, source: String(e.source), target: String(e.target), kind: e.kind }));
 const deadSet = new Set((DATA.deadEnds || []).map(String).filter(id => DATA.codemap?.absence?.[id]));
-const fanIn = new Map(), fanOut = new Map();
-const edgesByKind = new Map(), adjacency = new Map();
-const addAdj = (id, e) => { const a = adjacency.get(id); a ? a.push(e) : adjacency.set(id, [e]); };
+const edgesByKind = new Map();
 for (const e of edges) {
-  fanOut.set(e.source, (fanOut.get(e.source) || 0) + 1);
-  fanIn.set(e.target, (fanIn.get(e.target) || 0) + 1);
+  e.s = byId.get(e.source); e.t = byId.get(e.target);
   const b = edgesByKind.get(e.kind); b ? b.push(e) : edgesByKind.set(e.kind, [e]);
-  addAdj(e.source, e); if (e.target !== e.source) addAdj(e.target, e);
+}
+// The edges with exactly one end inside `n`: for a leaf its own edges, for a
+// circle everything that enters or leaves it.
+function crossing(n) {
+  const out = [];
+  for (const e of edges) {
+    const s = within(n, e.s), t = within(n, e.t);
+    if (s !== t) out.push({ e, outgoing: s });
+  }
+  return out;
 }
 
 // ── Colors ──────────────────────────────────────────────────────────────
 const KIND_FILL = { system: "#242424", domain: null, module: "#4a6580",
   datastore: "#3d6a5a", job: "#7a5d8a", screen: "#8a6d4a" };
-const LANG_FILL = { cobol: "#5e7a9e", java: "#9a6848", c: "#6e6a58",
+const LANG_FILL = { ruby: "#8a5560", rust: "#8f6a4c", go: "#4f7f8a", php: "#6a6a9a",
+  cobol: "#5e7a9e", java: "#9a6848", c: "#6e6a58",
   "c++": "#6e6a58", python: "#5a7850", javascript: "#9a8348",
   typescript: "#4a6580", csharp: "#5f7a5f", rpg: "#7d6580", pl1: "#806858",
   natural: "#587a78", sql: "#3d6a5a" };
 const EDGE_STYLE = {
   call:     { color: "rgba(201,182,144,0.30)", label: "calls" },
+  inherits:   { color: "rgba(107,184,90,0.40)",  label: "inherits" },
+  implements: { color: "rgba(91,160,224,0.40)",  label: "implements" },
+  extends:    { color: "rgba(190,150,220,0.40)", label: "extends" },
+  association: { color: "rgba(232,168,92,0.50)", label: "associations", dash: [5, 4] },
+  renders:     { color: "rgba(224,122,150,0.50)", label: "renders", dash: [2, 3] },
+  template:    { color: "rgba(120,200,190,0.50)", label: "templates", dash: [7, 3] },
   dispatch: { color: "rgba(160,130,200,0.35)", label: "dynamic dispatch" },
   read:     { color: "rgba(91,160,224,0.30)",  label: "reads" },
   write:    { color: "rgba(224,122,82,0.40)",  label: "writes" },
@@ -455,7 +491,7 @@ const canvas = document.getElementById("map");
 const ctx = canvas.getContext("2d");
 let transform = d3.zoomIdentity;
 let manuallyZoomed = false;
-let hovered = null, selected = null, activeFlow = null;
+let hovered = null, selected = null, selectedArc = null, activeFlow = null;
 const kindOn = Object.fromEntries(Object.keys(EDGE_STYLE).map(k => [k, true]));
 
 // ── Render ──────────────────────────────────────────────────────────────
@@ -469,6 +505,70 @@ function visible(n, k, tx, ty, vw, vh) {
 }
 
 const flowNodeSet = () => (activeFlow ? activeFlow._set : null);
+
+// Lifting is computed at a zoom rounded down to a step, so panning and small
+// zoom changes reuse it and every lifted end is a circle the frame draws.
+const liftScale = k => 2 ** (Math.floor(Math.log2(k) * 8) / 8);
+// An end smaller than LIFT_R pixels is too small to aim at; its edges belong
+// to the circle around it until zooming in makes it a target of its own.
+const LIFT_R = 6;
+const isDrawn = (n, k) => n.r * k >= LIFT_R && isRevealed(n, k);
+let liftKey = null, liftMemo = new Map(), liftGroups = new Map(), focusGroups = null;
+let drawnArcs = [];
+function liftTo(n, k) {
+  let r = liftMemo.get(n);
+  if (r) return r;
+  r = n;
+  while (r.parentNode && !isDrawn(r, k)) r = r.parentNode;
+  liftMemo.set(n, r);
+  return r;
+}
+function syncLift(k) {
+  if (liftKey !== k) { liftKey = k; liftMemo = new Map(); liftGroups = new Map(); focusGroups = null; }
+}
+function liftEdges(list, k) {
+  const groups = new Map();
+  for (const e of list) {
+    const a = liftTo(e.s, k), b = liftTo(e.t, k);
+    if (a === b || within(a, b) || within(b, a)) continue; // inside one circle at this zoom
+    const key = a.idx * nodes.length + b.idx;
+    const g = groups.get(key);
+    g ? (g.count++, g.edges.push(e)) : groups.set(key, { a, b, count: 1, edges: [e] });
+  }
+  return [...groups.values()].sort((x, y) => y.count - x.count);
+}
+function lifted(kind, k) {
+  syncLift(k);
+  let groups = liftGroups.get(kind);
+  if (!groups) { groups = liftEdges(edgesByKind.get(kind) || [], k); liftGroups.set(kind, groups); }
+  return groups;
+}
+function liftedFocus(id, k) {
+  syncLift(k);
+  if (!focusGroups || focusGroups.id !== id) {
+    const n = byId.get(id);
+    focusGroups = { id, groups: n ? liftEdges(crossing(n).filter(x => kindOn[x.e.kind] !== false).map(x => x.e), k) : [] };
+  }
+  return focusGroups.groups;
+}
+const arcWidth = count => Math.min(7, 0.8 + Math.log2(count) * 0.9);
+// The drawn arc within a few pixels of the pointer, widest first.
+function hitArc(mx, my) {
+  for (const arc of drawnArcs) {
+    let px = arc.ax, py = arc.ay;
+    for (let i = 1; i <= 12; i++) {
+      const t = i / 12, u = 1 - t;
+      const qx = u * u * arc.ax + 2 * u * t * arc.cx + t * t * arc.bx;
+      const qy = u * u * arc.ay + 2 * u * t * arc.cy + t * t * arc.by;
+      const dx = qx - px, dy = qy - py, len = dx * dx + dy * dy || 1;
+      const w = Math.max(0, Math.min(1, ((mx - px) * dx + (my - py) * dy) / len));
+      const ex = px + w * dx - mx, ey = py + w * dy - my;
+      if (ex * ex + ey * ey <= (3 + arcWidth(arc.g.count) / 2) ** 2) return arc;
+      px = qx; py = qy;
+    }
+  }
+  return null;
+}
 
 function draw() {
   const dpr = window.devicePixelRatio || 1;
@@ -518,39 +618,64 @@ function draw() {
     }
   }
 
-  // Edges: batched per kind, endpoints must both be on screen
-  const vis = id => { const n = byId.get(id); return n && n.r * k > MIN_R * 2 && isRevealed(n, k) && visible(n, k, tx, ty, vw, vh); };
-  const curve = (a, b) => {
-    const ax = a.x * k + tx, ay = a.y * k + ty, bx = b.x * k + tx, by = b.y * k + ty;
-    if ((ax - bx) ** 2 + (ay - by) ** 2 < 120) return;
-    ctx.moveTo(ax, ay);
-    ctx.quadraticCurveTo((ax + bx) / 2 + (by - ay) * 0.12, (ay + by) / 2 + (ax - bx) * 0.12, bx, by);
+  // Edges are lifted to the circles on screen: each end becomes its deepest
+  // drawn ancestor, and edges sharing both ends are one arc with a count.
+  const kq = liftScale(k);
+  const curve = arc => {
+    ctx.moveTo(arc.ax, arc.ay);
+    ctx.quadraticCurveTo(arc.cx, arc.cy, arc.bx, arc.by);
   };
+  const place = (g, offscreen) => {
+    const a = g.a, b = g.b;
+    if (!offscreen && (!visible(a, k, tx, ty, vw, vh) || !visible(b, k, tx, ty, vw, vh))) return null;
+    const ax = a.x * k + tx, ay = a.y * k + ty, bx = b.x * k + tx, by = b.y * k + ty;
+    if ((ax - bx) ** 2 + (ay - by) ** 2 < 120) return null;
+    return { ax, ay, bx, by, cx: (ax + bx) / 2 + (by - ay) * 0.12, cy: (ay + by) / 2 + (ax - bx) * 0.12, g };
+  };
+  drawnArcs = [];
   if (!flowSet) {
     for (const [kind, style] of Object.entries(EDGE_STYLE)) {
       if (!kindOn[kind]) continue;
-      const bucket = edgesByKind.get(kind);
-      if (!bucket) continue;
-      ctx.strokeStyle = style.color; ctx.lineWidth = 0.8; ctx.beginPath();
+      const groups = lifted(kind, kq);
+      if (!groups.length) continue;
+      const solid = style.color.replace(/[\d.]+\)$/, "0.95)");
+      ctx.strokeStyle = style.color;
+      ctx.setLineDash(style.dash || []);
+      const singles = [], labels = [];
       let drawn = 0;
-      for (const e of bucket) {
-        if (!vis(e.source) || !vis(e.target)) continue;
-        curve(byId.get(e.source), byId.get(e.target));
-        if (++drawn > 1200) break;
+      for (const g of groups) {
+        const arc = place(g);
+        if (!arc) continue;
+        arc.kind = kind; drawnArcs.push(arc);
+        if (g.count === 1) singles.push(arc);
+        else {
+          ctx.lineWidth = arcWidth(g.count); ctx.beginPath(); curve(arc); ctx.stroke();
+          if (g.count > 2 && labels.length < 60 && (arc.ax - arc.bx) ** 2 + (arc.ay - arc.by) ** 2 > 6400) labels.push(arc);
+        }
+        if (++drawn > 1500) break;
       }
-      ctx.stroke();
+      ctx.lineWidth = 0.8; ctx.beginPath(); singles.forEach(curve); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font = "600 10px system-ui, sans-serif"; ctx.fillStyle = solid;
+      for (const arc of labels)
+        ctx.fillText(arc.g.count.toLocaleString(), (arc.ax + 2 * arc.cx + arc.bx) / 4, (arc.ay + 2 * arc.cy + arc.by) / 4);
     }
   }
 
   // Focus edges (hover/selection) in accent, on top
   const focus = hovered || selected;
   if (focus && !flowSet) {
-    ctx.strokeStyle = "#cc785c"; ctx.lineWidth = 1.5; ctx.beginPath();
-    for (const e of adjacency.get(focus) || []) {
-      const a = byId.get(e.source), b = byId.get(e.target);
-      if (a && b) curve(a, b);
+    ctx.strokeStyle = "#cc785c";
+    for (const g of liftedFocus(focus, kq)) {
+      const arc = place(g, true);
+      if (!arc) continue;
+      ctx.lineWidth = Math.max(1.5, arcWidth(g.count)); ctx.beginPath(); curve(arc); ctx.stroke();
     }
-    ctx.stroke();
+  }
+  if (selectedArc && !flowSet) {
+    const g = lifted(selectedArc.kind, kq).find(x => x.a === selectedArc.a && x.b === selectedArc.b);
+    const arc = g && place(g);
+    if (arc) { ctx.strokeStyle = "#cc785c"; ctx.lineWidth = Math.max(2, arcWidth(g.count)); ctx.beginPath(); curve(arc); ctx.stroke(); }
   }
 
   // Active flow: numbered step path
@@ -560,7 +685,8 @@ function draw() {
     ctx.beginPath();
     for (let i = 0; i + 1 < seq.length; i++) {
       const a = byId.get(seq[i]), b = byId.get(seq[i + 1]);
-      if (a && b) curve(a, b);
+      const arc = a && b && place({ a, b }, true);
+      if (arc) curve(arc);
     }
     ctx.stroke();
     seq.forEach((id, i) => {
@@ -631,13 +757,17 @@ function flyTo(n) {
   })();
 }
 canvas.addEventListener("mousemove", e => {
-  const h = hit(e.offsetX, e.offsetY);
+  const arc = hitArc(e.offsetX, e.offsetY);
+  const h = arc ? null : hit(e.offsetX, e.offsetY);
   const id = h ? h.id : null;
-  if (id !== hovered) { hovered = id; canvas.style.cursor = h ? "pointer" : "grab"; requestDraw(); }
+  canvas.style.cursor = h || arc ? "pointer" : "grab";
+  if (id !== hovered) { hovered = id; requestDraw(); }
 });
 canvas.addEventListener("click", e => {
-  const h = hit(e.offsetX, e.offsetY);
+  const arc = activeFlow ? null : hitArc(e.offsetX, e.offsetY);
+  const h = arc ? null : hit(e.offsetX, e.offsetY);
   if (activeFlow && h) setFlow(""); // leave the walkthrough to inspect a node
+  selectedArc = arc ? { kind: arc.kind, a: arc.g.a, b: arc.g.b, edges: arc.g.edges } : null;
   selected = h ? h.id : null;
   resultsEl.innerHTML = "";
   renderSidebar();
@@ -650,7 +780,7 @@ addEventListener("keydown", e => {
   // Escape inside the search box or flow select should only affect that
   // control, not reset the whole viewport.
   if (e.target === searchEl || (e.target && e.target.tagName === "SELECT")) return;
-  flyGen++; selected = null; resultsEl.innerHTML = "";
+  flyGen++; selected = null; selectedArc = null; resultsEl.innerHTML = "";
   setFlow(""); flyTo(nodes[0]); renderSidebar();
 });
 addEventListener("resize", () => { if (!manuallyZoomed) fitGraph(); requestDraw(); });
@@ -673,35 +803,58 @@ function evidenceDetails(evidence) {
   const p = evidence.provenance;
   return `<details class="meta"><summary>${sourceLink(evidence.source_link, `${p.rel_path}:${p.span.start_line}-${p.span.end_line}`)}</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(p, null, 2))}</pre></details>`;
 }
+function connectionList(rows) {
+  return rows.slice(0, 40).map(x => `<span class="link" data-id="${esc(x.id)}">${x.dir} ${esc(byId.get(x.id)?.name || x.id)} <span class="kind">${esc(x.rel)}</span></span>${evidenceDetails(x.evidence)}`).join("") +
+    (rows.length > 40 ? `<div class="meta">…and ${rows.length - 40} more</div>` : "");
+}
+function wireSidebar(close) {
+  sidebar.classList.add("open");
+  sidebar.querySelector("#close").onclick = close;
+  sidebar.querySelectorAll(".link").forEach(el => el.onclick = () => {
+    const t = byId.get(el.dataset.id);
+    if (t) { selected = t.id; selectedArc = null; flyTo(t); renderSidebar(); requestDraw(); }
+  });
+}
+const deselect = () => { selected = null; selectedArc = null; renderSidebar(); if (innerWidth <= 700) { manuallyZoomed = false; fitGraph(); } requestDraw(); };
+function renderArcSidebar() {
+  const { kind, a, b, edges: members } = selectedArc;
+  const rel = EDGE_STYLE[kind]?.label || kind;
+  sidebar.innerHTML = `
+    <span class="closebtn" id="close">×</span>
+    <h2><span class="link" data-id="${esc(a.id)}" style="display:inline">${esc(a.name)}</span> → <span class="link" data-id="${esc(b.id)}" style="display:inline">${esc(b.name)}</span></h2>
+    <div class="meta">${members.length.toLocaleString()} ${esc(rel)} · ${esc(a.label)} to ${esc(b.label)}</div>
+    <p class="meta">${members[0]?.policy ? `Each row is one relation derived by ${esc(members[0].policy)} between a member of the first circle and a member of the second. It is not a snapshot edge.` : "Each row is one exact edge between a member of the first circle and a member of the second."}</p>
+    <h3>Edges (${members.length.toLocaleString()})</h3>
+    ${members.slice(0, 40).map(e => `<span class="link" data-id="${esc(e.source)}">${esc(e.s.name)} → ${esc(e.t.name)}</span>${evidenceDetails(e.codemap)}`).join("")}
+    ${members.length > 40 ? `<div class="meta">…and ${members.length - 40} more</div>` : ""}`;
+  wireSidebar(deselect);
+}
 function renderSidebar() {
-  document.body.classList.toggle("has-selection", !!selected || !!activeFlow);
+  document.body.classList.toggle("has-selection", !!selected || !!selectedArc || !!activeFlow);
   if (activeFlow) return renderFlowSidebar();
+  if (selectedArc) return renderArcSidebar();
   if (!selected) { sidebar.classList.remove("open"); return; }
   const n = byId.get(selected);
-  const neighbors = [];
-  for (const e of edges) {
-    if (e.source === n.id) neighbors.push({ id: e.target, rel: EDGE_STYLE[e.kind]?.label || e.kind, dir: "→", evidence: e.codemap });
-    else if (e.target === n.id) neighbors.push({ id: e.source, rel: EDGE_STYLE[e.kind]?.label || e.kind, dir: "←", evidence: e.codemap });
+  const neighbors = [], counts = new Map();
+  for (const { e, outgoing } of crossing(n)) {
+    const rel = EDGE_STYLE[e.kind]?.label || e.kind;
+    const c = counts.get(rel) || counts.set(rel, { in: 0, out: 0 }).get(rel);
+    outgoing ? c.out++ : c.in++;
+    neighbors.push({ id: outgoing ? e.target : e.source, rel, dir: outgoing ? "→" : "←", evidence: e.codemap });
   }
+  const unowned = n.id.startsWith("@file:") ? DATA.codemap?.unowned_call_site_summary?.by_file?.[n.id.slice(6)] : 0;
   sidebar.innerHTML = `
     <span class="closebtn" id="close">×</span>
     <h2>${esc(n.name)}</h2>
-    <div class="meta">${esc(n.kind)}${n.language ? " · " + esc(n.language) : ""}${n.loc ? " · " + n.loc.toLocaleString() + " LOC" : ""}</div>
+    <div class="meta">${esc(n.label)}${n.language ? " · " + esc(n.language) : ""}${n.loc ? " · " + n.loc.toLocaleString() + " LOC" : ""}</div>
     <div>${entrySet.has(n.id) ? '<span class="badge entry">entry point</span>' : ""}
       ${deadSet.has(n.id) ? `<p>${esc(DATA.codemap.absence[n.id].qualification)}</p><details><summary>Witness and admission</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(DATA.codemap.absence[n.id].witness)}\n${esc(DATA.codemap.absence[n.id].admission_witness)}</pre></details>` : ""}
-      <span class="badge">fan-in ${fanIn.get(n.id) || 0}</span>
-      <span class="badge">fan-out ${fanOut.get(n.id) || 0}</span></div>
+      ${[...counts].map(([rel, c]) => `<span class="badge">${esc(rel)} in ${c.in} · out ${c.out}</span>`).join("")}</div>
     ${n.file ? `<h3>Source</h3>${evidenceDetails(n.codemap) || esc(n.file)}` : ""}
     ${(n.codemap?.unresolved_call_sites || []).length ? `<h3>Unresolved call sites</h3><p class="meta">Annotations only; no target is established.</p><ul>${n.codemap.unresolved_call_sites.map(site => `<li>${esc(site.category)} · ${esc(site.raw_name)} · ${esc(site.rel_path)}:${site.span.start_line}-${site.span.end_line}</li>`).join("")}</ul>` : ""}
-    ${neighbors.length ? `<h3>Connections (${neighbors.length})</h3>` +
-      neighbors.slice(0, 40).map(x => `<span class="link" data-id="${esc(x.id)}">${x.dir} ${esc(byId.get(x.id)?.name || x.id)} <span class="kind">${esc(x.rel)}</span></span>${evidenceDetails(x.evidence)}`).join("") +
-      (neighbors.length > 40 ? `<div class="meta">…and ${neighbors.length - 40} more</div>` : "") : ""}`;
-  sidebar.classList.add("open");
-  sidebar.querySelector("#close").onclick = () => { selected = null; renderSidebar(); if (innerWidth <= 700) { manuallyZoomed = false; fitGraph(); } requestDraw(); };
-  sidebar.querySelectorAll(".link").forEach(el => el.onclick = () => {
-    const t = byId.get(el.dataset.id);
-    if (t) { selected = t.id; flyTo(t); renderSidebar(); requestDraw(); }
-  });
+    ${unowned ? `<p class="meta">${unowned.toLocaleString()} unresolved call sites in this file belong to no single callable.</p>` : ""}
+    ${neighbors.length ? `<h3>Connections (${neighbors.length.toLocaleString()})</h3>` + connectionList(neighbors) : ""}`;
+  wireSidebar(deselect);
 }
 function renderFlowSidebar() {
   const f = activeFlow;
@@ -723,10 +876,14 @@ searchEl.addEventListener("input", () => {
   const q = searchEl.value.trim().toLowerCase();
   resultsEl.innerHTML = "";
   if (q.length < 2) return;
-  nodes.filter(n => n.name.toLowerCase().includes(q)).slice(0, 12).forEach(n => {
+  // Exact names first, then prefixes, then the shortest containing name.
+  const rank = n => { const name = n.name.toLowerCase(); return name === q ? 0 : name.startsWith(q) ? 1 : 2; };
+  nodes.filter(n => n.name.toLowerCase().includes(q))
+    .sort((a, b) => rank(a) - rank(b) || a.name.length - b.name.length || a.lo - b.lo).slice(0, 12).forEach(n => {
     const d = document.createElement("div");
-    d.innerHTML = `${esc(n.name)}<span class="kind">${esc(n.kind)}</span>`;
-    d.onclick = () => { selected = n.id; resultsEl.innerHTML = ""; flyTo(n); renderSidebar(); requestDraw(); };
+    const where = n.file || (n.id.startsWith("@file:") ? n.id.slice(6) : n.id.startsWith("@directory:") ? n.id.slice(11) : "");
+    d.innerHTML = `${esc(n.name)}<span class="kind">${esc(n.label)}${where ? " · " + esc(where) : ""}</span>`;
+    d.onclick = () => { selected = n.id; selectedArc = null; resultsEl.innerHTML = ""; flyTo(n); renderSidebar(); requestDraw(); };
     resultsEl.appendChild(d);
   });
 });
@@ -734,11 +891,14 @@ searchEl.addEventListener("input", () => {
 // ── Edge-kind toggles & legend ──────────────────────────────────────────
 const togglesEl = document.getElementById("toggles");
 for (const [kind, style] of Object.entries(EDGE_STYLE)) {
-  if (!edges.some(e => e.kind === kind)) continue;
+  const total = (edgesByKind.get(kind) || []).length;
+  if (!total) continue;
   const solid = style.color.replace(/[\d.]+\)$/, "0.9)");
   const l = document.createElement("label");
-  l.innerHTML = `<input type="checkbox" checked><span class="swatch" style="background:${solid}"></span>${style.label}`;
-  l.querySelector("input").onchange = ev => { kindOn[kind] = ev.target.checked; requestDraw(); };
+  const policy = (edgesByKind.get(kind) || [])[0]?.policy;
+  l.innerHTML = `<input type="checkbox" checked><span class="swatch" style="background:${solid}"></span>${style.label} <span class="sub">${total.toLocaleString()}${policy ? " · by policy" : ""}</span>`;
+  if (policy) l.title = policy;
+  l.querySelector("input").onchange = ev => { kindOn[kind] = ev.target.checked; focusGroups = null; if (selectedArc?.kind === kind) { selectedArc = null; renderSidebar(); } requestDraw(); };
   togglesEl.appendChild(l);
 }
 if (!togglesEl.children.length) togglesEl.style.display = "none";
@@ -766,7 +926,7 @@ function setFlow(v) {
     activeFlow._seq = activeFlow.steps.flatMap(st => st.nodes);
     activeFlow._set = new Set(activeFlow._seq);
   }
-  selected = null;
+  selected = null; selectedArc = null;
   if (activeFlow) {
     const ids = activeFlow.steps.flatMap(s => s.nodes || []);
     const pts = ids.map(id => byId.get(id)).filter(Boolean);
@@ -792,17 +952,32 @@ document.getElementById("title").textContent = DATA.system || DATA.root.name || 
 if (DATA.codemap) {
   const identity = document.createElement("details");
   identity.className = "panel";
-  identity.innerHTML = `<summary>Snapshot identity and scope</summary><p class="meta">As of tree ${esc(DATA.codemap.identity.tree_sha)}. Exact calls only. Absence markers are conditional observations.</p><pre style="font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere">${esc(JSON.stringify(DATA.codemap, (key, value) => key === "absence" ? undefined : value, 2))}</pre>`;
+  const excluded = DATA.codemap.excluded;
+  const unowned = DATA.codemap.unowned_call_site_summary;
+  identity.innerHTML = `<summary>Snapshot identity and scope</summary><p class="meta">As of tree ${esc(DATA.codemap.identity.tree_sha)}. Edges are exact calls, inheritance and implementation only; an arc between two circles counts the exact edges between their members. ${entrySet.size && !deadSet.size && !Object.keys(DATA.codemap.absence || {}).length ? "Entry points are the supplied selection; no absence is claimed. " : "Absence markers are conditional observations. "}${excluded ? `Left off this map: ${excluded.prefixes.map(esc).join(", ")} (${excluded.files.toLocaleString()} files, ${excluded.nodes.toLocaleString()} nodes, ${excluded.edges.toLocaleString()} edges). ` : ""}${unowned?.total ? `${unowned.total.toLocaleString()} unresolved call sites belong to no single callable. ` : ""}${(DATA.codemap.policies || []).map(p => `${esc(p.policy)} derived ${p.relations.toLocaleString()} relations, drawn dashed; they are not snapshot edges.${Object.keys(p.unresolved).length ? " Left unresolved: " + Object.entries(p.unresolved).map(([reason, count]) => `${esc(reason)} ${count.toLocaleString()}`).join(", ") + "." : ""}`).join(" ")}</p>`;
   document.getElementById("hud").appendChild(identity);
-  identity.addEventListener("toggle", () => { if (!manuallyZoomed) fitGraph(); });
+  // The full record is large; build it when first opened.
+  identity.addEventListener("toggle", () => {
+    if (identity.open && !identity.querySelector("pre")) {
+      const pre = document.createElement("pre");
+      pre.style.cssText = "font-size:11px;white-space:pre-wrap;overflow-wrap:anywhere";
+      pre.textContent = JSON.stringify(DATA.codemap, (key, value) => key === "absence" || key === "by_file" ? undefined : value, 2);
+      identity.appendChild(pre);
+    }
+    if (!manuallyZoomed) fitGraph();
+  });
 }
 
 {
-  const leaves = nodes.filter(n => !n.container);
-  const stores = leaves.filter(n => n.kind === "datastore").length;
-  document.getElementById("stats").textContent =
-    `${leaves.length - stores} modules` + (stores ? ` · ${stores} data stores` : "") +
-    ` · ${edges.length} edges` + (entrySet.size ? ` · ${entrySet.size} entry points` : "") + (deadSet.size ? ` · ${deadSet.size} qualified absence (dashed)` : "");
+  const tally = new Map();
+  for (const n of nodes) if (n.codemap) tally.set(n.label, (tally.get(n.label) || 0) + 1);
+  const files = nodes.filter(n => n.label === "file").length;
+  const plural = label => ({ defined: "defined types", typealias: "type aliases" })[label] || label + (/(s|x|ch|sh)$/.test(label) ? "es" : "s");
+  const parts = [...tally].sort((a, b) => b[1] - a[1]).map(([label, count]) => `${count.toLocaleString()} ${count === 1 ? label : plural(label)}`);
+  if (files) parts.push(`${files.toLocaleString()} file${files === 1 ? "" : "s"}`);
+  if (!parts.length) parts.push(`${nodes.filter(n => !n.container).length.toLocaleString()} modules`);
+  document.getElementById("stats").textContent = parts.join(" · ") +
+    ` · ${(edges.length - policyEdges.length).toLocaleString()} edges` + (policyEdges.length ? ` · ${policyEdges.length.toLocaleString()} by policy` : "") + (entrySet.size ? ` · ${entrySet.size.toLocaleString()} entry points` : "") + (deadSet.size ? ` · ${deadSet.size} qualified absence (dashed)` : "");
 }
 fitGraph();
 requestDraw();

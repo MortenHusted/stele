@@ -11,7 +11,7 @@
 // Re-export the shared graph layer's modules so internal `crate::schema` /
 // `crate::validate` references in this crate resolve to the shared crate, and
 // so `codemap::schema::...` / `codemap::nav::...` work for the CLI.
-pub use codemap_graph::{analysis, diff, nav, schema, validate};
+pub use codemap_graph::{analysis, diff, lookup, nav, schema, validate};
 
 pub mod cli;
 pub(crate) mod clones;
@@ -28,6 +28,7 @@ pub(crate) mod cpp_profile;
 pub mod cpp_runtime;
 pub(crate) mod cpp_snapshot;
 pub(crate) mod cpp_syntax;
+pub mod erb;
 pub(crate) mod extract;
 pub(crate) mod git;
 pub(crate) mod go_lsp;

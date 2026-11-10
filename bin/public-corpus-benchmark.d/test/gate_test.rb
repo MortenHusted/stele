@@ -49,4 +49,16 @@ class PublicCorpusGateTest < Minitest::Test
       assert_operator gate.contract['minimum_files_exclusive'], :>, 0
     end
   end
+
+  def test_a_language_selects_a_further_declared_corpus_by_name_only
+    fizzy = PublicCorpusGate.new(language: 'ruby', corpus: 'fizzy').contract
+    assert_equal 'ruby', fizzy['language']
+    assert_includes fizzy['repository'], 'fizzy'
+    assert fizzy['template_oracle']
+    refute_equal PublicCorpusGate.new(language: 'ruby').contract['commit'], fizzy['commit']
+    ['missing', '../ruby/mastodon', 'Fizzy', ''].each do |name|
+      assert_raises(ArgumentError) { PublicCorpusGate.new(language: 'ruby', corpus: name) }
+    end
+    assert_raises(ArgumentError) { PublicCorpusGate.new(language: 'go', corpus: 'fizzy') }
+  end
 end

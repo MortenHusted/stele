@@ -1694,6 +1694,7 @@ mod tests {
                 name_start_byte: start,
                 receiver: ReceiverShape::ImplicitSelf,
                 scope: vec!["A".into()],
+                arguments: Vec::new(),
             },
         };
         let uri = uri_from_path(&root);

@@ -73,6 +73,7 @@ type GoEmbedObservation = (
     Vec<(String, String)>,
 );
 
+#[derive(Clone)]
 struct PendingCall {
     rel_path: String,
     file_hash: String,
@@ -747,6 +748,38 @@ pub fn build_snapshot(
                     *observations.entry(kind.to_owned()).or_default() += count;
                 }
             }
+            Language::Ruby if schema::is_erb_template(rel_path) => {
+                // A template is read for the calls its tags make. What else
+                // Prism finds in it is counted, not emitted, and a tag
+                // sequence that is not one Ruby program is not a parse
+                // error of the Ruby sources.
+                let Some(ruby) = crate::erb::ruby(bytes) else {
+                    *observations
+                        .entry("template_parse_errors".to_owned())
+                        .or_default() += 1;
+                    continue;
+                };
+                let raw = ruby_syntax::extract_template(&ruby);
+                for (kind, count) in [
+                    ("template_parse_errors", usize::from(raw.parse_errors > 0)),
+                    ("template_definitions", raw.defs.len()),
+                    (
+                        "template_heritage",
+                        raw.mixins.len() + raw.inherits.len() + raw.imports.len(),
+                    ),
+                ] {
+                    if count > 0 {
+                        *observations.entry(kind.to_owned()).or_default() += count;
+                    }
+                }
+                for call in raw.calls {
+                    raw_calls.push(PendingCall {
+                        rel_path: rel_path.clone(),
+                        file_hash: file_hash.clone(),
+                        call,
+                    });
+                }
+            }
             Language::Ruby => {
                 let raw = ruby_syntax::extract_file(rel_path, bytes)
                     .with_context(|| format!("extraction failed for {rel_path}"))?;
@@ -901,6 +934,7 @@ pub fn build_snapshot(
                     .clone()
                     .unwrap_or_else(|| format!("impl {}", imp.type_name)),
                 category: schema::CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             }),
         }
     }
@@ -914,6 +948,7 @@ pub fn build_snapshot(
                 span: mixin.span,
                 raw_name: format!("{} {}", mixin.mixin.report_key(), mixin.target),
                 category: schema::CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             }),
         }
     }
@@ -926,6 +961,7 @@ pub fn build_snapshot(
                 span: inherit.span,
                 raw_name: inherit.superclass.clone(),
                 category: schema::CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             }),
         }
     }
@@ -946,6 +982,7 @@ pub fn build_snapshot(
                     heritage.target
                 ),
                 category: schema::CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             }),
         }
     }
@@ -959,6 +996,7 @@ pub fn build_snapshot(
                 span: trait_use.span,
                 raw_name: format!("use {}", trait_use.trait_name),
                 category: schema::CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             }),
         }
     }
@@ -991,6 +1029,7 @@ pub fn build_snapshot(
                         )
                     ),
                     category: schema::CallSiteCategory::Unmapped,
+                    arguments: Vec::new(),
                 }),
             }
         }
@@ -1015,17 +1054,35 @@ pub fn build_snapshot(
                 let ruby = ruby_semantic
                     .as_ref()
                     .context("ruby semantic identity lost before call resolution")?;
+                // ruby-lsp is asked about Ruby sources only. A template's
+                // call sites stay on record as unsupported by the resolver.
+                let (templates, sources): (Vec<_>, Vec<_>) = raw_calls
+                    .iter()
+                    .cloned()
+                    .partition(|pending| schema::is_erb_template(&pending.rel_path));
+                let ruby_sources: BTreeMap<&str, &[u8]> = file_sources
+                    .iter()
+                    .filter(|(rel_path, _)| !schema::is_erb_template(rel_path))
+                    .map(|(rel_path, bytes)| (*rel_path, *bytes))
+                    .collect();
                 resolve_calls_semantic_ruby(
                     state,
                     &identity,
                     ruby,
                     &nodes,
                     &index,
-                    &raw_calls,
-                    &file_sources,
+                    &sources,
+                    &ruby_sources,
                     &mut edges,
                     &mut call_sites,
                 )?;
+                call_sites.extend(templates.into_iter().map(|pending| schema::CallSite {
+                    rel_path: pending.rel_path,
+                    span: pending.call.span,
+                    raw_name: pending.call.raw_name,
+                    category: schema::CallSiteCategory::Unsupported,
+                    arguments: pending.call.arguments,
+                }));
             }
             Language::Php => {
                 let php = php_semantic
@@ -1072,6 +1129,7 @@ pub fn build_snapshot(
                 span: pending.call.span,
                 raw_name: pending.call.raw_name.clone(),
                 category: schema::CallSiteCategory::Observed,
+                arguments: pending.call.arguments.clone(),
             });
         }
     }
@@ -1542,6 +1600,7 @@ fn resolve_calls_semantic(
             span: call.span,
             raw_name: call.raw_name.clone(),
             category,
+            arguments: Vec::new(),
         });
     }
 
@@ -1683,6 +1742,7 @@ fn resolve_rust_implementations(
                 span: implementation.span,
                 raw_name: trait_name.clone(),
                 category: CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             });
         }
     }
@@ -1832,6 +1892,7 @@ fn resolve_calls_semantic_ruby(
             span: site.call.span,
             raw_name: site.call.raw_name.clone(),
             category,
+            arguments: site.call.arguments.clone(),
         });
     }
 
@@ -1957,6 +2018,7 @@ fn resolve_calls_semantic_php(
             span: site.call.span,
             raw_name: site.call.raw_name.clone(),
             category,
+            arguments: site.call.arguments.clone(),
         });
     }
 
@@ -2076,6 +2138,7 @@ fn resolve_calls_semantic_go(
             span: site.call.span,
             raw_name: site.call.raw_name.clone(),
             category,
+            arguments: site.call.arguments.clone(),
         });
     }
 
@@ -2378,7 +2441,7 @@ mod tests {
         .expect("ruby extraction");
 
         assert_eq!(snapshot.identity.language, Language::Ruby);
-        assert_eq!(snapshot.identity.tools.ruby_parser, "prism 1.9.0");
+        assert_eq!(snapshot.identity.tools.ruby_parser, "prism 2.1.0+4691667");
         assert_eq!(snapshot.identity.tools.tree_sitter_rust, "");
         assert_eq!(snapshot.identity.tools.tree_sitter, "");
         // Only the ruby file is inventoried; every id is ruby-namespaced.
@@ -2453,6 +2516,7 @@ mod tests {
             name_start_byte: 4,
             receiver: crate::rust_syntax::ReceiverShape::Other,
             scope: Vec::new(),
+            arguments: Vec::new(),
         };
         let mut calls = vec![
             PendingCall {

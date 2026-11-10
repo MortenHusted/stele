@@ -202,6 +202,7 @@ fn native_calls_require_exact_resolved_census_even_with_consistent_counts() {
         span: provenance.span,
         raw_name: "outer".into(),
         category: CallSiteCategory::Resolved,
+        arguments: Vec::new(),
     });
     original.edges.push(Edge {
         id: edge_id(EdgeKind::Calls, &function.id, &function.id, 0),

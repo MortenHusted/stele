@@ -79,6 +79,8 @@ jobs:
         run: ruby bin/public-corpus-benchmark.d/test/command_test.rb
       - name: Test Rust and Ruby selected-caller oracle refusals
         run: ruby bin/public-corpus-benchmark.d/test/selected_caller_oracle_test.rb
+      - name: Template oracle refusals
+        run: ruby bin/public-corpus-benchmark.d/test/template_oracle_test.rb
       - name: Test Black preparation refusals and frozen labels
         run: ruby bin/prepare-black.d/test/preparation_test.rb
       - name: Test Excalidraw preparation refusals and frozen labels

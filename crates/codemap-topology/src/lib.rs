@@ -7,11 +7,54 @@ pub use liveness::{CheckReport, Selection};
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
-use anyhow::{Context, Result, ensure};
+use anyhow::{Context, Result, bail, ensure};
 use codemap_graph::{
     CallSite, CallSiteCategory, EdgeKind, Node, NodeKind, Provenance, Snapshot, SnapshotIdentity,
 };
 use serde::Serialize;
+
+/// What one projection covers besides the snapshot itself.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct Scope<'a> {
+    /// Marks the selected entry points. Alone it supports no absence claim.
+    pub selection: Option<&'a Selection>,
+    /// Admits absence markers, checked against `selection`.
+    pub liveness: Option<&'a CheckReport>,
+    /// Repository-relative path prefixes left off the map.
+    pub exclude: &'a [String],
+    /// Relations derived by named policies, supplied by the caller. The
+    /// topology places them; it derives none.
+    pub policies: &'a [Policy],
+}
+
+/// What one named policy derived from the snapshot being drawn.
+#[derive(Debug, Clone)]
+pub struct Policy {
+    /// The policy's provenance name, `policy:<name>/<language>`.
+    pub name: String,
+    /// The relation kind the viewer groups and toggles these under.
+    pub kind: String,
+    pub relations: Vec<Relation>,
+    /// What the policy left unresolved, counted by reason.
+    pub unresolved: BTreeMap<String, usize>,
+}
+
+/// One derived relation between two snapshot nodes.
+#[derive(Debug, Clone)]
+pub struct Relation {
+    pub from: String,
+    pub to: String,
+    /// Which of the policy's rules found the target.
+    pub rule: String,
+    /// The source declaration the relation rests on, as a reader would
+    /// write it.
+    pub declaration: String,
+    pub through: Option<String>,
+    /// The node that declares it on behalf of `from`, when one does.
+    pub via: Option<String>,
+    pub rel_path: String,
+    pub lines: (u32, u32),
+}
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -30,9 +73,64 @@ pub struct Extension {
     pub identity: SnapshotIdentity,
     pub selection: Option<Selection>,
     pub absence: BTreeMap<String, Absence>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub excluded: Option<Excluded>,
+    /// What each named policy derived from the snapshot and could not.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub policies: Vec<PolicySummary>,
+    /// Relations a policy derived. They are not snapshot edges.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub policy_relations: Vec<PolicyRelation>,
     pub unowned_call_sites: Vec<CallSite>,
+    pub unowned_call_site_summary: UnownedSummary,
     pub extraction_report: codemap_graph::Report,
     pub unsupported_construct_census: &'static str,
+}
+
+/// What `Scope::exclude` left off the map; the snapshot itself is unchanged.
+#[derive(Debug, Serialize)]
+pub struct Excluded {
+    pub prefixes: Vec<String>,
+    pub files: usize,
+    pub nodes: usize,
+    pub edges: usize,
+    pub call_sites: usize,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PolicySummary {
+    pub policy: String,
+    /// Relations derived over the whole snapshot, drawn or not.
+    pub relations: usize,
+    pub unresolved: BTreeMap<String, usize>,
+}
+
+/// One relation between two drawn nodes, with the declaration it rests on.
+#[derive(Debug, Serialize)]
+pub struct PolicyRelation {
+    pub source: String,
+    pub target: String,
+    pub kind: String,
+    pub policy: String,
+    pub rule: String,
+    pub declaration: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub through: Option<String>,
+    /// The module that declares it for the classes including it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub via: Option<String>,
+    pub rel_path: String,
+    pub start_line: u32,
+    pub end_line: u32,
+    pub source_link: Option<String>,
+}
+
+/// Counts of the unresolved call sites that no unique callable owns.
+#[derive(Debug, Serialize)]
+pub struct UnownedSummary {
+    pub total: usize,
+    pub by_category: BTreeMap<String, usize>,
+    pub by_file: BTreeMap<String, usize>,
 }
 
 #[derive(Debug, Serialize)]
@@ -91,43 +189,140 @@ pub(crate) const fn callable(node: &Node) -> bool {
     )
 }
 
-/// Accept a report only with an independently supplied expected selection.
-/// No report means no absence claims, including for nodes with zero inbound calls.
-pub fn project(
-    snapshot: &Snapshot,
-    liveness: Option<(&CheckReport, &Selection)>,
-) -> Result<Topology> {
-    codemap_graph::validate(snapshot)?;
-    let (selection, absence) = if let Some((report, selection)) = liveness {
-        (
-            Some(selection.clone()),
-            liveness::validate(snapshot, report, selection)?,
-        )
+const fn container(node: &Node) -> bool {
+    matches!(
+        node.kind,
+        NodeKind::Module | NodeKind::Type(_) | NodeKind::Trait
+    )
+}
+
+/// The node's id in the presentation tree, when the tree draws it.
+fn tree_id(node: &Node) -> Option<String> {
+    if callable(node) {
+        Some(node.id.clone())
+    } else if container(node) {
+        Some(format!("@container:{}", node.id))
     } else {
-        (None, BTreeMap::new())
+        None
+    }
+}
+
+/// The viewer's name for a canonical edge kind, or `None` when the map
+/// shows the relation as containment or not at all.
+const fn relation(kind: EdgeKind) -> Option<&'static str> {
+    match kind {
+        EdgeKind::Calls => Some("call"),
+        EdgeKind::Inherits => Some("inherits"),
+        EdgeKind::Implements => Some("implements"),
+        EdgeKind::Extends => Some("extends"),
+        EdgeKind::Contains | EdgeKind::Imports => None,
+    }
+}
+
+/// Where each snapshot node sits on the map. A file is drawn as its group,
+/// so a relation may end on one.
+fn drawn(snapshot: &Snapshot) -> BTreeMap<&String, String> {
+    snapshot
+        .nodes
+        .iter()
+        .filter_map(|node| {
+            let id = if node.kind == NodeKind::File {
+                format!("@file:{}", node.provenance.rel_path)
+            } else {
+                tree_id(node)?
+            };
+            Some((&node.id, id))
+        })
+        .collect()
+}
+
+fn under(rel_path: &str, prefix: &str) -> bool {
+    rel_path
+        .strip_prefix(prefix)
+        .is_some_and(|rest| rest.is_empty() || rest.starts_with('/'))
+}
+
+/// Drop everything under the excluded prefixes. An edge goes when either
+/// endpoint does. A prefix naming no file is refused rather than ignored.
+fn exclude(snapshot: &Snapshot, prefixes: &[String]) -> Result<(Snapshot, Excluded)> {
+    let prefixes: BTreeSet<&str> = prefixes
+        .iter()
+        .map(|prefix| prefix.strip_suffix('/').unwrap_or(prefix))
+        .collect();
+    for prefix in &prefixes {
+        ensure!(
+            snapshot.files.iter().any(|f| under(&f.rel_path, prefix)),
+            "exclusion matches no file: {prefix}"
+        );
+    }
+    let hidden = |rel_path: &str| prefixes.iter().any(|prefix| under(rel_path, prefix));
+    let mut shown = snapshot.clone();
+    shown.files.retain(|f| !hidden(&f.rel_path));
+    shown.nodes.retain(|n| !hidden(&n.provenance.rel_path));
+    shown.call_sites.retain(|site| !hidden(&site.rel_path));
+    let kept: BTreeSet<&String> = shown.nodes.iter().map(|n| &n.id).collect();
+    let mut edges = std::mem::take(&mut shown.edges);
+    edges.retain(|e| kept.contains(&e.from) && kept.contains(&e.to));
+    drop(kept);
+    shown.edges = edges;
+    let excluded = Excluded {
+        prefixes: prefixes.into_iter().map(str::to_string).collect(),
+        files: snapshot.files.len() - shown.files.len(),
+        nodes: snapshot.nodes.len() - shown.nodes.len(),
+        edges: snapshot.edges.len() - shown.edges.len(),
+        call_sites: snapshot.call_sites.len() - shown.call_sites.len(),
     };
-    let (annotations, unowned) = annotations(snapshot);
-    let root = tree(snapshot, annotations)?;
-    let callables: BTreeSet<_> = snapshot
+    Ok((shown, excluded))
+}
+
+/// A selection alone marks entry points. Absence markers also need the
+/// liveness report that selection is checked against; without one the map
+/// makes no absence claim, including for nodes with zero inbound calls.
+pub fn project(snapshot: &Snapshot, scope: Scope<'_>) -> Result<Topology> {
+    codemap_graph::validate(snapshot)?;
+    let absence = match (scope.liveness, scope.selection) {
+        (Some(report), Some(selection)) => liveness::validate(snapshot, report, selection)?,
+        (None, Some(selection)) => {
+            liveness::validate_selection(snapshot, selection)?;
+            BTreeMap::new()
+        }
+        (Some(_), None) => bail!("a liveness report needs its expected selection"),
+        (None, None) => BTreeMap::new(),
+    };
+    let (shown, excluded) = if scope.exclude.is_empty() {
+        (None, None)
+    } else {
+        let (shown, excluded) = exclude(snapshot, scope.exclude)?;
+        (Some(shown), Some(excluded))
+    };
+    let shown = shown.as_ref().unwrap_or(snapshot);
+    let (annotations, unowned) = annotations(shown);
+    let root = tree(shown, annotations)?;
+    let drawn = drawn(shown);
+    let callables: BTreeSet<_> = shown
         .nodes
         .iter()
         .filter(|node| callable(node))
         .map(|node| &node.id)
         .collect();
     let mut edges = Vec::new();
-    for edge in snapshot
-        .edges
-        .iter()
-        .filter(|edge| edge.kind == EdgeKind::Calls)
-    {
-        ensure!(
-            callables.contains(&edge.from) && callables.contains(&edge.to),
-            "call endpoints must be callable leaves"
-        );
+    for edge in &shown.edges {
+        let Some(kind) = relation(edge.kind) else {
+            continue;
+        };
+        if edge.kind == EdgeKind::Calls {
+            ensure!(
+                callables.contains(&edge.from) && callables.contains(&edge.to),
+                "call endpoints must be callable leaves"
+            );
+        }
+        let (Some(source), Some(target)) = (drawn.get(&edge.from), drawn.get(&edge.to)) else {
+            bail!("{kind} endpoints must be drawn nodes: {}", edge.id);
+        };
         edges.push(Connection {
-            source: edge.from.clone(),
-            target: edge.to.clone(),
-            kind: "call",
+            source: source.clone(),
+            target: target.clone(),
+            kind,
             codemap: EdgeEvidence {
                 edge_id: edge.id.clone(),
                 provenance: edge.provenance.clone(),
@@ -136,24 +331,107 @@ pub fn project(
         });
     }
     edges.sort_by(|a, b| a.codemap.edge_id.cmp(&b.codemap.edge_id));
+    let mut summary = UnownedSummary {
+        total: unowned.len(),
+        by_category: BTreeMap::new(),
+        by_file: BTreeMap::new(),
+    };
+    for site in &unowned {
+        *summary
+            .by_category
+            .entry(site.category.report_key().to_string())
+            .or_default() += 1;
+        *summary.by_file.entry(site.rel_path.clone()).or_default() += 1;
+    }
+    let (policies, policy_relations) = policy_relations(snapshot, scope.policies, &drawn)?;
+    let on_map = |id: &String| drawn.contains_key(id);
     Ok(Topology {
         system: snapshot.identity.repository.id.clone(),
         root,
         edges,
-        entry_points: selection
-            .as_ref()
-            .map_or_else(Vec::new, |s| s.entry_points.clone()),
-        dead_ends: absence.keys().cloned().collect(),
+        entry_points: scope.selection.map_or_else(Vec::new, |s| {
+            s.entry_points
+                .iter()
+                .filter(|id| on_map(id))
+                .cloned()
+                .collect()
+        }),
+        dead_ends: absence.keys().filter(|id| on_map(id)).cloned().collect(),
         codemap: Extension {
-            version: "codemap.topology.v1",
+            version: "codemap.topology.v2",
             identity: snapshot.identity.clone(),
-            selection,
+            selection: scope.selection.cloned(),
             absence,
+            excluded,
+            policies,
+            policy_relations,
             unowned_call_sites: unowned,
+            unowned_call_site_summary: summary,
             extraction_report: snapshot.report.clone(),
             unsupported_construct_census: "unknown: no denominator for unrecognized constructs",
         },
     })
+}
+
+/// Place each supplied policy's relations on the map. A relation must name
+/// nodes and a file of this snapshot; one whose ends are not both drawn is
+/// left off, while the summary counts everything the policy reported.
+fn policy_relations(
+    snapshot: &Snapshot,
+    policies: &[Policy],
+    drawn: &BTreeMap<&String, String>,
+) -> Result<(Vec<PolicySummary>, Vec<PolicyRelation>)> {
+    let nodes: BTreeSet<&str> = snapshot.nodes.iter().map(|n| n.id.as_str()).collect();
+    let files: BTreeSet<&str> = snapshot.files.iter().map(|f| f.rel_path.as_str()).collect();
+    let mut summaries = Vec::new();
+    let mut relations = Vec::new();
+    for policy in policies {
+        ensure!(
+            policy.name.starts_with("policy:") && !policy.kind.is_empty(),
+            "a policy needs a policy: name and a relation kind"
+        );
+        summaries.push(PolicySummary {
+            policy: policy.name.clone(),
+            relations: policy.relations.len(),
+            unresolved: policy.unresolved.clone(),
+        });
+        for relation in &policy.relations {
+            ensure!(
+                nodes.contains(relation.from.as_str())
+                    && nodes.contains(relation.to.as_str())
+                    && relation
+                        .via
+                        .as_deref()
+                        .is_none_or(|via| nodes.contains(via))
+                    && files.contains(relation.rel_path.as_str()),
+                "{} relation names a node or file outside the snapshot: {}",
+                policy.name,
+                relation.declaration
+            );
+            let (Some(source), Some(target)) = (drawn.get(&relation.from), drawn.get(&relation.to))
+            else {
+                continue;
+            };
+            relations.push(PolicyRelation {
+                source: source.clone(),
+                target: target.clone(),
+                kind: policy.kind.clone(),
+                policy: policy.name.clone(),
+                rule: relation.rule.clone(),
+                declaration: relation.declaration.clone(),
+                through: relation.through.clone(),
+                via: relation
+                    .via
+                    .as_ref()
+                    .and_then(|module| drawn.get(module).cloned()),
+                source_link: line_link(&relation.rel_path, relation.lines),
+                rel_path: relation.rel_path.clone(),
+                start_line: relation.lines.0,
+                end_line: relation.lines.1,
+            });
+        }
+    }
+    Ok((summaries, relations))
 }
 
 fn annotations(snapshot: &Snapshot) -> (BTreeMap<String, Vec<CallSite>>, Vec<CallSite>) {
@@ -258,34 +536,23 @@ fn tree(snapshot: &Snapshot, mut annotations: BTreeMap<String, Vec<CallSite>>) -
         );
         parents.insert(id, parent);
     }
-    let containers: BTreeMap<_, _> = snapshot
+    let containers: BTreeSet<_> = snapshot
         .nodes
         .iter()
-        .filter(|n| {
-            matches!(
-                n.kind,
-                NodeKind::Module | NodeKind::Type(_) | NodeKind::Trait
-            )
-        })
-        .map(|n| (&n.id, n))
+        .filter(|n| container(n))
+        .map(|n| &n.id)
         .collect();
     let mut containment: BTreeMap<&String, BTreeSet<&String>> = BTreeMap::new();
     for edge in snapshot
         .edges
         .iter()
-        .filter(|e| e.kind == EdgeKind::Contains && containers.contains_key(&e.from))
+        .filter(|e| e.kind == EdgeKind::Contains && containers.contains(&e.from))
     {
         containment.entry(&edge.to).or_default().insert(&edge.from);
     }
-    for node in snapshot
-        .nodes
-        .iter()
-        .filter(|n| callable(n) || containers.contains_key(&n.id))
-    {
-        let id = if callable(node) {
-            node.id.clone()
-        } else {
-            format!("@container:{}", node.id)
+    for node in &snapshot.nodes {
+        let Some(id) = tree_id(node) else {
+            continue;
         };
         let mut projected = group(id.clone(), node.name.clone());
         if callable(node) {
@@ -366,14 +633,17 @@ pub fn safe_link(link: &str) -> bool {
 }
 
 fn source_link(provenance: &Provenance) -> Option<String> {
-    if !safe_link(&provenance.rel_path) {
+    line_link(
+        &provenance.rel_path,
+        (provenance.span.start_line, provenance.span.end_line),
+    )
+}
+
+fn line_link(rel_path: &str, (start, end): (u32, u32)) -> Option<String> {
+    if !safe_link(rel_path) {
         return None;
     }
-    let path = encode_path(&provenance.rel_path);
-    Some(format!(
-        "{path}#L{}-L{}",
-        provenance.span.start_line, provenance.span.end_line
-    ))
+    Some(format!("{}#L{start}-L{end}", encode_path(rel_path)))
 }
 
 fn encode_path(path: &str) -> String {
@@ -444,7 +714,12 @@ fn absolute_lexical(path: &Path) -> Result<PathBuf> {
 }
 
 fn render_with_prefix(topology: &Topology, prefix: &str) -> Result<String> {
-    let data = serde_json::to_string(topology)?
+    let mut data = serde_json::to_value(topology)?;
+    data["codemap"]
+        .as_object_mut()
+        .context("topology extension is an object")?
+        .remove("unowned_call_sites");
+    let data = serde_json::to_string(&data)?
         .replace('<', "\\u003c")
         .replace('>', "\\u003e")
         .replace('&', "\\u0026");

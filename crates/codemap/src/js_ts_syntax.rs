@@ -357,6 +357,7 @@ impl Walker<'_> {
                         name_start_byte: callee.start_byte(),
                         receiver: ReceiverShape::Other,
                         scope: context.scope.clone(),
+                        arguments: Vec::new(),
                     });
                     self.output.call_anchors.push(CallAnchor {
                         span: span(node),

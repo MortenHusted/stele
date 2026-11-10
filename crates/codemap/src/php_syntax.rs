@@ -616,6 +616,7 @@ impl<'a> Walker<'a> {
             name_start_byte: name_node.start_byte(),
             receiver,
             scope,
+            arguments: Vec::new(),
         });
     }
 
