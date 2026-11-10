@@ -35,6 +35,10 @@ class Manager < Person
 end
 class Tagging
   belongs_to :tag
+  with_options class_name: "Person" do
+    belongs_to :author
+    belongs_to :editor, class_name: "Manager"
+  end
 end
 class Category; end
 class Status; end
@@ -168,7 +172,7 @@ fn relations(snapshot: &Snapshot, derived: &Associations) -> BTreeSet<Relation> 
 
 /// (owner, declaration, rule, class reached, through, declaring module).
 #[rustfmt::skip]
-const RELATED: [(&str, &str, &str, &str, &str, &str); 22] = [
+const RELATED: [(&str, &str, &str, &str, &str, &str); 24] = [
     // The association's own name, as written or as a singular of it.
     ("Person", "has_many :invoices", "inferred", "Invoice", "", ""),
     ("Person", "has_many :categories", "inferred", "Category", "", ""),
@@ -191,6 +195,9 @@ const RELATED: [(&str, &str, &str, &str, &str, &str); 22] = [
     // `class_name:` as a string or a constant.
     ("Billing::Invoice", "belongs_to :payer", "class_name", "Person", "", ""),
     ("Billing::Invoice", "belongs_to :account", "class_name", "Account", "", ""),
+    // `with_options` supplies it too, and the declaration's own wins.
+    ("Tagging", "belongs_to :author", "class_name", "Person", "", ""),
+    ("Tagging", "belongs_to :editor", "class_name", "Manager", "", ""),
     // A polymorphic belongs_to reaches the classes declaring `as:` back.
     ("Note", "belongs_to :subject", "polymorphic_as", "Person", "", ""),
     ("Note", "belongs_to :subject", "polymorphic_as", "Billing::Invoice", "", ""),

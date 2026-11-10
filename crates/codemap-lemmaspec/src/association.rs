@@ -12,7 +12,12 @@
 //! tried as written and under a few singular forms, and it counts only when
 //! exactly one of them names a class. A class defined in several files is
 //! one class only when exactly one of those files is where an autoloader
-//! would look for it.
+//! would look for it. A `with_options` block gives its options to the
+//! declarations inside it.
+//!
+//! The policy reads every class body. Another library's macros of the same
+//! names, a serializer's `has_one :object` for one, are read the same way
+//! and mostly end as `no_class`.
 
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
@@ -28,6 +33,8 @@ pub const ASSOCIATION: &str = "association";
 const TO_ONE: [&str; 2] = ["belongs_to", "has_one"];
 const TO_MANY: [&str; 2] = ["has_many", "has_and_belongs_to_many"];
 const DELEGATED_TYPE: &str = "delegated_type";
+/// `with_options key: value do … end` gives its options to the calls inside.
+const WITH_OPTIONS: &str = "with_options";
 /// How far up a superclass chain an inherited association is looked for.
 const MAX_ANCESTORS: usize = 32;
 
@@ -183,13 +190,6 @@ fn singular_candidates(name: &str) -> Vec<String> {
     out
 }
 
-fn option<'a>(arguments: &'a [CallArgument], keyword: &str) -> Option<&'a Literal> {
-    arguments
-        .iter()
-        .find(|argument| argument.keyword.as_deref() == Some(keyword))
-        .map(|argument| &argument.value)
-}
-
 fn written(literal: &Literal) -> Option<&str> {
     match literal {
         Literal::Symbol(text) | Literal::String(text) | Literal::Constant(text) => Some(text),
@@ -203,6 +203,7 @@ struct Index<'a> {
     nodes: HashMap<&'a str, &'a Node>,
     includers: HashMap<&'a str, Vec<&'a str>>,
     superclass: HashMap<&'a str, &'a str>,
+    with_options: HashMap<&'a str, Vec<&'a CallSite>>,
 }
 
 /// Whether `node` sits where an autoloader maps its name: `Billing::LineItem`
@@ -225,7 +226,17 @@ impl<'a> Index<'a> {
             nodes: HashMap::new(),
             includers: HashMap::new(),
             superclass: HashMap::new(),
+            with_options: HashMap::new(),
         };
+        for site in &snapshot.call_sites {
+            if site.raw_name == WITH_OPTIONS && !site.arguments.is_empty() {
+                index
+                    .with_options
+                    .entry(site.rel_path.as_str())
+                    .or_default()
+                    .push(site);
+            }
+        }
         for node in &snapshot.nodes {
             let class = node.kind == NodeKind::Type(TypeKind::Class);
             if class {
@@ -282,6 +293,28 @@ impl<'a> Index<'a> {
             [first, second, ..] if extent(first) < extent(second) => Some(first),
             _ => None,
         }
+    }
+
+    /// The keyword options in force at `site`: those of every `with_options`
+    /// block around it, outermost first, then its own. A later one wins.
+    fn options(&self, site: &'a CallSite) -> Vec<&'a CallArgument> {
+        let mut around: Vec<_> = self
+            .with_options
+            .get(site.rel_path.as_str())
+            .into_iter()
+            .flatten()
+            .filter(|block| {
+                block.span.start_byte < site.span.start_byte
+                    && site.span.end_byte <= block.span.end_byte
+            })
+            .collect();
+        around.sort_by_key(|block| block.span.start_byte);
+        around
+            .into_iter()
+            .chain(std::iter::once(&site))
+            .flat_map(|call| &call.arguments)
+            .filter(|argument| argument.keyword.is_some())
+            .collect()
     }
 
     /// The classes a declaration in `body` belongs to: the class itself, or
@@ -354,12 +387,17 @@ struct Declared<'a> {
     owner: &'a Node,
     via: Option<&'a Node>,
     site: &'a CallSite,
+    options: Vec<&'a CallArgument>,
     declaration: Declaration,
 }
 
-impl Declared<'_> {
-    fn option(&self, keyword: &str) -> Option<&Literal> {
-        option(&self.site.arguments, keyword)
+impl<'a> Declared<'a> {
+    fn option(&self, keyword: &str) -> Option<&'a Literal> {
+        self.options
+            .iter()
+            .rev()
+            .find(|argument| argument.keyword.as_deref() == Some(keyword))
+            .map(|argument| &argument.value)
     }
 
     fn polymorphic(&self) -> bool {
@@ -431,6 +469,7 @@ fn declared<'a>(
                 owner,
                 via: body.filter(|body| body.kind == NodeKind::Module),
                 site,
+                options: index.options(site),
                 declaration: declaration.clone(),
             });
         }
@@ -560,9 +599,8 @@ fn direct<'a>(
     reached: &mut Reached<'a>,
     declares_as: &mut DeclaresAs<'a>,
 ) {
-    let site = entry.site;
     for (target, rule) in targets(index, entry) {
-        if let (Ok(class), Some(Literal::Symbol(role))) = (&target, option(&site.arguments, "as")) {
+        if let (Ok(class), Some(Literal::Symbol(role))) = (&target, entry.option("as")) {
             declares_as
                 .entry((class.id.as_str(), role.as_str()))
                 .or_default()
