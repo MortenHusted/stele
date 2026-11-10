@@ -893,7 +893,8 @@ for (const [kind, style] of Object.entries(EDGE_STYLE)) {
   const solid = style.color.replace(/[\d.]+\)$/, "0.9)");
   const l = document.createElement("label");
   const policy = (edgesByKind.get(kind) || [])[0]?.policy;
-  l.innerHTML = `<input type="checkbox" checked><span class="swatch" style="background:${solid}"></span>${style.label} <span class="sub">${total.toLocaleString()}${policy ? " · " + esc(policy) : ""}</span>`;
+  l.innerHTML = `<input type="checkbox" checked><span class="swatch" style="background:${solid}"></span>${style.label} <span class="sub">${total.toLocaleString()}${policy ? " · by policy" : ""}</span>`;
+  if (policy) l.title = policy;
   l.querySelector("input").onchange = ev => { kindOn[kind] = ev.target.checked; focusGroups = null; if (selectedArc?.kind === kind) { selectedArc = null; renderSidebar(); } requestDraw(); };
   togglesEl.appendChild(l);
 }
