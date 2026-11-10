@@ -103,9 +103,17 @@ plan ruby_rails_facts {
     follows: [conventions_are_policies]
     serves: [intent.answers_from_facts, intent.fails_closed]
     touches: [
-      "rust:crates/codemap-lemmaspec/src/policy.rs#is_default_entry_point",
+      "rust:crates/codemap-lemmaspec/src/association.rs#associations",
+      "rust:crates/codemap-graph/src/schema.rs#Literal",
       "rust:crates/codemap-topology/src/lib.rs#project",
+      "rust:crates/stele/src/topology.rs#policies",
     ]
+    creates: [
+      "rust:crates/codemap-lemmaspec/src/template.rs#renders",
+      "rust:crates/codemap-lemmaspec/src/template.rs#owners",
+      "crates/stele/tests/templates.rs",
+    ]
+    state: done
     text: "Derive which partial or component a template renders, and which action or component owns a template, under named policies, and draw them on the map."
   }
 }

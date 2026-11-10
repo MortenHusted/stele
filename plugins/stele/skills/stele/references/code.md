@@ -116,4 +116,6 @@ A Ruby snapshot includes ERB templates: each is a file and the call sites of
 its tags (`render`, helpers, path helpers), never a definition or an edge.
 With `--calls required` those sites are `Unsupported`, so a helper called
 only from templates has no proven caller: say so rather than calling it
-unreached.
+unreached. The map also draws what each template renders and which action
+or class owns it, from `policy:template-render/ruby` and
+`policy:template-owner/ruby`.

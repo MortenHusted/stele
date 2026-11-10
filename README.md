@@ -83,7 +83,11 @@ unsupported shapes.
   counted under `observations` rather than as a parse error of the Ruby
   sources, and in semantic mode its call sites are `Unsupported`, because
   no resolver reads a template. Only ERB's tag syntax is read, not the
-  markup around it. Semantic mode launches
+  markup around it. An argument that is a call on a constant, such as
+  `render Card.new(title: t)`, is kept as that constant and method.
+  `policy:template-render/ruby` and `policy:template-owner/ruby` relate a
+  template to what it renders and to the action or class it belongs to.
+  Semantic mode launches
   ruby-lsp
   under an operator-installed, hash-pinned tool bundle
   (`CODEMAP_RUBY_TOOL_BUNDLE`, `BUNDLE_FROZEN` — no network, no worktree

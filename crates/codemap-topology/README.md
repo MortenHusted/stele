@@ -102,6 +102,24 @@ when it resolves to exactly one class in the snapshot;
 `codemap.policies` counts the relations derived and what stayed unresolved
 by reason. Custom inflections are not read.
 
+Two more policies read a Ruby snapshot's templates, each drawn under its
+own kind and toggle:
+
+- `policy:template-render/ruby` relates a template to what a `render` in it
+  names: a partial (`render "posts/card"`, `render partial:`), another
+  template (`render template:`) or a class (`render Card.new(…)`). A path
+  resolves under the rendering template's own views root and format when
+  several answer, and only when exactly one does. Renders with no literal
+  target, with no file or class, or with several are counted by reason.
+- `policy:template-owner/ruby` relates a controller or mailer action to the
+  templates named for it (`PostsController#show` and
+  `app/views/posts/show.*.erb`), and a class to a template sitting beside it
+  under the same name (`card_component.rb` and `card_component.html.erb`, or
+  `card_component/card_component.html.erb`).
+
+Lookup through a controller's superclasses and custom view paths is not read.
+A relation may end on a file, which the map draws as the file's circle.
+
 This crate derives none of that. It reads the canonical graph only, and
 `stele topology` hands it the relations each policy derived; `project`
 takes them in `Scope::policies`, checks that they name nodes and files of the

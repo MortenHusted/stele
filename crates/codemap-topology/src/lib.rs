@@ -219,6 +219,23 @@ const fn relation(kind: EdgeKind) -> Option<&'static str> {
     }
 }
 
+/// Where each snapshot node sits on the map. A file is drawn as its group,
+/// so a relation may end on one.
+fn drawn(snapshot: &Snapshot) -> BTreeMap<&String, String> {
+    snapshot
+        .nodes
+        .iter()
+        .filter_map(|node| {
+            let id = if node.kind == NodeKind::File {
+                format!("@file:{}", node.provenance.rel_path)
+            } else {
+                tree_id(node)?
+            };
+            Some((&node.id, id))
+        })
+        .collect()
+}
+
 fn under(rel_path: &str, prefix: &str) -> bool {
     rel_path
         .strip_prefix(prefix)
@@ -281,11 +298,7 @@ pub fn project(snapshot: &Snapshot, scope: Scope<'_>) -> Result<Topology> {
     let shown = shown.as_ref().unwrap_or(snapshot);
     let (annotations, unowned) = annotations(shown);
     let root = tree(shown, annotations)?;
-    let drawn: BTreeMap<&String, String> = shown
-        .nodes
-        .iter()
-        .filter_map(|node| Some((&node.id, tree_id(node)?)))
-        .collect();
+    let drawn = drawn(shown);
     let callables: BTreeSet<_> = shown
         .nodes
         .iter()

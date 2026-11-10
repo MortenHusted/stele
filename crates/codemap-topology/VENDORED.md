@@ -41,9 +41,9 @@ Modifications:
   header, and rank search results by how closely the name matches;
 - state excluded path prefixes and the unowned call-site counts, and build
   the full identity record when its panel is first opened;
-- draw relations a named policy derived as dashed arcs of their own kind,
-  labelled with the policy wherever they are listed, and count them apart
-  from the snapshot's edges.
+- draw relations a named policy derived as dashed arcs of their own kind
+  (associations, renders, templates), labelled with the policy wherever they
+  are listed, and count them apart from the snapshot's edges.
 
 Edge drawing, edge selection and search ranking differ from upstream. The
 original inline D3 subset, circle-pack layout, node drawing and navigation
