@@ -901,6 +901,7 @@ pub fn build_snapshot(
                     .clone()
                     .unwrap_or_else(|| format!("impl {}", imp.type_name)),
                 category: schema::CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             }),
         }
     }
@@ -914,6 +915,7 @@ pub fn build_snapshot(
                 span: mixin.span,
                 raw_name: format!("{} {}", mixin.mixin.report_key(), mixin.target),
                 category: schema::CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             }),
         }
     }
@@ -926,6 +928,7 @@ pub fn build_snapshot(
                 span: inherit.span,
                 raw_name: inherit.superclass.clone(),
                 category: schema::CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             }),
         }
     }
@@ -946,6 +949,7 @@ pub fn build_snapshot(
                     heritage.target
                 ),
                 category: schema::CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             }),
         }
     }
@@ -959,6 +963,7 @@ pub fn build_snapshot(
                 span: trait_use.span,
                 raw_name: format!("use {}", trait_use.trait_name),
                 category: schema::CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             }),
         }
     }
@@ -991,6 +996,7 @@ pub fn build_snapshot(
                         )
                     ),
                     category: schema::CallSiteCategory::Unmapped,
+                    arguments: Vec::new(),
                 }),
             }
         }
@@ -1072,6 +1078,7 @@ pub fn build_snapshot(
                 span: pending.call.span,
                 raw_name: pending.call.raw_name.clone(),
                 category: schema::CallSiteCategory::Observed,
+                arguments: pending.call.arguments.clone(),
             });
         }
     }
@@ -1542,6 +1549,7 @@ fn resolve_calls_semantic(
             span: call.span,
             raw_name: call.raw_name.clone(),
             category,
+            arguments: Vec::new(),
         });
     }
 
@@ -1683,6 +1691,7 @@ fn resolve_rust_implementations(
                 span: implementation.span,
                 raw_name: trait_name.clone(),
                 category: CallSiteCategory::Unmapped,
+                arguments: Vec::new(),
             });
         }
     }
@@ -1832,6 +1841,7 @@ fn resolve_calls_semantic_ruby(
             span: site.call.span,
             raw_name: site.call.raw_name.clone(),
             category,
+            arguments: site.call.arguments.clone(),
         });
     }
 
@@ -1957,6 +1967,7 @@ fn resolve_calls_semantic_php(
             span: site.call.span,
             raw_name: site.call.raw_name.clone(),
             category,
+            arguments: site.call.arguments.clone(),
         });
     }
 
@@ -2076,6 +2087,7 @@ fn resolve_calls_semantic_go(
             span: site.call.span,
             raw_name: site.call.raw_name.clone(),
             category,
+            arguments: site.call.arguments.clone(),
         });
     }
 
@@ -2453,6 +2465,7 @@ mod tests {
             name_start_byte: 4,
             receiver: crate::rust_syntax::ReceiverShape::Other,
             scope: Vec::new(),
+            arguments: Vec::new(),
         };
         let mut calls = vec![
             PendingCall {

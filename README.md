@@ -66,7 +66,13 @@ unsupported shapes.
   `CRuby` reference parser, via the official `ruby-prism` bindings) tracks
   local scope at parse time, so bare paren-less method calls (`params`,
   route helpers, chained receivers) are captured as observations; attribute
-  writes and operator calls are excluded. Semantic mode launches ruby-lsp
+  writes and operator calls are excluded. A receiver-less call made outside
+  any method body (`belongs_to :owner, class_name: "Person"`,
+  `validates :name, presence: true`) keeps its arguments as written on its
+  call site when at least one is a literal: symbols, strings, constant paths,
+  booleans, `nil` and arrays of these, with the keyword where there is one and
+  a placeholder for anything else. They record what the source says, not what
+  the call does, and create no edge. Semantic mode launches ruby-lsp
   under an operator-installed, hash-pinned tool bundle
   (`CODEMAP_RUBY_TOOL_BUNDLE`, `BUNDLE_FROZEN` — no network, no worktree
   writes) and emits a `calls` edge only when codemap's own static model

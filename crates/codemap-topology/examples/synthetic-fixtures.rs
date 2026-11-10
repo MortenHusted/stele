@@ -144,12 +144,14 @@ fn main() -> anyhow::Result<()> {
                 span: span(30, 34),
                 raw_name: "work".into(),
                 category: CallSiteCategory::Resolved,
+                arguments: Vec::new(),
             },
             CallSite {
                 rel_path: path.into(),
                 span: span(50, 54),
                 raw_name: "dynamic_target".into(),
                 category: CallSiteCategory::Candidate,
+                arguments: Vec::new(),
             },
         ];
         let report = report(&nodes, &edges);

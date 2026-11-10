@@ -172,6 +172,7 @@ fn a_syntax_snapshot_prints_coupling_as_unavailable_never_zero() {
         },
         raw_name: "puts".into(),
         category: CallSiteCategory::Observed,
+        arguments: Vec::new(),
     });
     snapshot
         .report

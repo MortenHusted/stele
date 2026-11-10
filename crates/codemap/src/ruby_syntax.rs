@@ -47,7 +47,7 @@ use ruby_prism::{
 
 use crate::measures::{Form, LineClass, LineCounts, RawMeasure, count_lines, line_classes};
 use crate::rust_syntax::{RawCall, RawDef, RawImport, ReceiverShape};
-use crate::schema::{NodeKind, Span, TypeKind};
+use crate::schema::{CallArgument, Literal, NodeKind, Span, TypeKind};
 
 /// Mixin flavor of a [`RawMixin`] observation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -340,6 +340,11 @@ impl<'a> Walker<'a> {
                     name_start_byte: name_start,
                     receiver: self.receiver_shape(node),
                     scope: self.scope_stack.clone(),
+                    arguments: if node.receiver().is_none() && self.def_stack.is_empty() {
+                        literal_arguments(node)
+                    } else {
+                        Vec::new()
+                    },
                 });
             }
         }
@@ -616,6 +621,72 @@ impl Walker<'_> {
             }
             _ => ReceiverShape::Other,
         }
+    }
+}
+
+/// The call's arguments as written, or none when no argument is a literal.
+fn literal_arguments(node: &CallNode<'_>) -> Vec<CallArgument> {
+    let Some(arguments) = node.arguments() else {
+        return Vec::new();
+    };
+    let mut out = Vec::new();
+    for argument in &arguments.arguments() {
+        let Some(hash) = argument.as_keyword_hash_node() else {
+            out.push(CallArgument {
+                keyword: None,
+                value: literal(&argument),
+            });
+            continue;
+        };
+        for element in &hash.elements() {
+            let pair = element.as_assoc_node();
+            let keyword = pair
+                .as_ref()
+                .and_then(|pair| pair.key().as_symbol_node())
+                .map(|key| String::from_utf8_lossy(key.unescaped()).into_owned());
+            out.push(match (pair, keyword) {
+                (Some(pair), Some(keyword)) => CallArgument {
+                    keyword: Some(keyword),
+                    value: literal(&pair.value()),
+                },
+                // `**options` and non-symbol keys name no keyword.
+                _ => CallArgument {
+                    keyword: None,
+                    value: Literal::Other,
+                },
+            });
+        }
+    }
+    if out.iter().any(|argument| argument.value.is_literal()) {
+        out
+    } else {
+        Vec::new()
+    }
+}
+
+fn literal(node: &Node<'_>) -> Literal {
+    match node {
+        Node::SymbolNode { .. } => Literal::Symbol(
+            String::from_utf8_lossy(node.as_symbol_node().unwrap().unescaped()).into_owned(),
+        ),
+        Node::StringNode { .. } => Literal::String(
+            String::from_utf8_lossy(node.as_string_node().unwrap().unescaped()).into_owned(),
+        ),
+        Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. } => Literal::Constant(
+            collapse_whitespace(&String::from_utf8_lossy(node.location().as_slice())),
+        ),
+        Node::TrueNode { .. } => Literal::Boolean(true),
+        Node::FalseNode { .. } => Literal::Boolean(false),
+        Node::NilNode { .. } => Literal::Nil,
+        Node::ArrayNode { .. } => Literal::Array(
+            node.as_array_node()
+                .unwrap()
+                .elements()
+                .iter()
+                .map(|element| literal(&element))
+                .collect(),
+        ),
+        _ => Literal::Other,
     }
 }
 

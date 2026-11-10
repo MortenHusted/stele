@@ -361,6 +361,7 @@ pub(crate) fn assemble_native(
                 } else {
                     CallSiteCategory::Observed
                 },
+                arguments: Vec::new(),
             });
         }
     }

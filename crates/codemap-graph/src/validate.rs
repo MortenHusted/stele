@@ -1202,6 +1202,14 @@ fn validate_call_sites(
                 "C++ call classification in a non-C++ snapshot at site {index}"
             ));
         }
+        if !call_site.arguments.is_empty()
+            && (snapshot.identity.language != Language::Ruby
+                || !call_site.arguments.iter().any(|a| a.value.is_literal()))
+        {
+            errors.push(format!(
+                "call site {index} carries arguments outside Ruby or without a literal"
+            ));
+        }
         match call_site.category {
             CallSiteCategory::Failed => errors.push(format!(
                 "call site {index} records an infrastructure failure in a successful snapshot"

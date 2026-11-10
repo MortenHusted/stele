@@ -1150,6 +1150,49 @@ pub struct CallSite {
     pub span: Span,
     pub raw_name: String,
     pub category: CallSiteCategory,
+    /// Ruby only: the arguments of a receiver-less call made outside any
+    /// method body, in source order, present when at least one is a
+    /// literal. They say what was written, never what the call does with
+    /// it. Absent everywhere else, so those call sites serialize as they
+    /// did before the field existed.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub arguments: Vec<CallArgument>,
+}
+
+/// One argument of a call site, as written.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CallArgument {
+    /// The key of a `key: value` argument; absent for a positional one.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub keyword: Option<String>,
+    pub value: Literal,
+}
+
+/// A literal as the source spells it. `Other` holds the place of anything
+/// that is not one, so positions stay meaningful.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = "kind", content = "value", rename_all = "snake_case")]
+pub enum Literal {
+    Symbol(String),
+    String(String),
+    /// A constant path as written, such as `Billing::Invoice`.
+    Constant(String),
+    Boolean(bool),
+    Nil,
+    Array(Vec<Self>),
+    Other,
+}
+
+impl Literal {
+    /// Whether the value, or any element of an array, is a literal.
+    pub fn is_literal(&self) -> bool {
+        match self {
+            Self::Other => false,
+            Self::Array(items) => items.iter().any(Self::is_literal),
+            _ => true,
+        }
+    }
 }
 
 /// Extraction report: counts and omission accounting.

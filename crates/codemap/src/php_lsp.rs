@@ -1001,6 +1001,7 @@ mod tests {
                 name_start_byte: 16,
                 receiver: ReceiverShape::Constant("Demo\\Helper".into()),
                 scope: Vec::new(),
+                arguments: Vec::new(),
             },
         };
         let at_make = DefinitionLocation {

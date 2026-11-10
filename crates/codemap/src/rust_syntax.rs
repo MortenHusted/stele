@@ -152,6 +152,8 @@ pub struct RawCall {
     /// last). Ruby-only policy input (implicit-self verification); empty
     /// for Rust calls.
     pub scope: Vec<String>,
+    /// Ruby only: see [`crate::schema::CallSite::arguments`].
+    pub arguments: Vec<crate::schema::CallArgument>,
 }
 
 /// How Rust leaves become the normalised token stream: comments dropped,
@@ -558,6 +560,7 @@ impl<'a> Walker<'a> {
                 name_start_byte: name_start,
                 receiver: ReceiverShape::Other,
                 scope: Vec::new(),
+                arguments: Vec::new(),
             });
         }
     }
@@ -572,6 +575,7 @@ impl<'a> Walker<'a> {
                     name_start_byte: macro_node.start_byte(),
                     receiver: ReceiverShape::Other,
                     scope: Vec::new(),
+                    arguments: Vec::new(),
                 });
             }
         }
@@ -633,6 +637,7 @@ impl<'a> Walker<'a> {
                 name_start_byte: token.start_byte(),
                 receiver: ReceiverShape::Other,
                 scope: Vec::new(),
+                arguments: Vec::new(),
             });
         }
     }

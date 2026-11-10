@@ -96,6 +96,7 @@ fn snapshot() -> Snapshot {
             span: Span::from_ts(4, 8, (0, 4), (0, 8)),
             raw_name: "target".into(),
             category: CallSiteCategory::Resolved,
+            arguments: Vec::new(),
         }],
         measures: vec![],
         file_measures: vec![],

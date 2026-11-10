@@ -598,6 +598,7 @@ fn unresolved_dispatcher_and_missing_or_rejected_admission_never_pass_absence_ch
             span: node.provenance.span,
             raw_name: "callback".into(),
             category: codemap_graph::schema::CallSiteCategory::Observed,
+            arguments: Vec::new(),
         });
         syntax.report = common::report_for(&syntax);
         assert_inconclusive(
