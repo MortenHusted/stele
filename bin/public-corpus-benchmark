@@ -52,8 +52,10 @@ class PublicCorpusBenchmarkCommand
     example 'bin/public-corpus-benchmark --language php --repo /local/monica --bundle /local/phpactor-bundle --out /local/new-results'
     example 'bin/public-corpus-benchmark --language ruby --repo /local/mastodon --bundle /local/ruby-operator --out /local/new-results'
     example 'bin/public-corpus-benchmark --language rust --repo /local/ripgrep --cargo-home /local/operator/.cargo --out /local/new-results'
+    example 'bin/public-corpus-benchmark --language ruby --corpus fizzy --repo /local/fizzy --bundle /local/ruby-operator --out /local/new-results'
   end
   option(:language) { long '--language NAME'; desc 'php, go, rust or ruby; selects the declared public corpus' }
+  option(:corpus) { long '--corpus NAME'; desc 'A further declared corpus of the language, such as fizzy for ruby; the default one when omitted' }
   option(:repo) { long '--repo PATH'; desc 'Clean checkout at the exact declared public commit' }
   option(:out) { long '--out PATH'; desc 'New directory outside Git for snapshots, logs and result.json' }
   option(:bundle) { long '--bundle PATH'; desc 'Prepared operator bundle; defaults to the declared toolchain directory' }
@@ -84,7 +86,7 @@ if ARGV.empty? && $stdin.tty?
 end
 begin
   %i[language repo out].each { |key| raise ArgumentError, "--#{key} is required" unless options[key] }
-  result = PublicCorpusGate.new(language: options[:language]).run(repo: options[:repo], out: options[:out], bundle: options[:bundle], cargo_home: options[:cargo_home])
+  result = PublicCorpusGate.new(language: options[:language], corpus: options[:corpus]).run(repo: options[:repo], out: options[:out], bundle: options[:bundle], cargo_home: options[:cargo_home])
   puts JSON.generate(result)
 rescue StandardError => error
   warn "public-corpus-benchmark: #{error.message}"

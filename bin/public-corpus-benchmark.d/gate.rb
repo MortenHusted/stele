@@ -5,16 +5,24 @@ require 'json'
 require 'tmpdir'
 require 'tty-command'
 require_relative 'selected_caller_oracle'
+require_relative 'template_oracle'
 
 class PublicCorpusGate
   attr_reader :contract
 
-  def initialize(language:)
+  def initialize(language:, corpus: nil)
     raise ArgumentError, 'language must be php, go, rust or ruby' unless %w[php go rust ruby].include?(language)
     @root = File.expand_path('../..', __dir__)
     descriptor = {'rust' => 'rust/ripgrep.json', 'ruby' => 'ruby/mastodon.json'}.fetch(language, "#{language}.json")
+    if corpus
+      # A language may declare further corpora beside its default one.
+      raise ArgumentError, 'corpus must be a declared name' unless corpus.match?(/\A[a-z0-9_]+\z/)
+      descriptor = "#{language}/#{corpus}.json"
+      raise ArgumentError, "#{language} declares no corpus named #{corpus}" unless File.file?(File.join(@root, 'benchmarks', descriptor))
+    end
     @contract = JSON.parse(File.read(File.join(@root, 'benchmarks', descriptor)))
-    [@contract.fetch('oracle'), @contract.fetch('tool_lock'), @contract['application_oracle']].compact.each do |pin|
+    raise ArgumentError, 'declared corpus is for another language' unless @contract.fetch('language') == language
+    [@contract.fetch('oracle'), @contract.fetch('tool_lock'), @contract['application_oracle'], @contract['template_oracle']].compact.each do |pin|
       raise ArgumentError, 'declared oracle or tool lock has drifted' unless Digest::SHA256.file(File.join(@root, pin.fetch('path'))).hexdigest == pin.fetch('sha256')
     end
     @runner = TTY::Command.new(printer: :null)
@@ -66,6 +74,7 @@ class PublicCorpusGate
       self.class.verify_oracle(policy_output.out, policy_test.fetch('test_name'))
     end
     binary = File.join(@root, 'target/release/stele')
+    templates = nil
     snapshots = Dir.mktmpdir('stele-public-corpus') do |scratch|
       %w[a b].each_with_index.map do |name, index|
         checkout = File.join(scratch, name)
@@ -86,6 +95,7 @@ class PublicCorpusGate
         bytes = File.binread(snapshot)
         self.class.verify_snapshot(JSON.parse(bytes), @contract)
         verify_application_oracle(JSON.parse(bytes)) if @contract['application_oracle']
+        templates = verify_template_oracle(name, snapshot, JSON.parse(bytes), binary) if @contract['template_oracle']
         raise ArgumentError, 'extractor changed its input checkout' unless @runner.run('git', '-C', checkout, 'status', '--porcelain').out.empty?
         bytes
       end
@@ -106,6 +116,11 @@ class PublicCorpusGate
       result['application_oracle'] = verify_application_oracle(JSON.parse(snapshots.first))
       result['scope'] = 'exact synthetic fixture; frozen selected production callers with explicit forbidden targets; explicit coverage exclusions; no application-wide precision or recall claim'
     end
+    if @contract['template_oracle']
+      result['template_oracle_sha256'] = @contract.fetch('template_oracle').fetch('sha256')
+      result['template_oracle'] = templates
+      result['scope'] = 'exact synthetic fixture; exact call sites of selected templates; selected required and forbidden policy relations; frozen template and policy census; no application-wide precision or recall claim'
+    end
     File.write(File.join(@out, 'result.json'), JSON.pretty_generate(result) + "\n")
     result
   end
@@ -122,13 +137,27 @@ class PublicCorpusGate
         raise ArgumentError, "Rust #{tool} version differs from the public pin" unless tools.fetch(tool).start_with?(prefix)
       end
     else
-      raise ArgumentError, 'Ruby tool-bundle identity differs' unless tools.fetch('ruby_tool_bundle_sha256') == @contract.fetch('tool_lock').fetch('sha256')
-      @contract.fetch('tool_versions').each do |tool, version|
-        raise ArgumentError, "Ruby #{tool} version differs from the public pin" unless tool == 'ruby' ? tools.fetch(tool).start_with?(version) : tools.fetch(tool) == version
-      end
+      verify_ruby_tools(tools)
     end
     pin = @contract.fetch('application_oracle')
     SelectedCallerOracle.verify(snapshot, JSON.parse(File.read(File.join(@root, pin.fetch('path')))), fact_source: @contract.fetch('semantic_fact_source', 'RustAnalyzer'))
+  end
+
+  def verify_ruby_tools(tools)
+    raise ArgumentError, 'Ruby tool-bundle identity differs' unless tools.fetch('ruby_tool_bundle_sha256') == @contract.fetch('tool_lock').fetch('sha256')
+    @contract.fetch('tool_versions').each do |tool, version|
+      raise ArgumentError, "Ruby #{tool} version differs from the public pin" unless tool == 'ruby' ? tools.fetch(tool).start_with?(version) : tools.fetch(tool) == version
+    end
+  end
+
+  # The policy relations are what the shipped binary derives: the gate asks
+  # `stele topology` for them rather than re-deriving anything itself.
+  def verify_template_oracle(name, snapshot_path, snapshot, binary)
+    verify_ruby_tools(snapshot.fetch('identity').fetch('tools'))
+    topology = File.join(@out, "topology-#{name}.json")
+    command("topology-#{name}", binary, 'topology', '--snapshot', snapshot_path, '--out', topology)
+    pin = @contract.fetch('template_oracle')
+    TemplateOracle.verify(snapshot, JSON.parse(File.read(topology)), JSON.parse(File.read(File.join(@root, pin.fetch('path')))))
   end
 
   def command(name, *args, **options)
