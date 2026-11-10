@@ -499,7 +499,10 @@ const flowNodeSet = () => (activeFlow ? activeFlow._set : null);
 // Lifting is computed at a zoom rounded down to a step, so panning and small
 // zoom changes reuse it and every lifted end is a circle the frame draws.
 const liftScale = k => 2 ** (Math.floor(Math.log2(k) * 8) / 8);
-const isDrawn = (n, k) => n.r * k > MIN_R * 2 && isRevealed(n, k);
+// An end smaller than LIFT_R pixels is too small to aim at; its edges belong
+// to the circle around it until zooming in makes it a target of its own.
+const LIFT_R = 6;
+const isDrawn = (n, k) => n.r * k >= LIFT_R && isRevealed(n, k);
 let liftKey = null, liftMemo = new Map(), liftGroups = new Map(), focusGroups = null;
 let drawnArcs = [];
 function liftTo(n, k) {
