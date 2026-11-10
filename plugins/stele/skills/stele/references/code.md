@@ -103,4 +103,9 @@ breach is a reason to look, and the user decides.
 ## Topology
 
 `stele topology --snapshot snapshot.json --out topology.json --html
-topology.html` renders a validated snapshot as an offline map.
+topology.html` renders a validated snapshot as an offline map. It draws
+exact calls, inheritance and implementation; an arc between two circles
+counts the exact edges between their members. `--exclude PREFIX`
+(repeatable) leaves a path prefix such as `test` off the map, and
+`--selection selection.json` alone marks entry points without any absence
+claim.

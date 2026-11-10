@@ -13,5 +13,7 @@ and embedded in the viewer so generated standalone HTML retains them.
 Codemap modifications preserve and display snapshot identity, exact-edge
 provenance, safe source-span links, unresolved call-site annotations, and
 admitted, qualified observed-graph absence witnesses, plus responsive viewport
-fitting and mobile details. Original upstream
-layout, drawing, navigation and inline D3 code are retained.
+fitting and mobile details. They also change edge drawing: inheritance and
+implementation edges are drawn beside calls, edges are lifted to the circles
+on screen and counted, and a lifted edge can be selected. Original upstream
+layout, node drawing, navigation and inline D3 code are retained.

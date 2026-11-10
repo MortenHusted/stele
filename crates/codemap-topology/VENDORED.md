@@ -29,8 +29,21 @@ Modifications:
 - include attribution and license notices;
 - fit the graph around controls on initial load/untouched resize and provide
   a mobile detail sheet; make admitted markers visibly dashed;
-- cancel animated navigation when the user pans, zooms or resets the viewport.
+- cancel animated navigation when the user pans, zooms or resets the viewport;
+- draw `inherits`, `implements` and `extends` edges beside calls, each with
+  its own toggle and count;
+- lift every edge to the circles drawn at the current zoom, merge edges that
+  share both lifted ends into one counted arc, and let an arc be selected to
+  list the edges behind it;
+- list the edges entering or leaving a selected circle, counted per kind, in
+  place of leaf-only fan-in and fan-out;
+- show each node's canonical kind and file in search, the sidebar and the
+  header, and rank search results by how closely the name matches;
+- state excluded path prefixes and the unowned call-site counts, and build
+  the full identity record when its panel is first opened.
 
-The original inline D3 subset and interaction design are unchanged. JSON
+Edge drawing, edge selection and search ranking differ from upstream. The
+original inline D3 subset, circle-pack layout, node drawing and navigation
+are unchanged. JSON
 injection retains upstream's `<`, `>` and `&` escaping and the offline CSP.
 Upstream schema changes require deliberate re-vendoring and another license review.
