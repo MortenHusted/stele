@@ -1,0 +1,88 @@
+// Ruby and Rails facts: the map shows the structure a snapshot already
+// holds, and framework conventions enter as named policies over exact
+// observations, never as canonical edges.
+// `stele plan check plans/ruby-rails-facts.stele` checks it and says what is next.
+plan ruby_rails_facts {
+  use "../intent/catalog.stele" as intent
+
+  decision map_draws_counted_exact_edges {
+    governs: [intent.answers_from_facts]
+    text: "The map draws exact calls, inheritance and implementation, and an arc between two circles is a count of the exact edges between their members."
+    rejected: "A depends-on relation between directories: a consumer would be deriving a new fact. Calls only: the type hierarchy a snapshot holds stayed invisible."
+  }
+  decision entries_without_absence {
+    governs: [intent.fails_closed]
+    text: "A selection alone marks entry points on the map. Absence markers still need the liveness report that selection is checked against."
+    rejected: "Reading routes.rb statically: it re-implements routing conventions without the framework and needs an oracle of its own."
+  }
+  decision conventions_are_policies {
+    governs: [intent.answers_from_facts]
+    text: "The extractor records the literal arguments of calls made outside any method body as exact observations. A named, versioned policy derives associations and renders from them, and what it cannot resolve is counted, not guessed."
+    rejected: "A canonical association edge: the target class follows from a naming convention, not from the parser, and a new edge kind would change traversal and coupling for every Ruby snapshot."
+  }
+  decision erb_joins_the_ruby_family {
+    governs: [intent.answers_from_facts]
+    text: "ERB templates are part of the Ruby family and share its snapshot, as JSX and TSX share the JS/TS snapshot."
+    rejected: "A separate ERB adapter: a template's references to Ruby classes and helpers would cross snapshots and could not be related."
+  }
+
+  change map_shows_structure {
+    follows: [map_draws_counted_exact_edges, entries_without_absence]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap-topology/src/lib.rs#project",
+      "rust:crates/codemap-topology/src/liveness.rs#validate_selection",
+      "crates/codemap-topology/assets/topology-viewer.html",
+      "crates/codemap-topology/VENDORED.md",
+      "crates/codemap-topology/README.md",
+    ]
+    creates: [
+      "rust:crates/codemap-topology/src/lib.rs#Scope",
+      "rust:crates/codemap-topology/src/lib.rs#relation",
+      "rust:crates/codemap-topology/src/lib.rs#exclude",
+    ]
+    state: done
+    text: "Draw inheritance and implementation beside calls, lift edges to the circles on screen and count them, show canonical kinds, leave excluded path prefixes off the map by name, and mark selected entry points without a liveness report."
+  }
+  change record_literal_arguments {
+    after: [map_shows_structure]
+    follows: [conventions_are_policies]
+    serves: [intent.answers_from_facts]
+    touches: [
+      "rust:crates/codemap/src/ruby_syntax.rs#extract_file",
+      "rust:crates/codemap-graph/src/schema.rs#CallSite",
+    ]
+    text: "Record the literal arguments of receiver-less Ruby calls made outside any method body on their call sites, omitted when there are none."
+  }
+  change derive_associations {
+    after: [record_literal_arguments]
+    follows: [conventions_are_policies]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap-lemmaspec/src/policy.rs#is_default_entry_point",
+      "rust:crates/codemap-topology/src/lib.rs#project",
+    ]
+    text: "Derive associations between classes under a named policy: explicit and inferred class names, polymorphic targets through their as: declarations, delegated types, and macros a concern hands to its includers. Draw them on the map under the policy's name and count what stays unresolved."
+  }
+  change templates_join_the_snapshot {
+    after: [record_literal_arguments]
+    follows: [erb_joins_the_ruby_family]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap/src/git.rs#source_globs",
+      "rust:crates/codemap/src/ruby_syntax.rs#extract_file",
+      "AGENTS.md",
+    ]
+    text: "Inventory ERB templates in the Ruby family, extract their Ruby with byte offsets preserved, and record their call sites; the call resolver leaves them unresolved and says so."
+  }
+  change derive_template_relations {
+    after: [derive_associations, templates_join_the_snapshot]
+    follows: [conventions_are_policies]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: [
+      "rust:crates/codemap-lemmaspec/src/policy.rs#is_default_entry_point",
+      "rust:crates/codemap-topology/src/lib.rs#project",
+    ]
+    text: "Derive which partial or component a template renders, and which action or component owns a template, under named policies, and draw them on the map."
+  }
+}
