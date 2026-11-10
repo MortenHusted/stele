@@ -1193,6 +1193,12 @@ pub enum Literal {
     Boolean(bool),
     Nil,
     Array(Vec<Self>),
+    /// A call on a constant, such as `Card.new(title: t)`: the constant
+    /// path and the method, without the call's own arguments.
+    ConstantCall {
+        constant: String,
+        method: String,
+    },
     Other,
 }
 

@@ -25,6 +25,7 @@ class Account
   with_options dependent: :destroy do
     has_many :notes
   end
+  renders Card.new(size: 1), Admin::Row.with_collection(rows)
 
   def run
     belongs_to :inside
@@ -143,6 +144,14 @@ fn class_body_calls_keep_their_literal_arguments() {
             json!([keyword("dependent", symbol("destroy"))]),
         ),
         ((16, "has_many"), json!([positional(symbol("notes"))])),
+        // A call on a constant is kept as the constant and the method.
+        (
+            (18, "renders"),
+            json!([
+                positional(json!({ "kind": "constant_call", "value": { "constant": "Card", "method": "new" } })),
+                positional(json!({ "kind": "constant_call", "value": { "constant": "Admin::Row", "method": "with_collection" } })),
+            ]),
+        ),
     ]
     .into_iter()
     .map(|((line, name), value)| ((line, name.to_string()), value))

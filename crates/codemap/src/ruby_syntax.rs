@@ -675,6 +675,20 @@ fn literal(node: &Node<'_>) -> Literal {
         Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. } => Literal::Constant(
             collapse_whitespace(&String::from_utf8_lossy(node.location().as_slice())),
         ),
+        Node::CallNode { .. } => {
+            let call = node.as_call_node().unwrap();
+            match call.receiver() {
+                Some(
+                    receiver @ (Node::ConstantReadNode { .. } | Node::ConstantPathNode { .. }),
+                ) => Literal::ConstantCall {
+                    constant: collapse_whitespace(&String::from_utf8_lossy(
+                        receiver.location().as_slice(),
+                    )),
+                    method: constant_str(&call.name()),
+                },
+                _ => Literal::Other,
+            }
+        }
         Node::TrueNode { .. } => Literal::Boolean(true),
         Node::FalseNode { .. } => Literal::Boolean(false),
         Node::NilNode { .. } => Literal::Nil,
