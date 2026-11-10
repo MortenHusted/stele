@@ -30,6 +30,7 @@ pub mod coverage;
 pub mod lemmaspec;
 pub mod policy;
 pub mod positive_path;
+pub mod template;
 
 use std::collections::{BTreeMap, BTreeSet};
 

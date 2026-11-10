@@ -146,7 +146,7 @@ pub struct Associations {
     pub unresolved: Vec<Unresolved>,
 }
 
-fn qualified(node: &Node) -> &str {
+pub(crate) fn qualified(node: &Node) -> &str {
     node.symbol_key
         .split_once('#')
         .map_or(node.name.as_str(), |(_, name)| name)
@@ -154,7 +154,7 @@ fn qualified(node: &Node) -> &str {
 
 /// Constant names compare without case or underscores, so `:api_keys`
 /// finds `APIKey` without knowing which words a project treats as acronyms.
-fn key(written: &str) -> String {
+pub(crate) fn key(written: &str) -> String {
     written.replace('_', "").replace('/', "::").to_lowercase()
 }
 
@@ -197,8 +197,47 @@ fn written(literal: &Literal) -> Option<&str> {
     }
 }
 
+/// The classes of a snapshot by [`key`] of their qualified name.
+pub(crate) type Classes<'a> = HashMap<String, Vec<&'a Node>>;
+
+pub(crate) fn classes(snapshot: &Snapshot) -> Classes<'_> {
+    let mut classes = Classes::new();
+    for node in &snapshot.nodes {
+        if node.kind == NodeKind::Type(TypeKind::Class) {
+            classes.entry(key(qualified(node))).or_default().push(node);
+        }
+    }
+    classes
+}
+
+/// What a written constant names among the classes on record.
+pub(crate) enum Named<'a> {
+    One(&'a Node),
+    None,
+    Several,
+}
+
+/// The class `written` names from inside `scope`. A name defined in several
+/// files is one class when exactly one of them is its autoload home.
+pub(crate) fn named<'a>(classes: &Classes<'a>, written: &str, scope: &[String]) -> Named<'a> {
+    let written = written
+        .strip_prefix("::")
+        .map_or_else(|| key(written), |absolute| format!("::{}", key(absolute)));
+    match lexical_constant(classes, &written, scope) {
+        Lexical::Unique(class) => Named::One(class),
+        Lexical::Ambiguous(several) => {
+            let mut homes = several.iter().filter(|class| autoload_home(class));
+            match (homes.next(), homes.next()) {
+                (Some(class), None) => Named::One(class),
+                _ => Named::Several,
+            }
+        }
+        Lexical::Unknown => Named::None,
+    }
+}
+
 struct Index<'a> {
-    classes: HashMap<String, Vec<&'a Node>>,
+    classes: Classes<'a>,
     containers: HashMap<&'a str, Vec<&'a Node>>,
     nodes: HashMap<&'a str, &'a Node>,
     includers: HashMap<&'a str, Vec<&'a str>>,
@@ -208,7 +247,7 @@ struct Index<'a> {
 
 /// Whether `node` sits where an autoloader maps its name: `Billing::LineItem`
 /// in a file whose path ends in `billing/line_item.rb`.
-fn autoload_home(node: &Node) -> bool {
+pub(crate) fn autoload_home(node: &Node) -> bool {
     let name = key(qualified(node));
     let Some(path) = node.provenance.rel_path.strip_suffix(".rb") else {
         return false;
@@ -221,7 +260,7 @@ fn autoload_home(node: &Node) -> bool {
 impl<'a> Index<'a> {
     fn new(snapshot: &'a Snapshot) -> Self {
         let mut index = Self {
-            classes: HashMap::new(),
+            classes: classes(snapshot),
             containers: HashMap::new(),
             nodes: HashMap::new(),
             includers: HashMap::new(),
@@ -239,13 +278,6 @@ impl<'a> Index<'a> {
         }
         for node in &snapshot.nodes {
             let class = node.kind == NodeKind::Type(TypeKind::Class);
-            if class {
-                index
-                    .classes
-                    .entry(key(qualified(node)))
-                    .or_default()
-                    .push(node);
-            }
             if class || node.kind == NodeKind::Module {
                 index
                     .containers
@@ -355,23 +387,12 @@ impl<'a> Index<'a> {
             .collect();
         let mut found = BTreeMap::new();
         for candidate in candidates {
-            let written = candidate
-                .strip_prefix("::")
-                .map_or_else(|| key(candidate), |absolute| format!("::{}", key(absolute)));
-            match lexical_constant(&self.classes, &written, &scope) {
-                Lexical::Unique(class) => {
-                    found.insert(class.id.as_str(), *class);
+            match named(&self.classes, candidate, &scope) {
+                Named::One(class) => {
+                    found.insert(class.id.as_str(), class);
                 }
-                Lexical::Ambiguous(classes) => {
-                    let mut homes = classes.iter().filter(|class| autoload_home(class));
-                    match (homes.next(), homes.next()) {
-                        (Some(class), None) => {
-                            found.insert(class.id.as_str(), *class);
-                        }
-                        _ => return Err(Reason::Ambiguous),
-                    }
-                }
-                Lexical::Unknown => {}
+                Named::Several => return Err(Reason::Ambiguous),
+                Named::None => {}
             }
         }
         let mut found = found.into_values();
