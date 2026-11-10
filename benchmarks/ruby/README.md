@@ -182,6 +182,13 @@ unverified receivers and do not produce canonical heritage edges.
 The gate includes a synthetic redirected-definition and rebound-self oracle.
 This does not infer ActiveSupport::Concern class methods.
 
+Receiver-less calls made outside any method body carry their literal
+arguments on their call sites. They create no edge and change no call-site
+category, so the synthetic oracle, the frozen application labels and the
+thresholds are unchanged, and the gate passes at the pin as before. Ruby
+snapshots extracted before this lack the arguments; regenerate them before
+deriving associations from them.
+
 A configured Ruby tool bundle that fails probing reports the attempted Gemfile
 and the subprocess failure, including stderr or timeout. Check that the
 Ruby executable used by Stele matches the one that installed the native gems;
