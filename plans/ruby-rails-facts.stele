@@ -116,4 +116,17 @@ plan ruby_rails_facts {
     state: done
     text: "Derive which partial or component a template renders, and which action or component owns a template, under named policies, and draw them on the map."
   }
+  change parser_matches_herb {
+    after: [derive_template_relations]
+    follows: [erb_joins_the_ruby_family]
+    serves: [intent.answers_from_facts]
+    touches: [
+      "rust:crates/codemap/src/ruby_lex.rs#lex",
+      "rust:crates/codemap/src/ruby_syntax.rs#extract_file",
+      "crates/codemap/Cargo.toml",
+      "crates/stele-plan/Cargo.toml",
+    ]
+    state: done
+    text: "Move the Ruby parser to Prism 2.1.0, the Prism the Herb crate is built against, so one Prism serves both."
+  }
 }
