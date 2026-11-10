@@ -62,11 +62,11 @@ unsupported shapes.
   `require`/`require_relative`/`load`/`autoload` imports with `ImportRef`
   placeholders, `inherits` edges from superclasses, `implements` edges from
   `include`/`prepend`, and `extends` edges from `extend`, each resolved only
-  when both sides map to unique in-repository definitions. Prism 2.1.0 (the
-  `CRuby` reference parser, via the official `ruby-prism` bindings; that
-  release reports a parse error for a command call with a `do` block as the
-  only argument of a parenthesised call, `foo(bar baz do end)`, which Ruby
-  3.4 accepts) tracks
+  when both sides map to unique in-repository definitions. Prism (the
+  `CRuby` reference parser, via the official `ruby-prism` bindings; the build
+  in use is the one Herb carries, the 2.1.0 release plus the upstream fix
+  for `foo(bar baz do end)`, and a snapshot names it as `ruby_parser`)
+  tracks
   local scope at parse time, so bare paren-less method calls (`params`,
   route helpers, chained receivers) are captured as observations; attribute
   writes and operator calls are excluded. A receiver-less call made outside
@@ -78,15 +78,16 @@ unsupported shapes.
   the call does, and create no edge. `policy:association/ruby` reads them to
   relate the classes an association macro names, and `stele topology` draws
   those relations apart from the snapshot's edges. ERB templates (`*.erb`)
-  are part of the Ruby family. Everything outside a template's `<% … %>`
-  tags is blanked, leaving Ruby at the template's own byte offsets, and
-  Prism reads that. A template contributes a file node and the call sites
+  are part of the Ruby family. Herb 0.11.2, linked in process, returns a template's Ruby with everything outside
+  its `<% … %>` tags blanked, so the Ruby sits at the template's own byte
+  offsets, and Prism reads it as the body of a method, where `yield` is
+  valid. A snapshot names the reader as `erb_parser`. A template contributes a file node and the call sites
   of its tags with their literal arguments; it contributes no definition,
   edge or measure, a tag sequence Prism cannot read as one program is
   counted under `observations` rather than as a parse error of the Ruby
   sources, and in semantic mode its call sites are `Unsupported`, because
-  no resolver reads a template. Only ERB's tag syntax is read, not the
-  markup around it. An argument that is a call on a constant, such as
+  no resolver reads a template. The markup around the tags is not turned
+  into facts. An argument that is a call on a constant, such as
   `render Card.new(title: t)`, is kept as that constant and method.
   `policy:template-render/ruby` and `policy:template-owner/ruby` relate a
   template to what it renders and to the action or class it belongs to.

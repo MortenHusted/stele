@@ -189,13 +189,20 @@ thresholds are unchanged, and the gate passes at the pin as before. Ruby
 snapshots extracted before this lack the arguments; regenerate them before
 deriving associations from them.
 
-The parser is Prism 2.1.0, recorded as `prism 2.1.0` in a snapshot's tool
-identity; snapshots made with Prism 1.9.0 name that version and are not
+The parser is Prism 2.1.0 as Herb carries it, the release plus upstream
+commit 4691667, recorded as `prism 2.1.0+4691667` in a snapshot's tool
+identity; snapshots made with another Prism name that one and are not
 comparable byte for byte. Regenerate them. The synthetic oracle, the frozen
-application labels and the thresholds are unchanged. That Prism release
-reports a parse error for `foo(bar baz do end)`, valid since Ruby 3.4; the
-pinned application has no such file, and a test holds the behaviour so a
-fixed parser is noticed.
+application labels and the thresholds are unchanged. Both `ruby-prism-sys`
+and Herb compile a Prism under the same symbols and the linker keeps one for
+both callers. The two differ in one fix, for `foo(bar baz do end)`, valid
+since Ruby 3.4, which the plain release rejects. Tests on the library and on
+the built binary hold that the copy in use is the fixed one the identity
+names, so a build that links the other fails its suite.
+
+ERB templates are read with Herb 0.11.2, linked in process and recorded as
+`erb_parser` in the tool identity, and parsed as method bodies, so `yield`
+in a layout or a partial is not a parse error.
 
 ERB templates are part of the Ruby inventory. They add file nodes and call
 sites that the resolver does not read (`Unsupported` in a semantic snapshot)

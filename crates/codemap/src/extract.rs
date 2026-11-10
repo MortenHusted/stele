@@ -753,8 +753,13 @@ pub fn build_snapshot(
                 // Prism finds in it is counted, not emitted, and a tag
                 // sequence that is not one Ruby program is not a parse
                 // error of the Ruby sources.
-                let raw = ruby_syntax::extract_file(rel_path, &crate::erb::ruby(bytes))
-                    .with_context(|| format!("extraction failed for {rel_path}"))?;
+                let Some(ruby) = crate::erb::ruby(bytes) else {
+                    *observations
+                        .entry("template_parse_errors".to_owned())
+                        .or_default() += 1;
+                    continue;
+                };
+                let raw = ruby_syntax::extract_template(&ruby);
                 for (kind, count) in [
                     ("template_parse_errors", usize::from(raw.parse_errors > 0)),
                     ("template_definitions", raw.defs.len()),
@@ -2436,7 +2441,7 @@ mod tests {
         .expect("ruby extraction");
 
         assert_eq!(snapshot.identity.language, Language::Ruby);
-        assert_eq!(snapshot.identity.tools.ruby_parser, "prism 2.1.0");
+        assert_eq!(snapshot.identity.tools.ruby_parser, "prism 2.1.0+4691667");
         assert_eq!(snapshot.identity.tools.tree_sitter_rust, "");
         assert_eq!(snapshot.identity.tools.tree_sitter, "");
         // Only the ruby file is inventoried; every id is ruby-namespaced.

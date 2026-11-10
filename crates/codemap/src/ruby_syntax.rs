@@ -135,7 +135,18 @@ impl Offsets for Location<'_> {
 /// total (error-tolerant), so the error path is currently unreachable.
 #[allow(clippy::unnecessary_wraps)]
 pub fn extract_file(_rel_path: &str, source: &[u8]) -> Result<RawFile> {
-    let result = ruby_prism::parse(source);
+    Ok(observe(source, &ruby_prism::parse(source)))
+}
+
+/// Extract the observations of a template's Ruby. A template is compiled
+/// into the body of a method, so `yield` and block control flow are valid
+/// in it where a script would not have them.
+pub fn extract_template(source: &[u8]) -> RawFile {
+    let options = ruby_prism::Options::default().partial_script(true).build();
+    observe(source, &ruby_prism::parse_with_options(source, &options))
+}
+
+fn observe(source: &[u8], result: &ruby_prism::ParseResult<'_>) -> RawFile {
     let parse_errors = result.errors().count();
 
     let comments: Vec<_> = result
@@ -150,7 +161,7 @@ pub fn extract_file(_rel_path: &str, source: &[u8]) -> Result<RawFile> {
     let root = result.node();
     walker.visit(&root);
 
-    Ok(RawFile {
+    RawFile {
         defs: walker.defs,
         imports: walker.imports,
         mixins: walker.mixins,
@@ -163,7 +174,7 @@ pub fn extract_file(_rel_path: &str, source: &[u8]) -> Result<RawFile> {
         uncertain_instance_methods: walker.uncertain_instance_methods,
         unverified_method_owners: walker.unverified_method_owners,
         line_classes: classes,
-    })
+    }
 }
 
 struct Walker<'a> {
@@ -1288,17 +1299,17 @@ mod tests {
         );
     }
 
-    /// Prism 2.1.0 rejects a command call with a `do` block as the only
-    /// argument of a parenthesised call. Ruby 3.4 accepts it, Prism 1.9.0
-    /// parsed it, and the fix landed upstream after 2.1.0. A file using it
-    /// is therefore counted as a parse error. When this assertion fails, a
-    /// fixed Prism is linked: delete the test and the README's note.
+    /// Two crates carry Prism under the same symbols: `ruby-prism-sys` the
+    /// 2.1.0 release, Herb that release plus the upstream fix for a command
+    /// call with a `do` block as the only argument of a parenthesised call.
+    /// The linker keeps one copy for both. This construct tells them apart,
+    /// and the copy in use must be the fixed one the snapshot identity names.
     #[test]
-    fn prism_2_1_0_rejects_a_do_block_command_call_as_the_only_argument() {
-        assert!(extract("foo(bar baz do end)\n").parse_errors > 0);
+    fn the_linked_prism_is_the_build_the_identity_names() {
+        assert_eq!(extract("foo(bar baz do end)\n").parse_errors, 0);
         assert_eq!(
-            extract("foo(bar(baz) { })\nfoo bar baz do end\n").parse_errors,
-            0
+            format!("prism {}", herb::prism_version()),
+            crate::schema::RUBY_PARSER_PRISM_VERSION
         );
     }
 

@@ -1274,6 +1274,9 @@ fn validate_call_sites(
 #[allow(clippy::too_many_lines)] // per-language identity gates read as one table
 fn validate_tool_identity(snapshot: &Snapshot, errors: &mut Vec<String>) {
     let tools = &snapshot.identity.tools;
+    if snapshot.identity.language != Language::Ruby && !tools.erb_parser.is_empty() {
+        errors.push("only a ruby snapshot carries an erb_parser identity".into());
+    }
     // Grammar fields must match the snapshot language, and a snapshot may
     // not carry the other language's grammar version.
     match snapshot.identity.language {

@@ -14,9 +14,9 @@
       "confidence": 1.0,
       "provenance": [
         "call_census_0",
-        "snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c"
+        "snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
       ],
-      "why": "call_census(Ambiguous, 0)  (conf 1.000, prov [\"call_census_0\", \"snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c\"])\n  ↳ asserted (base fact)\n"
+      "why": "call_census(Ambiguous, 0)  (conf 1.000, prov [\"call_census_0\", \"snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "call_census",
@@ -28,9 +28,9 @@
       "confidence": 1.0,
       "provenance": [
         "call_census_1",
-        "snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c"
+        "snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
       ],
-      "why": "call_census(Candidate, 1)  (conf 1.000, prov [\"call_census_1\", \"snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c\"])\n  ↳ asserted (base fact)\n"
+      "why": "call_census(Candidate, 1)  (conf 1.000, prov [\"call_census_1\", \"snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "call_census",
@@ -42,9 +42,9 @@
       "confidence": 1.0,
       "provenance": [
         "call_census_2",
-        "snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c"
+        "snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
       ],
-      "why": "call_census(ExternalCrate, 0)  (conf 1.000, prov [\"call_census_2\", \"snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c\"])\n  ↳ asserted (base fact)\n"
+      "why": "call_census(ExternalCrate, 0)  (conf 1.000, prov [\"call_census_2\", \"snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "call_census",
@@ -56,9 +56,9 @@
       "confidence": 1.0,
       "provenance": [
         "call_census_3",
-        "snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c"
+        "snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
       ],
-      "why": "call_census(Failed, 0)  (conf 1.000, prov [\"call_census_3\", \"snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c\"])\n  ↳ asserted (base fact)\n"
+      "why": "call_census(Failed, 0)  (conf 1.000, prov [\"call_census_3\", \"snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "call_census",
@@ -70,9 +70,9 @@
       "confidence": 1.0,
       "provenance": [
         "call_census_4",
-        "snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c"
+        "snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
       ],
-      "why": "call_census(Observed, 0)  (conf 1.000, prov [\"call_census_4\", \"snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c\"])\n  ↳ asserted (base fact)\n"
+      "why": "call_census(Observed, 0)  (conf 1.000, prov [\"call_census_4\", \"snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "call_census",
@@ -84,9 +84,9 @@
       "confidence": 1.0,
       "provenance": [
         "call_census_5",
-        "snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c"
+        "snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
       ],
-      "why": "call_census(Resolved, 1)  (conf 1.000, prov [\"call_census_5\", \"snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c\"])\n  ↳ asserted (base fact)\n"
+      "why": "call_census(Resolved, 1)  (conf 1.000, prov [\"call_census_5\", \"snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "call_census",
@@ -98,9 +98,9 @@
       "confidence": 1.0,
       "provenance": [
         "call_census_6",
-        "snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c"
+        "snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
       ],
-      "why": "call_census(StandardLibrary, 0)  (conf 1.000, prov [\"call_census_6\", \"snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c\"])\n  ↳ asserted (base fact)\n"
+      "why": "call_census(StandardLibrary, 0)  (conf 1.000, prov [\"call_census_6\", \"snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "call_census",
@@ -112,9 +112,9 @@
       "confidence": 1.0,
       "provenance": [
         "call_census_7",
-        "snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c"
+        "snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
       ],
-      "why": "call_census(Unmapped, 0)  (conf 1.000, prov [\"call_census_7\", \"snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c\"])\n  ↳ asserted (base fact)\n"
+      "why": "call_census(Unmapped, 0)  (conf 1.000, prov [\"call_census_7\", \"snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "call_census",
@@ -126,9 +126,9 @@
       "confidence": 1.0,
       "provenance": [
         "call_census_8",
-        "snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c"
+        "snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
       ],
-      "why": "call_census(Unsupported, 0)  (conf 1.000, prov [\"call_census_8\", \"snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c\"])\n  ↳ asserted (base fact)\n"
+      "why": "call_census(Unsupported, 0)  (conf 1.000, prov [\"call_census_8\", \"snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "calls",
@@ -282,7 +282,7 @@
     {
       "relation": "snapshot_identity",
       "args": [
-        "c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c",
+        "9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d",
         "https://example.test/synthetic-topology.git",
         "synthetic-commit",
         "synthetic-tree",
@@ -291,10 +291,10 @@
       "origin": "asserted",
       "confidence": 1.0,
       "provenance": [
-        "snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c",
+        "snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d",
         "snapshot_identity_0"
       ],
-      "why": "snapshot_identity(c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c, https://example.test/synthetic-topology.git, synthetic-commit, synthetic-tree, policy:entry-point/ruby)  (conf 1.000, prov [\"snapshot:c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c\", \"snapshot_identity_0\"])\n  ↳ asserted (base fact)\n"
+      "why": "snapshot_identity(9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d, https://example.test/synthetic-topology.git, synthetic-commit, synthetic-tree, policy:entry-point/ruby)  (conf 1.000, prov [\"snapshot:9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d\", \"snapshot_identity_0\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "unused_production_symbol",

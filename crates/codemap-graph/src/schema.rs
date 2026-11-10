@@ -253,10 +253,15 @@ pub struct ToolVersions {
     /// `tree-sitter-rust` grammar version (Rust snapshots).
     #[serde(default, skip_serializing_if = "is_empty_string")]
     pub tree_sitter_rust: String,
-    /// Ruby parser identity (e.g. `prism 2.1.0`); empty for non-Ruby
+    /// Ruby parser identity (e.g. `prism 2.1.0+4691667`); empty for non-Ruby
     /// snapshots.
     #[serde(default, skip_serializing_if = "is_empty_string")]
     pub ruby_parser: String,
+    /// ERB reader identity (e.g. `herb 0.11.2`) for a Ruby snapshot's
+    /// templates; empty for other languages and in snapshots made before
+    /// templates were read.
+    #[serde(default, skip_serializing_if = "is_empty_string")]
+    pub erb_parser: String,
     /// `rust-analyzer` version, present only in semantic (`--calls`) mode.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub rust_analyzer: Option<String>,
@@ -370,6 +375,7 @@ impl ToolVersions {
             tree_sitter: TREE_SITTER_VERSION.to_string(),
             tree_sitter_rust: TREE_SITTER_RUST_VERSION.to_string(),
             ruby_parser: String::new(),
+            erb_parser: String::new(),
             rust_analyzer: None,
             rustc: None,
             cargo: None,
@@ -404,6 +410,7 @@ impl ToolVersions {
             tree_sitter: String::new(),
             tree_sitter_rust: String::new(),
             ruby_parser: RUBY_PARSER_PRISM_VERSION.to_string(),
+            erb_parser: RUBY_ERB_HERB_VERSION.to_string(),
             rust_analyzer: None,
             rustc: None,
             cargo: None,
@@ -438,6 +445,7 @@ impl ToolVersions {
             tree_sitter: TREE_SITTER_VERSION.to_string(),
             tree_sitter_rust: String::new(),
             ruby_parser: String::new(),
+            erb_parser: String::new(),
             rust_analyzer: None,
             rustc: None,
             cargo: None,
@@ -477,6 +485,7 @@ impl ToolVersions {
             tree_sitter: TREE_SITTER_VERSION.to_string(),
             tree_sitter_rust: TREE_SITTER_RUST_VERSION.to_string(),
             ruby_parser: String::new(),
+            erb_parser: String::new(),
             rust_analyzer: Some(rust_analyzer),
             rustc: Some(rustc),
             cargo: Some(cargo),
@@ -515,6 +524,7 @@ impl ToolVersions {
             tree_sitter: String::new(),
             tree_sitter_rust: String::new(),
             ruby_parser: RUBY_PARSER_PRISM_VERSION.to_string(),
+            erb_parser: RUBY_ERB_HERB_VERSION.to_string(),
             rust_analyzer: None,
             rustc: None,
             cargo: None,
@@ -549,6 +559,7 @@ impl ToolVersions {
             tree_sitter: TREE_SITTER_VERSION.to_string(),
             tree_sitter_rust: String::new(),
             ruby_parser: String::new(),
+            erb_parser: String::new(),
             rust_analyzer: None,
             rustc: None,
             cargo: None,
@@ -622,6 +633,7 @@ impl ToolVersions {
             tree_sitter: TREE_SITTER_VERSION.to_string(),
             tree_sitter_rust: String::new(),
             ruby_parser: String::new(),
+            erb_parser: String::new(),
             rust_analyzer: None,
             rustc: None,
             cargo: None,
@@ -654,7 +666,13 @@ pub const TREE_SITTER_VERSION: &str = "0.25";
 pub const TREE_SITTER_RUST_VERSION: &str = "0.24.2";
 /// Ruby is parsed by Prism (the `CRuby` reference parser), not tree-sitter;
 /// the identity records the parser rather than a grammar.
-pub const RUBY_PARSER_PRISM_VERSION: &str = "prism 2.1.0";
+/// The Prism build a Ruby snapshot is parsed with: the one the Herb crate
+/// carries, the 2.1.0 release plus upstream commit 4691667. `ruby-prism`
+/// 2.1.0 carries the plain release under the same symbols, and the linker
+/// keeps one copy for both callers; tests hold that it is this one.
+pub const RUBY_PARSER_PRISM_VERSION: &str = "prism 2.1.0+4691667";
+/// The ERB reader behind a Ruby snapshot's templates.
+pub const RUBY_ERB_HERB_VERSION: &str = "herb 0.11.2";
 /// Pinned tree-sitter-php grammar crate version.
 pub const TREE_SITTER_PHP_VERSION: &str = "0.24.2";
 /// Pinned tree-sitter-go grammar crate version.

@@ -17,7 +17,7 @@ const SHOW: &str = r#"<h1><%= @post.title %></h1>
 <%= render Card.new(title: "caf\u{e9}") %>
 "#;
 
-const FILES: [(&str, &str); 5] = [
+const FILES: [(&str, &str); 6] = [
     ("app/views/posts/show.html.erb", SHOW),
     // Tags that are not one Ruby program between them.
     (
@@ -30,6 +30,11 @@ const FILES: [(&str, &str); 5] = [
         "<% def shout(text) = text.upcase %>\n<%= shout(post.title) %>\n",
     ),
     ("config/settings.yml.erb", "name: <%= app_name %>\n"),
+    // A template is a method body: `yield` is valid in it.
+    (
+        "app/views/layouts/application.html.erb",
+        "<head><%= yield :head %></head>\n<body><%= yield %></body>\n",
+    ),
     (
         "app/models/post.rb",
         "class Post\n  def title\n    name.strip\n  end\nend\n",

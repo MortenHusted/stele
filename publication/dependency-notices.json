@@ -24,6 +24,14 @@
       "url": "https://github.com/tree-sitter/tree-sitter/blob/da6fe9beb4f7f67beb75914ca8e0d48ae48d6406/LICENSE",
       "path": "publication/third-party/tree-sitter.LICENSE",
       "sha256": "5f9cf9fb6acb1972b35ae29119ce563bb60ec097656bc4b69b9bac2d04c7a147"
+    },
+    "herb": {
+      "version": "0.11.2",
+      "crate_sha256": "41c504a8ddcf6e0e1bb6f812b54fad4ecaf6238047ffba983b681ce77a78d699",
+      "commit": null,
+      "url": "https://github.com/marcoroth/herb/blob/37b2325d786594bae71dbc11e8d9828a904b1bf9/LICENSE.txt",
+      "path": "publication/third-party/herb.LICENSE",
+      "sha256": "c618d51cfa857024a01ec9c3706f678944ae4961cb9afaa03e87b8e9a8e224e7"
     }
   }
 }

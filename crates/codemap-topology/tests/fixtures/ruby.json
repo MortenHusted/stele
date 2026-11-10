@@ -10,14 +10,15 @@
     "commit_sha": "synthetic-commit",
     "tree_sha": "synthetic-tree",
     "tools": {
-      "ruby_parser": "prism 2.1.0",
+      "ruby_parser": "prism 2.1.0+4691667",
+      "erb_parser": "herb 0.11.2",
       "ruby_lsp": "ruby-lsp synthetic",
       "ruby": "ruby synthetic",
       "rbs": "rbs synthetic",
       "ruby_tool_bundle_sha256": "synthetic-bundle"
     },
     "dirty": false,
-    "snapshot_id": "c0b69e95c59fc5ef0a8898279e3a1ec335150b6e69ac7b79e1209fd7a7f9e36c"
+    "snapshot_id": "9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
   },
   "files": [
     {
