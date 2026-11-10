@@ -881,7 +881,8 @@ searchEl.addEventListener("input", () => {
   nodes.filter(n => n.name.toLowerCase().includes(q))
     .sort((a, b) => rank(a) - rank(b) || a.name.length - b.name.length || a.lo - b.lo).slice(0, 12).forEach(n => {
     const d = document.createElement("div");
-    d.innerHTML = `${esc(n.name)}<span class="kind">${esc(n.label)}${n.file ? " · " + esc(n.file) : ""}</span>`;
+    const where = n.file || (n.id.startsWith("@file:") ? n.id.slice(6) : n.id.startsWith("@directory:") ? n.id.slice(11) : "");
+    d.innerHTML = `${esc(n.name)}<span class="kind">${esc(n.label)}${where ? " · " + esc(where) : ""}</span>`;
     d.onclick = () => { selected = n.id; selectedArc = null; resultsEl.innerHTML = ""; flyTo(n); renderSidebar(); requestDraw(); };
     resultsEl.appendChild(d);
   });
