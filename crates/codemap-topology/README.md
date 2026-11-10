@@ -69,9 +69,10 @@ The viewer's `codemap.topology.v2` extension carries:
 
 - top level: full snapshot `identity`, expected `selection`, qualified `absence`
   with checker/admission witnesses, `extraction_report`, what `--exclude` left
-  out, unowned unresolved sites with their counts by category and file, and
-  explicitly unknown unsupported-construct census. The HTML carries the counts
-  only; the JSON lists every unowned site;
+  out, unowned unresolved sites with their counts by category and file,
+  policy relations with a summary per policy, and explicitly unknown
+  unsupported-construct census. The HTML carries the counts only; the JSON
+  lists every unowned site;
 - each edge: its kind (`call`, `inherits`, `implements` or `extends`), original
   `edge_id`, full canonical `provenance`, safe `source_link`;
 - each callable/container: original `node_id`, `symbol_key`, canonical kind and
@@ -89,6 +90,22 @@ An arc is therefore a count of exact edges between the members of two
 circles, never a relation of its own. Selecting an arc lists those edges
 with their evidence. Selecting a circle lists every edge entering or leaving
 it. Search shows each node's canonical kind and file.
+
+For a Ruby snapshot the map also draws associations, dashed, as derived by
+`policy:association/ruby` from the literal arguments of `belongs_to`,
+`has_one`, `has_many`, `has_and_belongs_to_many` and `delegated_type` calls
+in class bodies. They are policy relations, kept apart from `edges` in
+`codemap.policy_relations` with the policy, the rule that found the class
+(`class_name`, `inferred`, `through`, `polymorphic_as` or `delegated_type`)
+and the declaration they rest on. A declaration relates two classes only
+when it resolves to exactly one class in the snapshot;
+`codemap.policies` counts the relations derived and what stayed unresolved
+by reason. Custom inflections are not read.
+
+This crate derives none of that. It reads the canonical graph only, and
+`stele topology` hands it the relations each policy derived; `project`
+takes them in `Scope::policies`, checks that they name nodes and files of the
+snapshot, and places them.
 
 Relative source links resolve
 relative to the HTML file by default. Pass `--source-root /path/to/source`

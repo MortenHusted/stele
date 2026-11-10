@@ -4,8 +4,11 @@
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use crate::{CheckReport, Scope, Selection, project, render_html, render_html_with_source_root};
+use crate::{
+    CheckReport, Policy, Scope, Selection, project, render_html, render_html_with_source_root,
+};
 use anyhow::{Context, Result, ensure};
+use codemap_graph::Snapshot;
 use serde::de::DeserializeOwned;
 
 /// The inputs and outputs of one topology rendering.
@@ -39,7 +42,7 @@ fn read<T: DeserializeOwned>(path: &PathBuf) -> Result<T> {
     .with_context(|| format!("parse {}", path.display()))
 }
 
-fn run(args: Args) -> Result<()> {
+fn run(args: Args, policies: impl FnOnce(&Snapshot) -> Vec<Policy>) -> Result<()> {
     let outputs = std::iter::once(&args.out)
         .chain(args.html.iter())
         .map(|path| destination(path))
@@ -58,6 +61,7 @@ fn run(args: Args) -> Result<()> {
         );
     }
     let snapshot = read(&args.snapshot)?;
+    let policies = policies(&snapshot);
     let report: Option<CheckReport> = args.liveness.as_ref().map(read).transpose()?;
     let selection: Option<Selection> = args.selection.as_ref().map(read).transpose()?;
     let topology = project(
@@ -66,6 +70,7 @@ fn run(args: Args) -> Result<()> {
             selection: selection.as_ref(),
             liveness: report.as_ref(),
             exclude: &args.exclude,
+            policies: &policies,
         },
     )?;
     let json = serde_json::to_string_pretty(&topology)? + "\n";
@@ -100,9 +105,11 @@ fn destination(path: &Path) -> Result<PathBuf> {
 }
 
 /// Render one parsed topology command, reporting an error as
-/// `stele topology: …`.
-pub fn dispatch(args: Args) -> ExitCode {
-    match run(args) {
+/// `stele topology: …`. `policies` supplies the relations named policies
+/// derive from the snapshot; this crate reads the canonical graph only and
+/// derives none itself.
+pub fn dispatch(args: Args, policies: impl FnOnce(&Snapshot) -> Vec<Policy>) -> ExitCode {
+    match run(args, policies) {
         Ok(()) => ExitCode::SUCCESS,
         Err(error) => {
             eprintln!("stele topology: {error:#}");

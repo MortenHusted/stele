@@ -17,6 +17,7 @@ mod agent;
 mod check;
 mod intent;
 mod plan;
+mod topology;
 
 /// Deterministic code facts and the specifications checked against them.
 #[derive(Parser, Debug)]
@@ -79,7 +80,7 @@ fn main() -> ExitCode {
         Group::Plan(command) => plan::dispatch(command),
         Group::Intent(command) => intent::dispatch(command),
         Group::Slop(command) => codemap_slop::cli::dispatch(command),
-        Group::Topology(args) => codemap_topology::cli::dispatch(args),
+        Group::Topology(args) => codemap_topology::cli::dispatch(args, topology::policies),
         Group::Intro => agent::print_intro(),
         Group::Agent(command) => agent::dispatch(command),
     }

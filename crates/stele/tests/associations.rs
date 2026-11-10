@@ -9,7 +9,7 @@ use codemap::schema::{Language, Snapshot};
 use codemap::{ExtractOptions, extract};
 use codemap_lemmaspec::association::{Associations, associations};
 
-const FILES: [(&str, &str); 9] = [
+const FILES: [(&str, &str); 11] = [
     (
         "app/models/person.rb",
         r#"
@@ -27,9 +27,15 @@ class Person < ApplicationRecord
   belongs_to :ghost
   belongs_to :employer, class_name: employer_class
   has_many relation_name, class_name: "Tag"
+  has_many :taggings
+  has_many :labels, through: :taggings, source: :tag
 end
-class Manager < Person; end
-class Profile; end
+class Manager < Person
+  has_many :team_labels, through: :taggings, source: :tag
+end
+class Tagging
+  belongs_to :tag
+end
 class Category; end
 class Status; end
 class APIKey; end
@@ -90,6 +96,8 @@ module Orphaned
 end
 ",
     ),
+    ("app/models/profile.rb", "class Profile; end\n"),
+    ("lib/core_ext.rb", "class Profile\n  def extra; end\nend\n"),
     ("app/models/duplicate.rb", "class Duplicate; end\n"),
     ("lib/duplicate.rb", "class Duplicate; end\n"),
     (
@@ -160,7 +168,7 @@ fn relations(snapshot: &Snapshot, derived: &Associations) -> BTreeSet<Relation> 
 
 /// (owner, declaration, rule, class reached, through, declaring module).
 #[rustfmt::skip]
-const RELATED: [(&str, &str, &str, &str, &str, &str); 18] = [
+const RELATED: [(&str, &str, &str, &str, &str, &str); 22] = [
     // The association's own name, as written or as a singular of it.
     ("Person", "has_many :invoices", "inferred", "Invoice", "", ""),
     ("Person", "has_many :categories", "inferred", "Category", "", ""),
@@ -173,6 +181,12 @@ const RELATED: [(&str, &str, &str, &str, &str, &str); 18] = [
     ("Billing::Invoice", "has_one :note", "inferred", "Note", "", ""),
     // A class in the owner's namespace shadows one at the top level.
     ("Billing::Invoice", "has_many :line_items", "inferred", "Billing::LineItem", "", ""),
+    // `through:` follows the association it goes through, here and from a
+    // subclass; when that leads nowhere the name decides.
+    ("Person", "has_many :taggings", "inferred", "Tagging", "", ""),
+    ("Tagging", "belongs_to :tag", "inferred", "Tag", "", ""),
+    ("Person", "has_many :labels", "through", "Tag", "taggings", ""),
+    ("Manager", "has_many :team_labels", "through", "Tag", "taggings", ""),
     ("Person", "has_many :line_items", "inferred", "LineItem", "invoices", ""),
     // `class_name:` as a string or a constant.
     ("Billing::Invoice", "belongs_to :payer", "class_name", "Person", "", ""),
@@ -218,6 +232,11 @@ fn associations_relate_classes_only_when_exactly_one_class_is_named() {
         })
         .collect();
     assert_eq!(relations(&snapshot, &derived), expected);
+    // Two files define Profile; the one an autoloader maps the name to is it.
+    assert!(derived.relations.iter().any(|relation| {
+        relation.declaration.name.as_deref() == Some("profile")
+            && relation.to == "ruby:type:app/models/profile.rb#Profile"
+    }));
 
     let unresolved: BTreeSet<_> = derived
         .unresolved
@@ -239,4 +258,69 @@ fn a_snapshot_in_another_language_has_no_associations() {
     let mut snapshot = snapshot();
     snapshot.identity.language = Language::Rust;
     assert_eq!(associations(&snapshot), Associations::default());
+}
+
+#[test]
+fn the_map_carries_associations_as_policy_relations_beside_its_edges() {
+    let dir = tempfile::tempdir().unwrap();
+    let source = dir.path().join("snapshot.json");
+    let out = dir.path().join("topology.json");
+    std::fs::write(&source, serde_json::to_vec(&snapshot()).unwrap()).unwrap();
+    let project = |extra: &[&str]| -> serde_json::Value {
+        let run = Command::new(env!("CARGO_BIN_EXE_stele"))
+            .args(["topology", "--snapshot"])
+            .arg(&source)
+            .arg("--out")
+            .arg(&out)
+            .args(extra)
+            .output()
+            .unwrap();
+        assert!(
+            run.status.success(),
+            "{}",
+            String::from_utf8_lossy(&run.stderr)
+        );
+        serde_json::from_slice(&std::fs::read(&out).unwrap()).unwrap()
+    };
+    let topology = project(&[]);
+    let relations = topology["codemap"]["policy_relations"].as_array().unwrap();
+    assert_eq!(relations.len(), RELATED.len());
+    let payer = relations
+        .iter()
+        .find(|relation| relation["declaration"] == "belongs_to :payer")
+        .unwrap();
+    assert_eq!(
+        payer["source"],
+        "@container:ruby:type:app/models/billing/invoice.rb#Billing::Invoice"
+    );
+    assert_eq!(
+        payer["target"],
+        "@container:ruby:type:app/models/person.rb#Person"
+    );
+    assert_eq!(payer["kind"], "association");
+    assert_eq!(payer["policy"], "policy:association/ruby");
+    assert_eq!(payer["rule"], "class_name");
+    assert_eq!(payer["source_link"], "app/models/billing/invoice.rb#L5-L5");
+    assert!(
+        topology["edges"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .all(|edge| edge["kind"] != "association")
+    );
+    let summary = &topology["codemap"]["policies"];
+    assert_eq!(summary[0]["policy"], "policy:association/ruby");
+    assert_eq!(summary[0]["relations"], RELATED.len());
+    assert_eq!(summary[0]["unresolved"]["no_class"], 2);
+
+    // An exclusion hides relations; what the policy found is unchanged.
+    let scoped = project(&["--exclude", "app/models/billing"]);
+    assert!(
+        scoped["codemap"]["policy_relations"]
+            .as_array()
+            .unwrap()
+            .len()
+            < RELATED.len()
+    );
+    assert_eq!(scoped["codemap"]["policies"], *summary);
 }

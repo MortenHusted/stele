@@ -35,7 +35,7 @@ fn checked(
         Scope {
             selection: Some(&serde_json::from_value(selection)?),
             liveness: Some(&serde_json::from_value(report)?),
-            exclude: &[],
+            ..Scope::default()
         },
     )
 }

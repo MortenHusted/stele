@@ -72,7 +72,10 @@ unsupported shapes.
   call site when at least one is a literal: symbols, strings, constant paths,
   booleans, `nil` and arrays of these, with the keyword where there is one and
   a placeholder for anything else. They record what the source says, not what
-  the call does, and create no edge. Semantic mode launches ruby-lsp
+  the call does, and create no edge. `policy:association/ruby` reads them to
+  relate the classes an association macro names, and `stele topology` draws
+  those relations apart from the snapshot's edges. Semantic mode launches
+  ruby-lsp
   under an operator-installed, hash-pinned tool bundle
   (`CODEMAP_RUBY_TOOL_BUNDLE`, `BUNDLE_FROZEN` — no network, no worktree
   writes) and emits a `calls` edge only when codemap's own static model

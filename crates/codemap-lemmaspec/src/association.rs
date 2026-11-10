@@ -10,7 +10,9 @@
 //! exactly one class on record. Anything else is returned as unresolved
 //! with its reason. Custom inflections are not read: an inferred name is
 //! tried as written and under a few singular forms, and it counts only when
-//! exactly one of them names a class.
+//! exactly one of them names a class. A class defined in several files is
+//! one class only when exactly one of those files is where an autoloader
+//! would look for it.
 
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
@@ -26,6 +28,8 @@ pub const ASSOCIATION: &str = "association";
 const TO_ONE: [&str; 2] = ["belongs_to", "has_one"];
 const TO_MANY: [&str; 2] = ["has_many", "has_and_belongs_to_many"];
 const DELEGATED_TYPE: &str = "delegated_type";
+/// How far up a superclass chain an inherited association is looked for.
+const MAX_ANCESTORS: usize = 32;
 
 /// Plural endings English does not form with `s`, tried at a word boundary.
 const IRREGULAR: [(&str, &str); 9] = [
@@ -47,6 +51,9 @@ pub enum Rule {
     ClassName,
     /// The association's own name does.
     Inferred,
+    /// A `through:` association: what the association it goes through
+    /// reaches by the `source:` name or its own.
+    Through,
     /// A polymorphic `belongs_to :x`: the target declares `as: :x` back.
     PolymorphicAs,
     /// A class listed in `delegated_type … types:`.
@@ -58,6 +65,7 @@ impl Rule {
         match self {
             Self::ClassName => "class_name",
             Self::Inferred => "inferred",
+            Self::Through => "through",
             Self::PolymorphicAs => "polymorphic_as",
             Self::DelegatedType => "delegated_type",
         }
@@ -194,6 +202,19 @@ struct Index<'a> {
     containers: HashMap<&'a str, Vec<&'a Node>>,
     nodes: HashMap<&'a str, &'a Node>,
     includers: HashMap<&'a str, Vec<&'a str>>,
+    superclass: HashMap<&'a str, &'a str>,
+}
+
+/// Whether `node` sits where an autoloader maps its name: `Billing::LineItem`
+/// in a file whose path ends in `billing/line_item.rb`.
+fn autoload_home(node: &Node) -> bool {
+    let name = key(qualified(node));
+    let Some(path) = node.provenance.rel_path.strip_suffix(".rb") else {
+        return false;
+    };
+    let mut segments = path.rsplit('/');
+    name.rsplit("::")
+        .all(|part| segments.next().is_some_and(|segment| key(segment) == part))
 }
 
 impl<'a> Index<'a> {
@@ -203,6 +224,7 @@ impl<'a> Index<'a> {
             containers: HashMap::new(),
             nodes: HashMap::new(),
             includers: HashMap::new(),
+            superclass: HashMap::new(),
         };
         for node in &snapshot.nodes {
             let class = node.kind == NodeKind::Type(TypeKind::Class);
@@ -223,12 +245,18 @@ impl<'a> Index<'a> {
             }
         }
         for edge in &snapshot.edges {
-            if edge.kind == EdgeKind::Implements {
-                index
+            match edge.kind {
+                EdgeKind::Implements => index
                     .includers
                     .entry(edge.to.as_str())
                     .or_default()
-                    .push(edge.from.as_str());
+                    .push(edge.from.as_str()),
+                EdgeKind::Inherits => {
+                    index
+                        .superclass
+                        .insert(edge.from.as_str(), edge.to.as_str());
+                }
+                _ => {}
             }
         }
         index
@@ -301,7 +329,15 @@ impl<'a> Index<'a> {
                 Lexical::Unique(class) => {
                     found.insert(class.id.as_str(), *class);
                 }
-                Lexical::Ambiguous(_) => return Err(Reason::Ambiguous),
+                Lexical::Ambiguous(classes) => {
+                    let mut homes = classes.iter().filter(|class| autoload_home(class));
+                    match (homes.next(), homes.next()) {
+                        (Some(class), None) => {
+                            found.insert(class.id.as_str(), *class);
+                        }
+                        _ => return Err(Reason::Ambiguous),
+                    }
+                }
                 Lexical::Unknown => {}
             }
         }
@@ -431,6 +467,66 @@ fn targets<'a>(index: &Index<'a>, entry: &Declared<'a>) -> Vec<(Result<&'a Node,
     vec![(index.class(entry.owner, &candidates), rule)]
 }
 
+/// What each class's associations reach, by association name.
+#[derive(Default)]
+struct Reached<'a> {
+    by_name: HashMap<(&'a str, &'a str), BTreeSet<&'a str>>,
+}
+
+impl<'a> Reached<'a> {
+    fn add(&mut self, entry: &Declared<'a>, class: &'a str) {
+        let name = entry.declaration.name.as_deref().unwrap_or_default();
+        // The name borrows from the call site, which outlives the entry.
+        let name = match entry.site.arguments.first().map(|argument| &argument.value) {
+            Some(Literal::Symbol(written) | Literal::String(written)) if written == name => {
+                written.as_str()
+            }
+            _ => return,
+        };
+        self.by_name
+            .entry((entry.owner.id.as_str(), name))
+            .or_default()
+            .insert(class);
+    }
+
+    /// The one class `class` reaches through an association called `name`,
+    /// declared on it or on a class it inherits from.
+    fn one(&self, index: &Index<'a>, class: &'a str, name: &str) -> Option<&'a str> {
+        let mut class = class;
+        for _ in 0..MAX_ANCESTORS {
+            if let Some(found) = self.by_name.get(&(class, name)) {
+                let mut found = found.iter();
+                return match (found.next(), found.next()) {
+                    (Some(only), None) => Some(only),
+                    _ => None,
+                };
+            }
+            class = index.superclass.get(class)?;
+        }
+        None
+    }
+}
+
+/// A `through:` association reaches what the association it goes through
+/// reaches, by the `source:` name or its own, as written or in the singular.
+fn through<'a>(index: &Index<'a>, reached: &Reached<'a>, entry: &Declared<'a>) -> Option<&'a str> {
+    let via = entry.option("through").and_then(written)?;
+    let between = reached.one(index, entry.owner.id.as_str(), via)?;
+    let source = entry
+        .option("source")
+        .and_then(written)
+        .or(entry.declaration.name.as_deref())?;
+    let mut found = BTreeSet::new();
+    for candidate in singular_candidates(source) {
+        found.extend(reached.one(index, between, &candidate));
+    }
+    let mut found = found.into_iter();
+    match (found.next(), found.next()) {
+        (Some(only), None) => Some(only),
+        _ => None,
+    }
+}
+
 impl Associations {
     fn record(&mut self, entry: &Declared<'_>, target: Result<&str, Reason>, rule: Rule) {
         match target {
@@ -453,6 +549,32 @@ impl Associations {
     }
 }
 
+/// (class reached, its `as:` name) -> the classes that declare it.
+type DeclaresAs<'a> = BTreeMap<(&'a str, &'a str), BTreeSet<&'a str>>;
+
+/// Resolve a declaration by the class it names and record what it reaches.
+fn direct<'a>(
+    index: &Index<'a>,
+    entry: &Declared<'a>,
+    out: &mut Associations,
+    reached: &mut Reached<'a>,
+    declares_as: &mut DeclaresAs<'a>,
+) {
+    let site = entry.site;
+    for (target, rule) in targets(index, entry) {
+        if let (Ok(class), Some(Literal::Symbol(role))) = (&target, option(&site.arguments, "as")) {
+            declares_as
+                .entry((class.id.as_str(), role.as_str()))
+                .or_default()
+                .insert(entry.owner.id.as_str());
+        }
+        if let Ok(class) = target {
+            reached.add(entry, class.id.as_str());
+        }
+        out.record(entry, target.map(|class| class.id.as_str()), rule);
+    }
+}
+
 /// Derive the associations of a Ruby snapshot. Other languages have none.
 pub fn associations(snapshot: &Snapshot) -> Associations {
     let mut out = Associations::default();
@@ -461,18 +583,34 @@ pub fn associations(snapshot: &Snapshot) -> Associations {
     }
     let index = Index::new(snapshot);
     let declared = declared(snapshot, &index, &mut out);
-    // (class reached, its `as:` name) -> the classes that declare it.
-    let mut declares_as: BTreeMap<(&str, &str), BTreeSet<&str>> = BTreeMap::new();
-    for entry in declared.iter().filter(|entry| !entry.polymorphic()) {
-        for (target, rule) in targets(&index, entry) {
-            if let (Ok(class), Some(Literal::Symbol(role))) = (&target, entry.option("as")) {
-                declares_as
-                    .entry((class.id.as_str(), role.as_str()))
-                    .or_default()
-                    .insert(entry.owner.id.as_str());
-            }
-            out.record(entry, target.map(|class| class.id.as_str()), rule);
+    let mut reached = Reached::default();
+    let mut declares_as = DeclaresAs::new();
+    let (chained, named): (Vec<_>, Vec<_>) = declared
+        .iter()
+        .filter(|entry| !entry.polymorphic())
+        .partition(|entry| entry.option("through").is_some());
+    for entry in named {
+        direct(&index, entry, &mut out, &mut reached, &mut declares_as);
+    }
+    // One association can go through another that itself goes through a
+    // third, so resolve until a round adds nothing.
+    let mut pending = chained;
+    loop {
+        let before = pending.len();
+        pending.retain(|entry| {
+            let Some(class) = through(&index, &reached, entry) else {
+                return true;
+            };
+            reached.add(entry, class);
+            out.record(entry, Ok(class), Rule::Through);
+            false
+        });
+        if pending.len() == before {
+            break;
         }
+    }
+    for entry in pending {
+        direct(&index, entry, &mut out, &mut reached, &mut declares_as);
     }
     for entry in declared.iter().filter(|entry| entry.polymorphic()) {
         let role = entry.declaration.name.as_deref().unwrap_or_default();

@@ -108,4 +108,6 @@ exact calls, inheritance and implementation; an arc between two circles
 counts the exact edges between their members. `--exclude PREFIX`
 (repeatable) leaves a path prefix such as `test` off the map, and
 `--selection selection.json` alone marks entry points without any absence
-claim.
+claim. For Ruby it also draws associations between classes, dashed: they
+come from `policy:association/ruby`, not from the snapshot's edges, and the
+map counts the declarations the policy could not resolve to one class.

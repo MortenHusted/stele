@@ -22,6 +22,38 @@ pub struct Scope<'a> {
     pub liveness: Option<&'a CheckReport>,
     /// Repository-relative path prefixes left off the map.
     pub exclude: &'a [String],
+    /// Relations derived by named policies, supplied by the caller. The
+    /// topology places them; it derives none.
+    pub policies: &'a [Policy],
+}
+
+/// What one named policy derived from the snapshot being drawn.
+#[derive(Debug, Clone)]
+pub struct Policy {
+    /// The policy's provenance name, `policy:<name>/<language>`.
+    pub name: String,
+    /// The relation kind the viewer groups and toggles these under.
+    pub kind: String,
+    pub relations: Vec<Relation>,
+    /// What the policy left unresolved, counted by reason.
+    pub unresolved: BTreeMap<String, usize>,
+}
+
+/// One derived relation between two snapshot nodes.
+#[derive(Debug, Clone)]
+pub struct Relation {
+    pub from: String,
+    pub to: String,
+    /// Which of the policy's rules found the target.
+    pub rule: String,
+    /// The source declaration the relation rests on, as a reader would
+    /// write it.
+    pub declaration: String,
+    pub through: Option<String>,
+    /// The node that declares it on behalf of `from`, when one does.
+    pub via: Option<String>,
+    pub rel_path: String,
+    pub lines: (u32, u32),
 }
 
 #[derive(Debug, Serialize)]
@@ -43,6 +75,12 @@ pub struct Extension {
     pub absence: BTreeMap<String, Absence>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub excluded: Option<Excluded>,
+    /// What each named policy derived from the snapshot and could not.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub policies: Vec<PolicySummary>,
+    /// Relations a policy derived. They are not snapshot edges.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub policy_relations: Vec<PolicyRelation>,
     pub unowned_call_sites: Vec<CallSite>,
     pub unowned_call_site_summary: UnownedSummary,
     pub extraction_report: codemap_graph::Report,
@@ -57,6 +95,34 @@ pub struct Excluded {
     pub nodes: usize,
     pub edges: usize,
     pub call_sites: usize,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PolicySummary {
+    pub policy: String,
+    /// Relations derived over the whole snapshot, drawn or not.
+    pub relations: usize,
+    pub unresolved: BTreeMap<String, usize>,
+}
+
+/// One relation between two drawn nodes, with the declaration it rests on.
+#[derive(Debug, Serialize)]
+pub struct PolicyRelation {
+    pub source: String,
+    pub target: String,
+    pub kind: String,
+    pub policy: String,
+    pub rule: String,
+    pub declaration: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub through: Option<String>,
+    /// The module that declares it for the classes including it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub via: Option<String>,
+    pub rel_path: String,
+    pub start_line: u32,
+    pub end_line: u32,
+    pub source_link: Option<String>,
 }
 
 /// Counts of the unresolved call sites that no unique callable owns.
@@ -264,6 +330,7 @@ pub fn project(snapshot: &Snapshot, scope: Scope<'_>) -> Result<Topology> {
             .or_default() += 1;
         *summary.by_file.entry(site.rel_path.clone()).or_default() += 1;
     }
+    let (policies, policy_relations) = policy_relations(snapshot, scope.policies, &drawn)?;
     let on_map = |id: &String| drawn.contains_key(id);
     Ok(Topology {
         system: snapshot.identity.repository.id.clone(),
@@ -283,12 +350,75 @@ pub fn project(snapshot: &Snapshot, scope: Scope<'_>) -> Result<Topology> {
             selection: scope.selection.cloned(),
             absence,
             excluded,
+            policies,
+            policy_relations,
             unowned_call_sites: unowned,
             unowned_call_site_summary: summary,
             extraction_report: snapshot.report.clone(),
             unsupported_construct_census: "unknown: no denominator for unrecognized constructs",
         },
     })
+}
+
+/// Place each supplied policy's relations on the map. A relation must name
+/// nodes and a file of this snapshot; one whose ends are not both drawn is
+/// left off, while the summary counts everything the policy reported.
+fn policy_relations(
+    snapshot: &Snapshot,
+    policies: &[Policy],
+    drawn: &BTreeMap<&String, String>,
+) -> Result<(Vec<PolicySummary>, Vec<PolicyRelation>)> {
+    let nodes: BTreeSet<&str> = snapshot.nodes.iter().map(|n| n.id.as_str()).collect();
+    let files: BTreeSet<&str> = snapshot.files.iter().map(|f| f.rel_path.as_str()).collect();
+    let mut summaries = Vec::new();
+    let mut relations = Vec::new();
+    for policy in policies {
+        ensure!(
+            policy.name.starts_with("policy:") && !policy.kind.is_empty(),
+            "a policy needs a policy: name and a relation kind"
+        );
+        summaries.push(PolicySummary {
+            policy: policy.name.clone(),
+            relations: policy.relations.len(),
+            unresolved: policy.unresolved.clone(),
+        });
+        for relation in &policy.relations {
+            ensure!(
+                nodes.contains(relation.from.as_str())
+                    && nodes.contains(relation.to.as_str())
+                    && relation
+                        .via
+                        .as_deref()
+                        .is_none_or(|via| nodes.contains(via))
+                    && files.contains(relation.rel_path.as_str()),
+                "{} relation names a node or file outside the snapshot: {}",
+                policy.name,
+                relation.declaration
+            );
+            let (Some(source), Some(target)) = (drawn.get(&relation.from), drawn.get(&relation.to))
+            else {
+                continue;
+            };
+            relations.push(PolicyRelation {
+                source: source.clone(),
+                target: target.clone(),
+                kind: policy.kind.clone(),
+                policy: policy.name.clone(),
+                rule: relation.rule.clone(),
+                declaration: relation.declaration.clone(),
+                through: relation.through.clone(),
+                via: relation
+                    .via
+                    .as_ref()
+                    .and_then(|module| drawn.get(module).cloned()),
+                source_link: line_link(&relation.rel_path, relation.lines),
+                rel_path: relation.rel_path.clone(),
+                start_line: relation.lines.0,
+                end_line: relation.lines.1,
+            });
+        }
+    }
+    Ok((summaries, relations))
 }
 
 fn annotations(snapshot: &Snapshot) -> (BTreeMap<String, Vec<CallSite>>, Vec<CallSite>) {
@@ -490,14 +620,17 @@ pub fn safe_link(link: &str) -> bool {
 }
 
 fn source_link(provenance: &Provenance) -> Option<String> {
-    if !safe_link(&provenance.rel_path) {
+    line_link(
+        &provenance.rel_path,
+        (provenance.span.start_line, provenance.span.end_line),
+    )
+}
+
+fn line_link(rel_path: &str, (start, end): (u32, u32)) -> Option<String> {
+    if !safe_link(rel_path) {
         return None;
     }
-    let path = encode_path(&provenance.rel_path);
-    Some(format!(
-        "{path}#L{}-L{}",
-        provenance.span.start_line, provenance.span.end_line
-    ))
+    Some(format!("{}#L{start}-L{end}", encode_path(rel_path)))
 }
 
 fn encode_path(path: &str) -> String {

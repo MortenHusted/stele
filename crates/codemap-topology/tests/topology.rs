@@ -2,7 +2,7 @@ use codemap_graph::schema::{
     Edge, EdgeKind, FileRecord, Node, NodeKind, TypeKind, edge_id, node_id, symbol_key,
 };
 use codemap_graph::{CallSiteCategory, Snapshot};
-use codemap_topology::{Scope, project, render_html};
+use codemap_topology::{Policy, Relation, Scope, project, render_html};
 
 fn snapshot(language: &str) -> Snapshot {
     serde_json::from_str(
@@ -103,7 +103,7 @@ fn checked(
         Scope {
             selection: Some(&serde_json::from_value(selection)?),
             liveness: Some(&serde_json::from_value(report)?),
-            exclude: &[],
+            ..Scope::default()
         },
     )
 }
@@ -525,4 +525,88 @@ fn html_counts_unowned_sites_and_json_lists_them() {
     let html = render_html(&topology).unwrap();
     assert!(html.contains("\"unowned_call_site_summary\""));
     assert!(!html.contains("\"unowned_call_sites\""));
+}
+
+#[test]
+fn supplied_policy_relations_are_placed_apart_from_edges_and_checked_against_the_snapshot() {
+    let source = hierarchy();
+    let child = "ruby:type:app/controllers/demo.rb#Child";
+    let relation = |to: &str| Relation {
+        from: child.into(),
+        to: to.into(),
+        rule: "inferred".into(),
+        declaration: "belongs_to :base".into(),
+        through: None,
+        via: None,
+        rel_path: "app/controllers/demo.rb".into(),
+        lines: (3, 3),
+    };
+    let policy = |relations| {
+        [Policy {
+            name: "policy:association/ruby".into(),
+            kind: "association".into(),
+            relations,
+            unresolved: [("no_class".to_string(), 2)].into(),
+        }]
+    };
+    let policies = policy(vec![relation("ruby:type:lib/base.rb#Base")]);
+    let topology = project(
+        &source,
+        Scope {
+            policies: &policies,
+            ..Scope::default()
+        },
+    )
+    .unwrap();
+    let value = serde_json::to_value(&topology).unwrap();
+    assert_eq!(
+        value["codemap"]["policy_relations"],
+        serde_json::json!([{
+            "source": format!("@container:{child}"),
+            "target": "@container:ruby:type:lib/base.rb#Base",
+            "kind": "association",
+            "policy": "policy:association/ruby",
+            "rule": "inferred",
+            "declaration": "belongs_to :base",
+            "rel_path": "app/controllers/demo.rb",
+            "start_line": 3,
+            "end_line": 3,
+            "source_link": "app/controllers/demo.rb#L3-L3",
+        }])
+    );
+    assert_eq!(
+        value["codemap"]["policies"],
+        serde_json::json!([{
+            "policy": "policy:association/ruby",
+            "relations": 1,
+            "unresolved": { "no_class": 2 },
+        }])
+    );
+    assert!(topology.edges.iter().all(|edge| edge.kind != "association"));
+
+    // Hidden with an end that is excluded; still counted.
+    let exclude = ["lib".to_string()];
+    let scoped = project(
+        &source,
+        Scope {
+            policies: &policies,
+            exclude: &exclude,
+            ..Scope::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(scoped.codemap.policy_relations.len(), 0);
+    assert_eq!(scoped.codemap.policies[0].relations, 1);
+
+    let unknown = policy(vec![relation("ruby:type:lib/base.rb#Missing")]);
+    assert!(
+        project(
+            &source,
+            Scope {
+                policies: &unknown,
+                ..Scope::default()
+            }
+        )
+        .is_err()
+    );
 }

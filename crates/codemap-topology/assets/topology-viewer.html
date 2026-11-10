@@ -432,7 +432,14 @@ if (!nodes.some(n => !n.container)) {
 const isRevealed = (n, k) => !n.parentNode || n.parentNode.r * k >= REVEAL_R;
 
 const entrySet = new Set((DATA.entryPoints || []).map(String));
-const edges = (DATA.edges || [])
+// Relations a named policy derived join the drawn edges under their own
+// kind, carrying the policy and the declaration in place of edge provenance.
+const policyEdges = (DATA.codemap?.policy_relations || []).map(r => ({
+  source: r.source, target: r.target, kind: r.kind, policy: r.policy,
+  codemap: { source_link: r.source_link, provenance: { rel_path: r.rel_path,
+    span: { start_line: r.start_line, end_line: r.end_line }, policy: r.policy, rule: r.rule,
+    declaration: r.declaration, through: r.through, via: r.via } } }));
+const edges = (DATA.edges || []).concat(policyEdges)
   .filter(e => e && byId.has(String(e.source)) && byId.has(String(e.target)))
   .map(e => ({ ...e, source: String(e.source), target: String(e.target), kind: e.kind }));
 const deadSet = new Set((DATA.deadEnds || []).map(String).filter(id => DATA.codemap?.absence?.[id]));
@@ -465,6 +472,7 @@ const EDGE_STYLE = {
   inherits:   { color: "rgba(107,184,90,0.40)",  label: "inherits" },
   implements: { color: "rgba(91,160,224,0.40)",  label: "implements" },
   extends:    { color: "rgba(190,150,220,0.40)", label: "extends" },
+  association: { color: "rgba(232,168,92,0.50)", label: "associations", dash: [5, 4] },
   dispatch: { color: "rgba(160,130,200,0.35)", label: "dynamic dispatch" },
   read:     { color: "rgba(91,160,224,0.30)",  label: "reads" },
   write:    { color: "rgba(224,122,82,0.40)",  label: "writes" },
@@ -630,6 +638,7 @@ function draw() {
       if (!groups.length) continue;
       const solid = style.color.replace(/[\d.]+\)$/, "0.95)");
       ctx.strokeStyle = style.color;
+      ctx.setLineDash(style.dash || []);
       const singles = [], labels = [];
       let drawn = 0;
       for (const g of groups) {
@@ -644,6 +653,7 @@ function draw() {
         if (++drawn > 1500) break;
       }
       ctx.lineWidth = 0.8; ctx.beginPath(); singles.forEach(curve); ctx.stroke();
+      ctx.setLineDash([]);
       ctx.font = "600 10px system-ui, sans-serif"; ctx.fillStyle = solid;
       for (const arc of labels)
         ctx.fillText(arc.g.count.toLocaleString(), (arc.ax + 2 * arc.cx + arc.bx) / 4, (arc.ay + 2 * arc.cy + arc.by) / 4);
@@ -811,7 +821,7 @@ function renderArcSidebar() {
     <span class="closebtn" id="close">×</span>
     <h2><span class="link" data-id="${esc(a.id)}" style="display:inline">${esc(a.name)}</span> → <span class="link" data-id="${esc(b.id)}" style="display:inline">${esc(b.name)}</span></h2>
     <div class="meta">${members.length.toLocaleString()} ${esc(rel)} · ${esc(a.label)} to ${esc(b.label)}</div>
-    <p class="meta">Each row is one exact edge between a member of the first circle and a member of the second.</p>
+    <p class="meta">${members[0]?.policy ? `Each row is one relation derived by ${esc(members[0].policy)} between a member of the first circle and a member of the second. It is not a snapshot edge.` : "Each row is one exact edge between a member of the first circle and a member of the second."}</p>
     <h3>Edges (${members.length.toLocaleString()})</h3>
     ${members.slice(0, 40).map(e => `<span class="link" data-id="${esc(e.source)}">${esc(e.s.name)} → ${esc(e.t.name)}</span>${evidenceDetails(e.codemap)}`).join("")}
     ${members.length > 40 ? `<div class="meta">…and ${members.length - 40} more</div>` : ""}`;
@@ -882,7 +892,8 @@ for (const [kind, style] of Object.entries(EDGE_STYLE)) {
   if (!total) continue;
   const solid = style.color.replace(/[\d.]+\)$/, "0.9)");
   const l = document.createElement("label");
-  l.innerHTML = `<input type="checkbox" checked><span class="swatch" style="background:${solid}"></span>${style.label} <span class="sub">${total.toLocaleString()}</span>`;
+  const policy = (edgesByKind.get(kind) || [])[0]?.policy;
+  l.innerHTML = `<input type="checkbox" checked><span class="swatch" style="background:${solid}"></span>${style.label} <span class="sub">${total.toLocaleString()}${policy ? " · " + esc(policy) : ""}</span>`;
   l.querySelector("input").onchange = ev => { kindOn[kind] = ev.target.checked; focusGroups = null; if (selectedArc?.kind === kind) { selectedArc = null; renderSidebar(); } requestDraw(); };
   togglesEl.appendChild(l);
 }
@@ -939,7 +950,7 @@ if (DATA.codemap) {
   identity.className = "panel";
   const excluded = DATA.codemap.excluded;
   const unowned = DATA.codemap.unowned_call_site_summary;
-  identity.innerHTML = `<summary>Snapshot identity and scope</summary><p class="meta">As of tree ${esc(DATA.codemap.identity.tree_sha)}. Edges are exact calls, inheritance and implementation only; an arc between two circles counts the exact edges between their members. ${entrySet.size && !deadSet.size && !Object.keys(DATA.codemap.absence || {}).length ? "Entry points are the supplied selection; no absence is claimed. " : "Absence markers are conditional observations. "}${excluded ? `Left off this map: ${excluded.prefixes.map(esc).join(", ")} (${excluded.files.toLocaleString()} files, ${excluded.nodes.toLocaleString()} nodes, ${excluded.edges.toLocaleString()} edges). ` : ""}${unowned?.total ? `${unowned.total.toLocaleString()} unresolved call sites belong to no single callable.` : ""}</p>`;
+  identity.innerHTML = `<summary>Snapshot identity and scope</summary><p class="meta">As of tree ${esc(DATA.codemap.identity.tree_sha)}. Edges are exact calls, inheritance and implementation only; an arc between two circles counts the exact edges between their members. ${entrySet.size && !deadSet.size && !Object.keys(DATA.codemap.absence || {}).length ? "Entry points are the supplied selection; no absence is claimed. " : "Absence markers are conditional observations. "}${excluded ? `Left off this map: ${excluded.prefixes.map(esc).join(", ")} (${excluded.files.toLocaleString()} files, ${excluded.nodes.toLocaleString()} nodes, ${excluded.edges.toLocaleString()} edges). ` : ""}${unowned?.total ? `${unowned.total.toLocaleString()} unresolved call sites belong to no single callable. ` : ""}${(DATA.codemap.policies || []).map(p => `${esc(p.policy)} derived ${p.relations.toLocaleString()} relations, drawn dashed; they are not snapshot edges.${Object.keys(p.unresolved).length ? " Left unresolved: " + Object.entries(p.unresolved).map(([reason, count]) => `${esc(reason)} ${count.toLocaleString()}`).join(", ") + "." : ""}`).join(" ")}</p>`;
   document.getElementById("hud").appendChild(identity);
   // The full record is large; build it when first opened.
   identity.addEventListener("toggle", () => {
@@ -962,7 +973,7 @@ if (DATA.codemap) {
   if (files) parts.push(`${files.toLocaleString()} file${files === 1 ? "" : "s"}`);
   if (!parts.length) parts.push(`${nodes.filter(n => !n.container).length.toLocaleString()} modules`);
   document.getElementById("stats").textContent = parts.join(" · ") +
-    ` · ${edges.length.toLocaleString()} edges` + (entrySet.size ? ` · ${entrySet.size.toLocaleString()} entry points` : "") + (deadSet.size ? ` · ${deadSet.size} qualified absence (dashed)` : "");
+    ` · ${(edges.length - policyEdges.length).toLocaleString()} edges` + (policyEdges.length ? ` · ${policyEdges.length.toLocaleString()} by policy` : "") + (entrySet.size ? ` · ${entrySet.size.toLocaleString()} entry points` : "") + (deadSet.size ? ` · ${deadSet.size} qualified absence (dashed)` : "");
 }
 fitGraph();
 requestDraw();

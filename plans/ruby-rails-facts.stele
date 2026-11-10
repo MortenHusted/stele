@@ -52,6 +52,13 @@ plan ruby_rails_facts {
       "rust:crates/codemap/src/ruby_syntax.rs#extract_file",
       "rust:crates/codemap-graph/src/schema.rs#CallSite",
     ]
+    creates: [
+      "rust:crates/codemap-graph/src/schema.rs#CallArgument",
+      "rust:crates/codemap-graph/src/schema.rs#Literal",
+      "rust:crates/codemap/src/ruby_syntax.rs#literal_arguments",
+      "crates/codemap/tests/ruby_call_arguments.rs",
+    ]
+    state: done
     text: "Record the literal arguments of receiver-less Ruby calls made outside any method body on their call sites, omitted when there are none."
   }
   change derive_associations {
@@ -59,10 +66,19 @@ plan ruby_rails_facts {
     follows: [conventions_are_policies]
     serves: [intent.answers_from_facts, intent.fails_closed]
     touches: [
-      "rust:crates/codemap-lemmaspec/src/policy.rs#is_default_entry_point",
+      "rust:crates/codemap/src/resolve.rs#DefinitionIndex::resolve_constant",
       "rust:crates/codemap-topology/src/lib.rs#project",
+      "crates/codemap-topology/assets/topology-viewer.html",
     ]
-    text: "Derive associations between classes under a named policy: explicit and inferred class names, polymorphic targets through their as: declarations, delegated types, and macros a concern hands to its includers. Draw them on the map under the policy's name and count what stays unresolved."
+    creates: [
+      "rust:crates/codemap-lemmaspec/src/association.rs#associations",
+      "rust:crates/codemap-graph/src/lookup.rs#lexical_constant",
+      "rust:crates/codemap-topology/src/lib.rs#PolicyRelation",
+      "rust:crates/stele/src/topology.rs#policies",
+      "crates/stele/tests/associations.rs",
+    ]
+    state: done
+    text: "Derive associations between classes under a named policy: explicit and inferred class names, through: chains, polymorphic targets through their as: declarations, delegated types, and macros a module hands to the classes including it. Draw them on the map under the policy's name and count what stays unresolved."
   }
   change templates_join_the_snapshot {
     after: [record_literal_arguments]
