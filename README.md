@@ -74,7 +74,16 @@ unsupported shapes.
   a placeholder for anything else. They record what the source says, not what
   the call does, and create no edge. `policy:association/ruby` reads them to
   relate the classes an association macro names, and `stele topology` draws
-  those relations apart from the snapshot's edges. Semantic mode launches
+  those relations apart from the snapshot's edges. ERB templates (`*.erb`)
+  are part of the Ruby family. Everything outside a template's `<% … %>`
+  tags is blanked, leaving Ruby at the template's own byte offsets, and
+  Prism reads that. A template contributes a file node and the call sites
+  of its tags with their literal arguments; it contributes no definition,
+  edge or measure, a tag sequence Prism cannot read as one program is
+  counted under `observations` rather than as a parse error of the Ruby
+  sources, and in semantic mode its call sites are `Unsupported`, because
+  no resolver reads a template. Only ERB's tag syntax is read, not the
+  markup around it. Semantic mode launches
   ruby-lsp
   under an operator-installed, hash-pinned tool bundle
   (`CODEMAP_RUBY_TOOL_BUNDLE`, `BUNDLE_FROZEN` — no network, no worktree

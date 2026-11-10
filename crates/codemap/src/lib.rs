@@ -28,6 +28,7 @@ pub(crate) mod cpp_profile;
 pub mod cpp_runtime;
 pub(crate) mod cpp_snapshot;
 pub(crate) mod cpp_syntax;
+pub mod erb;
 pub(crate) mod extract;
 pub(crate) mod git;
 pub(crate) mod go_lsp;

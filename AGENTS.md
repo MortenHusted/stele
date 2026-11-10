@@ -32,7 +32,10 @@ canonical facts and must not maintain a divergent copy of Codemap source.
 - Snapshots retain one source-language namespace. The accepted JS/TS adapter
   deliberately treats JavaScript, TypeScript, JSX, and TSX as one `js_ts`
   family so mixed-source applications can share a snapshot; this does not
-  authorize arbitrary polyglot snapshots or cross-language edges. Mixed
+  authorize arbitrary polyglot snapshots or cross-language edges. The Ruby
+  adapter reads ERB templates as part of the Ruby family in the same way: a
+  template contributes a file node and the call sites of its tags, never a
+  definition, a canonical edge or a measure, and no resolver reads it. Mixed
   repositories use separate per-language snapshots; consumers may group
   them only when repository and commit/tree identities and clean/dirty
   status agree, retaining each snapshot's language and semantic-profile

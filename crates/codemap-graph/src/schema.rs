@@ -1143,6 +1143,18 @@ impl CallSiteCategory {
     }
 }
 
+/// Whether `rel_path` names an ERB template. The Ruby family reads a
+/// template for the calls its tags make: it contributes a file node and
+/// call sites, never a definition, an edge or a measure, and no resolver
+/// is asked about it.
+pub fn is_erb_template(rel_path: &str) -> bool {
+    rel_path
+        .rsplit(['/', '\\'])
+        .next()
+        .and_then(|name| name.rsplit_once('.'))
+        .is_some_and(|(stem, extension)| !stem.is_empty() && extension.eq_ignore_ascii_case("erb"))
+}
+
 /// A single observed call site, accumulated for the report.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct CallSite {

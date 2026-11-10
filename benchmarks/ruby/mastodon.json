@@ -60,6 +60,10 @@
     {
       "test_target": "ruby_absolute_classes",
       "test_name": "ruby_lsp_0_26_10_omits_implicit_calls_in_nested_absolute_bodies"
+    },
+    {
+      "test_target": "ruby_templates",
+      "test_name": "no_resolver_reads_a_template"
     }
   ],
   "tool_versions": {

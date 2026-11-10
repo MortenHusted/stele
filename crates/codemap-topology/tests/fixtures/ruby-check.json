@@ -1,7 +1,7 @@
 {
   "spec": "https___example_test_synthetic_topology_git",
   "status": "incomplete",
-  "asserted": 16,
+  "asserted": 17,
   "derived": 5,
   "facts": [
     {
@@ -115,6 +115,20 @@
         "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
       ],
       "why": "call_census(Unmapped, 0)  (conf 1.000, prov [\"call_census_7\", \"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\"])\n  ↳ asserted (base fact)\n"
+    },
+    {
+      "relation": "call_census",
+      "args": [
+        "Unsupported",
+        "0"
+      ],
+      "origin": "asserted",
+      "confidence": 1.0,
+      "provenance": [
+        "call_census_8",
+        "snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373"
+      ],
+      "why": "call_census(Unsupported, 0)  (conf 1.000, prov [\"call_census_8\", \"snapshot:f9bbba94435309239a9f2c3c302fd35acddff72c7571cbbaebca71b739841373\"])\n  ↳ asserted (base fact)\n"
     },
     {
       "relation": "calls",

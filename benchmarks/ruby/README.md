@@ -189,6 +189,12 @@ thresholds are unchanged, and the gate passes at the pin as before. Ruby
 snapshots extracted before this lack the arguments; regenerate them before
 deriving associations from them.
 
+ERB templates are part of the Ruby inventory. They add file nodes and call
+sites that the resolver does not read (`Unsupported` in a semantic snapshot)
+and no canonical call, so the selected-caller oracle is unaffected. The file
+count and the recognized call sites of a snapshot grow by the templates and
+their tags; regenerate older Ruby snapshots before comparing counts.
+
 A configured Ruby tool bundle that fails probing reports the attempted Gemfile
 and the subprocess failure, including stderr or timeout. Check that the
 Ruby executable used by Stele matches the one that installed the native gems;

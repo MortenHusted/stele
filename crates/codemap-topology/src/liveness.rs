@@ -394,11 +394,14 @@ fn validate_coverage<'a>(
         "coverage provenance differs"
     );
     let census = facts(report, "call_census");
+    // A Ruby census also counts the template sites no resolver reads.
+    let ruby = snapshot.identity.language == codemap_graph::schema::Language::Ruby;
+    let categories = CATEGORIES.into_iter().chain(ruby.then_some("Unsupported"));
     ensure!(
-        census.len() == CATEGORIES.len(),
+        census.len() == CATEGORIES.len() + usize::from(ruby),
         "missing census categories"
     );
-    for category in CATEGORIES {
+    for category in categories {
         let count = snapshot
             .report
             .call_sites_by_category

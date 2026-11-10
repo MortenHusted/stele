@@ -73,6 +73,7 @@ type GoEmbedObservation = (
     Vec<(String, String)>,
 );
 
+#[derive(Clone)]
 struct PendingCall {
     rel_path: String,
     file_hash: String,
@@ -747,6 +748,33 @@ pub fn build_snapshot(
                     *observations.entry(kind.to_owned()).or_default() += count;
                 }
             }
+            Language::Ruby if schema::is_erb_template(rel_path) => {
+                // A template is read for the calls its tags make. What else
+                // Prism finds in it is counted, not emitted, and a tag
+                // sequence that is not one Ruby program is not a parse
+                // error of the Ruby sources.
+                let raw = ruby_syntax::extract_file(rel_path, &crate::erb::ruby(bytes))
+                    .with_context(|| format!("extraction failed for {rel_path}"))?;
+                for (kind, count) in [
+                    ("template_parse_errors", usize::from(raw.parse_errors > 0)),
+                    ("template_definitions", raw.defs.len()),
+                    (
+                        "template_heritage",
+                        raw.mixins.len() + raw.inherits.len() + raw.imports.len(),
+                    ),
+                ] {
+                    if count > 0 {
+                        *observations.entry(kind.to_owned()).or_default() += count;
+                    }
+                }
+                for call in raw.calls {
+                    raw_calls.push(PendingCall {
+                        rel_path: rel_path.clone(),
+                        file_hash: file_hash.clone(),
+                        call,
+                    });
+                }
+            }
             Language::Ruby => {
                 let raw = ruby_syntax::extract_file(rel_path, bytes)
                     .with_context(|| format!("extraction failed for {rel_path}"))?;
@@ -1021,17 +1049,35 @@ pub fn build_snapshot(
                 let ruby = ruby_semantic
                     .as_ref()
                     .context("ruby semantic identity lost before call resolution")?;
+                // ruby-lsp is asked about Ruby sources only. A template's
+                // call sites stay on record as unsupported by the resolver.
+                let (templates, sources): (Vec<_>, Vec<_>) = raw_calls
+                    .iter()
+                    .cloned()
+                    .partition(|pending| schema::is_erb_template(&pending.rel_path));
+                let ruby_sources: BTreeMap<&str, &[u8]> = file_sources
+                    .iter()
+                    .filter(|(rel_path, _)| !schema::is_erb_template(rel_path))
+                    .map(|(rel_path, bytes)| (*rel_path, *bytes))
+                    .collect();
                 resolve_calls_semantic_ruby(
                     state,
                     &identity,
                     ruby,
                     &nodes,
                     &index,
-                    &raw_calls,
-                    &file_sources,
+                    &sources,
+                    &ruby_sources,
                     &mut edges,
                     &mut call_sites,
                 )?;
+                call_sites.extend(templates.into_iter().map(|pending| schema::CallSite {
+                    rel_path: pending.rel_path,
+                    span: pending.call.span,
+                    raw_name: pending.call.raw_name,
+                    category: schema::CallSiteCategory::Unsupported,
+                    arguments: pending.call.arguments,
+                }));
             }
             Language::Php => {
                 let php = php_semantic

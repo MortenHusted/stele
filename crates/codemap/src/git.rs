@@ -704,7 +704,7 @@ pub fn gather_at(start_path: &Path, commitish: &str, language: Language) -> Resu
 pub const fn source_globs(language: Language) -> &'static [&'static str] {
     match language {
         Language::Rust => &["*.rs"],
-        Language::Ruby => &["*.rb"],
+        Language::Ruby => &["*.rb", "*.erb"],
         Language::Php => &["*.php"],
         Language::Go => &["*.go"],
         Language::Python => &["*.py"],
@@ -748,7 +748,7 @@ pub fn is_source_path(language: Language, rel_path: &str) -> bool {
     };
     match language {
         Language::Rust => ext.eq_ignore_ascii_case("rs"),
-        Language::Ruby => ext.eq_ignore_ascii_case("rb"),
+        Language::Ruby => ext.eq_ignore_ascii_case("rb") || ext.eq_ignore_ascii_case("erb"),
         Language::Php => ext.eq_ignore_ascii_case("php"),
         Language::Go => ext.eq_ignore_ascii_case("go"),
         Language::Python => ext == "py",

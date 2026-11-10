@@ -23,7 +23,7 @@ plan ruby_rails_facts {
   decision erb_joins_the_ruby_family {
     governs: [intent.answers_from_facts]
     text: "ERB templates are part of the Ruby family and share its snapshot, as JSX and TSX share the JS/TS snapshot."
-    rejected: "A separate ERB adapter: a template's references to Ruby classes and helpers would cross snapshots and could not be related."
+    rejected: "A separate ERB adapter: a template's references to Ruby classes and helpers would cross snapshots and could not be related. Parsing with the Herb crate in process: it compiles its own Prism, a different version from the one ruby-prism links, and the two collide at link time; the extractor reads ERB's tag syntax itself and gives the Ruby to the Prism it already has."
   }
 
   change map_shows_structure {
@@ -87,8 +87,15 @@ plan ruby_rails_facts {
     touches: [
       "rust:crates/codemap/src/git.rs#source_globs",
       "rust:crates/codemap/src/ruby_syntax.rs#extract_file",
+      "rust:crates/codemap-lemmaspec/src/coverage.rs#categories",
       "AGENTS.md",
     ]
+    creates: [
+      "rust:crates/codemap/src/erb.rs#ruby",
+      "rust:crates/codemap-graph/src/schema.rs#is_erb_template",
+      "crates/codemap/tests/ruby_templates.rs",
+    ]
+    state: done
     text: "Inventory ERB templates in the Ruby family, extract their Ruby with byte offsets preserved, and record their call sites; the call resolver leaves them unresolved and says so."
   }
   change derive_template_relations {

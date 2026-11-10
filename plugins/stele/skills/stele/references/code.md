@@ -111,3 +111,9 @@ counts the exact edges between their members. `--exclude PREFIX`
 claim. For Ruby it also draws associations between classes, dashed: they
 come from `policy:association/ruby`, not from the snapshot's edges, and the
 map counts the declarations the policy could not resolve to one class.
+
+A Ruby snapshot includes ERB templates: each is a file and the call sites of
+its tags (`render`, helpers, path helpers), never a definition or an edge.
+With `--calls required` those sites are `Unsupported`, so a helper called
+only from templates has no proven caller: say so rather than calling it
+unreached.
