@@ -5,7 +5,7 @@
 use std::path::PathBuf;
 
 use codemap_graph::Snapshot;
-use codemap_topology::project;
+use codemap_topology::{Scope, project};
 
 /// The synthetic snapshots, check reports and selections of the topology
 /// crate's own tests.
@@ -32,10 +32,11 @@ fn checked(
 ) -> anyhow::Result<codemap_topology::Topology> {
     project(
         source,
-        Some((
-            &serde_json::from_value(report)?,
-            &serde_json::from_value(selection)?,
-        )),
+        Scope {
+            selection: Some(&serde_json::from_value(selection)?),
+            liveness: Some(&serde_json::from_value(report)?),
+            exclude: &[],
+        },
     )
 }
 
@@ -233,4 +234,45 @@ fn cli_relocates_source_links_without_changing_topology_json() {
     }
     assert!(!run(Some(&snapshot_path)).status.success());
     assert_eq!(json, std::fs::read(&out).unwrap());
+}
+
+#[test]
+fn cli_marks_selected_entry_points_without_liveness_and_refuses_unknown_exclusions() {
+    let dir = tempfile::tempdir().unwrap();
+    let fixtures = fixtures();
+    let out = dir.path().join("topology.json");
+    let run = |extra: &[&str]| {
+        std::process::Command::new(env!("CARGO_BIN_EXE_stele"))
+            .args(["topology", "--snapshot"])
+            .arg(fixtures.join("ruby.json"))
+            .arg("--selection")
+            .arg(fixtures.join("ruby-selection.json"))
+            .arg("--out")
+            .arg(&out)
+            .args(extra)
+            .output()
+            .unwrap()
+    };
+    let written =
+        || -> serde_json::Value { serde_json::from_slice(&std::fs::read(&out).unwrap()).unwrap() };
+    assert!(run(&[]).status.success());
+    assert_eq!(
+        written()["entryPoints"],
+        fixture_value("ruby", "selection")["entry_points"]
+    );
+    assert_eq!(written()["deadEnds"], serde_json::json!([]));
+
+    let refused = run(&["--exclude", "missing"]);
+    assert!(!refused.status.success());
+    assert!(
+        String::from_utf8_lossy(&refused.stderr).contains("exclusion matches no file: missing")
+    );
+
+    assert!(run(&["--exclude", "app"]).status.success());
+    assert_eq!(
+        written()["codemap"]["excluded"]["prefixes"],
+        serde_json::json!(["app"])
+    );
+    assert_eq!(written()["entryPoints"], serde_json::json!([]));
+    assert_eq!(written()["edges"], serde_json::json!([]));
 }
