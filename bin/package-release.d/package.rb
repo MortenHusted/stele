@@ -106,8 +106,8 @@ class ReleasePackage
     bytes.to_enum(:scan, %r{registry/src/index\.crates\.io-|lib/rustlib/src/rust/library}n).each do
       offset = Regexp.last_match.begin(0)
       start = [offset - 4096, 0].max
-      prefix = bytes.byteslice(start, offset - start)[%r{[A-Za-z0-9_/.+@=-]*\z}n]
-      slash = prefix.index('/')
+      prefix = bytes.byteslice(start, offset - start)[%r{[A-Za-z0-9_/.+@=:-]*\z}n]
+      slash = prefix.start_with?('http://', 'https://') ? prefix.rindex('/stele/') : prefix.index('/')
       raise ArgumentError, 'source path is outside /stele/ logical roots; no archive produced' unless slash && prefix.byteslice(slash..).start_with?('/stele/')
     end
   end
