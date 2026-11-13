@@ -45,7 +45,7 @@
   },
   "tool_lock": {
     "path": "rust-toolchain.toml",
-    "sha256": "065388cb682c606d7f02487e70f150afccd2326949c4c6247a9fc59f2334fe05"
+    "sha256": "c3dcaa2e4c0d9b494b33f2d1539f78166c78b3f1355bb68934405d559af4db43"
   },
-  "toolchain": "1.99.0"
+  "toolchain": "1.100.0"
 }
