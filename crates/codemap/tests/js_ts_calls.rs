@@ -156,7 +156,7 @@ fn semantic_identity_is_clone_stable_and_dirty_content_addressed() {
             bundle: helper.bundle,
         };
         let options = ExtractOptions {
-            path: root.clone(),
+            path: root,
             language: Language::JsTs,
             calls_required: true,
             ..ExtractOptions::default()

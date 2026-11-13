@@ -1,7 +1,7 @@
 # Public Rust corpus gate
 
 `ripgrep.json` pins BurntSushi/ripgrep 15.2.0 at
-`e89fff89ac9af12e8d4ce9d5fd07beb408ca730f`, Rust 1.99.0 and the unchanged
+`e89fff89ac9af12e8d4ce9d5fd07beb408ca730f`, Rust 1.100.0 and the unchanged
 synthetic call oracle. Ripgrep is MIT OR Unlicense; `LICENSE.ripgrep` preserves
 its upstream MIT notice. The oracle contains symbol/span/hash metadata, not
 copied function bodies. Fetch the source separately and retain its notices.
@@ -28,11 +28,11 @@ isolated Cargo home named `.cargo`, without personal credentials or custom
 configuration. For example, after checking out the exact ripgrep commit:
 
 ```sh
-rustup component add --toolchain 1.99.0 rust-analyzer rust-src
+rustup component add --toolchain 1.100.0 rust-analyzer rust-src
 mkdir -p /local/rust-operator/.cargo
-CARGO_HOME=/local/rust-operator/.cargo cargo +1.99.0 fetch --locked --manifest-path /local/stele/Cargo.toml
-CARGO_HOME=/local/rust-operator/.cargo cargo +1.99.0 fetch --locked --manifest-path /local/stele/crates/codemap/tests/fixtures/calls_cargo/Cargo.toml
-CARGO_HOME=/local/rust-operator/.cargo cargo +1.99.0 fetch --locked --manifest-path /local/ripgrep/Cargo.toml
+CARGO_HOME=/local/rust-operator/.cargo cargo +1.100.0 fetch --locked --manifest-path /local/stele/Cargo.toml
+CARGO_HOME=/local/rust-operator/.cargo cargo +1.100.0 fetch --locked --manifest-path /local/stele/crates/codemap/tests/fixtures/calls_cargo/Cargo.toml
+CARGO_HOME=/local/rust-operator/.cargo cargo +1.100.0 fetch --locked --manifest-path /local/ripgrep/Cargo.toml
 ```
 
 Fetching dependencies is preparation, not a semantic result. Do not build or

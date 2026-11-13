@@ -29,6 +29,9 @@ sha2 = "0.10"
 [workspace.lints.rust]
 unused_must_use = "deny"
 
+[workspace.lints.cargo]
+unused_dependencies = "deny"
+
 [workspace.lints.clippy]
 all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
