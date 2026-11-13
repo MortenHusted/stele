@@ -172,4 +172,19 @@ class ReleaseNoticesTest < Minitest::Test
       assert_raises(ArgumentError) { package.send(:check_paths!, '/unexpected/toolchain/lib/rustlib/src/rust/library/core.rs'.b, []) }
     end
   end
+
+  def test_accepts_remapped_source_paths_adjacent_to_urls_but_refuses_physical_paths
+    package = ReleasePackage.new
+    url = 'https://example.com/project/issues'
+    paths = ['/stele/dependencies/registry/src/index.crates.io-synthetic/pkg/file.rs',
+             '/stele/builder/toolchain/lib/rustlib/src/rust/library/core.rs']
+    paths.each { |path| package.send(:check_paths!, (url + path).b, []) }
+    paths.each do |path|
+      assert_raises(ArgumentError) { package.send(:check_paths!, ('/unexpected' + path).b, []) }
+      assert_raises(ArgumentError) { package.send(:check_paths!, (url + '/private/builder' + path).b, ['/private/builder']) }
+    end
+    assert_raises(ArgumentError) { package.send(:check_paths!, (url + '/registry/src/index.crates.io-synthetic/pkg/file.rs').b, []) }
+    assert_raises(ArgumentError) { package.send(:check_paths!, (url + '/toolchain/lib/rustlib/src/rust/library/core.rs').b, []) }
+  end
+
 end
