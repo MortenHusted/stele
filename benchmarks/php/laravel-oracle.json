@@ -1,0 +1,3844 @@
+{
+  "contract": "stele-laravel-source-oracle/v1",
+  "status": "frozen after independent source labelling and source-anchor review; not extractor-generated",
+  "basis": "reviewer_declared public source labels; no extraction or framework/application execution",
+  "repository": "https://github.com/laravelio/laravel.io.git",
+  "commit": "b9d33e281c25c8f764ae144d95eb736e01c8fa0e",
+  "license": "MIT",
+  "license_file": {
+    "path": "LICENSE.md",
+    "sha256": "8d204e1298b82927f9a397b941df0fa53826fb14d876c7d2cd99965cbe3735b6",
+    "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/LICENSE.md"
+  },
+  "framework": {
+    "constraint": "^13.38.0",
+    "version": "v13.42.0",
+    "source": {
+      "type": "git",
+      "url": "https://github.com/laravel/framework.git",
+      "reference": "f5c01f6b63803f16f38ebb31622c4fea412bd022"
+    },
+    "composer_json_sha256": "e4024f337ffc20633871b009f802776eddf309dadfefc0127497db971e2b5e09",
+    "composer_lock_sha256": "b07187949c4a40c43d8500318da8b0c33a3ca9baa6d1dab803a10bf399eb77d7"
+  },
+  "scope": {
+    "required_eloquent_declarations": 8,
+    "required_blade_references": 5,
+    "complete_selected_eloquent_method_bodies": true,
+    "complete_selected_blade_reference_constructs": true,
+    "blade_selected_files": [
+      "resources/views/components/forms/inputs/email.blade.php",
+      "resources/views/components/forms/inputs/password.blade.php",
+      "resources/views/components/rules-banner.blade.php",
+      "resources/views/layouts/default.blade.php"
+    ],
+    "blade_reference_kinds": [
+      "extends",
+      "include",
+      "anonymous-component"
+    ],
+    "no_application_wide_precision_or_recall_claim": true,
+    "extra_relations_inside_selected_declarations_or_templates": "forbidden; selected kinds only",
+    "trait_provided_associations": "not required by this first slice; must not be used as a substitute for explicit direct declarations",
+    "model_class_recognition": "User requires a profile for Illuminate\\Foundation\\Auth\\User; other selected owners directly extend imported Illuminate\\Database\\Eloquent\\Model"
+  },
+  "required_eloquent": [
+    {
+      "id": "Thread.updatedByRelation",
+      "source": {
+        "path": "app/Models/Thread.php",
+        "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/Thread.php"
+      },
+      "owner": {
+        "qualified_name": "App\\Models\\Thread",
+        "path": "app/Models/Thread.php",
+        "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+      },
+      "declaration": {
+        "name": "updatedByRelation",
+        "span": {
+          "start_byte": 2730,
+          "end_byte": 2848,
+          "start_line": 122,
+          "start_column": 4,
+          "end_line": 125,
+          "end_column": 5
+        },
+        "name_span": {
+          "start_byte": 2746,
+          "end_byte": 2763,
+          "start_line": 122,
+          "start_column": 20,
+          "end_line": 122,
+          "end_column": 37
+        }
+      },
+      "factory": "belongsTo",
+      "call_span": {
+        "start_byte": 2798,
+        "end_byte": 2841,
+        "start_line": 124,
+        "start_column": 15,
+        "end_line": 124,
+        "end_column": 58
+      },
+      "target_reference_span": {
+        "start_byte": 2815,
+        "end_byte": 2826,
+        "start_line": 124,
+        "start_column": 32,
+        "end_line": 124,
+        "end_column": 43
+      },
+      "required_target": {
+        "qualified_name": "App\\Models\\User",
+        "path": "app/Models/User.php",
+        "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+      },
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Thread",
+          "path": "app/Models/Thread.php",
+          "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+        },
+        {
+          "qualified_name": "App\\Models\\Reply",
+          "path": "app/Models/Reply.php",
+          "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+        },
+        {
+          "qualified_name": "App\\Models\\Tag",
+          "path": "app/Models/Tag.php",
+          "sha256": "2f2113fd63964bd377f111d272687fed9d21463b78c84a17ea46fc8a20dab9a7"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ],
+      "binding_basis": "same namespace App\\Models; literal class constant; direct $this receiver; complete selected return body",
+      "runtime_claim": false
+    },
+    {
+      "id": "Thread.solutionReplyRelation",
+      "source": {
+        "path": "app/Models/Thread.php",
+        "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/Thread.php"
+      },
+      "owner": {
+        "qualified_name": "App\\Models\\Thread",
+        "path": "app/Models/Thread.php",
+        "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+      },
+      "declaration": {
+        "name": "solutionReplyRelation",
+        "span": {
+          "start_byte": 3422,
+          "end_byte": 3552,
+          "start_line": 153,
+          "start_column": 4,
+          "end_line": 156,
+          "end_column": 5
+        },
+        "name_span": {
+          "start_byte": 3438,
+          "end_byte": 3459,
+          "start_line": 153,
+          "start_column": 20,
+          "end_line": 153,
+          "end_column": 41
+        }
+      },
+      "factory": "belongsTo",
+      "call_span": {
+        "start_byte": 3494,
+        "end_byte": 3545,
+        "start_line": 155,
+        "start_column": 15,
+        "end_line": 155,
+        "end_column": 66
+      },
+      "target_reference_span": {
+        "start_byte": 3511,
+        "end_byte": 3523,
+        "start_line": 155,
+        "start_column": 32,
+        "end_line": 155,
+        "end_column": 44
+      },
+      "required_target": {
+        "qualified_name": "App\\Models\\Reply",
+        "path": "app/Models/Reply.php",
+        "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+      },
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Thread",
+          "path": "app/Models/Thread.php",
+          "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+        },
+        {
+          "qualified_name": "App\\Models\\User",
+          "path": "app/Models/User.php",
+          "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+        },
+        {
+          "qualified_name": "App\\Models\\Tag",
+          "path": "app/Models/Tag.php",
+          "sha256": "2f2113fd63964bd377f111d272687fed9d21463b78c84a17ea46fc8a20dab9a7"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ],
+      "binding_basis": "same namespace App\\Models; literal class constant; direct $this receiver; complete selected return body",
+      "runtime_claim": false
+    },
+    {
+      "id": "Thread.resolvedByRelation",
+      "source": {
+        "path": "app/Models/Thread.php",
+        "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/Thread.php"
+      },
+      "owner": {
+        "qualified_name": "App\\Models\\Thread",
+        "path": "app/Models/Thread.php",
+        "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+      },
+      "declaration": {
+        "name": "resolvedByRelation",
+        "span": {
+          "start_byte": 4504,
+          "end_byte": 4624,
+          "start_line": 197,
+          "start_column": 4,
+          "end_line": 200,
+          "end_column": 5
+        },
+        "name_span": {
+          "start_byte": 4520,
+          "end_byte": 4538,
+          "start_line": 197,
+          "start_column": 20,
+          "end_line": 197,
+          "end_column": 38
+        }
+      },
+      "factory": "belongsTo",
+      "call_span": {
+        "start_byte": 4573,
+        "end_byte": 4617,
+        "start_line": 199,
+        "start_column": 15,
+        "end_line": 199,
+        "end_column": 59
+      },
+      "target_reference_span": {
+        "start_byte": 4590,
+        "end_byte": 4601,
+        "start_line": 199,
+        "start_column": 32,
+        "end_line": 199,
+        "end_column": 43
+      },
+      "required_target": {
+        "qualified_name": "App\\Models\\User",
+        "path": "app/Models/User.php",
+        "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+      },
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Thread",
+          "path": "app/Models/Thread.php",
+          "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+        },
+        {
+          "qualified_name": "App\\Models\\Reply",
+          "path": "app/Models/Reply.php",
+          "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+        },
+        {
+          "qualified_name": "App\\Models\\Tag",
+          "path": "app/Models/Tag.php",
+          "sha256": "2f2113fd63964bd377f111d272687fed9d21463b78c84a17ea46fc8a20dab9a7"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ],
+      "binding_basis": "same namespace App\\Models; literal class constant; direct $this receiver; complete selected return body",
+      "runtime_claim": false
+    },
+    {
+      "id": "Reply.solutionTo",
+      "source": {
+        "path": "app/Models/Reply.php",
+        "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/Reply.php"
+      },
+      "owner": {
+        "qualified_name": "App\\Models\\Reply",
+        "path": "app/Models/Reply.php",
+        "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+      },
+      "declaration": {
+        "name": "solutionTo",
+        "span": {
+          "start_byte": 1381,
+          "end_byte": 1495,
+          "start_line": 62,
+          "start_column": 4,
+          "end_line": 65,
+          "end_column": 5
+        },
+        "name_span": {
+          "start_byte": 1397,
+          "end_byte": 1407,
+          "start_line": 62,
+          "start_column": 20,
+          "end_line": 62,
+          "end_column": 30
+        }
+      },
+      "factory": "hasOne",
+      "call_span": {
+        "start_byte": 1439,
+        "end_byte": 1488,
+        "start_line": 64,
+        "start_column": 15,
+        "end_line": 64,
+        "end_column": 64
+      },
+      "target_reference_span": {
+        "start_byte": 1453,
+        "end_byte": 1466,
+        "start_line": 64,
+        "start_column": 29,
+        "end_line": 64,
+        "end_column": 42
+      },
+      "required_target": {
+        "qualified_name": "App\\Models\\Thread",
+        "path": "app/Models/Thread.php",
+        "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+      },
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Reply",
+          "path": "app/Models/Reply.php",
+          "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+        },
+        {
+          "qualified_name": "App\\Models\\User",
+          "path": "app/Models/User.php",
+          "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+        },
+        {
+          "qualified_name": "App\\Models\\Tag",
+          "path": "app/Models/Tag.php",
+          "sha256": "2f2113fd63964bd377f111d272687fed9d21463b78c84a17ea46fc8a20dab9a7"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ],
+      "binding_basis": "same namespace App\\Models; literal class constant; direct $this receiver; complete selected return body",
+      "runtime_claim": false
+    },
+    {
+      "id": "Reply.deletedByRelation",
+      "source": {
+        "path": "app/Models/Reply.php",
+        "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/Reply.php"
+      },
+      "owner": {
+        "qualified_name": "App\\Models\\Reply",
+        "path": "app/Models/Reply.php",
+        "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+      },
+      "declaration": {
+        "name": "deletedByRelation",
+        "span": {
+          "start_byte": 2311,
+          "end_byte": 2429,
+          "start_line": 107,
+          "start_column": 4,
+          "end_line": 110,
+          "end_column": 5
+        },
+        "name_span": {
+          "start_byte": 2327,
+          "end_byte": 2344,
+          "start_line": 107,
+          "start_column": 20,
+          "end_line": 107,
+          "end_column": 37
+        }
+      },
+      "factory": "belongsTo",
+      "call_span": {
+        "start_byte": 2379,
+        "end_byte": 2422,
+        "start_line": 109,
+        "start_column": 15,
+        "end_line": 109,
+        "end_column": 58
+      },
+      "target_reference_span": {
+        "start_byte": 2396,
+        "end_byte": 2407,
+        "start_line": 109,
+        "start_column": 32,
+        "end_line": 109,
+        "end_column": 43
+      },
+      "required_target": {
+        "qualified_name": "App\\Models\\User",
+        "path": "app/Models/User.php",
+        "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+      },
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Thread",
+          "path": "app/Models/Thread.php",
+          "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+        },
+        {
+          "qualified_name": "App\\Models\\Reply",
+          "path": "app/Models/Reply.php",
+          "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+        },
+        {
+          "qualified_name": "App\\Models\\Tag",
+          "path": "app/Models/Tag.php",
+          "sha256": "2f2113fd63964bd377f111d272687fed9d21463b78c84a17ea46fc8a20dab9a7"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ],
+      "binding_basis": "same namespace App\\Models; literal class constant; direct $this receiver; complete selected return body",
+      "runtime_claim": false
+    },
+    {
+      "id": "Subscription.userRelation",
+      "source": {
+        "path": "app/Models/Subscription.php",
+        "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/Subscription.php"
+      },
+      "owner": {
+        "qualified_name": "App\\Models\\Subscription",
+        "path": "app/Models/Subscription.php",
+        "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+      },
+      "declaration": {
+        "name": "userRelation",
+        "span": {
+          "start_byte": 679,
+          "end_byte": 789,
+          "start_line": 37,
+          "start_column": 4,
+          "end_line": 40,
+          "end_column": 5
+        },
+        "name_span": {
+          "start_byte": 695,
+          "end_byte": 707,
+          "start_line": 37,
+          "start_column": 20,
+          "end_line": 37,
+          "end_column": 32
+        }
+      },
+      "factory": "belongsTo",
+      "call_span": {
+        "start_byte": 742,
+        "end_byte": 782,
+        "start_line": 39,
+        "start_column": 15,
+        "end_line": 39,
+        "end_column": 55
+      },
+      "target_reference_span": {
+        "start_byte": 759,
+        "end_byte": 770,
+        "start_line": 39,
+        "start_column": 32,
+        "end_line": 39,
+        "end_column": 43
+      },
+      "required_target": {
+        "qualified_name": "App\\Models\\User",
+        "path": "app/Models/User.php",
+        "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+      },
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Thread",
+          "path": "app/Models/Thread.php",
+          "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+        },
+        {
+          "qualified_name": "App\\Models\\Reply",
+          "path": "app/Models/Reply.php",
+          "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+        },
+        {
+          "qualified_name": "App\\Models\\Tag",
+          "path": "app/Models/Tag.php",
+          "sha256": "2f2113fd63964bd377f111d272687fed9d21463b78c84a17ea46fc8a20dab9a7"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ],
+      "binding_basis": "same namespace App\\Models; literal class constant; direct $this receiver; complete selected return body",
+      "runtime_claim": false
+    },
+    {
+      "id": "User.threadsRelation",
+      "source": {
+        "path": "app/Models/User.php",
+        "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/User.php"
+      },
+      "owner": {
+        "qualified_name": "App\\Models\\User",
+        "path": "app/Models/User.php",
+        "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+      },
+      "declaration": {
+        "name": "threadsRelation",
+        "span": {
+          "start_byte": 6050,
+          "end_byte": 6163,
+          "start_line": 279,
+          "start_column": 4,
+          "end_line": 282,
+          "end_column": 5
+        },
+        "name_span": {
+          "start_byte": 6066,
+          "end_byte": 6081,
+          "start_line": 279,
+          "start_column": 20,
+          "end_line": 279,
+          "end_column": 35
+        }
+      },
+      "factory": "hasMany",
+      "call_span": {
+        "start_byte": 6114,
+        "end_byte": 6156,
+        "start_line": 281,
+        "start_column": 15,
+        "end_line": 281,
+        "end_column": 57
+      },
+      "target_reference_span": {
+        "start_byte": 6129,
+        "end_byte": 6142,
+        "start_line": 281,
+        "start_column": 30,
+        "end_line": 281,
+        "end_column": 43
+      },
+      "required_target": {
+        "qualified_name": "App\\Models\\Thread",
+        "path": "app/Models/Thread.php",
+        "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+      },
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Reply",
+          "path": "app/Models/Reply.php",
+          "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+        },
+        {
+          "qualified_name": "App\\Models\\User",
+          "path": "app/Models/User.php",
+          "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+        },
+        {
+          "qualified_name": "App\\Models\\Tag",
+          "path": "app/Models/Tag.php",
+          "sha256": "2f2113fd63964bd377f111d272687fed9d21463b78c84a17ea46fc8a20dab9a7"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ],
+      "binding_basis": "same namespace App\\Models; literal class constant; direct $this receiver; complete selected return body",
+      "runtime_claim": false
+    },
+    {
+      "id": "User.blockedUsers",
+      "source": {
+        "path": "app/Models/User.php",
+        "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/User.php"
+      },
+      "owner": {
+        "qualified_name": "App\\Models\\User",
+        "path": "app/Models/User.php",
+        "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+      },
+      "declaration": {
+        "name": "blockedUsers",
+        "span": {
+          "start_byte": 7573,
+          "end_byte": 7727,
+          "start_line": 343,
+          "start_column": 4,
+          "end_line": 346,
+          "end_column": 5
+        },
+        "name_span": {
+          "start_byte": 7589,
+          "end_byte": 7601,
+          "start_line": 343,
+          "start_column": 20,
+          "end_line": 343,
+          "end_column": 32
+        }
+      },
+      "factory": "belongsToMany",
+      "call_span": {
+        "start_byte": 7640,
+        "end_byte": 7720,
+        "start_line": 345,
+        "start_column": 15,
+        "end_line": 345,
+        "end_column": 95
+      },
+      "target_reference_span": {
+        "start_byte": 7661,
+        "end_byte": 7672,
+        "start_line": 345,
+        "start_column": 36,
+        "end_line": 345,
+        "end_column": 47
+      },
+      "required_target": {
+        "qualified_name": "App\\Models\\User",
+        "path": "app/Models/User.php",
+        "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+      },
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Thread",
+          "path": "app/Models/Thread.php",
+          "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+        },
+        {
+          "qualified_name": "App\\Models\\Reply",
+          "path": "app/Models/Reply.php",
+          "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+        },
+        {
+          "qualified_name": "App\\Models\\Tag",
+          "path": "app/Models/Tag.php",
+          "sha256": "2f2113fd63964bd377f111d272687fed9d21463b78c84a17ea46fc8a20dab9a7"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ],
+      "binding_basis": "same namespace App\\Models; literal class constant; direct $this receiver; complete selected return body",
+      "runtime_claim": false
+    }
+  ],
+  "required_blade": [
+    {
+      "id": "resources/views/layouts/default.blade.php:1",
+      "source": {
+        "path": "resources/views/layouts/default.blade.php",
+        "sha256": "0a68bade3bc35a9f6da1c5db720b4beb1dfed6962cf3bf07380616bca6a57cd9",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/default.blade.php"
+      },
+      "kind": "extends",
+      "span": {
+        "start_byte": 0,
+        "end_byte": 24,
+        "start_line": 1,
+        "start_column": 0,
+        "end_line": 1,
+        "end_column": 24
+      },
+      "required_target": {
+        "path": "resources/views/layouts/base.blade.php",
+        "sha256": "5d3bca7e73d4ab7db478fb1701abe53d98dbb9e20d50abc1c1f86f7e7da7d950",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/base.blade.php"
+      },
+      "forbidden_targets": [
+        {
+          "path": "resources/views/components/forms/inputs/password.blade.php",
+          "sha256": "6e1d376f75874121269f43a31050cf6fcce8ead96d54e4054e1accbd5bc23da1",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/password.blade.php"
+        },
+        {
+          "path": "resources/views/components/forms/inputs/email.blade.php",
+          "sha256": "6dcffa4dff9c3aa989b063935aa3353fa53930794a54dbb68bc8ec5bb2bac0bb",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/email.blade.php"
+        },
+        {
+          "path": "resources/views/components/a.blade.php",
+          "sha256": "da0f56acf404478b234b548b67cf3ef5ee3d5e30d73fcf013ba2e33fd7720799",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/a.blade.php"
+        }
+      ],
+      "binding_basis": "literal default resources/views lookup; dots become directories; anonymous component names under components; explicit custom namespace registrations are outside this selected profile",
+      "runtime_claim": false
+    },
+    {
+      "id": "resources/views/layouts/default.blade.php:5",
+      "source": {
+        "path": "resources/views/layouts/default.blade.php",
+        "sha256": "0a68bade3bc35a9f6da1c5db720b4beb1dfed6962cf3bf07380616bca6a57cd9",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/default.blade.php"
+      },
+      "kind": "include",
+      "span": {
+        "start_byte": 89,
+        "end_byte": 116,
+        "start_line": 5,
+        "start_column": 8,
+        "end_line": 5,
+        "end_column": 35
+      },
+      "required_target": {
+        "path": "resources/views/layouts/_alerts.blade.php",
+        "sha256": "90d4529e78990ac9a02a853a97274cc997974d4a055b8cdcd185c94f7125f13a",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/_alerts.blade.php"
+      },
+      "forbidden_targets": [
+        {
+          "path": "resources/views/layouts/base.blade.php",
+          "sha256": "5d3bca7e73d4ab7db478fb1701abe53d98dbb9e20d50abc1c1f86f7e7da7d950",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/base.blade.php"
+        },
+        {
+          "path": "resources/views/components/forms/inputs/password.blade.php",
+          "sha256": "6e1d376f75874121269f43a31050cf6fcce8ead96d54e4054e1accbd5bc23da1",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/password.blade.php"
+        },
+        {
+          "path": "resources/views/components/forms/inputs/email.blade.php",
+          "sha256": "6dcffa4dff9c3aa989b063935aa3353fa53930794a54dbb68bc8ec5bb2bac0bb",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/email.blade.php"
+        },
+        {
+          "path": "resources/views/components/a.blade.php",
+          "sha256": "da0f56acf404478b234b548b67cf3ef5ee3d5e30d73fcf013ba2e33fd7720799",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/a.blade.php"
+        }
+      ],
+      "binding_basis": "literal default resources/views lookup; dots become directories; anonymous component names under components; explicit custom namespace registrations are outside this selected profile",
+      "runtime_claim": false
+    },
+    {
+      "id": "resources/views/components/forms/inputs/password.blade.php:3",
+      "source": {
+        "path": "resources/views/components/forms/inputs/password.blade.php",
+        "sha256": "6e1d376f75874121269f43a31050cf6fcce8ead96d54e4054e1accbd5bc23da1",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/password.blade.php"
+      },
+      "kind": "component",
+      "span": {
+        "start_byte": 18,
+        "end_byte": 107,
+        "start_line": 3,
+        "start_column": 0,
+        "end_line": 7,
+        "end_column": 2
+      },
+      "required_target": {
+        "path": "resources/views/components/forms/inputs/input.blade.php",
+        "sha256": "d2a322302750d7512444fd7913372a3062ccff1e7972ba201fccb96f0ec7592d",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/input.blade.php"
+      },
+      "forbidden_targets": [
+        {
+          "path": "resources/views/layouts/default.blade.php",
+          "sha256": "0a68bade3bc35a9f6da1c5db720b4beb1dfed6962cf3bf07380616bca6a57cd9",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/default.blade.php"
+        },
+        {
+          "path": "resources/views/layouts/base.blade.php",
+          "sha256": "5d3bca7e73d4ab7db478fb1701abe53d98dbb9e20d50abc1c1f86f7e7da7d950",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/base.blade.php"
+        },
+        {
+          "path": "resources/views/components/forms/inputs/email.blade.php",
+          "sha256": "6dcffa4dff9c3aa989b063935aa3353fa53930794a54dbb68bc8ec5bb2bac0bb",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/email.blade.php"
+        },
+        {
+          "path": "resources/views/components/a.blade.php",
+          "sha256": "da0f56acf404478b234b548b67cf3ef5ee3d5e30d73fcf013ba2e33fd7720799",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/a.blade.php"
+        }
+      ],
+      "binding_basis": "literal default resources/views lookup; dots become directories; anonymous component names under components; explicit custom namespace registrations are outside this selected profile",
+      "runtime_claim": false
+    },
+    {
+      "id": "resources/views/components/forms/inputs/email.blade.php:3",
+      "source": {
+        "path": "resources/views/components/forms/inputs/email.blade.php",
+        "sha256": "6dcffa4dff9c3aa989b063935aa3353fa53930794a54dbb68bc8ec5bb2bac0bb",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/email.blade.php"
+      },
+      "kind": "component",
+      "span": {
+        "start_byte": 35,
+        "end_byte": 141,
+        "start_line": 3,
+        "start_column": 0,
+        "end_line": 8,
+        "end_column": 2
+      },
+      "required_target": {
+        "path": "resources/views/components/forms/inputs/input.blade.php",
+        "sha256": "d2a322302750d7512444fd7913372a3062ccff1e7972ba201fccb96f0ec7592d",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/input.blade.php"
+      },
+      "forbidden_targets": [
+        {
+          "path": "resources/views/layouts/default.blade.php",
+          "sha256": "0a68bade3bc35a9f6da1c5db720b4beb1dfed6962cf3bf07380616bca6a57cd9",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/default.blade.php"
+        },
+        {
+          "path": "resources/views/layouts/base.blade.php",
+          "sha256": "5d3bca7e73d4ab7db478fb1701abe53d98dbb9e20d50abc1c1f86f7e7da7d950",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/base.blade.php"
+        },
+        {
+          "path": "resources/views/components/forms/inputs/password.blade.php",
+          "sha256": "6e1d376f75874121269f43a31050cf6fcce8ead96d54e4054e1accbd5bc23da1",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/password.blade.php"
+        },
+        {
+          "path": "resources/views/components/a.blade.php",
+          "sha256": "da0f56acf404478b234b548b67cf3ef5ee3d5e30d73fcf013ba2e33fd7720799",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/a.blade.php"
+        }
+      ],
+      "binding_basis": "literal default resources/views lookup; dots become directories; anonymous component names under components; explicit custom namespace registrations are outside this selected profile",
+      "runtime_claim": false
+    },
+    {
+      "id": "resources/views/components/rules-banner.blade.php:2",
+      "source": {
+        "path": "resources/views/components/rules-banner.blade.php",
+        "sha256": "63d295f1bea480a5e16d2b08d9bcc10c3a2dd74e4e1a8f9244faa5d744d22997",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/rules-banner.blade.php"
+      },
+      "kind": "component",
+      "span": {
+        "start_byte": 69,
+        "end_byte": 102,
+        "start_line": 2,
+        "start_column": 30,
+        "end_line": 2,
+        "end_column": 63
+      },
+      "required_target": {
+        "path": "resources/views/components/a.blade.php",
+        "sha256": "da0f56acf404478b234b548b67cf3ef5ee3d5e30d73fcf013ba2e33fd7720799",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/a.blade.php"
+      },
+      "forbidden_targets": [
+        {
+          "path": "resources/views/layouts/default.blade.php",
+          "sha256": "0a68bade3bc35a9f6da1c5db720b4beb1dfed6962cf3bf07380616bca6a57cd9",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/default.blade.php"
+        },
+        {
+          "path": "resources/views/layouts/base.blade.php",
+          "sha256": "5d3bca7e73d4ab7db478fb1701abe53d98dbb9e20d50abc1c1f86f7e7da7d950",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/base.blade.php"
+        },
+        {
+          "path": "resources/views/components/forms/inputs/password.blade.php",
+          "sha256": "6e1d376f75874121269f43a31050cf6fcce8ead96d54e4054e1accbd5bc23da1",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/password.blade.php"
+        },
+        {
+          "path": "resources/views/components/forms/inputs/email.blade.php",
+          "sha256": "6dcffa4dff9c3aa989b063935aa3353fa53930794a54dbb68bc8ec5bb2bac0bb",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/forms/inputs/email.blade.php"
+        }
+      ],
+      "binding_basis": "literal default resources/views lookup; dots become directories; anonymous component names under components; explicit custom namespace registrations are outside this selected profile",
+      "runtime_claim": false
+    }
+  ],
+  "must_remain_unresolved_or_explicitly_out_of_scope": [
+    {
+      "id": "app/Models/Reply.php#replyAbleRelation",
+      "source": {
+        "path": "app/Models/Reply.php",
+        "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/Reply.php"
+      },
+      "declaration": {
+        "name": "replyAbleRelation",
+        "span": {
+          "start_byte": 3082,
+          "end_byte": 3224,
+          "start_line": 138,
+          "start_column": 4,
+          "end_line": 141,
+          "end_column": 5
+        }
+      },
+      "factory": "morphTo",
+      "reason": "polymorphic target not a literal owned class",
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Thread",
+          "path": "app/Models/Thread.php",
+          "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+        },
+        {
+          "qualified_name": "App\\Models\\Reply",
+          "path": "app/Models/Reply.php",
+          "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+        },
+        {
+          "qualified_name": "App\\Models\\User",
+          "path": "app/Models/User.php",
+          "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ]
+    },
+    {
+      "id": "app/Models/Subscription.php#subscriptionAbleRelation",
+      "source": {
+        "path": "app/Models/Subscription.php",
+        "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/Subscription.php"
+      },
+      "declaration": {
+        "name": "subscriptionAbleRelation",
+        "span": {
+          "start_byte": 1166,
+          "end_byte": 1336,
+          "start_line": 53,
+          "start_column": 4,
+          "end_line": 56,
+          "end_column": 5
+        }
+      },
+      "factory": "morphTo",
+      "reason": "polymorphic target not a literal owned class",
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Thread",
+          "path": "app/Models/Thread.php",
+          "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+        },
+        {
+          "qualified_name": "App\\Models\\Reply",
+          "path": "app/Models/Reply.php",
+          "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+        },
+        {
+          "qualified_name": "App\\Models\\User",
+          "path": "app/Models/User.php",
+          "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ]
+    },
+    {
+      "id": "app/Models/Thread.php#spamReportersRelation",
+      "source": {
+        "path": "app/Models/Thread.php",
+        "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Models/Thread.php"
+      },
+      "declaration": {
+        "name": "spamReportersRelation",
+        "span": {
+          "start_byte": 3068,
+          "end_byte": 3314,
+          "start_line": 137,
+          "start_column": 4,
+          "end_line": 146,
+          "end_column": 5
+        }
+      },
+      "factory": "morphToMany",
+      "reason": "polymorphic chained relation outside first direct relation profile",
+      "forbidden_targets": [
+        {
+          "qualified_name": "App\\Models\\Thread",
+          "path": "app/Models/Thread.php",
+          "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+        },
+        {
+          "qualified_name": "App\\Models\\Reply",
+          "path": "app/Models/Reply.php",
+          "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+        },
+        {
+          "qualified_name": "App\\Models\\User",
+          "path": "app/Models/User.php",
+          "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+        },
+        {
+          "qualified_name": "App\\Models\\Subscription",
+          "path": "app/Models/Subscription.php",
+          "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+        }
+      ]
+    },
+    {
+      "id": "dynamic-notification-include",
+      "source": {
+        "path": "resources/views/livewire/user-notifications.blade.php",
+        "sha256": "fc3037b5c5ddce09c5520c2833641c66e376599ddcda36272e38c63bc781c5a1",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/livewire/user-notifications.blade.php"
+      },
+      "span": {
+        "start_byte": 1474,
+        "end_byte": 1531,
+        "start_line": 32,
+        "start_column": 40,
+        "end_line": 32,
+        "end_column": 97
+      },
+      "kind": "includeIf",
+      "reason": "interpolated target; not a literal view name",
+      "forbidden_targets": [
+        {
+          "path": "resources/views/notifications/article_approved.blade.php",
+          "sha256": "2cadd8af7640e2e0e7352b4d223fb959b30d53c898f792ae92ceea3305ff9104",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/notifications/article_approved.blade.php"
+        },
+        {
+          "path": "resources/views/notifications/mention.blade.php",
+          "sha256": "9064c70f3a4559dfa2a67cd16e5337692d76ad4c48e9a6b8e9d9d5e11346a7f6",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/notifications/mention.blade.php"
+        },
+        {
+          "path": "resources/views/notifications/new_reply.blade.php",
+          "sha256": "9eaeb48049cf26b8f8c508cce2ac68eb2ce65b66c4faa30112370fa753b245bd",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/notifications/new_reply.blade.php"
+        }
+      ]
+    },
+    {
+      "id": "namespaced-mail-component-1",
+      "source": {
+        "path": "resources/views/emails/article_approved.blade.php",
+        "sha256": "de57ae51557009afe007b2cecefe2ecd8ed1c1c0db52c9d879458975efaf93cd",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/emails/article_approved.blade.php"
+      },
+      "span": {
+        "start_byte": 0,
+        "end_byte": 27,
+        "start_line": 1,
+        "start_column": 0,
+        "end_line": 1,
+        "end_column": 27
+      },
+      "kind": "component",
+      "reason": "namespaced mail view resolution needs separately accepted namespace/HTML-versus-Markdown profile",
+      "forbidden_targets": [
+        {
+          "path": "resources/views/vendor/mail/html/button.blade.php",
+          "sha256": "659b162a3c8e9d491af06ed173987128fdc14fbb26f8b3a9a55ac602eed1db10",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/vendor/mail/html/button.blade.php"
+        },
+        {
+          "path": "resources/views/vendor/mail/html/message.blade.php",
+          "sha256": "acadcd455906c5a04d1526e47353e78ffe4e92a52379a2d59834a6be99682a77",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/vendor/mail/html/message.blade.php"
+        },
+        {
+          "path": "resources/views/vendor/mail/markdown/message.blade.php",
+          "sha256": "acadcd455906c5a04d1526e47353e78ffe4e92a52379a2d59834a6be99682a77",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/vendor/mail/markdown/message.blade.php"
+        }
+      ]
+    },
+    {
+      "id": "namespaced-mail-component-5",
+      "source": {
+        "path": "resources/views/emails/article_approved.blade.php",
+        "sha256": "de57ae51557009afe007b2cecefe2ecd8ed1c1c0db52c9d879458975efaf93cd",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/emails/article_approved.blade.php"
+      },
+      "span": {
+        "start_byte": 122,
+        "end_byte": 190,
+        "start_line": 5,
+        "start_column": 0,
+        "end_line": 5,
+        "end_column": 68
+      },
+      "kind": "component",
+      "reason": "namespaced mail view resolution needs separately accepted namespace/HTML-versus-Markdown profile",
+      "forbidden_targets": [
+        {
+          "path": "resources/views/vendor/mail/html/button.blade.php",
+          "sha256": "659b162a3c8e9d491af06ed173987128fdc14fbb26f8b3a9a55ac602eed1db10",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/vendor/mail/html/button.blade.php"
+        },
+        {
+          "path": "resources/views/vendor/mail/html/message.blade.php",
+          "sha256": "acadcd455906c5a04d1526e47353e78ffe4e92a52379a2d59834a6be99682a77",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/vendor/mail/html/message.blade.php"
+        },
+        {
+          "path": "resources/views/vendor/mail/markdown/message.blade.php",
+          "sha256": "acadcd455906c5a04d1526e47353e78ffe4e92a52379a2d59834a6be99682a77",
+          "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/vendor/mail/markdown/message.blade.php"
+        }
+      ]
+    }
+  ],
+  "model_binding_inventory": [
+    {
+      "class": {
+        "qualified_name": "App\\Models\\Thread",
+        "path": "app/Models/Thread.php",
+        "sha256": "0e2b35a036ea83fdb2b8472f690f9a32e2b753a91bb186d8d825c895361204d7"
+      },
+      "base_spelling": "Model",
+      "base_qualified_name": "Illuminate\\Database\\Eloquent\\Model",
+      "imports": {
+        "HasAuthor": "App\\Concerns\\HasAuthor",
+        "HasLikes": "App\\Concerns\\HasLikes",
+        "HasMentions": "App\\Concerns\\HasMentions",
+        "HasSlug": "App\\Concerns\\HasSlug",
+        "HasTags": "App\\Concerns\\HasTags",
+        "HasTimestamps": "App\\Concerns\\HasTimestamps",
+        "HasUuid": "App\\Concerns\\HasUuid",
+        "PreparesSearch": "App\\Concerns\\PreparesSearch",
+        "ProvidesSubscriptions": "App\\Concerns\\ProvidesSubscriptions",
+        "ReceivesReplies": "App\\Concerns\\ReceivesReplies",
+        "MentionAble": "App\\Contracts\\MentionAble",
+        "ReplyAble": "App\\Contracts\\ReplyAble",
+        "Spam": "App\\Contracts\\Spam",
+        "SubscriptionAble": "App\\Contracts\\SubscriptionAble",
+        "CouldNotMarkReplyAsSolution": "App\\Exceptions\\CouldNotMarkReplyAsSolution",
+        "Exception": "Exception",
+        "Paginator": "Illuminate\\Contracts\\Pagination\\Paginator",
+        "Builder": "Illuminate\\Database\\Eloquent\\Builder",
+        "Collection": "Illuminate\\Database\\Eloquent\\Collection",
+        "HasFactory": "Illuminate\\Database\\Eloquent\\Factories\\HasFactory",
+        "Model": "Illuminate\\Database\\Eloquent\\Model",
+        "BelongsTo": "Illuminate\\Database\\Eloquent\\Relations\\BelongsTo",
+        "MorphToMany": "Illuminate\\Database\\Eloquent\\Relations\\MorphToMany",
+        "Carbon": "Illuminate\\Support\\Carbon",
+        "SupportCollection": "Illuminate\\Support\\Collection",
+        "DB": "Illuminate\\Support\\Facades\\DB",
+        "Str": "Illuminate\\Support\\Str",
+        "Searchable": "Laravel\\Scout\\Searchable",
+        "Feedable": "Spatie\\Feed\\Feedable",
+        "FeedItem": "Spatie\\Feed\\FeedItem"
+      },
+      "trait_uses": [
+        {
+          "spelling": "HasAuthor",
+          "qualified_name": "App\\Concerns\\HasAuthor",
+          "span": {
+            "start_byte": 1190,
+            "end_byte": 1208,
+            "start_line": 38,
+            "start_column": 0,
+            "end_line": 38,
+            "end_column": 18
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasAuthor.php",
+            "sha256": "752fc08734c1f2beedc95f3b1befa98f8fb208a0c3dac108cb82115fc8e8daf5",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasAuthor.php"
+          }
+        },
+        {
+          "spelling": "HasFactory",
+          "qualified_name": "Illuminate\\Database\\Eloquent\\Factories\\HasFactory",
+          "span": {
+            "start_byte": 1209,
+            "end_byte": 1228,
+            "start_line": 39,
+            "start_column": 0,
+            "end_line": 39,
+            "end_column": 19
+          },
+          "external_source_not_present_in_app": true
+        },
+        {
+          "spelling": "HasLikes",
+          "qualified_name": "App\\Concerns\\HasLikes",
+          "span": {
+            "start_byte": 1229,
+            "end_byte": 1246,
+            "start_line": 40,
+            "start_column": 0,
+            "end_line": 40,
+            "end_column": 17
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasLikes.php",
+            "sha256": "8bf86c88812e0b22009e420905d5eafaecc77b27f43a416989efe19774630da7",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasLikes.php"
+          }
+        },
+        {
+          "spelling": "HasMentions",
+          "qualified_name": "App\\Concerns\\HasMentions",
+          "span": {
+            "start_byte": 1247,
+            "end_byte": 1267,
+            "start_line": 41,
+            "start_column": 0,
+            "end_line": 41,
+            "end_column": 20
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasMentions.php",
+            "sha256": "03c785cf74c099adaed8a3be21f672df699cd7d7b22184bfae12f87a5857fc6c",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasMentions.php"
+          }
+        },
+        {
+          "spelling": "HasSlug",
+          "qualified_name": "App\\Concerns\\HasSlug",
+          "span": {
+            "start_byte": 1268,
+            "end_byte": 1284,
+            "start_line": 42,
+            "start_column": 0,
+            "end_line": 42,
+            "end_column": 16
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasSlug.php",
+            "sha256": "c7002f6bd78fdd81c3ff20e73f93c1882c6f3c929160919859b96734d005dcd0",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasSlug.php"
+          }
+        },
+        {
+          "spelling": "HasTags",
+          "qualified_name": "App\\Concerns\\HasTags",
+          "span": {
+            "start_byte": 1285,
+            "end_byte": 1301,
+            "start_line": 43,
+            "start_column": 0,
+            "end_line": 43,
+            "end_column": 16
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasTags.php",
+            "sha256": "4a1b0609199fdfe57643ef674cda32843627b32e424105600bc110c31005e01d",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasTags.php"
+          }
+        },
+        {
+          "spelling": "HasTimestamps",
+          "qualified_name": "App\\Concerns\\HasTimestamps",
+          "span": {
+            "start_byte": 1302,
+            "end_byte": 1324,
+            "start_line": 44,
+            "start_column": 0,
+            "end_line": 44,
+            "end_column": 22
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasTimestamps.php",
+            "sha256": "a49c18dbc2736392c7f6e3f9a80ee0d065cdf6ea4d07fc0743eb9dbc4f67390b",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasTimestamps.php"
+          }
+        },
+        {
+          "spelling": "HasUuid",
+          "qualified_name": "App\\Concerns\\HasUuid",
+          "span": {
+            "start_byte": 1325,
+            "end_byte": 1341,
+            "start_line": 45,
+            "start_column": 0,
+            "end_line": 45,
+            "end_column": 16
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasUuid.php",
+            "sha256": "4fa0c326b5914a43d3749b5f27f6abcc69af175ffb1be420975d85c6fcc1094d",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasUuid.php"
+          }
+        },
+        {
+          "spelling": "PreparesSearch",
+          "qualified_name": "App\\Concerns\\PreparesSearch",
+          "span": {
+            "start_byte": 1342,
+            "end_byte": 1365,
+            "start_line": 46,
+            "start_column": 0,
+            "end_line": 46,
+            "end_column": 23
+          },
+          "owned_source": {
+            "path": "app/Concerns/PreparesSearch.php",
+            "sha256": "a8d0e3e2638d0d51ae38db451ad591eb85f1909918afc1c11cf6d7b09b1a5336",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/PreparesSearch.php"
+          }
+        },
+        {
+          "spelling": "ProvidesSubscriptions",
+          "qualified_name": "App\\Concerns\\ProvidesSubscriptions",
+          "span": {
+            "start_byte": 1366,
+            "end_byte": 1396,
+            "start_line": 47,
+            "start_column": 0,
+            "end_line": 47,
+            "end_column": 30
+          },
+          "owned_source": {
+            "path": "app/Concerns/ProvidesSubscriptions.php",
+            "sha256": "a7ca514fbb0d3f7150cc287a323869df843caba7839c95c00b5bf3f969740ada",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/ProvidesSubscriptions.php"
+          }
+        },
+        {
+          "spelling": "ReceivesReplies",
+          "qualified_name": "App\\Concerns\\ReceivesReplies",
+          "span": {
+            "start_byte": 1397,
+            "end_byte": 1421,
+            "start_line": 48,
+            "start_column": 0,
+            "end_line": 48,
+            "end_column": 24
+          },
+          "owned_source": {
+            "path": "app/Concerns/ReceivesReplies.php",
+            "sha256": "04077bb513a437c7bef2b651c53bccffa34eebc264bbf8ae52f46be29b6bdec3",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/ReceivesReplies.php"
+          }
+        },
+        {
+          "spelling": "Searchable",
+          "qualified_name": "Laravel\\Scout\\Searchable",
+          "span": {
+            "start_byte": 1422,
+            "end_byte": 1441,
+            "start_line": 49,
+            "start_column": 0,
+            "end_line": 49,
+            "end_column": 19
+          },
+          "external_source_not_present_in_app": true
+        }
+      ],
+      "methods": [
+        {
+          "name": "casts",
+          "name_span": {
+            "start_byte": 2124,
+            "end_byte": 2129,
+            "start_line": 89,
+            "start_column": 23,
+            "end_line": 89,
+            "end_column": 28
+          }
+        },
+        {
+          "name": "id",
+          "name_span": {
+            "start_byte": 2285,
+            "end_byte": 2287,
+            "start_line": 97,
+            "start_column": 20,
+            "end_line": 97,
+            "end_column": 22
+          }
+        },
+        {
+          "name": "subject",
+          "name_span": {
+            "start_byte": 2354,
+            "end_byte": 2361,
+            "start_line": 102,
+            "start_column": 20,
+            "end_line": 102,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "body",
+          "name_span": {
+            "start_byte": 2436,
+            "end_byte": 2440,
+            "start_line": 107,
+            "start_column": 20,
+            "end_line": 107,
+            "end_column": 24
+          }
+        },
+        {
+          "name": "excerpt",
+          "name_span": {
+            "start_byte": 2512,
+            "end_byte": 2519,
+            "start_line": 112,
+            "start_column": 20,
+            "end_line": 112,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "updatedBy",
+          "name_span": {
+            "start_byte": 2653,
+            "end_byte": 2662,
+            "start_line": 117,
+            "start_column": 20,
+            "end_line": 117,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "updatedByRelation",
+          "name_span": {
+            "start_byte": 2746,
+            "end_byte": 2763,
+            "start_line": 122,
+            "start_column": 20,
+            "end_line": 122,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "isUpdated",
+          "name_span": {
+            "start_byte": 2870,
+            "end_byte": 2879,
+            "start_line": 127,
+            "start_column": 20,
+            "end_line": 127,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "spamReporters",
+          "name_span": {
+            "start_byte": 2978,
+            "end_byte": 2991,
+            "start_line": 132,
+            "start_column": 20,
+            "end_line": 132,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "spamReportersRelation",
+          "name_span": {
+            "start_byte": 3084,
+            "end_byte": 3105,
+            "start_line": 137,
+            "start_column": 20,
+            "end_line": 137,
+            "end_column": 41
+          }
+        },
+        {
+          "name": "solutionReply",
+          "name_span": {
+            "start_byte": 3336,
+            "end_byte": 3349,
+            "start_line": 148,
+            "start_column": 20,
+            "end_line": 148,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "solutionReplyRelation",
+          "name_span": {
+            "start_byte": 3438,
+            "end_byte": 3459,
+            "start_line": 153,
+            "start_column": 20,
+            "end_line": 153,
+            "end_column": 41
+          }
+        },
+        {
+          "name": "isSolved",
+          "name_span": {
+            "start_byte": 3574,
+            "end_byte": 3582,
+            "start_line": 158,
+            "start_column": 20,
+            "end_line": 158,
+            "end_column": 28
+          }
+        },
+        {
+          "name": "isSolutionReply",
+          "name_span": {
+            "start_byte": 3674,
+            "end_byte": 3689,
+            "start_line": 163,
+            "start_column": 20,
+            "end_line": 163,
+            "end_column": 35
+          }
+        },
+        {
+          "name": "markSolution",
+          "name_span": {
+            "start_byte": 3868,
+            "end_byte": 3880,
+            "start_line": 172,
+            "start_column": 20,
+            "end_line": 172,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "unmarkSolution",
+          "name_span": {
+            "start_byte": 4247,
+            "end_byte": 4261,
+            "start_line": 185,
+            "start_column": 20,
+            "end_line": 185,
+            "end_column": 34
+          }
+        },
+        {
+          "name": "resolvedBy",
+          "name_span": {
+            "start_byte": 4425,
+            "end_byte": 4435,
+            "start_line": 192,
+            "start_column": 20,
+            "end_line": 192,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "resolvedByRelation",
+          "name_span": {
+            "start_byte": 4520,
+            "end_byte": 4538,
+            "start_line": 197,
+            "start_column": 20,
+            "end_line": 197,
+            "end_column": 38
+          }
+        },
+        {
+          "name": "wasResolvedBy",
+          "name_span": {
+            "start_byte": 4646,
+            "end_byte": 4659,
+            "start_line": 202,
+            "start_column": 20,
+            "end_line": 202,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "isLocked",
+          "name_span": {
+            "start_byte": 4836,
+            "end_byte": 4844,
+            "start_line": 211,
+            "start_column": 20,
+            "end_line": 211,
+            "end_column": 28
+          }
+        },
+        {
+          "name": "isUnlocked",
+          "name_span": {
+            "start_byte": 4930,
+            "end_byte": 4940,
+            "start_line": 216,
+            "start_column": 20,
+            "end_line": 216,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "lockedBy",
+          "name_span": {
+            "start_byte": 5018,
+            "end_byte": 5026,
+            "start_line": 221,
+            "start_column": 20,
+            "end_line": 221,
+            "end_column": 28
+          }
+        },
+        {
+          "name": "lockedByRelation",
+          "name_span": {
+            "start_byte": 5109,
+            "end_byte": 5125,
+            "start_line": 226,
+            "start_column": 20,
+            "end_line": 226,
+            "end_column": 36
+          }
+        },
+        {
+          "name": "isLockedBy",
+          "name_span": {
+            "start_byte": 5231,
+            "end_byte": 5241,
+            "start_line": 231,
+            "start_column": 20,
+            "end_line": 231,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "delete",
+          "name_span": {
+            "start_byte": 5338,
+            "end_byte": 5344,
+            "start_line": 236,
+            "start_column": 20,
+            "end_line": 236,
+            "end_column": 26
+          }
+        },
+        {
+          "name": "toFeedItem",
+          "name_span": {
+            "start_byte": 5468,
+            "end_byte": 5478,
+            "start_line": 244,
+            "start_column": 20,
+            "end_line": 244,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "feed",
+          "name_span": {
+            "start_byte": 5897,
+            "end_byte": 5901,
+            "start_line": 260,
+            "start_column": 27,
+            "end_line": 260,
+            "end_column": 31
+          }
+        },
+        {
+          "name": "feedPaginated",
+          "name_span": {
+            "start_byte": 6067,
+            "end_byte": 6080,
+            "start_line": 268,
+            "start_column": 27,
+            "end_line": 268,
+            "end_column": 40
+          }
+        },
+        {
+          "name": "feedByTagPaginated",
+          "name_span": {
+            "start_byte": 6245,
+            "end_byte": 6263,
+            "start_line": 276,
+            "start_column": 27,
+            "end_line": 276,
+            "end_column": 45
+          }
+        },
+        {
+          "name": "feedByTagQuery",
+          "name_span": {
+            "start_byte": 6420,
+            "end_byte": 6434,
+            "start_line": 282,
+            "start_column": 27,
+            "end_line": 282,
+            "end_column": 41
+          }
+        },
+        {
+          "name": "feedQuery",
+          "name_span": {
+            "start_byte": 6858,
+            "end_byte": 6867,
+            "start_line": 295,
+            "start_column": 27,
+            "end_line": 295,
+            "end_column": 36
+          }
+        },
+        {
+          "name": "resolutionTime",
+          "name_span": {
+            "start_byte": 7138,
+            "end_byte": 7152,
+            "start_line": 305,
+            "start_column": 27,
+            "end_line": 305,
+            "end_column": 41
+          }
+        },
+        {
+          "name": "getFeedItems",
+          "name_span": {
+            "start_byte": 7524,
+            "end_byte": 7536,
+            "start_line": 317,
+            "start_column": 27,
+            "end_line": 317,
+            "end_column": 39
+          }
+        },
+        {
+          "name": "replyAbleSubject",
+          "name_span": {
+            "start_byte": 7700,
+            "end_byte": 7716,
+            "start_line": 324,
+            "start_column": 20,
+            "end_line": 324,
+            "end_column": 36
+          }
+        },
+        {
+          "name": "toSearchableArray",
+          "name_span": {
+            "start_byte": 7793,
+            "end_byte": 7810,
+            "start_line": 329,
+            "start_column": 20,
+            "end_line": 329,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "searchIndexShouldBeUpdated",
+          "name_span": {
+            "start_byte": 8031,
+            "end_byte": 8057,
+            "start_line": 339,
+            "start_column": 20,
+            "end_line": 339,
+            "end_column": 46
+          }
+        },
+        {
+          "name": "splitBody",
+          "name_span": {
+            "start_byte": 8200,
+            "end_byte": 8209,
+            "start_line": 348,
+            "start_column": 20,
+            "end_line": 348,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "scopeResolved",
+          "name_span": {
+            "start_byte": 8288,
+            "end_byte": 8301,
+            "start_line": 353,
+            "start_column": 20,
+            "end_line": 353,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "scopeUnresolved",
+          "name_span": {
+            "start_byte": 8418,
+            "end_byte": 8433,
+            "start_line": 358,
+            "start_column": 20,
+            "end_line": 358,
+            "end_column": 35
+          }
+        },
+        {
+          "name": "scopeActive",
+          "name_span": {
+            "start_byte": 8547,
+            "end_byte": 8558,
+            "start_line": 363,
+            "start_column": 20,
+            "end_line": 363,
+            "end_column": 31
+          }
+        },
+        {
+          "name": "scopeUnlocked",
+          "name_span": {
+            "start_byte": 8664,
+            "end_byte": 8677,
+            "start_line": 368,
+            "start_column": 20,
+            "end_line": 368,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "participants",
+          "name_span": {
+            "start_byte": 8783,
+            "end_byte": 8795,
+            "start_line": 373,
+            "start_column": 20,
+            "end_line": 373,
+            "end_column": 32
+          }
+        }
+      ],
+      "local_relation_factory_overrides": []
+    },
+    {
+      "class": {
+        "qualified_name": "App\\Models\\Reply",
+        "path": "app/Models/Reply.php",
+        "sha256": "212d9eae8e3894f7ed2bc4665397173ff98b9aaf4d1d5c23d725d055e39713b6"
+      },
+      "base_spelling": "Model",
+      "base_qualified_name": "Illuminate\\Database\\Eloquent\\Model",
+      "imports": {
+        "HasAuthor": "App\\Concerns\\HasAuthor",
+        "HasLikes": "App\\Concerns\\HasLikes",
+        "HasMentions": "App\\Concerns\\HasMentions",
+        "HasTimestamps": "App\\Concerns\\HasTimestamps",
+        "HasUuid": "App\\Concerns\\HasUuid",
+        "MentionAble": "App\\Contracts\\MentionAble",
+        "ReplyAble": "App\\Contracts\\ReplyAble",
+        "Spam": "App\\Contracts\\Spam",
+        "Carbon": "Carbon\\Carbon",
+        "Builder": "Illuminate\\Database\\Eloquent\\Builder",
+        "Collection": "Illuminate\\Database\\Eloquent\\Collection",
+        "HasFactory": "Illuminate\\Database\\Eloquent\\Factories\\HasFactory",
+        "Model": "Illuminate\\Database\\Eloquent\\Model",
+        "BelongsTo": "Illuminate\\Database\\Eloquent\\Relations\\BelongsTo",
+        "HasOne": "Illuminate\\Database\\Eloquent\\Relations\\HasOne",
+        "MorphTo": "Illuminate\\Database\\Eloquent\\Relations\\MorphTo",
+        "MorphToMany": "Illuminate\\Database\\Eloquent\\Relations\\MorphToMany",
+        "SoftDeletes": "Illuminate\\Database\\Eloquent\\SoftDeletes",
+        "Str": "Illuminate\\Support\\Str"
+      },
+      "trait_uses": [
+        {
+          "spelling": "HasAuthor",
+          "qualified_name": "App\\Concerns\\HasAuthor",
+          "span": {
+            "start_byte": 809,
+            "end_byte": 827,
+            "start_line": 27,
+            "start_column": 0,
+            "end_line": 27,
+            "end_column": 18
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasAuthor.php",
+            "sha256": "752fc08734c1f2beedc95f3b1befa98f8fb208a0c3dac108cb82115fc8e8daf5",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasAuthor.php"
+          }
+        },
+        {
+          "spelling": "HasFactory",
+          "qualified_name": "Illuminate\\Database\\Eloquent\\Factories\\HasFactory",
+          "span": {
+            "start_byte": 828,
+            "end_byte": 847,
+            "start_line": 28,
+            "start_column": 0,
+            "end_line": 28,
+            "end_column": 19
+          },
+          "external_source_not_present_in_app": true
+        },
+        {
+          "spelling": "HasLikes",
+          "qualified_name": "App\\Concerns\\HasLikes",
+          "span": {
+            "start_byte": 848,
+            "end_byte": 865,
+            "start_line": 29,
+            "start_column": 0,
+            "end_line": 29,
+            "end_column": 17
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasLikes.php",
+            "sha256": "8bf86c88812e0b22009e420905d5eafaecc77b27f43a416989efe19774630da7",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasLikes.php"
+          }
+        },
+        {
+          "spelling": "HasMentions",
+          "qualified_name": "App\\Concerns\\HasMentions",
+          "span": {
+            "start_byte": 866,
+            "end_byte": 886,
+            "start_line": 30,
+            "start_column": 0,
+            "end_line": 30,
+            "end_column": 20
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasMentions.php",
+            "sha256": "03c785cf74c099adaed8a3be21f672df699cd7d7b22184bfae12f87a5857fc6c",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasMentions.php"
+          }
+        },
+        {
+          "spelling": "HasTimestamps",
+          "qualified_name": "App\\Concerns\\HasTimestamps",
+          "span": {
+            "start_byte": 887,
+            "end_byte": 909,
+            "start_line": 31,
+            "start_column": 0,
+            "end_line": 31,
+            "end_column": 22
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasTimestamps.php",
+            "sha256": "a49c18dbc2736392c7f6e3f9a80ee0d065cdf6ea4d07fc0743eb9dbc4f67390b",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasTimestamps.php"
+          }
+        },
+        {
+          "spelling": "HasUuid",
+          "qualified_name": "App\\Concerns\\HasUuid",
+          "span": {
+            "start_byte": 910,
+            "end_byte": 926,
+            "start_line": 32,
+            "start_column": 0,
+            "end_line": 32,
+            "end_column": 16
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasUuid.php",
+            "sha256": "4fa0c326b5914a43d3749b5f27f6abcc69af175ffb1be420975d85c6fcc1094d",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasUuid.php"
+          }
+        },
+        {
+          "spelling": "SoftDeletes",
+          "qualified_name": "Illuminate\\Database\\Eloquent\\SoftDeletes",
+          "span": {
+            "start_byte": 927,
+            "end_byte": 947,
+            "start_line": 33,
+            "start_column": 0,
+            "end_line": 33,
+            "end_column": 20
+          },
+          "external_source_not_present_in_app": true
+        }
+      ],
+      "methods": [
+        {
+          "name": "solutionTo",
+          "name_span": {
+            "start_byte": 1397,
+            "end_byte": 1407,
+            "start_line": 62,
+            "start_column": 20,
+            "end_line": 62,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "id",
+          "name_span": {
+            "start_byte": 1517,
+            "end_byte": 1519,
+            "start_line": 67,
+            "start_column": 20,
+            "end_line": 67,
+            "end_column": 22
+          }
+        },
+        {
+          "name": "body",
+          "name_span": {
+            "start_byte": 1586,
+            "end_byte": 1590,
+            "start_line": 72,
+            "start_column": 20,
+            "end_line": 72,
+            "end_column": 24
+          }
+        },
+        {
+          "name": "excerpt",
+          "name_span": {
+            "start_byte": 1662,
+            "end_byte": 1669,
+            "start_line": 77,
+            "start_column": 20,
+            "end_line": 77,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "to",
+          "name_span": {
+            "start_byte": 1803,
+            "end_byte": 1805,
+            "start_line": 82,
+            "start_column": 20,
+            "end_line": 82,
+            "end_column": 22
+          }
+        },
+        {
+          "name": "replyAble",
+          "name_span": {
+            "start_byte": 1920,
+            "end_byte": 1929,
+            "start_line": 87,
+            "start_column": 20,
+            "end_line": 87,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "updatedBy",
+          "name_span": {
+            "start_byte": 2017,
+            "end_byte": 2026,
+            "start_line": 92,
+            "start_column": 20,
+            "end_line": 92,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "deletedBy",
+          "name_span": {
+            "start_byte": 2110,
+            "end_byte": 2119,
+            "start_line": 97,
+            "start_column": 20,
+            "end_line": 97,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "updatedByRelation",
+          "name_span": {
+            "start_byte": 2203,
+            "end_byte": 2220,
+            "start_line": 102,
+            "start_column": 20,
+            "end_line": 102,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "deletedByRelation",
+          "name_span": {
+            "start_byte": 2327,
+            "end_byte": 2344,
+            "start_line": 107,
+            "start_column": 20,
+            "end_line": 107,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "deletedAt",
+          "name_span": {
+            "start_byte": 2451,
+            "end_byte": 2460,
+            "start_line": 112,
+            "start_column": 20,
+            "end_line": 112,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "remover",
+          "name_span": {
+            "start_byte": 2538,
+            "end_byte": 2545,
+            "start_line": 117,
+            "start_column": 20,
+            "end_line": 117,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "isDeletedBy",
+          "name_span": {
+            "start_byte": 2628,
+            "end_byte": 2639,
+            "start_line": 122,
+            "start_column": 20,
+            "end_line": 122,
+            "end_column": 31
+          }
+        },
+        {
+          "name": "isUpdated",
+          "name_span": {
+            "start_byte": 2737,
+            "end_byte": 2746,
+            "start_line": 127,
+            "start_column": 20,
+            "end_line": 127,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "replyAbleRelation",
+          "name_span": {
+            "start_byte": 3098,
+            "end_byte": 3115,
+            "start_line": 138,
+            "start_column": 20,
+            "end_line": 138,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "spamReporters",
+          "name_span": {
+            "start_byte": 3246,
+            "end_byte": 3259,
+            "start_line": 143,
+            "start_column": 20,
+            "end_line": 143,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "spamReportersRelation",
+          "name_span": {
+            "start_byte": 3352,
+            "end_byte": 3373,
+            "start_line": 148,
+            "start_column": 20,
+            "end_line": 148,
+            "end_column": 41
+          }
+        },
+        {
+          "name": "scopeIsSolution",
+          "name_span": {
+            "start_byte": 3604,
+            "end_byte": 3619,
+            "start_line": 159,
+            "start_column": 20,
+            "end_line": 159,
+            "end_column": 35
+          }
+        }
+      ],
+      "local_relation_factory_overrides": []
+    },
+    {
+      "class": {
+        "qualified_name": "App\\Models\\Subscription",
+        "path": "app/Models/Subscription.php",
+        "sha256": "741f33833d84d9abb67b0c2c3c7472166b587318ddb14261eeda81f460135927"
+      },
+      "base_spelling": "Model",
+      "base_qualified_name": "Illuminate\\Database\\Eloquent\\Model",
+      "imports": {
+        "HasUuid": "App\\Concerns\\HasUuid",
+        "SubscriptionAble": "App\\Contracts\\SubscriptionAble",
+        "HasFactory": "Illuminate\\Database\\Eloquent\\Factories\\HasFactory",
+        "Model": "Illuminate\\Database\\Eloquent\\Model",
+        "BelongsTo": "Illuminate\\Database\\Eloquent\\Relations\\BelongsTo",
+        "MorphTo": "Illuminate\\Database\\Eloquent\\Relations\\MorphTo"
+      },
+      "trait_uses": [
+        {
+          "spelling": "HasFactory",
+          "qualified_name": "Illuminate\\Database\\Eloquent\\Factories\\HasFactory",
+          "span": {
+            "start_byte": 335,
+            "end_byte": 354,
+            "start_line": 14,
+            "start_column": 0,
+            "end_line": 14,
+            "end_column": 19
+          },
+          "external_source_not_present_in_app": true
+        },
+        {
+          "spelling": "HasUuid",
+          "qualified_name": "App\\Concerns\\HasUuid",
+          "span": {
+            "start_byte": 355,
+            "end_byte": 371,
+            "start_line": 15,
+            "start_column": 0,
+            "end_line": 15,
+            "end_column": 16
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasUuid.php",
+            "sha256": "4fa0c326b5914a43d3749b5f27f6abcc69af175ffb1be420975d85c6fcc1094d",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasUuid.php"
+          }
+        }
+      ],
+      "methods": [
+        {
+          "name": "getKeyName",
+          "name_span": {
+            "start_byte": 471,
+            "end_byte": 481,
+            "start_line": 22,
+            "start_column": 20,
+            "end_line": 22,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "getIncrementing",
+          "name_span": {
+            "start_byte": 540,
+            "end_byte": 555,
+            "start_line": 27,
+            "start_column": 20,
+            "end_line": 27,
+            "end_column": 35
+          }
+        },
+        {
+          "name": "user",
+          "name_span": {
+            "start_byte": 613,
+            "end_byte": 617,
+            "start_line": 32,
+            "start_column": 20,
+            "end_line": 32,
+            "end_column": 24
+          }
+        },
+        {
+          "name": "userRelation",
+          "name_span": {
+            "start_byte": 695,
+            "end_byte": 707,
+            "start_line": 37,
+            "start_column": 20,
+            "end_line": 37,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "subscriptionAble",
+          "name_span": {
+            "start_byte": 811,
+            "end_byte": 827,
+            "start_line": 42,
+            "start_column": 20,
+            "end_line": 42,
+            "end_column": 36
+          }
+        },
+        {
+          "name": "subscriptionAbleRelation",
+          "name_span": {
+            "start_byte": 1182,
+            "end_byte": 1206,
+            "start_line": 53,
+            "start_column": 20,
+            "end_line": 53,
+            "end_column": 44
+          }
+        }
+      ],
+      "local_relation_factory_overrides": []
+    },
+    {
+      "class": {
+        "qualified_name": "App\\Models\\User",
+        "path": "app/Models/User.php",
+        "sha256": "d09ef688e2ef1ce43eec0203bd1a490a6251a49917e87b93a8d4a7a12a218d98"
+      },
+      "base_spelling": "Authenticatable",
+      "base_qualified_name": "Illuminate\\Foundation\\Auth\\User",
+      "imports": {
+        "HasTimestamps": "App\\Concerns\\HasTimestamps",
+        "PreparesSearch": "App\\Concerns\\PreparesSearch",
+        "NotificationType": "App\\Enums\\NotificationType",
+        "UserPolicy": "App\\Policies\\UserPolicy",
+        "Carbon": "Carbon\\Carbon",
+        "FilamentUser": "Filament\\Models\\Contracts\\FilamentUser",
+        "Panel": "Filament\\Panel",
+        "MustVerifyEmail": "Illuminate\\Contracts\\Auth\\MustVerifyEmail",
+        "Builder": "Illuminate\\Database\\Eloquent\\Builder",
+        "Collection": "Illuminate\\Database\\Eloquent\\Collection",
+        "HasFactory": "Illuminate\\Database\\Eloquent\\Factories\\HasFactory",
+        "BelongsToMany": "Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany",
+        "HasMany": "Illuminate\\Database\\Eloquent\\Relations\\HasMany",
+        "JoinClause": "Illuminate\\Database\\Query\\JoinClause",
+        "Authenticatable": "Illuminate\\Foundation\\Auth\\User",
+        "Notifiable": "Illuminate\\Notifications\\Notifiable",
+        "Auth": "Illuminate\\Support\\Facades\\Auth",
+        "Storage": "Illuminate\\Support\\Facades\\Storage",
+        "HasApiTokens": "Laravel\\Sanctum\\HasApiTokens",
+        "Searchable": "Laravel\\Scout\\Searchable"
+      },
+      "trait_uses": [
+        {
+          "spelling": "HasApiTokens",
+          "qualified_name": "Laravel\\Sanctum\\HasApiTokens",
+          "span": {
+            "start_byte": 903,
+            "end_byte": 924,
+            "start_line": 28,
+            "start_column": 0,
+            "end_line": 28,
+            "end_column": 21
+          },
+          "external_source_not_present_in_app": true
+        },
+        {
+          "spelling": "HasFactory",
+          "qualified_name": "Illuminate\\Database\\Eloquent\\Factories\\HasFactory",
+          "span": {
+            "start_byte": 925,
+            "end_byte": 944,
+            "start_line": 29,
+            "start_column": 0,
+            "end_line": 29,
+            "end_column": 19
+          },
+          "external_source_not_present_in_app": true
+        },
+        {
+          "spelling": "HasTimestamps",
+          "qualified_name": "App\\Concerns\\HasTimestamps",
+          "span": {
+            "start_byte": 945,
+            "end_byte": 967,
+            "start_line": 30,
+            "start_column": 0,
+            "end_line": 30,
+            "end_column": 22
+          },
+          "owned_source": {
+            "path": "app/Concerns/HasTimestamps.php",
+            "sha256": "a49c18dbc2736392c7f6e3f9a80ee0d065cdf6ea4d07fc0743eb9dbc4f67390b",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasTimestamps.php"
+          }
+        },
+        {
+          "spelling": "Notifiable",
+          "qualified_name": "Illuminate\\Notifications\\Notifiable",
+          "span": {
+            "start_byte": 968,
+            "end_byte": 987,
+            "start_line": 31,
+            "start_column": 0,
+            "end_line": 31,
+            "end_column": 19
+          },
+          "external_source_not_present_in_app": true
+        },
+        {
+          "spelling": "PreparesSearch",
+          "qualified_name": "App\\Concerns\\PreparesSearch",
+          "span": {
+            "start_byte": 988,
+            "end_byte": 1011,
+            "start_line": 32,
+            "start_column": 0,
+            "end_line": 32,
+            "end_column": 23
+          },
+          "owned_source": {
+            "path": "app/Concerns/PreparesSearch.php",
+            "sha256": "a8d0e3e2638d0d51ae38db451ad591eb85f1909918afc1c11cf6d7b09b1a5336",
+            "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/PreparesSearch.php"
+          }
+        },
+        {
+          "spelling": "Searchable",
+          "qualified_name": "Laravel\\Scout\\Searchable",
+          "span": {
+            "start_byte": 1012,
+            "end_byte": 1031,
+            "start_line": 33,
+            "start_column": 0,
+            "end_line": 33,
+            "end_column": 19
+          },
+          "external_source_not_present_in_app": true
+        }
+      ],
+      "methods": [
+        {
+          "name": "casts",
+          "name_span": {
+            "start_byte": 1869,
+            "end_byte": 1874,
+            "start_line": 81,
+            "start_column": 23,
+            "end_line": 81,
+            "end_column": 28
+          }
+        },
+        {
+          "name": "id",
+          "name_span": {
+            "start_byte": 2090,
+            "end_byte": 2092,
+            "start_line": 90,
+            "start_column": 20,
+            "end_line": 90,
+            "end_column": 22
+          }
+        },
+        {
+          "name": "name",
+          "name_span": {
+            "start_byte": 2159,
+            "end_byte": 2163,
+            "start_line": 95,
+            "start_column": 20,
+            "end_line": 95,
+            "end_column": 24
+          }
+        },
+        {
+          "name": "emailAddress",
+          "name_span": {
+            "start_byte": 2235,
+            "end_byte": 2247,
+            "start_line": 100,
+            "start_column": 20,
+            "end_line": 100,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "username",
+          "name_span": {
+            "start_byte": 2320,
+            "end_byte": 2328,
+            "start_line": 105,
+            "start_column": 20,
+            "end_line": 105,
+            "end_column": 28
+          }
+        },
+        {
+          "name": "bio",
+          "name_span": {
+            "start_byte": 2404,
+            "end_byte": 2407,
+            "start_line": 110,
+            "start_column": 20,
+            "end_line": 110,
+            "end_column": 23
+          }
+        },
+        {
+          "name": "githubId",
+          "name_span": {
+            "start_byte": 2478,
+            "end_byte": 2486,
+            "start_line": 115,
+            "start_column": 20,
+            "end_line": 115,
+            "end_column": 28
+          }
+        },
+        {
+          "name": "githubUsername",
+          "name_span": {
+            "start_byte": 2564,
+            "end_byte": 2578,
+            "start_line": 120,
+            "start_column": 20,
+            "end_line": 120,
+            "end_column": 34
+          }
+        },
+        {
+          "name": "hasConnectedGitHubAccount",
+          "name_span": {
+            "start_byte": 2667,
+            "end_byte": 2692,
+            "start_line": 125,
+            "start_column": 20,
+            "end_line": 125,
+            "end_column": 45
+          }
+        },
+        {
+          "name": "hasGitHubIdenticon",
+          "name_span": {
+            "start_byte": 2779,
+            "end_byte": 2797,
+            "start_line": 130,
+            "start_column": 20,
+            "end_line": 130,
+            "end_column": 38
+          }
+        },
+        {
+          "name": "twitter",
+          "name_span": {
+            "start_byte": 2890,
+            "end_byte": 2897,
+            "start_line": 135,
+            "start_column": 20,
+            "end_line": 135,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "bluesky",
+          "name_span": {
+            "start_byte": 2973,
+            "end_byte": 2980,
+            "start_line": 140,
+            "start_column": 20,
+            "end_line": 140,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "website",
+          "name_span": {
+            "start_byte": 3056,
+            "end_byte": 3063,
+            "start_line": 145,
+            "start_column": 20,
+            "end_line": 145,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "heroImagePath",
+          "name_span": {
+            "start_byte": 3139,
+            "end_byte": 3152,
+            "start_line": 150,
+            "start_column": 20,
+            "end_line": 150,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "hasHeroImage",
+          "name_span": {
+            "start_byte": 3236,
+            "end_byte": 3248,
+            "start_line": 155,
+            "start_column": 20,
+            "end_line": 155,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "heroImageUrl",
+          "name_span": {
+            "start_byte": 3338,
+            "end_byte": 3350,
+            "start_line": 160,
+            "start_column": 20,
+            "end_line": 160,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "profilePicturePath",
+          "name_span": {
+            "start_byte": 3572,
+            "end_byte": 3590,
+            "start_line": 169,
+            "start_column": 20,
+            "end_line": 169,
+            "end_column": 38
+          }
+        },
+        {
+          "name": "hasProfilePicture",
+          "name_span": {
+            "start_byte": 3679,
+            "end_byte": 3696,
+            "start_line": 174,
+            "start_column": 20,
+            "end_line": 174,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "avatarUrl",
+          "name_span": {
+            "start_byte": 3791,
+            "end_byte": 3800,
+            "start_line": 179,
+            "start_column": 20,
+            "end_line": 179,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "hasTwitterAccount",
+          "name_span": {
+            "start_byte": 4201,
+            "end_byte": 4218,
+            "start_line": 192,
+            "start_column": 20,
+            "end_line": 192,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "hasBlueskyAccount",
+          "name_span": {
+            "start_byte": 4302,
+            "end_byte": 4319,
+            "start_line": 197,
+            "start_column": 20,
+            "end_line": 197,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "hasWebsite",
+          "name_span": {
+            "start_byte": 4403,
+            "end_byte": 4413,
+            "start_line": 202,
+            "start_column": 20,
+            "end_line": 202,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "isBanned",
+          "name_span": {
+            "start_byte": 4497,
+            "end_byte": 4505,
+            "start_line": 207,
+            "start_column": 20,
+            "end_line": 207,
+            "end_column": 28
+          }
+        },
+        {
+          "name": "bannedReason",
+          "name_span": {
+            "start_byte": 4591,
+            "end_byte": 4603,
+            "start_line": 212,
+            "start_column": 20,
+            "end_line": 212,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "type",
+          "name_span": {
+            "start_byte": 4685,
+            "end_byte": 4689,
+            "start_line": 217,
+            "start_column": 20,
+            "end_line": 217,
+            "end_column": 24
+          }
+        },
+        {
+          "name": "isRegularUser",
+          "name_span": {
+            "start_byte": 4764,
+            "end_byte": 4777,
+            "start_line": 222,
+            "start_column": 20,
+            "end_line": 222,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "isModerator",
+          "name_span": {
+            "start_byte": 4867,
+            "end_byte": 4878,
+            "start_line": 227,
+            "start_column": 20,
+            "end_line": 227,
+            "end_column": 31
+          }
+        },
+        {
+          "name": "isAdmin",
+          "name_span": {
+            "start_byte": 4970,
+            "end_byte": 4977,
+            "start_line": 232,
+            "start_column": 20,
+            "end_line": 232,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "isLoggedInUser",
+          "name_span": {
+            "start_byte": 5065,
+            "end_byte": 5079,
+            "start_line": 237,
+            "start_column": 20,
+            "end_line": 237,
+            "end_column": 34
+          }
+        },
+        {
+          "name": "hasPassword",
+          "name_span": {
+            "start_byte": 5164,
+            "end_byte": 5175,
+            "start_line": 242,
+            "start_column": 20,
+            "end_line": 242,
+            "end_column": 31
+          }
+        },
+        {
+          "name": "threads",
+          "name_span": {
+            "start_byte": 5361,
+            "end_byte": 5368,
+            "start_line": 252,
+            "start_column": 20,
+            "end_line": 252,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "latestThreads",
+          "name_span": {
+            "start_byte": 5485,
+            "end_byte": 5498,
+            "start_line": 260,
+            "start_column": 20,
+            "end_line": 260,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "paginatedThreads",
+          "name_span": {
+            "start_byte": 5623,
+            "end_byte": 5639,
+            "start_line": 265,
+            "start_column": 20,
+            "end_line": 265,
+            "end_column": 36
+          }
+        },
+        {
+          "name": "deleteThreads",
+          "name_span": {
+            "start_byte": 5785,
+            "end_byte": 5798,
+            "start_line": 270,
+            "start_column": 20,
+            "end_line": 270,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "threadsRelation",
+          "name_span": {
+            "start_byte": 6066,
+            "end_byte": 6081,
+            "start_line": 279,
+            "start_column": 20,
+            "end_line": 279,
+            "end_column": 35
+          }
+        },
+        {
+          "name": "countThreads",
+          "name_span": {
+            "start_byte": 6185,
+            "end_byte": 6197,
+            "start_line": 284,
+            "start_column": 20,
+            "end_line": 284,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "countThreadsFromToday",
+          "name_span": {
+            "start_byte": 6288,
+            "end_byte": 6309,
+            "start_line": 289,
+            "start_column": 20,
+            "end_line": 289,
+            "end_column": 41
+          }
+        },
+        {
+          "name": "hasTooManyThreadsToday",
+          "name_span": {
+            "start_byte": 6527,
+            "end_byte": 6549,
+            "start_line": 298,
+            "start_column": 20,
+            "end_line": 298,
+            "end_column": 42
+          }
+        },
+        {
+          "name": "replies",
+          "name_span": {
+            "start_byte": 6685,
+            "end_byte": 6692,
+            "start_line": 306,
+            "start_column": 20,
+            "end_line": 306,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "latestReplies",
+          "name_span": {
+            "start_byte": 6803,
+            "end_byte": 6816,
+            "start_line": 314,
+            "start_column": 20,
+            "end_line": 314,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "paginatedReplies",
+          "name_span": {
+            "start_byte": 6936,
+            "end_byte": 6952,
+            "start_line": 319,
+            "start_column": 20,
+            "end_line": 319,
+            "end_column": 36
+          }
+        },
+        {
+          "name": "deleteReplies",
+          "name_span": {
+            "start_byte": 7092,
+            "end_byte": 7105,
+            "start_line": 324,
+            "start_column": 20,
+            "end_line": 324,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "countReplies",
+          "name_span": {
+            "start_byte": 7380,
+            "end_byte": 7392,
+            "start_line": 333,
+            "start_column": 20,
+            "end_line": 333,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "replyAble",
+          "name_span": {
+            "start_byte": 7477,
+            "end_byte": 7486,
+            "start_line": 338,
+            "start_column": 20,
+            "end_line": 338,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "blockedUsers",
+          "name_span": {
+            "start_byte": 7589,
+            "end_byte": 7601,
+            "start_line": 343,
+            "start_column": 20,
+            "end_line": 343,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "articles",
+          "name_span": {
+            "start_byte": 7749,
+            "end_byte": 7757,
+            "start_line": 348,
+            "start_column": 20,
+            "end_line": 348,
+            "end_column": 28
+          }
+        },
+        {
+          "name": "latestArticles",
+          "name_span": {
+            "start_byte": 7862,
+            "end_byte": 7876,
+            "start_line": 353,
+            "start_column": 20,
+            "end_line": 353,
+            "end_column": 34
+          }
+        },
+        {
+          "name": "paginatedArticles",
+          "name_span": {
+            "start_byte": 8007,
+            "end_byte": 8024,
+            "start_line": 358,
+            "start_column": 20,
+            "end_line": 358,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "countArticles",
+          "name_span": {
+            "start_byte": 8176,
+            "end_byte": 8189,
+            "start_line": 363,
+            "start_column": 20,
+            "end_line": 363,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "findByUsername",
+          "name_span": {
+            "start_byte": 8292,
+            "end_byte": 8306,
+            "start_line": 368,
+            "start_column": 27,
+            "end_line": 368,
+            "end_column": 41
+          }
+        },
+        {
+          "name": "findByEmailAddress",
+          "name_span": {
+            "start_byte": 8437,
+            "end_byte": 8455,
+            "start_line": 373,
+            "start_column": 27,
+            "end_line": 373,
+            "end_column": 45
+          }
+        },
+        {
+          "name": "findByGitHubId",
+          "name_span": {
+            "start_byte": 8591,
+            "end_byte": 8605,
+            "start_line": 378,
+            "start_column": 27,
+            "end_line": 378,
+            "end_column": 41
+          }
+        },
+        {
+          "name": "delete",
+          "name_span": {
+            "start_byte": 8730,
+            "end_byte": 8736,
+            "start_line": 383,
+            "start_column": 20,
+            "end_line": 383,
+            "end_column": 26
+          }
+        },
+        {
+          "name": "isVerifiedAuthor",
+          "name_span": {
+            "start_byte": 8863,
+            "end_byte": 8879,
+            "start_line": 391,
+            "start_column": 20,
+            "end_line": 391,
+            "end_column": 36
+          }
+        },
+        {
+          "name": "canVerifiedAuthorPublishMoreArticlesToday",
+          "name_span": {
+            "start_byte": 8994,
+            "end_byte": 9035,
+            "start_line": 396,
+            "start_column": 20,
+            "end_line": 396,
+            "end_column": 61
+          }
+        },
+        {
+          "name": "countSolutions",
+          "name_span": {
+            "start_byte": 9388,
+            "end_byte": 9402,
+            "start_line": 413,
+            "start_column": 20,
+            "end_line": 413,
+            "end_column": 34
+          }
+        },
+        {
+          "name": "scopeMostSolutions",
+          "name_span": {
+            "start_byte": 9501,
+            "end_byte": 9519,
+            "start_line": 418,
+            "start_column": 20,
+            "end_line": 418,
+            "end_column": 38
+          }
+        },
+        {
+          "name": "scopeMostSubmissions",
+          "name_span": {
+            "start_byte": 10431,
+            "end_byte": 10451,
+            "start_line": 441,
+            "start_column": 20,
+            "end_line": 441,
+            "end_column": 40
+          }
+        },
+        {
+          "name": "scopeMostSolutionsInLastDays",
+          "name_span": {
+            "start_byte": 11081,
+            "end_byte": 11109,
+            "start_line": 458,
+            "start_column": 20,
+            "end_line": 458,
+            "end_column": 48
+          }
+        },
+        {
+          "name": "scopeMostSubmissionsInLastDays",
+          "name_span": {
+            "start_byte": 11215,
+            "end_byte": 11245,
+            "start_line": 463,
+            "start_column": 20,
+            "end_line": 463,
+            "end_column": 50
+          }
+        },
+        {
+          "name": "shouldBeSearchable",
+          "name_span": {
+            "start_byte": 11353,
+            "end_byte": 11371,
+            "start_line": 468,
+            "start_column": 20,
+            "end_line": 468,
+            "end_column": 38
+          }
+        },
+        {
+          "name": "toSearchableArray",
+          "name_span": {
+            "start_byte": 11428,
+            "end_byte": 11445,
+            "start_line": 473,
+            "start_column": 20,
+            "end_line": 473,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "scopeModerators",
+          "name_span": {
+            "start_byte": 11631,
+            "end_byte": 11646,
+            "start_line": 482,
+            "start_column": 20,
+            "end_line": 482,
+            "end_column": 35
+          }
+        },
+        {
+          "name": "scopeWithAvatar",
+          "name_span": {
+            "start_byte": 11803,
+            "end_byte": 11818,
+            "start_line": 490,
+            "start_column": 20,
+            "end_line": 490,
+            "end_column": 35
+          }
+        },
+        {
+          "name": "scopeNotBanned",
+          "name_span": {
+            "start_byte": 12161,
+            "end_byte": 12175,
+            "start_line": 500,
+            "start_column": 20,
+            "end_line": 500,
+            "end_column": 34
+          }
+        },
+        {
+          "name": "hasBlocked",
+          "name_span": {
+            "start_byte": 12272,
+            "end_byte": 12282,
+            "start_line": 505,
+            "start_column": 20,
+            "end_line": 505,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "hasUnblocked",
+          "name_span": {
+            "start_byte": 12425,
+            "end_byte": 12437,
+            "start_line": 510,
+            "start_column": 20,
+            "end_line": 510,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "scopeWithUsersWhoDoesntBlock",
+          "name_span": {
+            "start_byte": 12532,
+            "end_byte": 12560,
+            "start_line": 515,
+            "start_column": 20,
+            "end_line": 515,
+            "end_column": 48
+          }
+        },
+        {
+          "name": "scopeWithUsersWhoArentBlockedBy",
+          "name_span": {
+            "start_byte": 12784,
+            "end_byte": 12815,
+            "start_line": 522,
+            "start_column": 20,
+            "end_line": 522,
+            "end_column": 51
+          }
+        },
+        {
+          "name": "isNotificationAllowed",
+          "name_span": {
+            "start_byte": 13031,
+            "end_byte": 13052,
+            "start_line": 529,
+            "start_column": 20,
+            "end_line": 529,
+            "end_column": 41
+          }
+        },
+        {
+          "name": "canAccessPanel",
+          "name_span": {
+            "start_byte": 13359,
+            "end_byte": 13373,
+            "start_line": 537,
+            "start_column": 20,
+            "end_line": 537,
+            "end_column": 34
+          }
+        }
+      ],
+      "local_relation_factory_overrides": []
+    }
+  ],
+  "owned_trait_inventory": {
+    "App\\Concerns\\HasAuthor": {
+      "source": {
+        "path": "app/Concerns/HasAuthor.php",
+        "sha256": "752fc08734c1f2beedc95f3b1befa98f8fb208a0c3dac108cb82115fc8e8daf5",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasAuthor.php"
+      },
+      "methods": [
+        {
+          "name": "author",
+          "name_span": {
+            "start_byte": 146,
+            "end_byte": 152,
+            "start_line": 10,
+            "start_column": 20,
+            "end_line": 10,
+            "end_column": 26
+          }
+        },
+        {
+          "name": "authoredBy",
+          "name_span": {
+            "start_byte": 232,
+            "end_byte": 242,
+            "start_line": 15,
+            "start_column": 20,
+            "end_line": 15,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "authorRelation",
+          "name_span": {
+            "start_byte": 392,
+            "end_byte": 406,
+            "start_line": 22,
+            "start_column": 20,
+            "end_line": 22,
+            "end_column": 34
+          }
+        },
+        {
+          "name": "isAuthoredBy",
+          "name_span": {
+            "start_byte": 512,
+            "end_byte": 524,
+            "start_line": 27,
+            "start_column": 20,
+            "end_line": 27,
+            "end_column": 32
+          }
+        }
+      ],
+      "relation_factory_overrides": [],
+      "nested_trait_uses": []
+    },
+    "App\\Concerns\\HasLikes": {
+      "source": {
+        "path": "app/Concerns/HasLikes.php",
+        "sha256": "8bf86c88812e0b22009e420905d5eafaecc77b27f43a416989efe19774630da7",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasLikes.php"
+      },
+      "methods": [
+        {
+          "name": "bootHasLikes",
+          "name_span": {
+            "start_byte": 332,
+            "end_byte": 344,
+            "start_line": 14,
+            "start_column": 30,
+            "end_line": 14,
+            "end_column": 42
+          }
+        },
+        {
+          "name": "likes",
+          "name_span": {
+            "start_byte": 543,
+            "end_byte": 548,
+            "start_line": 23,
+            "start_column": 20,
+            "end_line": 23,
+            "end_column": 25
+          }
+        },
+        {
+          "name": "likers",
+          "name_span": {
+            "start_byte": 633,
+            "end_byte": 639,
+            "start_line": 28,
+            "start_column": 20,
+            "end_line": 28,
+            "end_column": 26
+          }
+        },
+        {
+          "name": "likedBy",
+          "name_span": {
+            "start_byte": 725,
+            "end_byte": 732,
+            "start_line": 33,
+            "start_column": 20,
+            "end_line": 33,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "dislikedBy",
+          "name_span": {
+            "start_byte": 900,
+            "end_byte": 910,
+            "start_line": 40,
+            "start_column": 20,
+            "end_line": 40,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "isLikedBy",
+          "name_span": {
+            "start_byte": 1102,
+            "end_byte": 1111,
+            "start_line": 47,
+            "start_column": 20,
+            "end_line": 47,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "likesRelation",
+          "name_span": {
+            "start_byte": 1496,
+            "end_byte": 1509,
+            "start_line": 58,
+            "start_column": 20,
+            "end_line": 58,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "likersRelation",
+          "name_span": {
+            "start_byte": 1651,
+            "end_byte": 1665,
+            "start_line": 63,
+            "start_column": 20,
+            "end_line": 63,
+            "end_column": 34
+          }
+        }
+      ],
+      "relation_factory_overrides": [],
+      "nested_trait_uses": []
+    },
+    "App\\Concerns\\HasMentions": {
+      "source": {
+        "path": "app/Concerns/HasMentions.php",
+        "sha256": "03c785cf74c099adaed8a3be21f672df699cd7d7b22184bfae12f87a5857fc6c",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasMentions.php"
+      },
+      "methods": [
+        {
+          "name": "mentionedIn",
+          "name_span": {
+            "start_byte": 158,
+            "end_byte": 169,
+            "start_line": 11,
+            "start_column": 20,
+            "end_line": 11,
+            "end_column": 31
+          }
+        },
+        {
+          "name": "mentionedUsers",
+          "name_span": {
+            "start_byte": 330,
+            "end_byte": 344,
+            "start_line": 20,
+            "start_column": 20,
+            "end_line": 20,
+            "end_column": 34
+          }
+        }
+      ],
+      "relation_factory_overrides": [],
+      "nested_trait_uses": []
+    },
+    "App\\Concerns\\HasSlug": {
+      "source": {
+        "path": "app/Concerns/HasSlug.php",
+        "sha256": "c7002f6bd78fdd81c3ff20e73f93c1882c6f3c929160919859b96734d005dcd0",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasSlug.php"
+      },
+      "methods": [
+        {
+          "name": "slug",
+          "name_span": {
+            "start_byte": 97,
+            "end_byte": 101,
+            "start_line": 9,
+            "start_column": 20,
+            "end_line": 9,
+            "end_column": 24
+          }
+        },
+        {
+          "name": "setSlugAttribute",
+          "name_span": {
+            "start_byte": 173,
+            "end_byte": 189,
+            "start_line": 14,
+            "start_column": 20,
+            "end_line": 14,
+            "end_column": 36
+          }
+        },
+        {
+          "name": "findBySlug",
+          "name_span": {
+            "start_byte": 314,
+            "end_byte": 324,
+            "start_line": 19,
+            "start_column": 27,
+            "end_line": 19,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "generateUniqueSlug",
+          "name_span": {
+            "start_byte": 439,
+            "end_byte": 457,
+            "start_line": 24,
+            "start_column": 21,
+            "end_line": 24,
+            "end_column": 39
+          }
+        },
+        {
+          "name": "slugExists",
+          "name_span": {
+            "start_byte": 791,
+            "end_byte": 801,
+            "start_line": 37,
+            "start_column": 21,
+            "end_line": 37,
+            "end_column": 31
+          }
+        }
+      ],
+      "relation_factory_overrides": [],
+      "nested_trait_uses": []
+    },
+    "App\\Concerns\\HasTags": {
+      "source": {
+        "path": "app/Concerns/HasTags.php",
+        "sha256": "4a1b0609199fdfe57643ef674cda32843627b32e424105600bc110c31005e01d",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasTags.php"
+      },
+      "methods": [
+        {
+          "name": "tags",
+          "name_span": {
+            "start_byte": 190,
+            "end_byte": 194,
+            "start_line": 11,
+            "start_column": 20,
+            "end_line": 11,
+            "end_column": 24
+          }
+        },
+        {
+          "name": "syncTags",
+          "name_span": {
+            "start_byte": 328,
+            "end_byte": 336,
+            "start_line": 19,
+            "start_column": 20,
+            "end_line": 19,
+            "end_column": 28
+          }
+        },
+        {
+          "name": "removeTags",
+          "name_span": {
+            "start_byte": 497,
+            "end_byte": 507,
+            "start_line": 27,
+            "start_column": 20,
+            "end_line": 27,
+            "end_column": 30
+          }
+        },
+        {
+          "name": "tagsRelation",
+          "name_span": {
+            "start_byte": 631,
+            "end_byte": 643,
+            "start_line": 34,
+            "start_column": 20,
+            "end_line": 34,
+            "end_column": 32
+          }
+        }
+      ],
+      "relation_factory_overrides": [],
+      "nested_trait_uses": []
+    },
+    "App\\Concerns\\HasTimestamps": {
+      "source": {
+        "path": "app/Concerns/HasTimestamps.php",
+        "sha256": "a49c18dbc2736392c7f6e3f9a80ee0d065cdf6ea4d07fc0743eb9dbc4f67390b",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasTimestamps.php"
+      },
+      "methods": [
+        {
+          "name": "createdAt",
+          "name_span": {
+            "start_byte": 94,
+            "end_byte": 103,
+            "start_line": 9,
+            "start_column": 20,
+            "end_line": 9,
+            "end_column": 29
+          }
+        },
+        {
+          "name": "updatedAt",
+          "name_span": {
+            "start_byte": 181,
+            "end_byte": 190,
+            "start_line": 14,
+            "start_column": 20,
+            "end_line": 14,
+            "end_column": 29
+          }
+        }
+      ],
+      "relation_factory_overrides": [],
+      "nested_trait_uses": []
+    },
+    "App\\Concerns\\HasUuid": {
+      "source": {
+        "path": "app/Concerns/HasUuid.php",
+        "sha256": "4fa0c326b5914a43d3749b5f27f6abcc69af175ffb1be420975d85c6fcc1094d",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/HasUuid.php"
+      },
+      "methods": [
+        {
+          "name": "uuid",
+          "name_span": {
+            "start_byte": 122,
+            "end_byte": 126,
+            "start_line": 10,
+            "start_column": 20,
+            "end_line": 10,
+            "end_column": 24
+          }
+        },
+        {
+          "name": "findByUuidOrFail",
+          "name_span": {
+            "start_byte": 230,
+            "end_byte": 246,
+            "start_line": 15,
+            "start_column": 27,
+            "end_line": 15,
+            "end_column": 43
+          }
+        }
+      ],
+      "relation_factory_overrides": [],
+      "nested_trait_uses": []
+    },
+    "App\\Concerns\\PreparesSearch": {
+      "source": {
+        "path": "app/Concerns/PreparesSearch.php",
+        "sha256": "a8d0e3e2638d0d51ae38db451ad591eb85f1909918afc1c11cf6d7b09b1a5336",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/PreparesSearch.php"
+      },
+      "methods": [
+        {
+          "name": "split",
+          "name_span": {
+            "start_byte": 139,
+            "end_byte": 144,
+            "start_line": 10,
+            "start_column": 20,
+            "end_line": 10,
+            "end_column": 25
+          }
+        },
+        {
+          "name": "splitToCollection",
+          "name_span": {
+            "start_byte": 720,
+            "end_byte": 737,
+            "start_line": 27,
+            "start_column": 21,
+            "end_line": 27,
+            "end_column": 38
+          }
+        },
+        {
+          "name": "batch",
+          "name_span": {
+            "start_byte": 862,
+            "end_byte": 867,
+            "start_line": 32,
+            "start_column": 21,
+            "end_line": 32,
+            "end_column": 26
+          }
+        }
+      ],
+      "relation_factory_overrides": [],
+      "nested_trait_uses": []
+    },
+    "App\\Concerns\\ProvidesSubscriptions": {
+      "source": {
+        "path": "app/Concerns/ProvidesSubscriptions.php",
+        "sha256": "a7ca514fbb0d3f7150cc287a323869df843caba7839c95c00b5bf3f969740ada",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/ProvidesSubscriptions.php"
+      },
+      "methods": [
+        {
+          "name": "subscriptions",
+          "name_span": {
+            "start_byte": 254,
+            "end_byte": 267,
+            "start_line": 13,
+            "start_column": 20,
+            "end_line": 13,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "subscriptionsRelation",
+          "name_span": {
+            "start_byte": 613,
+            "end_byte": 634,
+            "start_line": 24,
+            "start_column": 20,
+            "end_line": 24,
+            "end_column": 41
+          }
+        },
+        {
+          "name": "hasSubscriber",
+          "name_span": {
+            "start_byte": 867,
+            "end_byte": 880,
+            "start_line": 34,
+            "start_column": 20,
+            "end_line": 34,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "subscribe",
+          "name_span": {
+            "start_byte": 1046,
+            "end_byte": 1055,
+            "start_line": 41,
+            "start_column": 20,
+            "end_line": 41,
+            "end_column": 29
+          }
+        }
+      ],
+      "relation_factory_overrides": [],
+      "nested_trait_uses": []
+    },
+    "App\\Concerns\\ReceivesReplies": {
+      "source": {
+        "path": "app/Concerns/ReceivesReplies.php",
+        "sha256": "04077bb513a437c7bef2b651c53bccffa34eebc264bbf8ae52f46be29b6bdec3",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Concerns/ReceivesReplies.php"
+      },
+      "methods": [
+        {
+          "name": "replies",
+          "name_span": {
+            "start_byte": 331,
+            "end_byte": 338,
+            "start_line": 14,
+            "start_column": 20,
+            "end_line": 14,
+            "end_column": 27
+          }
+        },
+        {
+          "name": "repliesWithTrashed",
+          "name_span": {
+            "start_byte": 425,
+            "end_byte": 443,
+            "start_line": 19,
+            "start_column": 20,
+            "end_line": 19,
+            "end_column": 38
+          }
+        },
+        {
+          "name": "replyAuthors",
+          "name_span": {
+            "start_byte": 541,
+            "end_byte": 553,
+            "start_line": 24,
+            "start_column": 20,
+            "end_line": 24,
+            "end_column": 32
+          }
+        },
+        {
+          "name": "latestReplies",
+          "name_span": {
+            "start_byte": 905,
+            "end_byte": 918,
+            "start_line": 39,
+            "start_column": 20,
+            "end_line": 39,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "deleteReplies",
+          "name_span": {
+            "start_byte": 1055,
+            "end_byte": 1068,
+            "start_line": 44,
+            "start_column": 20,
+            "end_line": 44,
+            "end_column": 33
+          }
+        },
+        {
+          "name": "repliesRelation",
+          "name_span": {
+            "start_byte": 1652,
+            "end_byte": 1667,
+            "start_line": 61,
+            "start_column": 20,
+            "end_line": 61,
+            "end_column": 35
+          }
+        },
+        {
+          "name": "repliesRelationWithTrashed",
+          "name_span": {
+            "start_byte": 1814,
+            "end_byte": 1840,
+            "start_line": 66,
+            "start_column": 20,
+            "end_line": 66,
+            "end_column": 46
+          }
+        },
+        {
+          "name": "isConversationOld",
+          "name_span": {
+            "start_byte": 2002,
+            "end_byte": 2019,
+            "start_line": 71,
+            "start_column": 20,
+            "end_line": 71,
+            "end_column": 37
+          }
+        },
+        {
+          "name": "bootReceivesReplies",
+          "name_span": {
+            "start_byte": 2306,
+            "end_byte": 2325,
+            "start_line": 82,
+            "start_column": 27,
+            "end_line": 82,
+            "end_column": 46
+          }
+        }
+      ],
+      "relation_factory_overrides": [],
+      "nested_trait_uses": []
+    }
+  },
+  "external_trait_dependency_notice": "External trait methods have not been inspected in the application checkout. composer.lock pins framework/Scout/Sanctum sources; treating these traits as harmless requires explicit profile evidence or conservative unsupported outcomes. No negative override proof is inferred from their names.",
+  "provider_inventory": [
+    {
+      "source": {
+        "path": "app/Providers/AppServiceProvider.php",
+        "sha256": "396e5def0cf55a3f77f4a0a8349b09f474c193c4785d94172a79aa118930bd7c",
+        "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Providers/AppServiceProvider.php"
+      },
+      "explicit_blade_registration_tokens": []
+    }
+  ],
+  "additional_source_labelled_render_candidate": {
+    "source": {
+      "path": "app/Http/Controllers/Settings/ProfileController.php",
+      "sha256": "5a6fde93c3e98d75829358f6c2cbfb07a682c0ac81d5a9b3907418abe0bb16c4",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Http/Controllers/Settings/ProfileController.php"
+    },
+    "owner_qualified_name": "App\\Http\\Controllers\\Settings\\ProfileController",
+    "declaration": {
+      "name": "edit",
+      "span": {
+        "start_byte": 495,
+        "end_byte": 583,
+        "start_line": 22,
+        "start_column": 4,
+        "end_line": 25,
+        "end_column": 5
+      }
+    },
+    "span": {
+      "start_byte": 545,
+      "end_byte": 576,
+      "start_line": 24,
+      "start_column": 15,
+      "end_line": 24,
+      "end_column": 46
+    },
+    "required_target": {
+      "path": "resources/views/users/settings/settings.blade.php",
+      "sha256": "f87df66bbbba6e69656722f7fd8c608174928f66c0df05bab0a84bf586dd2ed5",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/users/settings/settings.blade.php"
+    },
+    "scope_status": "additional independently source-labelled candidate; outside the fixed 8+5 required slice",
+    "binding_basis": "unqualified view() helper; no namespaced view() declaration/import in this file"
+  },
+  "synthetic_controls_still_required": [
+    "local alias named Model bound to a non-Eloquent class",
+    "local override of a relation factory",
+    "trait override of a relation factory, including aliases/adaptations",
+    "dynamic class reference and non-$this receiver",
+    "interpolated/missing/ambiguous Blade targets",
+    "escaped Blade directives and verbatim blocks",
+    "custom namespace/component registration and component class versus anonymous view ambiguity"
+  ]
+}

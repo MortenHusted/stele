@@ -9,7 +9,11 @@ class ReleaseNotices
   PROJECT_FILES = %w[LICENSE NOTICE THIRD_PARTY_NOTICES.md
                      crates/codemap-topology/NOTICE crates/codemap-topology/VENDORED.md
                      crates/codemap-topology/LICENSE.apache-2.0 crates/codemap-topology/LICENSE.d3-ISC
-                     crates/codemap/src/queries/rust/LICENSE-tree-sitter-rust.txt].freeze
+                     crates/codemap/src/queries/rust/LICENSE-tree-sitter-rust.txt
+                     crates/codemap/vendor/tree-sitter-blade/LICENSE
+                     crates/codemap/vendor/tree-sitter-blade/LICENSE.html
+                     crates/codemap/vendor/tree-sitter-blade/SOURCE.json
+                     crates/codemap/vendor/tree-sitter-blade/VENDORED.md].freeze
   REGISTRY = 'registry+https://github.com/rust-lang/crates.io-index'
 
   def initialize(repo:, cargo_home:)

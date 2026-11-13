@@ -68,6 +68,7 @@ pub fn validate(snapshot: &Snapshot) -> Result<()> {
     validate_nodes(snapshot, &files_by_path, &mut node_ids, &mut errors);
     validate_edges(snapshot, &files_by_path, &node_ids, &mut errors);
     validate_python_nodes(snapshot, &files_by_path, &mut errors);
+    validate_php_syntax(snapshot, &files_by_path, &mut errors);
     validate_call_sites(snapshot, &files_by_path, &mut errors);
     validate_profiled_census(snapshot, &mut errors);
     validate_measures(snapshot, &mut errors);
@@ -78,6 +79,286 @@ pub fn validate(snapshot: &Snapshot) -> Result<()> {
         Ok(())
     } else {
         bail!("snapshot validation failed:\n  - {}", errors.join("\n  - "));
+    }
+}
+
+fn validate_php_syntax(
+    snapshot: &Snapshot,
+    files: &HashMap<&str, &FileRecord>,
+    errors: &mut Vec<String>,
+) {
+    let Some(php) = &snapshot.php else {
+        if snapshot.identity.language == Language::Php {
+            errors.push("PHP snapshot is missing its syntax observations".into());
+        }
+        return;
+    };
+    if snapshot.identity.language != Language::Php {
+        errors.push("PHP observations on a non-PHP snapshot".into());
+        return;
+    }
+    let mut validation = PhpValidation {
+        snapshot,
+        files,
+        errors,
+    };
+    validation.anonymous_classes(php);
+    validation.declarations(php);
+    validation.incomplete_files(php);
+    validation.blade(php);
+}
+
+struct PhpValidation<'a, 'e> {
+    snapshot: &'a Snapshot,
+    files: &'a HashMap<&'a str, &'a FileRecord>,
+    errors: &'e mut Vec<String>,
+}
+
+impl PhpValidation<'_, '_> {
+    fn anonymous_classes(&mut self, php: &crate::schema::PhpSyntax) {
+        let mut spans = HashSet::new();
+        for source in &php.anonymous_classes {
+            self.expression(source, None);
+            if crate::schema::is_blade_template(&source.rel_path)
+                || !spans.insert((
+                    &source.rel_path,
+                    source.span.start_byte,
+                    source.span.end_byte,
+                ))
+            {
+                self.errors
+                    .push("invalid PHP anonymous class observation".into());
+            }
+        }
+    }
+
+    fn declarations(&mut self, php: &crate::schema::PhpSyntax) {
+        let nodes: HashMap<_, _> = self
+            .snapshot
+            .nodes
+            .iter()
+            .map(|node| (node.id.as_str(), node))
+            .collect();
+        let mut class_ids = HashSet::new();
+        for class in &php.classes {
+            let Some(node) = nodes.get(class.node.as_str()) else {
+                self.errors
+                    .push(format!("dangling PHP class {}", class.node));
+                continue;
+            };
+            if !class_ids.insert(class.node.as_str())
+                || !matches!(node.kind, NodeKind::Type(_) | NodeKind::Trait)
+            {
+                self.errors
+                    .push(format!("invalid PHP class declaration {}", class.node));
+            }
+            self.class(class, node);
+        }
+        let method_ids = self.methods(php, &nodes);
+        self.declaration_coverage(&class_ids, &method_ids);
+    }
+
+    fn declaration_coverage(&mut self, class_ids: &HashSet<&str>, method_ids: &HashSet<&str>) {
+        for node in &self.snapshot.nodes {
+            if matches!(node.kind, NodeKind::Type(_) | NodeKind::Trait)
+                && !class_ids.contains(node.id.as_str())
+            {
+                self.errors
+                    .push(format!("missing PHP class observation {}", node.id));
+            }
+            if node.kind == NodeKind::Method && !method_ids.contains(node.id.as_str()) {
+                self.errors
+                    .push(format!("missing PHP method observation {}", node.id));
+            }
+        }
+    }
+
+    fn methods<'a>(
+        &mut self,
+        php: &'a crate::schema::PhpSyntax,
+        nodes: &HashMap<&str, &crate::schema::Node>,
+    ) -> HashSet<&'a str> {
+        let owners = crate::php::PhpMethodOwners::new(self.snapshot);
+        let mut ids = HashSet::new();
+        for method in &php.methods {
+            let Some(node) = nodes.get(method.node.as_str()) else {
+                self.errors
+                    .push(format!("dangling PHP method {}", method.node));
+                continue;
+            };
+            if !ids.insert(method.node.as_str()) || node.kind != NodeKind::Method {
+                self.errors
+                    .push(format!("invalid PHP method declaration {}", method.node));
+            }
+            if owners.owner(node).is_none() {
+                self.errors.push(format!(
+                    "PHP method has invalid lexical containment {}",
+                    node.id
+                ));
+            }
+            self.method(method, node);
+        }
+        ids
+    }
+
+    fn incomplete_files(&mut self, php: &crate::schema::PhpSyntax) {
+        let incomplete: HashSet<_> = php.incomplete_files.iter().map(String::as_str).collect();
+        let parse_errors: HashSet<_> = self
+            .snapshot
+            .report
+            .parse_error_files
+            .keys()
+            .map(String::as_str)
+            .collect();
+        if incomplete.len() != php.incomplete_files.len()
+            || incomplete != parse_errors
+            || incomplete.iter().any(|path| {
+                !self.files.contains_key(path) || crate::schema::is_blade_template(path)
+            })
+        {
+            self.errors
+                .push("PHP incomplete-file inventory disagrees with parser errors".into());
+        }
+    }
+
+    fn blade(&mut self, php: &crate::schema::PhpSyntax) {
+        let blade_errors: HashSet<_> = php
+            .blade
+            .iter()
+            .filter(|reference| reference.kind == crate::schema::BladeReferenceKind::ParseError)
+            .map(|reference| reference.provenance.rel_path.as_str())
+            .collect();
+        for path in &blade_errors {
+            if php
+                .blade
+                .iter()
+                .filter(|reference| reference.provenance.rel_path == *path)
+                .count()
+                != 1
+            {
+                self.errors
+                    .push("Blade error file carries other source references".into());
+            }
+        }
+        for reference in &php.blade {
+            self.expression(&reference.provenance, None);
+            if !crate::schema::is_blade_template(&reference.provenance.rel_path) {
+                self.errors
+                    .push("Blade reference outside a Blade file".into());
+            }
+        }
+        for node in &self.snapshot.nodes {
+            if crate::schema::is_blade_template(&node.provenance.rel_path)
+                && node.kind != NodeKind::File
+            {
+                self.errors.push(format!(
+                    "Blade template has a canonical declaration {}",
+                    node.id
+                ));
+            }
+        }
+        for edge in &self.snapshot.edges {
+            if crate::schema::is_blade_template(&edge.provenance.rel_path) {
+                self.errors
+                    .push("Blade template has a canonical edge".into());
+            }
+        }
+    }
+
+    fn class(&mut self, class: &crate::schema::PhpClass, node: &crate::schema::Node) {
+        if class.qualified.rsplit('\\').next() != Some(node.name.as_str())
+            || class.qualified.split('\\').any(str::is_empty)
+        {
+            self.errors.push(format!(
+                "PHP qualified declaration disagrees with {}",
+                class.node
+            ));
+        }
+        for name in class.parent.iter().chain(&class.traits) {
+            self.expression(&name.provenance, Some(node));
+            if name.qualified.is_empty() || name.written.is_empty() {
+                self.errors.push("empty PHP name binding".into());
+            }
+        }
+    }
+
+    fn method(&mut self, method: &crate::schema::PhpMethod, node: &crate::schema::Node) {
+        let mut calls = HashSet::new();
+        for call in &method.member_calls {
+            self.expression(&call.provenance, Some(node));
+            if call.receiver.is_empty()
+                || call.name.is_empty()
+                || !calls.insert((
+                    call.provenance.span.start_byte,
+                    call.provenance.span.end_byte,
+                ))
+            {
+                self.errors
+                    .push("invalid PHP member call observation".into());
+            }
+        }
+        self.returned_call(method, node);
+    }
+
+    fn returned_call(&mut self, method: &crate::schema::PhpMethod, node: &crate::schema::Node) {
+        if let crate::schema::PhpMethodBody::ReturnCall {
+            provenance,
+            arguments,
+            receiver,
+            name,
+        } = &method.body
+        {
+            self.expression(provenance, Some(node));
+            if !method.member_calls.iter().any(|call| {
+                call.receiver == *receiver && call.name == *name && call.provenance == **provenance
+            }) {
+                self.errors
+                    .push("PHP returned call is missing from its method observations".into());
+            }
+            if receiver.is_empty() || name.is_empty() {
+                self.errors.push("empty PHP return call".into());
+            }
+            for argument in arguments {
+                self.literal(argument, node);
+            }
+        }
+    }
+
+    fn literal(&mut self, literal: &crate::schema::PhpLiteral, node: &crate::schema::Node) {
+        use crate::schema::PhpLiteral;
+        let provenance = match literal {
+            PhpLiteral::Class { name } => {
+                if name.qualified.is_empty() || name.written.is_empty() {
+                    self.errors.push("empty PHP class literal".into());
+                }
+                &name.provenance
+            }
+            PhpLiteral::String { provenance, .. } | PhpLiteral::Other { provenance } => provenance,
+        };
+        self.expression(provenance, Some(node));
+    }
+
+    fn expression(&mut self, provenance: &Provenance, owner: Option<&crate::schema::Node>) {
+        validate_provenance(
+            "PHP observation",
+            "source",
+            provenance,
+            self.snapshot,
+            self.files,
+            self.errors,
+        );
+        if provenance.fact_source != FactSource::TreeSitter || provenance.confidence != u8::MAX {
+            self.errors
+                .push("PHP observation has invalid parser provenance".into());
+        }
+        if owner.is_some_and(|node| {
+            provenance.rel_path != node.provenance.rel_path
+                || provenance.span.start_byte < node.provenance.span.start_byte
+                || provenance.span.end_byte > node.provenance.span.end_byte
+        }) {
+            self.errors
+                .push("PHP observation is outside its declaration".into());
+        }
     }
 }
 
@@ -781,11 +1062,22 @@ fn validate_file_measures(
             ));
         }
     }
+    validate_file_measure_coverage(snapshot, &measured_files, errors);
+}
+
+fn validate_file_measure_coverage(
+    snapshot: &Snapshot,
+    measured_files: &HashSet<&str>,
+    errors: &mut Vec<String>,
+) {
     // Templates are outside the counting policy: measured, they would
     // change every total the policy name stands for.
     for node in &snapshot.nodes {
-        let template = snapshot.identity.language == Language::Ruby
-            && crate::schema::is_erb_template(&node.provenance.rel_path);
+        let template = match snapshot.identity.language {
+            Language::Ruby => crate::schema::is_erb_template(&node.provenance.rel_path),
+            Language::Php => crate::schema::is_blade_template(&node.provenance.rel_path),
+            _ => false,
+        };
         if node.kind == NodeKind::File && measured_files.contains(node.id.as_str()) == template {
             errors.push(if template {
                 format!("template {} carries a file measure", node.id)
@@ -1271,9 +1563,21 @@ fn validate_call_sites(
     }
 }
 
+fn validate_blade_identity(snapshot: &Snapshot, errors: &mut Vec<String>) {
+    let tools = &snapshot.identity.tools;
+    if snapshot.identity.language == Language::Php {
+        if tools.blade_parser != crate::schema::BLADE_PARSER {
+            errors.push("PHP snapshot is missing the pinned Blade parser identity".into());
+        }
+    } else if !tools.blade_parser.is_empty() {
+        errors.push("only a PHP snapshot carries a Blade parser identity".into());
+    }
+}
+
 #[allow(clippy::too_many_lines)] // per-language identity gates read as one table
 fn validate_tool_identity(snapshot: &Snapshot, errors: &mut Vec<String>) {
     let tools = &snapshot.identity.tools;
+    validate_blade_identity(snapshot, errors);
     if snapshot.identity.language != Language::Ruby && !tools.erb_parser.is_empty() {
         errors.push("only a ruby snapshot carries an erb_parser identity".into());
     }
@@ -1643,6 +1947,7 @@ mod tests {
         let mut node_counts = std::collections::BTreeMap::new();
         node_counts.insert("file".to_string(), 1);
         Snapshot {
+            php: (identity.language == Language::Php).then(PhpSyntax::default),
             identity,
             files: vec![FileRecord {
                 rel_path: rel_path.into(),
@@ -1818,6 +2123,7 @@ mod tests {
     fn valid_empty_snapshot_passes() {
         let id = good_identity();
         let snap = Snapshot {
+            php: None,
             identity: id,
             files: vec![],
             nodes: vec![],
@@ -1854,6 +2160,7 @@ mod tests {
             provenance: prov,
         };
         let snap = Snapshot {
+            php: None,
             identity: id,
             files: vec![FileRecord {
                 rel_path: "a.rs".into(),

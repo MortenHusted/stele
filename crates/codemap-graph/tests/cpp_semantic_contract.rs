@@ -83,6 +83,7 @@ fn snapshot() -> Snapshot {
         edge(EdgeKind::Calls, 1, 2, provenance(4, 8, FactSource::Clangd)),
     ];
     Snapshot {
+        php: None,
         identity,
         files: vec![FileRecord {
             rel_path: "unit.cpp".into(),

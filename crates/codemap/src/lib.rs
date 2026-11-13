@@ -13,6 +13,7 @@
 // so `codemap::schema::...` / `codemap::nav::...` work for the CLI.
 pub use codemap_graph::{analysis, diff, lookup, nav, schema, validate};
 
+pub mod blade;
 pub mod cli;
 pub(crate) mod clones;
 pub(crate) mod cpp_admission;

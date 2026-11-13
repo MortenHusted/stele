@@ -47,7 +47,7 @@ call regime has its own prepared-environment and admission boundary. See the
 [Python](toolchain/python/README.md) toolchain guides for configuration and
 unsupported shapes.
 
-- versioned snapshot (`codemap.snapshot.v7`) with a declared source
+- versioned snapshot (`codemap.snapshot.v9`; regenerate older snapshots for this reader) with a declared source
   `language`, deterministic identity, SHA-256 `snapshot_id`, and canonical
   byte-stable serialization in both syntax and semantic modes; the validator
   enforces that every fact lives in the declared language's ID namespace;
@@ -131,6 +131,20 @@ unsupported shapes.
   declared receiver, a typed property through `$this` or a typed
   parameter the body never assigns, reaching a method in the declared
   type's ancestry); everything else stays a categorized observation;
+- Laravel source policies over PHP syntax observations: direct returned
+  Eloquent `hasOne`, `hasMany`, `belongsTo` and `belongsToMany` declarations
+  with literal class constants, and literal Blade inheritance, include and
+  component references. Qualified names, method return shapes and trait uses
+  are recorded in the snapshot's PHP syntax block. The named
+  `laravel-association-v1` and `laravel-template-render-v1` policies consume
+  those observations and draw their relations separately from canonical
+  edges. The first static-source profile is tested against the pinned
+  Laravel.io/framework source, with an explicit finite class/trait surface;
+  it does not establish the application's runtime autoload or Composer identity.
+  Local overrides, unknown traits, chains, dynamic targets and ambiguous
+  view/component names remain unresolved by reason. Blade files contribute
+  template observations, with no canonical definitions, calls or measures,
+  and no resolver reads them. See the [Laravel profile and public gate](benchmarks/php/README.md).
 - Tree-sitter Go extraction (structural, plus semantic `calls` under the
   G2 verified-edge policy): one module per file from the `package`
   clause, struct, interface, defined, and alias types, functions, methods
@@ -738,6 +752,8 @@ onto the fresh default branch and rerun the gates.
 The workflow explicitly prepares rust-analyzer, rust-src and the locked Rust
 fixture dependencies, then runs the four native Rust semantic tests offline.
 Each test needs a named passing witness, so an empty filtered run fails CI.
+The workflow also fetches the pinned Laravel.io source and runs the frozen
+Laravel syntax-policy gate without installing or executing the application.
 Other operator-backed suites, public corpus runs and language-specific Ruby
 benchmark runner tests still need their prepared operators. Linux runtime
 profiles, macOS and cross-target runtime acceptance require their own evidence

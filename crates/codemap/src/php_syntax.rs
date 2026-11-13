@@ -103,9 +103,52 @@ pub struct RawTraitUse {
     pub span: Span,
 }
 
+#[derive(Debug, Clone)]
+pub struct RawName {
+    pub written: String,
+    pub qualified: String,
+    pub span: Span,
+}
+
+#[derive(Debug, Clone)]
+pub struct RawClass {
+    pub def: usize,
+    pub qualified: String,
+    pub parent: Option<RawName>,
+    pub traits: Vec<RawName>,
+    pub trait_adaptations: bool,
+}
+
+#[derive(Debug, Clone)]
+pub struct RawMethod {
+    pub member_calls: Vec<RawReturnCall>,
+    pub def: usize,
+    pub is_static: bool,
+    pub returned: Option<RawReturnCall>,
+}
+
+#[derive(Debug, Clone)]
+pub struct RawReturnCall {
+    pub receiver: String,
+    pub name: String,
+    pub arguments: Vec<RawLiteral>,
+    pub span: Span,
+}
+
+#[derive(Debug, Clone)]
+pub enum RawLiteral {
+    Class(RawName),
+    String(String, Span),
+    Other(Span),
+}
+
 /// Per-file PHP extraction output.
 #[derive(Debug, Clone)]
 pub struct RawFile {
+    pub syntax_complete: bool,
+    pub anonymous_classes: Vec<Span>,
+    pub classes: Vec<RawClass>,
+    pub methods: Vec<RawMethod>,
     pub defs: Vec<RawDef>,
     pub imports: Vec<RawImport>,
     pub calls: Vec<RawCall>,
@@ -183,6 +226,10 @@ pub fn extract_file(rel_path: &str, source: &[u8]) -> Result<RawFile> {
     let tokens = token_stream(root, source, &PHP_TOKENS);
 
     Ok(RawFile {
+        syntax_complete: !root.has_error(),
+        anonymous_classes: walker.anonymous_classes,
+        classes: walker.classes,
+        methods: walker.methods,
         defs: walker.defs,
         imports: walker.imports,
         calls: walker.calls,
@@ -357,6 +404,9 @@ fn declared_local(ctx: &Ctx, name: &str) -> Option<String> {
 }
 
 struct Walker<'a> {
+    anonymous_classes: Vec<Span>,
+    classes: Vec<RawClass>,
+    methods: Vec<RawMethod>,
     source: &'a [u8],
     defs: Vec<RawDef>,
     imports: Vec<RawImport>,
@@ -385,23 +435,6 @@ fn first_named_non_name_child(node: Node) -> Option<Node> {
     let name_start = node.child_by_field_name("name").map(|n| n.start_byte());
     node.named_children(&mut cursor)
         .find(|child| Some(child.start_byte()) != name_start && child.kind() != "arguments")
-}
-
-/// Start byte of the first name token under `node`, in source order: the
-/// point where an import path begins.
-fn first_name_start(node: Node) -> Option<usize> {
-    let mut stack = vec![node];
-    let mut earliest: Option<usize> = None;
-    while let Some(n) = stack.pop() {
-        if matches!(n.kind(), "name" | "qualified_name" | "namespace_name") {
-            let start = n.start_byte();
-            earliest = Some(earliest.map_or(start, |e| e.min(start)));
-            continue;
-        }
-        let mut cursor = n.walk();
-        stack.extend(n.children(&mut cursor));
-    }
-    earliest
 }
 
 fn text(source: &[u8], node: Node) -> String {
@@ -484,6 +517,9 @@ fn register_class_import(ctx: &mut Ctx, import: &str) {
 impl<'a> Walker<'a> {
     fn new(source: &'a [u8]) -> Self {
         Self {
+            anonymous_classes: Vec::new(),
+            classes: Vec::new(),
+            methods: Vec::new(),
             source,
             defs: Vec::new(),
             imports: Vec::new(),
@@ -688,38 +724,8 @@ impl<'a> Walker<'a> {
                 self.record_property_declaration(node, ctx);
                 self.visit_children(node, ctx);
             }
-            "method_declaration" => {
-                if let Some(name_node) = node.child_by_field_name("name") {
-                    let leaf = self.text(name_node);
-                    let idx = self.push_def(NodeKind::Method, leaf.clone(), node, ctx);
-                    self.callables.push((idx, cyclomatic(node), form(node)));
-                    ctx.chain.push(leaf);
-                    let saved_parent = ctx.parent.replace(idx);
-                    // `$this` regime: instance methods only. A `static`
-                    // modifier anywhere in the declaration header makes the
-                    // body a singleton context.
-                    let is_static = node
-                        .children_by_field_name("modifier", &mut node.walk())
-                        .any(|m| m.kind() == "static_modifier")
-                        || {
-                            let mut c = node.walk();
-                            node.children(&mut c)
-                                .any(|ch| ch.kind() == "static_modifier")
-                        };
-                    if is_static {
-                        self.static_methods.push(idx);
-                    }
-                    let saved_im = ctx.in_instance_method.replace(!is_static);
-                    self.enter_callable(node, ctx, false);
-                    self.visit_children(node, ctx);
-                    ctx.locals.pop();
-                    ctx.in_instance_method = saved_im;
-                    ctx.parent = saved_parent;
-                    ctx.chain.pop();
-                } else {
-                    self.visit_children(node, ctx);
-                }
-            }
+            "method_declaration" => self.visit_method(node, ctx),
+            "anonymous_class" => self.visit_anonymous_class(node, ctx),
             "const_declaration" => {
                 // Constants are values, not structure; the schema has no
                 // constant node kind (consistent with the Rust and Ruby
@@ -905,27 +911,14 @@ impl<'a> Walker<'a> {
     }
 
     fn visit_namespace_use(&mut self, node: Node, ctx: &mut Ctx) {
-        // `use function f;` and `use const C;` import callables and
-        // constants, which never name a class. The grammar keeps neither
-        // keyword as a node, so read the text between `use` and the first
-        // clause.
-        let imports_classes = {
-            let after_use = node
-                .child(0)
-                .map_or_else(|| node.start_byte(), |n| n.end_byte());
-            let first_name = first_name_start(node).unwrap_or_else(|| node.end_byte());
-            let keyword = std::str::from_utf8(&self.source[after_use..first_name.max(after_use)])
-                .unwrap_or_default()
-                .trim();
-            !matches!(keyword, "function" | "const")
-        };
+        let imports_classes = node.child_by_field_name("type").is_none();
         // Group form: `use Foo\{Bar, Baz as Qux};`
         let mut cursor = node.walk();
         for child in node.children(&mut cursor) {
             match child.kind() {
                 "namespace_use_clause" => {
                     let path = self.clause_path("", child);
-                    if imports_classes {
+                    if imports_classes && child.child_by_field_name("type").is_none() {
                         register_class_import(ctx, &path);
                     }
                     self.imports.push(RawImport {
@@ -948,7 +941,7 @@ impl<'a> Walker<'a> {
                     while let Some(n) = stack.pop() {
                         if n.kind() == "namespace_use_clause" {
                             let path = self.clause_path(&prefix, n);
-                            if imports_classes {
+                            if imports_classes && n.child_by_field_name("type").is_none() {
                                 register_class_import(ctx, &path);
                             }
                             self.imports.push(RawImport {
@@ -991,6 +984,206 @@ impl<'a> Walker<'a> {
         }
     }
 
+    fn bound_name(&self, node: Node, ctx: &Ctx) -> RawName {
+        let written = self.text(node);
+        RawName {
+            qualified: qualify_class_reference(ctx, &written),
+            written,
+            span: span(node),
+        }
+    }
+
+    fn direct_return(&self, method: Node, ctx: &Ctx) -> Option<RawReturnCall> {
+        let body = method.child_by_field_name("body")?;
+        let mut cursor = body.walk();
+        let statements: Vec<_> = body
+            .named_children(&mut cursor)
+            .filter(|n| n.kind() != "comment")
+            .collect();
+        if statements.len() != 1 || statements[0].kind() != "return_statement" {
+            return None;
+        }
+        let call = statements[0].named_child(0)?;
+        let mut returned = self.member_call(call)?;
+        let arguments = call.child_by_field_name("arguments")?;
+        let mut cursor = arguments.walk();
+        returned.arguments = arguments
+            .named_children(&mut cursor)
+            .filter(|n| n.kind() == "argument")
+            .map(|argument| self.argument_literal(argument, ctx))
+            .collect();
+        Some(returned)
+    }
+
+    fn argument_literal(&self, argument: Node, ctx: &Ctx) -> RawLiteral {
+        if argument.child_by_field_name("name").is_some() {
+            return RawLiteral::Other(span(argument));
+        }
+        argument.named_child(0).map_or_else(
+            || RawLiteral::Other(span(argument)),
+            |value| self.literal(value, ctx),
+        )
+    }
+
+    fn member_call(&self, node: Node) -> Option<RawReturnCall> {
+        if node.kind() != "member_call_expression" {
+            return None;
+        }
+        let receiver = node.child_by_field_name("object")?;
+        let name = node.child_by_field_name("name")?;
+        if name.kind() != "name" {
+            return None;
+        }
+        Some(RawReturnCall {
+            receiver: self.text(receiver),
+            name: self.text(name),
+            arguments: Vec::new(),
+            span: span(node),
+        })
+    }
+
+    fn member_calls(&self, method: Node) -> Vec<RawReturnCall> {
+        let mut calls = Vec::new();
+        let mut stack: Vec<_> = method.child_by_field_name("body").into_iter().collect();
+        while let Some(node) = stack.pop() {
+            if matches!(
+                node.kind(),
+                "anonymous_function"
+                    | "arrow_function"
+                    | "function_definition"
+                    | "method_declaration"
+            ) {
+                continue;
+            }
+            calls.extend(self.member_call(node));
+            let mut cursor = node.walk();
+            stack.extend(node.named_children(&mut cursor));
+        }
+        calls.sort_by_key(|call| call.span.start_byte);
+        calls
+    }
+
+    fn literal(&self, node: Node, ctx: &Ctx) -> RawLiteral {
+        if node.kind() == "class_constant_access_expression" {
+            let mut cursor = node.walk();
+            let children: Vec<_> = node.named_children(&mut cursor).collect();
+            if children.len() == 2
+                && self.text(children[1]).eq_ignore_ascii_case("class")
+                && matches!(children[0].kind(), "name" | "qualified_name")
+            {
+                return RawLiteral::Class(self.bound_name(children[0], ctx));
+            }
+        }
+        if let Some(value) = string_node(node, self.source) {
+            return RawLiteral::String(value, span(node));
+        }
+        RawLiteral::Other(span(node))
+    }
+
+    fn visit_method(&mut self, node: Node, ctx: &mut Ctx) {
+        if let Some(name_node) = node.child_by_field_name("name") {
+            let leaf = self.text(name_node);
+            let idx = self.push_def(NodeKind::Method, leaf.clone(), node, ctx);
+            self.callables.push((idx, cyclomatic(node), form(node)));
+            ctx.chain.push(leaf);
+            let saved_parent = ctx.parent.replace(idx);
+            // `$this` regime: instance methods only. A `static`
+            // modifier anywhere in the declaration header makes the
+            // body a singleton context.
+            let is_static = node
+                .children_by_field_name("modifier", &mut node.walk())
+                .any(|m| m.kind() == "static_modifier")
+                || {
+                    let mut c = node.walk();
+                    node.children(&mut c)
+                        .any(|ch| ch.kind() == "static_modifier")
+                };
+            if is_static {
+                self.static_methods.push(idx);
+            }
+            self.methods.push(RawMethod {
+                def: idx,
+                member_calls: self.member_calls(node),
+                is_static,
+                returned: self.direct_return(node, ctx),
+            });
+            let saved_im = ctx.in_instance_method.replace(!is_static);
+            self.enter_callable(node, ctx, false);
+            self.visit_children(node, ctx);
+            ctx.locals.pop();
+            ctx.in_instance_method = saved_im;
+            ctx.parent = saved_parent;
+            ctx.chain.pop();
+        } else {
+            self.visit_children(node, ctx);
+        }
+    }
+
+    fn visit_anonymous_class(&mut self, node: Node, ctx: &mut Ctx) {
+        self.anonymous_classes.push(span(node));
+        let body = node.child_by_field_name("body");
+        let mut cursor = node.walk();
+        for child in node.children(&mut cursor) {
+            if Some(child) == body {
+                let mut anonymous = Ctx {
+                    ns_prefix: ctx.ns_prefix.clone(),
+                    uses: ctx.uses.clone(),
+                    ..Ctx::default()
+                };
+                self.visit(child, &mut anonymous);
+            } else {
+                self.visit(child, ctx);
+            }
+        }
+    }
+
+    fn class_observation(&self, node: Node, def: usize, ctx: &Ctx) -> RawClass {
+        let mut cursor = node.walk();
+        let parent = node
+            .named_children(&mut cursor)
+            .filter(|child| child.kind() == "base_clause")
+            .filter_map(|clause| {
+                let mut cursor = clause.walk();
+                clause
+                    .named_children(&mut cursor)
+                    .find(|n| matches!(n.kind(), "name" | "qualified_name"))
+            })
+            .last()
+            .map(|name| self.bound_name(name, ctx));
+        let mut record = RawClass {
+            def,
+            qualified: ctx.ns_prefix.as_ref().map_or_else(
+                || self.defs[def].name.clone(),
+                |namespace| format!("{namespace}\\{}", self.defs[def].name),
+            ),
+            parent,
+            traits: Vec::new(),
+            trait_adaptations: false,
+        };
+        let Some(body) = node.child_by_field_name("body") else {
+            return record;
+        };
+        let mut cursor = body.walk();
+        for declaration in body
+            .named_children(&mut cursor)
+            .filter(|n| n.kind() == "use_declaration")
+        {
+            self.class_traits(declaration, ctx, &mut record);
+        }
+        record
+    }
+
+    fn class_traits(&self, declaration: Node, ctx: &Ctx, record: &mut RawClass) {
+        let mut cursor = declaration.walk();
+        for child in declaration.children(&mut cursor) {
+            if matches!(child.kind(), "name" | "qualified_name") {
+                record.traits.push(self.bound_name(child, ctx));
+            } else if child.kind() == "use_list" || child.kind() == "{" {
+                record.trait_adaptations = true;
+            }
+        }
+    }
+
     fn visit_type(&mut self, node: Node, ctx: &mut Ctx, kind: NodeKind) {
         let Some(name_node) = node.child_by_field_name("name") else {
             self.visit_children(node, ctx);
@@ -1020,6 +1213,7 @@ impl<'a> Walker<'a> {
             }
         }
 
+        self.classes.push(self.class_observation(node, idx, ctx));
         let saved_parent = ctx.parent.replace(idx);
         if let Some(body) = node.child_by_field_name("body") {
             self.visit_children(body, ctx);
@@ -1205,6 +1399,26 @@ const fn is_named_definition(kind: &str) -> bool {
             | b"trait_declaration"
             | b"enum_declaration"
     )
+}
+
+fn literal_string(written: &str) -> Option<String> {
+    let bytes = written.as_bytes();
+    let quote = *bytes.first()?;
+    if !matches!(quote, b'\'' | b'"') || bytes.last() != Some(&quote) || bytes.len() < 2 {
+        return None;
+    }
+    let body = &written[1..written.len() - 1];
+    if body.contains('$') || body.contains('\\') {
+        return None;
+    }
+    Some(body.to_owned())
+}
+
+pub fn string_node(node: Node, source: &[u8]) -> Option<String> {
+    if !matches!(node.kind(), "string" | "encapsed_string") || node.has_error() {
+        return None;
+    }
+    literal_string(node.utf8_text(source).ok()?)
 }
 
 #[cfg(test)]

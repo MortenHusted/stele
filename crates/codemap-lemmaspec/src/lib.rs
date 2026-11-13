@@ -27,6 +27,7 @@ pub mod association;
 pub mod citations;
 pub mod cli;
 pub mod coverage;
+pub mod laravel;
 pub mod lemmaspec;
 pub mod policy;
 pub mod positive_path;

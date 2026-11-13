@@ -8,7 +8,7 @@
 //!
 //! ## Snapshot contract v2
 //!
-//! A snapshot is identified as `codemap.snapshot.v8`. It is byte-stable
+//! A snapshot is identified as `codemap.snapshot.v9`. It is byte-stable
 //! for the same clean commit, extractor version, grammar version, and
 //! options. Determinism is enforced by:
 //!
@@ -25,10 +25,14 @@
 use std::collections::BTreeMap;
 use std::fmt;
 
+pub use crate::php::{
+    BLADE_PARSER, BladeReference, BladeReferenceKind, PhpClass, PhpLiteral, PhpMemberCall,
+    PhpMethod, PhpMethodBody, PhpName, PhpSyntax,
+};
 use serde::{Deserialize, Serialize};
 
 /// Schema version tag stamped onto every snapshot.
-pub const SCHEMA_VERSION: &str = "codemap.snapshot.v8";
+pub const SCHEMA_VERSION: &str = "codemap.snapshot.v9";
 
 /// The counting policy behind Rust measures.
 ///
@@ -287,6 +291,8 @@ pub struct ToolVersions {
     /// `tree-sitter-php` grammar version (PHP snapshots).
     #[serde(default, skip_serializing_if = "is_empty_string")]
     pub tree_sitter_php: String,
+    #[serde(default, skip_serializing_if = "is_empty_string")]
+    pub blade_parser: String,
     /// `ruby-lsp` version, present only in Ruby semantic (`--calls`) mode.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ruby_lsp: Option<String>,
@@ -384,6 +390,7 @@ impl ToolVersions {
             cargo_lock_sha256: None,
             rust_analyzer_policy: None,
             tree_sitter_php: String::new(),
+            blade_parser: String::new(),
             ruby_lsp: None,
             ruby: None,
             rbs: None,
@@ -419,6 +426,7 @@ impl ToolVersions {
             cargo_lock_sha256: None,
             rust_analyzer_policy: None,
             tree_sitter_php: String::new(),
+            blade_parser: String::new(),
             ruby_lsp: None,
             ruby: None,
             rbs: None,
@@ -454,6 +462,7 @@ impl ToolVersions {
             cargo_lock_sha256: None,
             rust_analyzer_policy: None,
             tree_sitter_php: TREE_SITTER_PHP_VERSION.to_string(),
+            blade_parser: BLADE_PARSER.to_string(),
             ruby_lsp: None,
             ruby: None,
             rbs: None,
@@ -494,6 +503,7 @@ impl ToolVersions {
             cargo_lock_sha256,
             rust_analyzer_policy: Some(RustAnalyzerPolicy::fixed()),
             tree_sitter_php: String::new(),
+            blade_parser: String::new(),
             ruby_lsp: None,
             ruby: None,
             rbs: None,
@@ -533,6 +543,7 @@ impl ToolVersions {
             cargo_lock_sha256: None,
             rust_analyzer_policy: None,
             tree_sitter_php: String::new(),
+            blade_parser: String::new(),
             ruby_lsp: Some(ruby_lsp),
             ruby: Some(ruby),
             rbs: Some(rbs),
@@ -568,6 +579,7 @@ impl ToolVersions {
             cargo_lock_sha256: None,
             rust_analyzer_policy: None,
             tree_sitter_php: TREE_SITTER_PHP_VERSION.to_string(),
+            blade_parser: BLADE_PARSER.to_string(),
             ruby_lsp: None,
             ruby: None,
             rbs: None,
@@ -642,6 +654,7 @@ impl ToolVersions {
             cargo_lock_sha256: None,
             rust_analyzer_policy: None,
             tree_sitter_php: String::new(),
+            blade_parser: String::new(),
             ruby_lsp: None,
             ruby: None,
             rbs: None,
@@ -1161,6 +1174,11 @@ impl CallSiteCategory {
     }
 }
 
+/// Whether a PHP-family file is a Blade template.
+pub fn is_blade_template(path: &str) -> bool {
+    path.ends_with(".blade.php")
+}
+
 /// Whether `rel_path` names an ERB template. The Ruby family reads a
 /// template for the calls its tags make: it contributes a file node and
 /// call sites, never a definition, an edge or a measure, and no resolver
@@ -1260,6 +1278,8 @@ pub struct Report {
 /// The immutable snapshot.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Snapshot {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub php: Option<PhpSyntax>,
     pub identity: SnapshotIdentity,
     pub files: Vec<FileRecord>,
     pub nodes: Vec<Node>,
@@ -1922,7 +1942,7 @@ mod tests {
 
     #[test]
     fn v7_requires_file_lengths_and_language_but_keeps_optional_semantic_tool_fields() {
-        assert_eq!(SCHEMA_VERSION, "codemap.snapshot.v8");
+        assert_eq!(SCHEMA_VERSION, "codemap.snapshot.v9");
 
         let file = serde_json::from_value::<FileRecord>(serde_json::json!({
             "rel_path": "a.rs",

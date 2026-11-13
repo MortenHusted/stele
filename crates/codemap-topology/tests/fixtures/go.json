@@ -1,8 +1,8 @@
 {
   "identity": {
-    "schema_version": "codemap.snapshot.v8",
+    "schema_version": "codemap.snapshot.v9",
     "language": "go",
-    "extractor_version": "0.4.0",
+    "extractor_version": "0.6.1",
     "repository": {
       "id": "https://example.test/synthetic-topology.git",
       "is_canonical": false
@@ -17,7 +17,7 @@
       "go_tool_bundle_sha256": "synthetic-bundle"
     },
     "dirty": false,
-    "snapshot_id": "9860bf2a9f1350962703a0768a69943c56281f2d7a2a8220197f6cabdef2526b"
+    "snapshot_id": "dc89ba30c07cf6e97930a9e1075470e7c5f733f0d6bb043687fdaf5008d2ba6c"
   },
   "files": [
     {
@@ -47,7 +47,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -72,7 +72,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -97,7 +97,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -122,7 +122,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -147,7 +147,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -172,7 +172,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -195,7 +195,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -218,7 +218,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -241,7 +241,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -264,7 +264,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "Gopls",
         "confidence": 255
       }

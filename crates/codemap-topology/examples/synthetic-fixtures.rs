@@ -155,7 +155,8 @@ fn main() -> anyhow::Result<()> {
             },
         ];
         let report = report(&nodes, &edges);
-        let snapshot = Snapshot {
+        let mut snapshot = Snapshot {
+            php: None,
             identity,
             files: vec![FileRecord {
                 rel_path: path.into(),
@@ -171,12 +172,20 @@ fn main() -> anyhow::Result<()> {
             twin_pairs: vec![],
             report,
         };
-        codemap_graph::validate(&snapshot)?;
-        let dir = format!("{}/tests/fixtures", env!("CARGO_MANIFEST_DIR"));
-        std::fs::write(
-            format!("{dir}/{}.json", language.tag()),
-            serde_json::to_string_pretty(&snapshot)? + "\n",
-        )?;
+        if language == Language::Php {
+            snapshot.php = Some(codemap_graph::schema::PhpSyntax::default());
+        }
+        write_fixture(&snapshot, language)?;
     }
+    Ok(())
+}
+
+fn write_fixture(snapshot: &Snapshot, language: Language) -> anyhow::Result<()> {
+    codemap_graph::validate(snapshot)?;
+    let dir = format!("{}/tests/fixtures", env!("CARGO_MANIFEST_DIR"));
+    std::fs::write(
+        format!("{dir}/{}.json", language.tag()),
+        serde_json::to_string_pretty(snapshot)? + "\n",
+    )?;
     Ok(())
 }

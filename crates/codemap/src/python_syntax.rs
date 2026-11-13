@@ -394,6 +394,7 @@ pub(crate) fn assemble_native(
     });
     let report = build_report(&files, &nodes, &edges, &sites, 0, 0, BTreeMap::new());
     let snapshot = Snapshot {
+        php: None,
         identity,
         files,
         nodes,

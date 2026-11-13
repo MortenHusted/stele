@@ -1,0 +1,216 @@
+{
+  "contract": "stele-laravel-static-source-profile/v1",
+  "scope": "Explicit source-convention assumptions tested against these public package pins; no installed package or runtime autoload identity claim",
+  "policies": [
+    "policy:laravel-association-v1/php",
+    "policy:laravel-template-render-v1/php"
+  ],
+  "root_package": "laravel/framework",
+  "roots": [
+    {
+      "qualified_name": "Illuminate\\Database\\Eloquent\\Model",
+      "path": "src/Illuminate/Database/Eloquent/Model.php",
+      "sha256": "c84c3458477caabc8b86a441de97c35e74fe1542246a5017c252b93873424ea9",
+      "parent": null,
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/Database/Eloquent/Model.php"
+    },
+    {
+      "qualified_name": "Illuminate\\Foundation\\Auth\\User",
+      "path": "src/Illuminate/Foundation/Auth/User.php",
+      "sha256": "b6c28d33e736fce06e0310b8ae218977eed96741deec7ab835d31e505f6c4609",
+      "parent": "Illuminate\\Database\\Eloquent\\Model",
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/Foundation/Auth/User.php"
+    }
+  ],
+  "relationship_factories": {
+    "names": [
+      "hasOne",
+      "hasMany",
+      "belongsTo",
+      "belongsToMany"
+    ],
+    "path": "src/Illuminate/Database/Eloquent/Concerns/HasRelationships.php",
+    "sha256": "503994cc37f53f8182ce05113655c1a916f6379a1d940d2112f517d23076e32f"
+  },
+  "trusted_traits": [
+    {
+      "qualified_name": "Illuminate\\Database\\Eloquent\\Factories\\HasFactory",
+      "package": "laravel/framework",
+      "version": "v13.42.0",
+      "revision": "f5c01f6b63803f16f38ebb31622c4fea412bd022",
+      "path": "src/Illuminate/Database/Eloquent/Factories/HasFactory.php",
+      "sha256": "b6cb2b164e90168e80963a5549541f5f3188a3ec8cfd368bf3611bd94fbd46a7",
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/Database/Eloquent/Factories/HasFactory.php",
+      "declared_methods": [
+        "factory",
+        "getUseFactoryAttribute",
+        "newFactory"
+      ],
+      "trait_uses": []
+    },
+    {
+      "qualified_name": "Illuminate\\Database\\Eloquent\\SoftDeletes",
+      "package": "laravel/framework",
+      "version": "v13.42.0",
+      "revision": "f5c01f6b63803f16f38ebb31622c4fea412bd022",
+      "path": "src/Illuminate/Database/Eloquent/SoftDeletes.php",
+      "sha256": "8b2e86482b44cad900e57bf26b0eb8153a3c32d42b3f7600c06976de305d113c",
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/Database/Eloquent/SoftDeletes.php",
+      "declared_methods": [
+        "bootSoftDeletes",
+        "forceDelete",
+        "forceDeleteQuietly",
+        "forceDeleted",
+        "forceDeleting",
+        "forceDestroy",
+        "getDeletedAtColumn",
+        "getQualifiedDeletedAtColumn",
+        "initializeSoftDeletes",
+        "isForceDeleting",
+        "performDeleteOnModel",
+        "restore",
+        "restoreQuietly",
+        "restored",
+        "restoring",
+        "runSoftDelete",
+        "softDeleted",
+        "trashed"
+      ],
+      "trait_uses": []
+    },
+    {
+      "qualified_name": "Illuminate\\Notifications\\Notifiable",
+      "package": "laravel/framework",
+      "version": "v13.42.0",
+      "revision": "f5c01f6b63803f16f38ebb31622c4fea412bd022",
+      "path": "src/Illuminate/Notifications/Notifiable.php",
+      "sha256": "573fa9bb96fa392434450c9cd9deb8d4e40a5bb93c140a648267b48dfa0433ac",
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/Notifications/Notifiable.php",
+      "declared_methods": [],
+      "trait_uses": [
+        "Illuminate\\Notifications\\HasDatabaseNotifications",
+        "Illuminate\\Notifications\\RoutesNotifications"
+      ]
+    },
+    {
+      "qualified_name": "Illuminate\\Notifications\\HasDatabaseNotifications",
+      "package": "laravel/framework",
+      "version": "v13.42.0",
+      "revision": "f5c01f6b63803f16f38ebb31622c4fea412bd022",
+      "path": "src/Illuminate/Notifications/HasDatabaseNotifications.php",
+      "sha256": "a7a163aa1f98a0ae4cd2135905b6852e29a850beb4296aa72c44c37d22832135",
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/Notifications/HasDatabaseNotifications.php",
+      "declared_methods": [
+        "notifications",
+        "readNotifications",
+        "unreadNotifications"
+      ],
+      "trait_uses": []
+    },
+    {
+      "qualified_name": "Illuminate\\Notifications\\RoutesNotifications",
+      "package": "laravel/framework",
+      "version": "v13.42.0",
+      "revision": "f5c01f6b63803f16f38ebb31622c4fea412bd022",
+      "path": "src/Illuminate/Notifications/RoutesNotifications.php",
+      "sha256": "82891713db67f6df9ea3b400c9905d26da7834b51d26f53dd3bdb1d7f6a78497",
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/Notifications/RoutesNotifications.php",
+      "declared_methods": [
+        "notify",
+        "notifyNow",
+        "routeNotificationFor"
+      ],
+      "trait_uses": []
+    },
+    {
+      "qualified_name": "Laravel\\Sanctum\\HasApiTokens",
+      "package": "laravel/sanctum",
+      "version": "v4.4.0",
+      "revision": "a28ea5d4c2b123420562d6a3a233414f84b70774",
+      "path": "src/HasApiTokens.php",
+      "sha256": "7400600b832dc377ac5f51d051a917775f6efc0d2176a1de7bd7826499ae6509",
+      "source_url": "https://github.com/laravel/sanctum/blob/a28ea5d4c2b123420562d6a3a233414f84b70774/src/HasApiTokens.php",
+      "declared_methods": [
+        "createToken",
+        "currentAccessToken",
+        "generateTokenString",
+        "tokenCan",
+        "tokenCant",
+        "tokens",
+        "withAccessToken"
+      ],
+      "trait_uses": []
+    },
+    {
+      "qualified_name": "Laravel\\Scout\\Searchable",
+      "package": "laravel/scout",
+      "version": "v11.9.0",
+      "revision": "07a6255b0cf2420426a80fd0e58a96b44afbfd40",
+      "path": "src/Searchable.php",
+      "sha256": "b2c6d49995e03baecb6fd06ea69d22b1996068f247d0c30beddae1895a10df87",
+      "source_url": "https://github.com/laravel/scout/blob/07a6255b0cf2420426a80fd0e58a96b44afbfd40/src/Searchable.php",
+      "declared_methods": [
+        "bootSearchable",
+        "disableSearchSyncing",
+        "enableSearchSyncing",
+        "getScoutKey",
+        "getScoutKeyName",
+        "getScoutKeyType",
+        "getScoutModelsByIds",
+        "indexableAs",
+        "makeAllSearchable",
+        "makeAllSearchableQuery",
+        "makeAllSearchableUsing",
+        "makeSearchableUsing",
+        "pushSoftDeleteMetadata",
+        "queryScoutModelsByIds",
+        "queueMakeSearchable",
+        "queueRemoveFromSearch",
+        "registerSearchableMacros",
+        "removeAllFromSearch",
+        "scoutMetadata",
+        "search",
+        "searchIndexShouldBeUpdated",
+        "searchable",
+        "searchableAs",
+        "searchableEmbeddingColumn",
+        "searchableSync",
+        "searchableUsing",
+        "shouldBeSearchable",
+        "syncMakeSearchable",
+        "syncRemoveFromSearch",
+        "syncWithSearchUsing",
+        "syncWithSearchUsingQueue",
+        "toSearchableArray",
+        "unsearchable",
+        "unsearchableSync",
+        "usesSoftDelete",
+        "wasSearchableBeforeDelete",
+        "wasSearchableBeforeUpdate",
+        "withScoutMetadata",
+        "withoutSyncingToSearch"
+      ],
+      "trait_uses": []
+    }
+  ],
+  "packages": [
+    {
+      "name": "laravel/framework",
+      "version": "v13.42.0",
+      "revision": "f5c01f6b63803f16f38ebb31622c4fea412bd022",
+      "repository": "https://github.com/laravel/framework"
+    },
+    {
+      "name": "laravel/scout",
+      "version": "v11.9.0",
+      "revision": "07a6255b0cf2420426a80fd0e58a96b44afbfd40",
+      "repository": "https://github.com/laravel/scout"
+    },
+    {
+      "name": "laravel/sanctum",
+      "version": "v4.4.0",
+      "revision": "a28ea5d4c2b123420562d6a3a233414f84b70774",
+      "repository": "https://github.com/laravel/sanctum"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ require 'tmpdir'
 require 'tty-command'
 require_relative 'selected_caller_oracle'
 require_relative 'template_oracle'
+require_relative 'laravel_oracle'
 
 class PublicCorpusGate
   attr_reader :contract
@@ -22,7 +23,7 @@ class PublicCorpusGate
     end
     @contract = JSON.parse(File.read(File.join(@root, 'benchmarks', descriptor)))
     raise ArgumentError, 'declared corpus is for another language' unless @contract.fetch('language') == language
-    [@contract.fetch('oracle'), @contract.fetch('tool_lock'), @contract['application_oracle'], @contract['template_oracle']].compact.each do |pin|
+    [@contract.fetch('oracle'), @contract.fetch('tool_lock'), @contract['application_oracle'], @contract['template_oracle'], @contract['framework_profile'], @contract['reader_scope']].compact.each do |pin|
       raise ArgumentError, 'declared oracle or tool lock has drifted' unless Digest::SHA256.file(File.join(@root, pin.fetch('path'))).hexdigest == pin.fetch('sha256')
     end
     @runner = TTY::Command.new(printer: :null)
@@ -51,6 +52,8 @@ class PublicCorpusGate
     head = @runner.run('git', '-C', repo, 'rev-parse', 'HEAD').out.strip
     clean = @runner.run('git', '-C', repo, 'status', '--porcelain').out.empty?
     raise ArgumentError, 'source must be clean at the exact public corpus commit' unless head == @contract.fetch('commit') && clean
+    return run_framework(repo, head, bundle, cargo_home) if @contract['mode'] == 'framework-syntax'
+
     lock = @contract.fetch('tool_lock')
     if @contract.fetch('language') == 'rust'
       raise ArgumentError, '--cargo-home is required for Rust; --bundle is not supported' unless cargo_home && !bundle
@@ -126,6 +129,75 @@ class PublicCorpusGate
   end
 
   private
+
+  def run_framework(repo, head, bundle, cargo_home)
+    raise ArgumentError, 'the syntax framework gate uses no --bundle or --cargo-home' if bundle || cargo_home
+    oracle = JSON.parse(File.read(File.join(@root, @contract.fetch('oracle').fetch('path'))))
+    framework_sources(repo, oracle)
+    env = {'CARGO_NET_OFFLINE' => 'true', 'RUSTUP_TOOLCHAIN' => @contract.fetch('toolchain'), 'RUSTUP_NO_UPDATE_CHECK' => '1'}
+    Dir.mkdir(@out, 0o700)
+    command('build', 'cargo', 'build', '--locked', '--release', '-p', 'stele', chdir: @root, env: env)
+    @contract.fetch('synthetic_tests').each do |test|
+      observed = command(test.fetch('test_name'), 'cargo', 'test', '--locked', '-p', test.fetch('package'), '--test', test.fetch('test_target'), '--', '--exact', test.fetch('test_name'), '--color', 'never', chdir: @root, env: env)
+      self.class.verify_oracle(observed.out, test.fetch('test_name'))
+    end
+    metadata = command('metadata', 'cargo', 'metadata', '--locked', '--offline', '--no-deps', '--format-version', '1', chdir: @root, env: env)
+    binary = File.join(JSON.parse(metadata.out).fetch('target_directory'), 'release/stele')
+    scored = []
+    snapshots = []
+    topologies = Dir.mktmpdir('stele-laravel-corpus') do |scratch|
+      %w[a b].map do |name|
+        checkout = File.join(scratch, name)
+        command("clone-#{name}", 'git', 'clone', '--quiet', '--no-local', '--no-checkout', repo, checkout)
+        command("checkout-#{name}", 'git', '-C', checkout, 'checkout', '--quiet', '--detach', head)
+        command("origin-#{name}", 'git', '-C', checkout, 'remote', 'set-url', 'origin', @contract.fetch('repository'))
+        framework_sources(checkout, oracle)
+        snapshot_path = File.join(@out, "syntax-#{name}.json")
+        command("extract-#{name}", binary, 'code', 'extract', '--path', checkout, '--language', 'php', '--out', snapshot_path, env: env)
+        command("validate-#{name}", binary, 'code', 'validate', '--file', snapshot_path, env: env)
+        bytes = File.binread(snapshot_path)
+        snapshot = JSON.parse(bytes)
+        self.class.verify_snapshot(snapshot, @contract, semantic: false)
+        @contract.fetch('tool_versions', {}).each do |tool, version|
+          raise ArgumentError, "Laravel #{tool} identity differs" unless snapshot.fetch('identity').fetch('tools').fetch(tool) == version
+        end
+        topology_path = File.join(@out, "topology-#{name}.json")
+        command("topology-#{name}", binary, 'topology', '--snapshot', snapshot_path, '--out', topology_path, env: env)
+        topology_bytes = File.binread(topology_path)
+        reader_scope = JSON.parse(File.read(File.join(@root, @contract.fetch('reader_scope').fetch('path'))))
+        scored << LaravelOracle.verify(snapshot, JSON.parse(topology_bytes), oracle, reader_scope: reader_scope)
+        raise ArgumentError, 'extractor changed its input checkout' unless @runner.run('git', '-C', checkout, 'status', '--porcelain').out.empty?
+        snapshots << bytes
+        topology_bytes
+      end
+    end
+    raise ArgumentError, 'independent Laravel checkouts produced different snapshots' unless snapshots.uniq.length == 1
+    raise ArgumentError, 'independent Laravel checkouts produced different policies' unless topologies.uniq.length == 1 && scored.uniq.length == 1
+    result = {
+      'contract' => 'stele-public-corpus-result/v1', 'passed' => true, 'language' => 'php',
+      'repository' => @contract.fetch('repository'), 'commit' => head,
+      'oracle_sha256' => @contract.fetch('oracle').fetch('sha256'),
+      'framework_profile_sha256' => @contract.fetch('framework_profile').fetch('sha256'),
+      'reader_scope_sha256' => @contract.fetch('reader_scope').fetch('sha256'),
+      'tool_lock_sha256' => @contract.fetch('tool_lock').fetch('sha256'),
+      'stele_sha256' => Digest::SHA256.file(binary).hexdigest,
+      'snapshot_sha256' => Digest::SHA256.hexdigest(snapshots.first),
+      'topology_sha256' => Digest::SHA256.hexdigest(topologies.first), 'framework_oracle' => scored.first,
+      'scope' => 'frozen selected Eloquent declarations and Blade references with forbidden targets and explicit omissions; no application-wide precision or recall claim'
+    }
+    File.write(File.join(@out, 'result.json'), JSON.pretty_generate(result) + "\n")
+    result
+  end
+
+  def framework_sources(repo, oracle)
+    framework = oracle.fetch('framework')
+    {'composer.json' => framework.fetch('composer_json_sha256'), 'composer.lock' => framework.fetch('composer_lock_sha256'),
+     oracle.fetch('license_file').fetch('path') => oracle.fetch('license_file').fetch('sha256')}.each do |path, digest|
+      raise ArgumentError, "Laravel framework source pin differs: #{path}" unless Digest::SHA256.file(File.join(repo, path)).hexdigest == digest
+    end
+    locked = JSON.parse(File.read(File.join(repo, 'composer.lock'))).fetch('packages').select { |package| package.fetch('name') == 'laravel/framework' }
+    raise ArgumentError, 'Laravel framework package pin differs' unless locked.length == 1 && locked.first.fetch('version') == framework.fetch('version') && locked.first.fetch('source') == framework.fetch('source')
+  end
 
   def verify_application_oracle(snapshot)
     tools = snapshot.fetch('identity').fetch('tools')

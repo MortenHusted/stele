@@ -568,6 +568,7 @@ pub fn build_snapshot(
 
     let mut files: Vec<FileRecord> = Vec::with_capacity(files_with_bytes.len());
     let mut nodes: Vec<Node> = Vec::new();
+    let mut php_syntax = (state.language == Language::Php).then(schema::PhpSyntax::default);
     let mut edges: Vec<Edge> = Vec::new();
     let mut parse_errors = 0usize;
     let mut parse_error_files = BTreeMap::new();
@@ -824,9 +825,23 @@ pub fn build_snapshot(
                 }
             }
             Language::Php => {
+                let source = PhpObservationSource {
+                    identity: &identity,
+                    path: rel_path,
+                    hash: &file_hash,
+                };
+                let php = php_syntax.as_mut().expect("PHP syntax accumulator");
+                if schema::is_blade_template(rel_path) {
+                    source.blade(bytes, php, &mut observations)?;
+                    continue;
+                }
                 let raw = php_syntax::extract_file(rel_path, bytes)
                     .with_context(|| format!("extraction failed for {rel_path}"))?;
-                parse_errors += raw.parse_errors;
+                let file_errors = raw.parse_errors.max(usize::from(!raw.syntax_complete));
+                parse_errors += file_errors;
+                if file_errors > 0 {
+                    parse_error_files.insert(rel_path.clone(), file_errors);
+                }
                 let def_ids = assign_and_push(
                     &raw.defs,
                     &raw.imports,
@@ -837,6 +852,7 @@ pub fn build_snapshot(
                     &file_node_id,
                     rel_path,
                 );
+                source.syntax(&raw, &def_ids, php);
                 php_static_methods.extend(raw.static_methods.iter().map(|&i| def_ids[i].clone()));
                 if measures {
                     sink.record(
@@ -850,19 +866,21 @@ pub fn build_snapshot(
                         &raw.tokens,
                     );
                 }
-                for c in &raw.calls {
-                    raw_calls.push(PendingCall {
-                        rel_path: rel_path.clone(),
-                        file_hash: file_hash.clone(),
-                        call: c.clone(),
-                    });
-                }
-                for h in &raw.heritage {
-                    php_heritage_obs.push((rel_path.clone(), file_hash.clone(), h.clone()));
-                }
-                for t in &raw.trait_uses {
-                    php_trait_obs.push((rel_path.clone(), file_hash.clone(), t.clone()));
-                }
+                raw_calls.extend(raw.calls.iter().map(|call| PendingCall {
+                    rel_path: rel_path.clone(),
+                    file_hash: file_hash.clone(),
+                    call: call.clone(),
+                }));
+                php_heritage_obs.extend(
+                    raw.heritage
+                        .iter()
+                        .map(|heritage| (rel_path.clone(), file_hash.clone(), heritage.clone())),
+                );
+                php_trait_obs.extend(
+                    raw.trait_uses
+                        .iter()
+                        .map(|trait_use| (rel_path.clone(), file_hash.clone(), trait_use.clone())),
+                );
             }
             Language::Go => {
                 let raw = go_syntax::extract_file(rel_path, bytes)
@@ -1194,6 +1212,7 @@ pub fn build_snapshot(
     report.first_parse_errors = first_parse_errors;
 
     let snapshot = Snapshot {
+        php: php_syntax,
         identity,
         files,
         nodes,
@@ -1391,6 +1410,117 @@ fn build_file_node(
         name: rel_path.to_string(),
         symbol_key: format!("{}file:{rel_path}", identity.language.id_prefix()),
         provenance: provenance(identity, rel_path, span, file_hash),
+    }
+}
+
+struct PhpObservationSource<'a> {
+    identity: &'a SnapshotIdentity,
+    path: &'a str,
+    hash: &'a str,
+}
+
+impl PhpObservationSource<'_> {
+    fn blade(
+        &self,
+        bytes: &[u8],
+        php: &mut schema::PhpSyntax,
+        observations: &mut BTreeMap<String, usize>,
+    ) -> Result<()> {
+        let raw = crate::blade::extract_file(bytes)?;
+        *observations.entry("blade_templates".into()).or_default() += 1;
+        for reference in raw {
+            if reference.kind == schema::BladeReferenceKind::ParseError {
+                *observations.entry("blade_parse_errors".into()).or_default() += 1;
+            }
+            php.blade.push(schema::BladeReference {
+                kind: reference.kind,
+                target: reference.target,
+                provenance: self.provenance(reference.span),
+            });
+        }
+        Ok(())
+    }
+
+    fn syntax(&self, raw: &php_syntax::RawFile, def_ids: &[String], php: &mut schema::PhpSyntax) {
+        php.anonymous_classes.extend(
+            raw.anonymous_classes
+                .iter()
+                .map(|span| self.provenance(*span)),
+        );
+        if !raw.syntax_complete {
+            php.incomplete_files.push(self.path.to_owned());
+        }
+        php.classes
+            .extend(raw.classes.iter().map(|class| schema::PhpClass {
+                node: def_ids[class.def].clone(),
+                qualified: class.qualified.clone(),
+                parent: class.parent.as_ref().map(|name| self.name(name)),
+                traits: class.traits.iter().map(|name| self.name(name)).collect(),
+                trait_adaptations: class.trait_adaptations,
+            }));
+        php.methods.extend(
+            raw.methods
+                .iter()
+                .map(|method| self.method(method, def_ids)),
+        );
+    }
+
+    fn method(&self, method: &php_syntax::RawMethod, def_ids: &[String]) -> schema::PhpMethod {
+        schema::PhpMethod {
+            node: def_ids[method.def].clone(),
+            is_static: method.is_static,
+            member_calls: method
+                .member_calls
+                .iter()
+                .map(|call| schema::PhpMemberCall {
+                    receiver: call.receiver.clone(),
+                    name: call.name.clone(),
+                    provenance: self.provenance(call.span),
+                })
+                .collect(),
+            body: method
+                .returned
+                .as_ref()
+                .map_or(schema::PhpMethodBody::Other, |call| {
+                    schema::PhpMethodBody::ReturnCall {
+                        receiver: call.receiver.clone(),
+                        name: call.name.clone(),
+                        arguments: call
+                            .arguments
+                            .iter()
+                            .map(|literal| self.literal(literal))
+                            .collect(),
+                        provenance: Box::new(self.provenance(call.span)),
+                    }
+                }),
+        }
+    }
+
+    fn literal(&self, literal: &php_syntax::RawLiteral) -> schema::PhpLiteral {
+        match literal {
+            php_syntax::RawLiteral::Class(name) => schema::PhpLiteral::Class {
+                name: self.name(name),
+            },
+            php_syntax::RawLiteral::String(value, span) => schema::PhpLiteral::String {
+                value: value.clone(),
+                provenance: self.provenance(*span),
+            },
+            php_syntax::RawLiteral::Other(span) => schema::PhpLiteral::Other {
+                provenance: self.provenance(*span),
+            },
+        }
+    }
+
+    fn name(&self, name: &php_syntax::RawName) -> schema::PhpName {
+        schema::PhpName {
+            written: name.written.clone(),
+            qualified: name.qualified.clone(),
+            provenance: self.provenance(name.span),
+        }
+    }
+
+    fn provenance(&self, span: Span) -> Provenance {
+        provenance(self.identity, self.path, span, self.hash)
     }
 }
 

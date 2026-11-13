@@ -1,0 +1,61 @@
+plan laravel_facts {
+  use "../intent/catalog.stele" as intent
+
+  decision syntax_before_framework_meaning {
+    governs: [intent.answers_from_facts]
+    text: "PHP parsers record qualified declaration bindings, method return shapes and Blade references in an optional PHP syntax block. Laravel policies consume the snapshot alone and emit separately named relations with source provenance and unresolved reasons."
+    rejected: "Generalizing Ruby call arguments does not preserve PHP return, receiver or override context. Reopening source in a consumer creates another producer. Framework conventions must not become canonical call edges."
+  }
+  decision bounded_static_source_profile {
+    governs: [intent.answers_from_facts, intent.fails_closed]
+    text: "The first Laravel source profile admits direct returned Eloquent hasOne, hasMany, belongsTo and belongsToMany class literals and literal Blade references. Qualified roots and a finite source-reviewed external trait surface are explicit profile assumptions, tested against the pinned Laravel.io and locked framework source. Local shadows, overrides, unknown traits, chains, dynamic targets and ambiguous view bindings remain unresolved. This is not runtime Composer or application execution evidence."
+    rejected: "Accepting any method called hasMany or any parent named Model would misclassify unrelated PHP. Booting providers, evaluating templates or expanding dynamic names would violate extraction's no-execution boundary."
+  }
+  decision blade_uses_a_pinned_parser {
+    governs: [intent.answers_from_facts]
+    text: "Read Blade through a pinned MIT tree-sitter grammar in process, retaining its inherited HTML notices and source hashes. Templates contribute PHP-family file observations, with no canonical definitions, calls or measures and no resolver queries."
+    rejected: "A regex template reader cannot establish comments, escaping, nesting and verbatim boundaries. An unpublished Git crate would require a second dependency notice transport; reviewed generated-source vendoring uses the existing build and notice path."
+  }
+  decision unsupported_templates_are_whole_file_refusals {
+    governs: [intent.answers_from_facts, intent.fails_closed]
+    text: "The pinned grammar cannot read nineteen independently source-reviewed Laravel.io templates using custom directives, literal at-sign text, dynamic or conditional HTML and extension syntax. Any template grammar error yields only a whole-file refusal observation and no relationships. A separate source-scope artifact pins those constructs and files; the gate refuses unexplained failures and every failure in a required selected template, without changing the frozen eight association and five template labels."
+    rejected: "Recovering partial relationships from an error-bearing template could misread context. Requiring zero errors for the whole application would claim a complete Blade grammar that the pinned reader does not provide. Relabelling the required positive cases from extractor output would weaken acceptance."
+  }
+  decision labels_precede_results {
+    governs: [intent.answers_from_facts, intent.same_commit_same_facts]
+    text: "Freeze selected source-labelled Laravel.io relationships and forbidden targets before extraction. Its framework gate is separate from Monica's existing PHP call acceptance, whose labels and thresholds remain unchanged. Independent clean checkouts must produce identical validated snapshots and policy results."
+    rejected: "Deriving expected labels from extractor output would only prove self-consistency. Monica's six Blade templates do not establish positive owned-template coverage."
+  }
+  decision method_ownership_requires_lexical_source_scopes {
+    governs: [intent.answers_from_facts, intent.fails_closed]
+    text: "PHP syntax observations include anonymous-class spans. Every method must retain its unique nearest lexical owner: a named class or trait, or file containment for an anonymous class. Consumers exclude anonymous methods from named model composition. Missing, duplicate or reparented ownership refuses validation."
+    rejected: "Checking method-payload completeness alone lets a missing containment edge hide an override. Requiring every method to belong to a named class rejects existing anonymous migrations. Inferring an anonymous method's owner from an enclosing named class misattributes nested anonymous declarations."
+  }
+
+  change record_php_and_blade_syntax {
+    follows: [syntax_before_framework_meaning, blade_uses_a_pinned_parser, unsupported_templates_are_whole_file_refusals, method_ownership_requires_lexical_source_scopes]
+    serves: [intent.answers_from_facts, intent.fails_closed, intent.same_commit_same_facts]
+    touches: ["crates/codemap-graph/src/schema.rs", "crates/codemap-graph/src/validate.rs", "crates/codemap/src/php_syntax.rs", "crates/codemap/src/extract.rs"]
+    creates: ["crates/codemap/src/blade.rs", "crates/codemap/tests/laravel_syntax.rs"]
+    state: done
+    text: "Given aliased PHP classes and Blade templates, extraction records exact spans and qualified source observations. Given comments, escaped directives, verbatim text or malformed templates, it emits no invented reference. The validator refuses foreign-language metadata, invalid spans and dangling declaration IDs. Existing PHP canonical call labels stay unchanged."
+  }
+  change derive_laravel_relations {
+    after: [record_php_and_blade_syntax]
+    follows: [syntax_before_framework_meaning, bounded_static_source_profile]
+    serves: [intent.answers_from_facts, intent.fails_closed]
+    touches: ["crates/stele/src/topology.rs", "crates/codemap-lemmaspec/src/lib.rs"]
+    creates: ["crates/codemap-lemmaspec/src/laravel.rs", "crates/stele/tests/laravel.rs"]
+    state: done
+    text: "Given a supported direct Eloquent declaration or literal Blade reference, topology JSON and HTML show the uniquely resolved relationship under a Laravel policy name. Given a shadow, override, dynamic target, missing view or ambiguous component, no relationship is emitted and an explicit reason is counted. Policy relations do not admit runtime reachability or dead-code claims."
+  }
+  change verify_public_framework_profile {
+    after: [derive_laravel_relations]
+    follows: [labels_precede_results, bounded_static_source_profile, unsupported_templates_are_whole_file_refusals]
+    serves: [intent.answers_from_facts, intent.fails_closed, intent.same_commit_same_facts]
+    touches: ["README.md", "bin/public-corpus-benchmark.d/gate.rb"]
+    creates: ["benchmarks/php/laravel.json", "benchmarks/php/laravel-oracle.json", "benchmarks/php/README.md", "benchmarks/php/laravel-blade-scope.json", "benchmarks/php/laravel-profile.json"]
+    state: done
+    text: "Given the pinned public Laravel.io source, its independent labels require selected Eloquent and Blade relationships and forbid wrong targets. The gate verifies source anchors, categorized exclusions and byte determinism across independent checkouts. Documentation states supported constructs, tested framework pins, excluded behavior, and selected coverage without application-wide precision claims."
+  }
+}

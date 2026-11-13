@@ -48,6 +48,22 @@ complete application sources are obtained separately. Upstream notices are
 retained as `LICENSE.ripgrep`, `LICENSE.mastodon`, `LICENSE.fizzy` and
 `LICENSE.double-conversion` beside the descriptors.
 
+## Blade parser and Laravel framework metadata
+
+The PHP adapter includes generated parser/scanner sources from
+[EmranMR/tree-sitter-blade](https://github.com/EmranMR/tree-sitter-blade/tree/b5291d1ba207a8ebb8383b2ecb8a8a6535210a50).
+Its MIT notice, inherited tree-sitter-html MIT notice, source hashes and upstream
+pins are preserved under `crates/codemap/vendor/tree-sitter-blade/` and included
+in release bundles. The grammar runs in process; no Laravel application is
+executed to read templates.
+
+The additional Laravel.io source labels under `benchmarks/php/` refer to
+separately obtained public source at their pinned commit. They retain names,
+source locations and hashes, without complete application source files. Its
+MIT notice is preserved beside the descriptor. Framework profile metadata
+records the public Laravel, Scout and Sanctum source surfaces behind the
+profile's finite class/trait assumptions; their notices are retained there.
+
 ## Parser crate notice supplements
 
 The published `tree-sitter-cpp` 0.23.4, `tree-sitter-typescript` 0.23.2 and
