@@ -1,0 +1,17 @@
+{
+  "repository": "https://github.com/EmranMR/tree-sitter-blade",
+  "commit": "b5291d1ba207a8ebb8383b2ecb8a8a6535210a50",
+  "inherited_html_commit": "cbb91a0ff3621245e890d1c50cc811bffb77a26b",
+  "files": {
+    "src/parser.c": "a04483803c19742cb82bddf8c055d1ff2e12168ef0f5c1e4af33064d804a5286",
+    "src/scanner.c": "8f7e3a669525be515f31df420ec71ff0bbd9453e73e2f170be6e59a42dd8f953",
+    "src/tag.h": "e52b42ef21d27c7a6b3a863e846bfee6c17e30904a3fd813f64c304b6b39b8f0",
+    "src/tree_sitter/parser.h": "180b893c8734778fd32f372dfbc27bd6ad1cd2221f26150b31256ff6716320d2",
+    "src/tree_sitter/alloc.h": "b29c1c9fb7cc82f58c84b376df1297d6e2737a1d655fd356db0859e3c29c2fea",
+    "src/tree_sitter/array.h": "31e60a1bff6f715afacce03b5b70efe42b58371b4f9595dd4af52a577ff9608c",
+    "src/node-types.json": "c8900917a83e1d981698ae375c522a87ba76d7416ee28cd39c639370c6963cc8",
+    "LICENSE": "96e0c1803ffb831c7287b1fb7f88567d05e58d37da553e6bb9a9c4a765434ecb",
+    "LICENSE.html": "2e0110e07abef7c2548b26ec9d6969775617ca539a0dc8dbeeb14d6452c711d1"
+  },
+  "inherited_html_license": "https://github.com/tree-sitter/tree-sitter-html/blob/cbb91a0ff3621245e890d1c50cc811bffb77a26b/LICENSE"
+}

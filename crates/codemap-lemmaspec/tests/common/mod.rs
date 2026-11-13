@@ -545,6 +545,7 @@ impl Fixture {
             .filter(|node| node.kind == NodeKind::ImportRef)
             .count();
         let mut snapshot = Snapshot {
+            php: None,
             identity: self.identity,
             report: Report {
                 files_scanned: files.len(),
@@ -567,6 +568,9 @@ impl Fixture {
             clone_groups: Vec::new(),
             twin_pairs: Vec::new(),
         };
+        if snapshot.identity.language == Language::Php {
+            snapshot.php = Some(php_syntax(&snapshot));
+        }
         snapshot.report = report_for(&snapshot);
         snapshot
     }
@@ -668,4 +672,40 @@ pub fn dispatcher_snapshot() -> Snapshot {
         arguments: Vec::new(),
     });
     fixture.finish()
+}
+
+fn php_syntax(snapshot: &Snapshot) -> codemap_graph::schema::PhpSyntax {
+    use codemap_graph::schema::{PhpClass, PhpMethod, PhpMethodBody, PhpSyntax};
+    PhpSyntax {
+        anonymous_classes: Vec::new(),
+        classes: snapshot
+            .nodes
+            .iter()
+            .filter(|node| matches!(node.kind, NodeKind::Type(_) | NodeKind::Trait))
+            .map(|node| PhpClass {
+                node: node.id.clone(),
+                qualified: node
+                    .symbol_key
+                    .split_once('#')
+                    .unwrap()
+                    .1
+                    .replace("::", "\\"),
+                parent: None,
+                traits: Vec::new(),
+                trait_adaptations: false,
+            })
+            .collect(),
+        methods: snapshot
+            .nodes
+            .iter()
+            .filter(|node| node.kind == NodeKind::Method)
+            .map(|node| PhpMethod {
+                node: node.id.clone(),
+                is_static: false,
+                body: PhpMethodBody::Other,
+                member_calls: Vec::new(),
+            })
+            .collect(),
+        ..PhpSyntax::default()
+    }
 }

@@ -163,8 +163,7 @@ const PROBE_TIMEOUT: Duration = Duration::from_secs(30);
 /// the answer into `.phpactor.json` in the analyzed tree. codemap never
 /// writes into what it extracts; the end-of-run clean check would refuse
 /// the snapshot.
-pub const PHPACTOR_CONFIG_EXTRA: &str =
-    r#"{"composer.enable":false,"language_server_configuration.auto_config":false}"#;
+pub const PHPACTOR_CONFIG_EXTRA: &str = r#"{"composer.enable":false,"language_server_configuration.auto_config":false,"indexer.exclude_patterns":["/vendor/**/Tests/**/*","/vendor/**/tests/**/*","/vendor/composer/**/*","/vendor/rector/rector/stubs-rector","/**/*.blade.php"]}"#;
 
 /// The phpactor process as codemap launches it: the pinned script under
 /// `php`, run from the tool bundle, with every configuration source
@@ -852,6 +851,14 @@ mod tests {
         );
         let extra = serde_json::from_str::<Value>(PHPACTOR_CONFIG_EXTRA).expect("valid json");
         assert_eq!(extra["composer.enable"], Value::Bool(false));
+        assert!(
+            extra["indexer.exclude_patterns"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|pattern| pattern == "/**/*.blade.php"),
+            "Blade files must not enter index:build or language-server indexing"
+        );
         assert_eq!(
             extra["language_server_configuration.auto_config"],
             Value::Bool(false),

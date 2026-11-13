@@ -427,6 +427,7 @@ mod tests {
             false,
         );
         Snapshot {
+            php: None,
             identity,
             files: vec![FileRecord {
                 rel_path: "a.rs".into(),

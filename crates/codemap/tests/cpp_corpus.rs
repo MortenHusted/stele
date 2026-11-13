@@ -35,7 +35,10 @@ fn syntax_extraction_names_overloads_and_emits_no_call_edges() {
     ])
     .expect("repo");
     let snapshot = extract_cpp(&repo);
-    assert_eq!(snapshot.identity.schema_version, "codemap.snapshot.v8");
+    assert_eq!(
+        snapshot.identity.schema_version,
+        codemap::schema::SCHEMA_VERSION
+    );
     assert_eq!(
         snapshot.identity.structure_policy.as_deref(),
         Some("spelled/cpp/1"),

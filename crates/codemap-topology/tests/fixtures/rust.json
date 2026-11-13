@@ -1,8 +1,8 @@
 {
   "identity": {
-    "schema_version": "codemap.snapshot.v8",
+    "schema_version": "codemap.snapshot.v9",
     "language": "rust",
-    "extractor_version": "0.4.0",
+    "extractor_version": "0.6.1",
     "repository": {
       "id": "https://example.test/synthetic-topology.git",
       "is_canonical": false
@@ -25,7 +25,7 @@
       }
     },
     "dirty": false,
-    "snapshot_id": "dad0ace30b1a939cbd0174aed341e5d010b1a4d2d8307f1fd704a4eeddfe45f4"
+    "snapshot_id": "3922dec9e05f7b1660bfb2d4f790950f04c1f2eb712818adf02d705fbe17484b"
   },
   "files": [
     {
@@ -55,7 +55,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -80,7 +80,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -105,7 +105,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -130,7 +130,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -155,7 +155,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -180,7 +180,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -203,7 +203,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -226,7 +226,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -249,7 +249,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -272,7 +272,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "RustAnalyzer",
         "confidence": 255
       }

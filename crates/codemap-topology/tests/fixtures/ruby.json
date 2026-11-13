@@ -1,8 +1,8 @@
 {
   "identity": {
-    "schema_version": "codemap.snapshot.v8",
+    "schema_version": "codemap.snapshot.v9",
     "language": "ruby",
-    "extractor_version": "0.5.11",
+    "extractor_version": "0.6.1",
     "repository": {
       "id": "https://example.test/synthetic-topology.git",
       "is_canonical": false
@@ -18,7 +18,7 @@
       "ruby_tool_bundle_sha256": "synthetic-bundle"
     },
     "dirty": false,
-    "snapshot_id": "9883538bd6964e4d5a7837866c11d6836346ad467aaba97e06ce58d1b0cbe25d"
+    "snapshot_id": "eb77d42300703ddc65e83a186e052baeca0e30df212f069c37fda24bb76571c0"
   },
   "files": [
     {
@@ -48,7 +48,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.5.11",
+        "extractor_version": "0.6.1",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -73,7 +73,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.5.11",
+        "extractor_version": "0.6.1",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -98,7 +98,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.5.11",
+        "extractor_version": "0.6.1",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -123,7 +123,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.5.11",
+        "extractor_version": "0.6.1",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -148,7 +148,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.5.11",
+        "extractor_version": "0.6.1",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -173,7 +173,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.5.11",
+        "extractor_version": "0.6.1",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -196,7 +196,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.5.11",
+        "extractor_version": "0.6.1",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -219,7 +219,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.5.11",
+        "extractor_version": "0.6.1",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -242,7 +242,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.5.11",
+        "extractor_version": "0.6.1",
         "fact_source": "Prism",
         "confidence": 255
       }
@@ -265,7 +265,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.5.11",
+        "extractor_version": "0.6.1",
         "fact_source": "RubyLsp",
         "confidence": 255
       }

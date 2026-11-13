@@ -1,0 +1,1 @@
+Generated Blade parser and scanner from EmranMR/tree-sitter-blade at b5291d1ba207a8ebb8383b2ecb8a8a6535210a50. SOURCE.json fixes the imported bytes. The scanner and tag support inherit tree-sitter-html at cbb91a0ff3621245e890d1c50cc811bffb77a26b. Both MIT notices are retained. No application or parser generator executes during extraction.

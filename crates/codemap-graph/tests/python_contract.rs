@@ -63,6 +63,7 @@ fn snapshot() -> Snapshot {
         provenance: function.provenance.clone(),
     };
     Snapshot {
+        php: None,
         identity,
         files: vec![FileRecord {
             rel_path: "main.py".into(),

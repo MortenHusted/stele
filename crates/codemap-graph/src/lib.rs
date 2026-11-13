@@ -11,6 +11,7 @@ pub mod analysis;
 pub mod diff;
 pub mod lookup;
 pub mod nav;
+pub mod php;
 pub mod schema;
 pub mod validate;
 

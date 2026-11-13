@@ -1,8 +1,15 @@
 {
+  "php": {
+    "incomplete_files": [],
+    "anonymous_classes": [],
+    "classes": [],
+    "methods": [],
+    "blade": []
+  },
   "identity": {
-    "schema_version": "codemap.snapshot.v8",
+    "schema_version": "codemap.snapshot.v9",
     "language": "php",
-    "extractor_version": "0.4.0",
+    "extractor_version": "0.6.1",
     "repository": {
       "id": "https://example.test/synthetic-topology.git",
       "is_canonical": false
@@ -12,12 +19,13 @@
     "tools": {
       "tree_sitter": "0.25",
       "tree_sitter_php": "0.24.2",
+      "blade_parser": "tree-sitter-blade b5291d1ba207a8ebb8383b2ecb8a8a6535210a50",
       "phpactor": "phpactor synthetic",
       "php": "php synthetic",
       "php_tool_bundle_sha256": "synthetic-bundle"
     },
     "dirty": false,
-    "snapshot_id": "3d3a14fbe2a4b3c07e013549856e78fbec200a7276f392ac71ea2a21e208fce6"
+    "snapshot_id": "cc9e9b1566b7edbef09ab994b1a7bbeca56029ce08529512cc057b7d2b76bc30"
   },
   "files": [
     {
@@ -47,7 +55,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -72,7 +80,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -97,7 +105,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -122,7 +130,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -147,7 +155,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -172,7 +180,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -195,7 +203,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -218,7 +226,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -241,7 +249,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "TreeSitter",
         "confidence": 255
       }
@@ -264,7 +272,7 @@
           "end_col": 0
         },
         "file_hash": "synthetic-file-hash",
-        "extractor_version": "0.4.0",
+        "extractor_version": "0.6.1",
         "fact_source": "Phpactor",
         "confidence": 255
       }

@@ -5,7 +5,7 @@
 use std::collections::BTreeMap;
 
 use codemap::schema::Snapshot;
-use codemap_lemmaspec::{association, policy, template};
+use codemap_lemmaspec::{association, laravel, policy, template};
 use codemap_topology::{Policy, Relation};
 
 /// What the shipped policies derive from `snapshot`; a policy with
@@ -22,6 +22,16 @@ pub fn policies(snapshot: &Snapshot) -> Vec<Policy> {
             template::TEMPLATE_OWNER,
             "template",
             template::owners(snapshot),
+        ),
+        (
+            laravel::ASSOCIATION,
+            "association",
+            laravel::associations(snapshot),
+        ),
+        (
+            laravel::TEMPLATE_RENDER,
+            "renders",
+            laravel::templates(snapshot),
         ),
     ]
     .into_iter()

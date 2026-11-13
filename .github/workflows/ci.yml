@@ -54,6 +54,23 @@ jobs:
               assert f"test {name} ... ok" in output, f"missing passing witness: {name}"
           assert output.count("test result: ok. 1 passed; 0 failed; 0 ignored;") == 4
           PY
+      - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
+        with:
+          ruby-version: '4.0.7'
+      - name: Prepare the Laravel source gate
+        run: |
+          gem install --no-document tty-option:0.3.0 tty-prompt:0.23.1 tty-command:0.10.1
+          python3 - <<'PYTHON'
+          import json, os, pathlib, subprocess
+          contract = json.loads(pathlib.Path("benchmarks/php/laravel.json").read_text())
+          checkout = str(pathlib.Path(os.environ["RUNNER_TEMP"]) / "laravel-source")
+          subprocess.run(["git", "init", "--quiet", checkout], check=True)
+          subprocess.run(["git", "-C", checkout, "remote", "add", "origin", contract["repository"]], check=True)
+          subprocess.run(["git", "-C", checkout, "fetch", "--quiet", "--depth", "1", "origin", contract["commit"]], check=True)
+          subprocess.run(["git", "-C", checkout, "checkout", "--quiet", "--detach", "FETCH_HEAD"], check=True)
+          PYTHON
+      - name: Verify the frozen Laravel framework oracle
+        run: bin/public-corpus-benchmark --language php --corpus laravel --repo "$RUNNER_TEMP/laravel-source" --out "$RUNNER_TEMP/laravel-results"
       - name: Check the plan
         run: cargo run --locked -p stele -- plan check plans/stele-plans.stele
       - name: Report catalog standings
@@ -79,6 +96,8 @@ jobs:
         run: ruby bin/public-corpus-benchmark.d/test/command_test.rb
       - name: Test Rust and Ruby selected-caller oracle refusals
         run: ruby bin/public-corpus-benchmark.d/test/selected_caller_oracle_test.rb
+      - name: Laravel framework oracle refusals
+        run: ruby bin/public-corpus-benchmark.d/test/laravel_oracle_test.rb
       - name: Template oracle refusals
         run: ruby bin/public-corpus-benchmark.d/test/template_oracle_test.rb
       - name: Test Black preparation refusals and frozen labels

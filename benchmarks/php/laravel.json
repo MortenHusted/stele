@@ -1,0 +1,50 @@
+{
+  "contract": "stele-laravel-public-corpus/v1",
+  "language": "php",
+  "mode": "framework-syntax",
+  "repository": "https://github.com/laravelio/laravel.io.git",
+  "commit": "b9d33e281c25c8f764ae144d95eb736e01c8fa0e",
+  "license": "MIT",
+  "license_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/LICENSE.md",
+  "minimum_files_exclusive": 400,
+  "oracle": {
+    "path": "benchmarks/php/laravel-oracle.json",
+    "sha256": "42f7bfd24a2ae1e1c8e6cdb065ac78176635e5e67357d20104a4faf8d4aee831"
+  },
+  "framework_profile": {
+    "path": "benchmarks/php/laravel-profile.json",
+    "sha256": "86ef9a30c2a885ef9987e4ecebd6eb0c312cc57be90beddde74c1b998b917b85"
+  },
+  "tool_lock": {
+    "path": "rust-toolchain.toml",
+    "sha256": "c3dcaa2e4c0d9b494b33f2d1539f78166c78b3f1355bb68934405d559af4db43"
+  },
+  "toolchain": "1.100.0",
+  "framework": {
+    "constraint": "^13.38.0",
+    "version": "v13.42.0",
+    "source": {
+      "type": "git",
+      "url": "https://github.com/laravel/framework.git",
+      "reference": "f5c01f6b63803f16f38ebb31622c4fea412bd022"
+    },
+    "composer_json_sha256": "e4024f337ffc20633871b009f802776eddf309dadfefc0127497db971e2b5e09",
+    "composer_lock_sha256": "b07187949c4a40c43d8500318da8b0c33a3ca9baa6d1dab803a10bf399eb77d7"
+  },
+  "synthetic_tests": [
+    {
+      "package": "codemap",
+      "test_target": "laravel_syntax",
+      "test_name": "laravel_source_observations_preserve_bindings_and_templates"
+    }
+  ],
+  "copied_corpus_source": false,
+  "scope": "Source-reviewed selected Eloquent declarations and Blade references; explicit forbidden targets and omissions; no application-wide precision or recall claim",
+  "tool_versions": {
+    "blade_parser": "tree-sitter-blade b5291d1ba207a8ebb8383b2ecb8a8a6535210a50"
+  },
+  "reader_scope": {
+    "path": "benchmarks/php/laravel-blade-scope.json",
+    "sha256": "2c59e1bca577b748458e6b09d69e7aa6c41fecde23640961a18da703a9bf615d"
+  }
+}

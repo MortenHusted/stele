@@ -606,6 +606,7 @@ fn build_for(
         *edge_counts.entry(edge.kind.tag().to_string()).or_insert(0) += 1;
     }
     Snapshot {
+        php: None,
         identity,
         report: Report {
             files_scanned: records.len(),

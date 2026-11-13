@@ -61,6 +61,7 @@ fn no_forbidden_runtime_dependencies() {
         "serde_json",
         "sha2",
         "tree-sitter",
+        "tree-sitter-language",
         "tree-sitter-rust",
         "tree-sitter-php",
         "tree-sitter-go",

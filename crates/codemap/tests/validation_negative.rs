@@ -44,6 +44,7 @@ fn minimal_snapshot() -> Snapshot {
         provenance,
     };
     Snapshot {
+        php: None,
         identity,
         files: vec![FileRecord {
             rel_path: "a.rs".into(),

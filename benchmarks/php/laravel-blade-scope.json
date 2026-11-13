@@ -1,0 +1,785 @@
+{
+  "contract": "stele-laravel-blade-reader-scope/v1",
+  "status": "source-reviewed bounded template-reader profile; required relationship oracle unchanged",
+  "basis": "Public source constructs and pinned compiler/grammar source were inspected independently; no template compilation, provider execution or application boot occurred. Diagnostic file membership directed review but diagnostic outcomes are not source labels.",
+  "repository": "https://github.com/laravelio/laravel.io.git",
+  "commit": "b9d33e281c25c8f764ae144d95eb736e01c8fa0e",
+  "grammar_repository": "https://github.com/EmranMR/tree-sitter-blade",
+  "grammar_commit": "b5291d1ba207a8ebb8383b2ecb8a8a6535210a50",
+  "source_reviewed_categories": {
+    "registered_single_directive": {
+      "source_basis": "Application resources/macros/blade.php registers canonical/shareImage/title as one-shot custom directives. AppServiceProvider calls bootMacros, which requires that source. This is source evidence of registration, not execution proof.",
+      "grammar_limitation": "Unknown _custom directives are required to have an @end... partner; canonical and shareImage are absent from the inline-directive table.",
+      "validity": "declared application syntax; runtime activation is not claimed",
+      "evidence": [
+        "app_macros",
+        "app_provider",
+        "grammar_custom",
+        "framework_statement_dispatch"
+      ]
+    },
+    "registered_error_override": {
+      "source_basis": "Application resources/macros/blade.php overrides error with a one-shot echo; these uses therefore have no @enderror.",
+      "grammar_limitation": "CONDITIONAL_SPECS hardcodes @error/@enderror and cannot inspect application directive overrides.",
+      "validity": "declared application syntax; runtime registration is outside profile",
+      "evidence": [
+        "app_macros",
+        "app_provider",
+        "grammar_conditionals",
+        "framework_statement_dispatch"
+      ]
+    },
+    "literal_at_text": {
+      "source_basis": "Email addresses and the twitter handle occur in ordinary quoted HTML attributes/text, rather than template directives.",
+      "grammar_limitation": "Grammar generic @word custom-block parsing reports errors for literal @ content. BladeCompiler only compiles recognized/custom statements; other statements remain text. Its matcher also uses a non-word-boundary guard.",
+      "validity": "ordinary template text/attribute syntax",
+      "evidence": [
+        "grammar_custom",
+        "framework_statement_dispatch"
+      ]
+    },
+    "conditional_html_structure": {
+      "source_basis": "The template opens HTML elements inside branches and closes them outside those branches, or emits different openings in mutually exclusive branches.",
+      "grammar_limitation": "The grammar inherits a statically nested HTML element tree; Laravel Blade conditionals compile to PHP conditionals without requiring static HTML-tree balancing.",
+      "validity": "source-level conditional template structure; no branch execution or rendered-markup validity claim",
+      "evidence": [
+        "grammar_html",
+        "framework_conditionals"
+      ]
+    },
+    "dynamic_html_tag": {
+      "source_basis": "The template writes opening and closing tag names with a Blade echo of a supplied tag variable.",
+      "grammar_limitation": "Inherited HTML scanner requires a static tag_name; the Blade echo is not a tag name in that grammar.",
+      "validity": "Blade echo syntax; runtime tag value and output markup are not claimed",
+      "evidence": [
+        "grammar_html",
+        "framework_echo"
+      ]
+    },
+    "quoted_at_attribute_payload": {
+      "source_basis": "A single-quoted component attribute holds literal Alpine-style @click text and double-quoted JavaScript payload.",
+      "grammar_limitation": "The @ token is interpreted as a Blade conditional within quoted-attribute parsing; the application passes the attribute payload as literal markup elsewhere.",
+      "validity": "quoted attribute syntax; no client execution claim",
+      "evidence": [
+        "grammar_attributes",
+        "framework_statement_dispatch"
+      ]
+    },
+    "extension_directive_in_attribute": {
+      "source_basis": "Livewire v4.4.8 pinned by composer.lock explicitly registers entangle; the template uses it inside x-data.",
+      "grammar_limitation": "The grammar inline-directive table does not include entangle, and generic custom conditionals are not an adequate attribute expression model.",
+      "validity": "declared extension syntax at the pinned source; provider activation is outside profile",
+      "evidence": [
+        "livewire_entangle",
+        "grammar_attributes"
+      ]
+    },
+    "directive_case_variant": {
+      "source_basis": "The source closes @guest with @endGuest. BladeCompiler dispatches compileEndGuest through PHP method lookup; the grammar requires literal lowercase @endguest.",
+      "grammar_limitation": "Literal directive tokens are case-sensitive while compiler method lookup accepts this case variant.",
+      "validity": "source/compiler correspondence; not a template execution witness",
+      "evidence": [
+        "grammar_conditionals",
+        "framework_statement_dispatch",
+        "framework_conditionals"
+      ],
+      "synthetic_language_check": "PHP method_exists(SyntheticBladeScope::class,\"compileendGuest\") returns true for declared protected compileEndGuest; only synthetic class executed, no framework/application source executed."
+    },
+    "nested_component_blocks": {
+      "source_basis": "The source contains nested, paired @component blocks, with @slot blocks in the vendor mail layout. Source openings and endings are balanced.",
+      "grammar_limitation": "Pinned grammar has no dedicated @component rule, relying on generic custom conditional blocks and wildcard @end... endings; it synthesizes a missing end at EOF for these nested sources.",
+      "validity": "balanced component syntax admitted by the pinned compiler source; rendering external mail views remains outside profile",
+      "evidence": [
+        "grammar_custom",
+        "framework_components"
+      ]
+    }
+  },
+  "evidence": {
+    "app_macros": {
+      "path": "resources/macros/blade.php",
+      "sha256": "930bc5a38e13333011ecf3d12a1b65bb7511c3e604194035b1833b9f633a3c64",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/macros/blade.php",
+      "lines": [
+        5,
+        20
+      ]
+    },
+    "app_provider": {
+      "path": "app/Providers/AppServiceProvider.php",
+      "sha256": "396e5def0cf55a3f77f4a0a8349b09f474c193c4785d94172a79aa118930bd7c",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/app/Providers/AppServiceProvider.php",
+      "lines": [
+        41,
+        62
+      ]
+    },
+    "grammar_custom": {
+      "path": "grammar.js",
+      "sha256": "0e053139b915520d88f4fa0aba8451b4fb5556e66ff198c7530b8fe455dfff3b",
+      "source_url": "https://github.com/EmranMR/tree-sitter-blade/blob/b5291d1ba207a8ebb8383b2ecb8a8a6535210a50/grammar.js",
+      "lines": [
+        499,
+        538,
+        738,
+        760
+      ]
+    },
+    "grammar_conditionals": {
+      "path": "grammar.js",
+      "sha256": "0e053139b915520d88f4fa0aba8451b4fb5556e66ff198c7530b8fe455dfff3b",
+      "source_url": "https://github.com/EmranMR/tree-sitter-blade/blob/b5291d1ba207a8ebb8383b2ecb8a8a6535210a50/grammar.js",
+      "lines": [
+        283,
+        300,
+        310,
+        326
+      ]
+    },
+    "grammar_html": {
+      "path": "grammar.js",
+      "sha256": "0e053139b915520d88f4fa0aba8451b4fb5556e66ff198c7530b8fe455dfff3b",
+      "source_url": "https://github.com/EmranMR/tree-sitter-blade/blob/b5291d1ba207a8ebb8383b2ecb8a8a6535210a50/grammar.js",
+      "lines": [
+        80,
+        113,
+        334,
+        357
+      ]
+    },
+    "grammar_attributes": {
+      "path": "grammar.js",
+      "sha256": "0e053139b915520d88f4fa0aba8451b4fb5556e66ff198c7530b8fe455dfff3b",
+      "source_url": "https://github.com/EmranMR/tree-sitter-blade/blob/b5291d1ba207a8ebb8383b2ecb8a8a6535210a50/grammar.js",
+      "lines": [
+        415,
+        495
+      ]
+    },
+    "framework_statement_dispatch": {
+      "path": "src/Illuminate/View/Compilers/BladeCompiler.php",
+      "sha256": "89a658d55b84ddbcc8dbd9b2d8bf1117980594da79eca5ae0fc5499f9bfa1c68",
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/View/Compilers/BladeCompiler.php",
+      "lines": [
+        549,
+        592,
+        664,
+        680
+      ]
+    },
+    "framework_conditionals": {
+      "path": "src/Illuminate/View/Compilers/Concerns/CompilesConditionals.php",
+      "sha256": "06a55272732a9516260037a14c7a3f9876a600fb75cf3a82d8c5228f3e000c4b",
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/View/Compilers/Concerns/CompilesConditionals.php",
+      "lines": [
+        99,
+        127,
+        179,
+        214
+      ]
+    },
+    "framework_echo": {
+      "path": "src/Illuminate/View/Compilers/Concerns/CompilesEchos.php",
+      "sha256": "0b1e7428a18688d0d920cfffc386400047703caa382f4a876272c914080bbaaf",
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/View/Compilers/Concerns/CompilesEchos.php",
+      "lines": [
+        39,
+        59
+      ]
+    },
+    "framework_components": {
+      "path": "src/Illuminate/View/Compilers/Concerns/CompilesComponents.php",
+      "sha256": "d120f5b9c7455c2ac177fbfd10ab704f1aba7924a2f91c8fbcb09fe4b1c50397",
+      "source_url": "https://github.com/laravel/framework/blob/f5c01f6b63803f16f38ebb31622c4fea412bd022/src/Illuminate/View/Compilers/Concerns/CompilesComponents.php",
+      "lines": [
+        25,
+        45,
+        83,
+        99
+      ]
+    },
+    "livewire_entangle": {
+      "path": "src/Features/SupportEntangle/SupportEntangle.php",
+      "sha256": "0dd8e07e755abd726742162af61c0bc498030ade9b3ddf346d595bfadca015d4",
+      "repository": "https://github.com/livewire/livewire",
+      "version": "v4.4.8",
+      "revision": "8d7f8fc6138274a2f3384c9db354ca012215a259",
+      "source_url": "https://github.com/livewire/livewire/blob/8d7f8fc6138274a2f3384c9db354ca012215a259/src/Features/SupportEntangle/SupportEntangle.php",
+      "lines": [
+        10,
+        17
+      ]
+    }
+  },
+  "reviewed_files": [
+    {
+      "path": "resources/views/articles/overview.blade.php",
+      "sha256": "4a47bd1e826d3aed41fb0b2c1691af581172718aa205aea315fd46f4097d63bc",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/articles/overview.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "registered_single_directive",
+          "span": {
+            "start_byte": 29,
+            "end_byte": 51,
+            "start_line": 2,
+            "end_line": 2
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/articles/show.blade.php",
+      "sha256": "37073e2ba2299bd3dfacdade1375a86676863d14aac8adce5804140ff2ead0a2",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/articles/show.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "registered_single_directive",
+          "span": {
+            "start_byte": 26,
+            "end_byte": 62,
+            "start_line": 2,
+            "end_line": 2
+          }
+        },
+        {
+          "category": "registered_single_directive",
+          "span": {
+            "start_byte": 63,
+            "end_byte": 117,
+            "start_line": 3,
+            "end_line": 3
+          }
+        },
+        {
+          "category": "literal_at_text",
+          "span": {
+            "start_byte": 755,
+            "end_byte": 771,
+            "start_line": 16,
+            "end_line": 16
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/auth/login.blade.php",
+      "sha256": "b99eabce9c9a93521add0d776a3ea7d2be431216108077dc213a61b04afa5b49",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/auth/login.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "literal_at_text",
+          "span": {
+            "start_byte": 2073,
+            "end_byte": 2089,
+            "start_line": 65,
+            "end_line": 65
+          }
+        },
+        {
+          "category": "literal_at_text",
+          "span": {
+            "start_byte": 2212,
+            "end_byte": 2228,
+            "start_line": 66,
+            "end_line": 66
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/auth/register.blade.php",
+      "sha256": "90eac99d607cadce71c09ffd22b4e48d5c55a71cd2b7fd79e45470008512959e",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/auth/register.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "literal_at_text",
+          "span": {
+            "start_byte": 1072,
+            "end_byte": 1088,
+            "start_line": 26,
+            "end_line": 26
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/components/articles/form.blade.php",
+      "sha256": "331b1606c02b13105c519b160be1b3c2f62b7029b055ccae78d12f9a86c97480",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/articles/form.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "registered_error_override",
+          "span": {
+            "start_byte": 4485,
+            "end_byte": 4499,
+            "start_line": 79,
+            "end_line": 79
+          }
+        },
+        {
+          "category": "registered_error_override",
+          "span": {
+            "start_byte": 5762,
+            "end_byte": 5776,
+            "start_line": 106,
+            "end_line": 106
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/components/avatar.blade.php",
+      "sha256": "c2be44ea34350cf37884ded303625b159880d7a2ddd207f025e64b3115cb4ff0",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/avatar.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "conditional_html_structure",
+          "span": {
+            "start_byte": 118,
+            "end_byte": 522,
+            "start_line": 8,
+            "end_line": 21
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/components/buttons/danger-menu-button.blade.php",
+      "sha256": "ba0f19633c9c0d2b43b180e49a3b72f6ef791f5966e98ebe058b48d3ec19b9e8",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/buttons/danger-menu-button.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "dynamic_html_tag",
+          "span": {
+            "start_byte": 56,
+            "end_byte": 285,
+            "start_line": 6,
+            "end_line": 8
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/components/buttons/primary-menu-button.blade.php",
+      "sha256": "aaede3b2ee05cadd00181f78041572051411b946ac54d8e932c408ecb1ecfa61",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/buttons/primary-menu-button.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "dynamic_html_tag",
+          "span": {
+            "start_byte": 56,
+            "end_byte": 270,
+            "start_line": 6,
+            "end_line": 8
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/components/threads/reply.blade.php",
+      "sha256": "2f2f7d3d654517bc7ea0eb58864d56d069b5dffa4ddfbbd641633f4fd6cc5848",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/components/threads/reply.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "conditional_html_structure",
+          "span": {
+            "start_byte": 29,
+            "end_byte": 420,
+            "start_line": 3,
+            "end_line": 10
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/emails/thread_deleted.blade.php",
+      "sha256": "37e0975010297044cc700c4006997d44f5e03bc954ff5dfa6c1691a52f20c55b",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/emails/thread_deleted.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "nested_component_blocks",
+          "span": {
+            "start_byte": 0,
+            "end_byte": 172,
+            "start_line": 1,
+            "end_line": 8
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations",
+      "component_delimiter_source_inventory": [
+        {
+          "role": "open",
+          "span": {
+            "start_byte": 0,
+            "end_byte": 11,
+            "start_line": 1,
+            "end_line": 1
+          }
+        },
+        {
+          "role": "open",
+          "span": {
+            "start_byte": 118,
+            "end_byte": 129,
+            "start_line": 5,
+            "end_line": 5
+          }
+        },
+        {
+          "role": "close",
+          "span": {
+            "start_byte": 158,
+            "end_byte": 171,
+            "start_line": 7,
+            "end_line": 7
+          }
+        },
+        {
+          "role": "close",
+          "span": {
+            "start_byte": 294,
+            "end_byte": 307,
+            "start_line": 13,
+            "end_line": 13
+          }
+        }
+      ]
+    },
+    {
+      "path": "resources/views/forum/overview.blade.php",
+      "sha256": "7f0fca7f8e0de18fa75a3e4aa90a51b8a9fa8b1aa9484163ea2470a671e5a173",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/forum/overview.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "registered_single_directive",
+          "span": {
+            "start_byte": 126,
+            "end_byte": 148,
+            "start_line": 3,
+            "end_line": 3
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/forum/threads/show.blade.php",
+      "sha256": "7a339f5976bda35b21adb49912c638e71a84bbd11b20df1c40a8f03dc92a6bf6",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/forum/threads/show.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "registered_single_directive",
+          "span": {
+            "start_byte": 27,
+            "end_byte": 71,
+            "start_line": 2,
+            "end_line": 2
+          }
+        },
+        {
+          "category": "registered_error_override",
+          "span": {
+            "start_byte": 3891,
+            "end_byte": 3905,
+            "start_line": 89,
+            "end_line": 89
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/layouts/_social.blade.php",
+      "sha256": "13108b820e1877f0824451ceff568bef91f48f2c1c213e3af221027e4d4af955",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/layouts/_social.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "literal_at_text",
+          "span": {
+            "start_byte": 215,
+            "end_byte": 235,
+            "start_line": 4,
+            "end_line": 4
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/livewire/edit-reply.blade.php",
+      "sha256": "d4c92f8be72b8b714c37f3c55ea157cce60582327926a73962c9354714ef465d",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/livewire/edit-reply.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "quoted_at_attribute_payload",
+          "span": {
+            "start_byte": 787,
+            "end_byte": 838,
+            "start_line": 21,
+            "end_line": 21
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/livewire/editor.blade.php",
+      "sha256": "ca94ba319321a28749e05b0b08a7a9b64d51e8ba5e159a946808d9ee1146119c",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/livewire/editor.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "extension_directive_in_attribute",
+          "span": {
+            "start_byte": 191,
+            "end_byte": 208,
+            "start_line": 8,
+            "end_line": 8
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/livewire/like-article.blade.php",
+      "sha256": "9db71dcff374a936b4a813c8fc6183dc1c9d86467b37cf9eae15c31dc0b0d7c7",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/livewire/like-article.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "directive_case_variant",
+          "span": {
+            "start_byte": 939,
+            "end_byte": 948,
+            "start_line": 16,
+            "end_line": 16
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/users/profile.blade.php",
+      "sha256": "433e3a61448970a2e0fa5bee0beeede8590d9a40fc924ff1f2de3ab770d1b9b6",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/users/profile.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "registered_single_directive",
+          "span": {
+            "start_byte": 48,
+            "end_byte": 95,
+            "start_line": 2,
+            "end_line": 2
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations"
+    },
+    {
+      "path": "resources/views/vendor/mail/html/message.blade.php",
+      "sha256": "acadcd455906c5a04d1526e47353e78ffe4e92a52379a2d59834a6be99682a77",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/vendor/mail/html/message.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "nested_component_blocks",
+          "span": {
+            "start_byte": 0,
+            "end_byte": 288,
+            "start_line": 1,
+            "end_line": 9
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations",
+      "component_delimiter_source_inventory": [
+        {
+          "role": "open",
+          "span": {
+            "start_byte": 0,
+            "end_byte": 11,
+            "start_line": 1,
+            "end_line": 1
+          }
+        },
+        {
+          "role": "open",
+          "span": {
+            "start_byte": 76,
+            "end_byte": 87,
+            "start_line": 4,
+            "end_line": 4
+          }
+        },
+        {
+          "role": "close",
+          "span": {
+            "start_byte": 274,
+            "end_byte": 287,
+            "start_line": 8,
+            "end_line": 8
+          }
+        },
+        {
+          "role": "open",
+          "span": {
+            "start_byte": 418,
+            "end_byte": 429,
+            "start_line": 17,
+            "end_line": 17
+          }
+        },
+        {
+          "role": "close",
+          "span": {
+            "start_byte": 489,
+            "end_byte": 502,
+            "start_line": 19,
+            "end_line": 19
+          }
+        },
+        {
+          "role": "open",
+          "span": {
+            "start_byte": 584,
+            "end_byte": 595,
+            "start_line": 25,
+            "end_line": 25
+          }
+        },
+        {
+          "role": "close",
+          "span": {
+            "start_byte": 706,
+            "end_byte": 719,
+            "start_line": 27,
+            "end_line": 27
+          }
+        },
+        {
+          "role": "close",
+          "span": {
+            "start_byte": 733,
+            "end_byte": 746,
+            "start_line": 29,
+            "end_line": 29
+          }
+        }
+      ]
+    },
+    {
+      "path": "resources/views/vendor/mail/markdown/message.blade.php",
+      "sha256": "acadcd455906c5a04d1526e47353e78ffe4e92a52379a2d59834a6be99682a77",
+      "source_url": "https://github.com/laravelio/laravel.io/blob/b9d33e281c25c8f764ae144d95eb736e01c8fa0e/resources/views/vendor/mail/markdown/message.blade.php",
+      "reviewed_constructs": [
+        {
+          "category": "nested_component_blocks",
+          "span": {
+            "start_byte": 0,
+            "end_byte": 288,
+            "start_line": 1,
+            "end_line": 9
+          }
+        }
+      ],
+      "recommended_reader_result": "whole_template_refusal; one parse_error observation; no usable references or policy relations",
+      "component_delimiter_source_inventory": [
+        {
+          "role": "open",
+          "span": {
+            "start_byte": 0,
+            "end_byte": 11,
+            "start_line": 1,
+            "end_line": 1
+          }
+        },
+        {
+          "role": "open",
+          "span": {
+            "start_byte": 76,
+            "end_byte": 87,
+            "start_line": 4,
+            "end_line": 4
+          }
+        },
+        {
+          "role": "close",
+          "span": {
+            "start_byte": 274,
+            "end_byte": 287,
+            "start_line": 8,
+            "end_line": 8
+          }
+        },
+        {
+          "role": "open",
+          "span": {
+            "start_byte": 418,
+            "end_byte": 429,
+            "start_line": 17,
+            "end_line": 17
+          }
+        },
+        {
+          "role": "close",
+          "span": {
+            "start_byte": 489,
+            "end_byte": 502,
+            "start_line": 19,
+            "end_line": 19
+          }
+        },
+        {
+          "role": "open",
+          "span": {
+            "start_byte": 584,
+            "end_byte": 595,
+            "start_line": 25,
+            "end_line": 25
+          }
+        },
+        {
+          "role": "close",
+          "span": {
+            "start_byte": 706,
+            "end_byte": 719,
+            "start_line": 27,
+            "end_line": 27
+          }
+        },
+        {
+          "role": "close",
+          "span": {
+            "start_byte": 733,
+            "end_byte": 746,
+            "start_line": 29,
+            "end_line": 29
+          }
+        }
+      ]
+    }
+  ],
+  "grammar_fix_assessment": {
+    "minimal_safe_single_fix": false,
+    "reason": "The failures span custom directive registration/overrides, literal @ text, HTML grammar structure, dynamic tags, attribute extension syntax, directive case and nested generic blocks. A single reader patch would not establish all those contexts. Modifying grammar or adding a Blade-specific parser profile requires independent grammar/synthetic and public-source acceptance; masking error nodes or regex fallback would weaken the truth boundary.",
+    "preferred_first_profile": "Keep upstream grammar pinned and unmodified, with a reviewed whole-template refusal boundary and visible exclusions."
+  },
+  "acceptance": {
+    "frozen_relationship_oracle": "unchanged: 8 Eloquent and 5 Blade required cases, original forbidden targets and omission controls",
+    "selected_positive_templates": "none of the four selected positive files are among reviewed refusal files; any failure there must still fail",
+    "whole_file_boundary": "On any grammar error, emit only a whole-file ParseError observation. No usable reference from that file may enter any policy, even if an individual reference appears recoverable.",
+    "reviewed_refusal_boundary": "If the parent accepts this separate scope artifact, require exact source hashes and explicit error-file membership, fail on new/unreviewed error files, and report the entire refused file census. A listed file becoming parseable is a reviewed scope change, not automatic evidence that its relations are correct.",
+    "omission_control_overlap": [
+      "resources/views/emails/thread_deleted.blade.php"
+    ],
+    "no_general_accuracy_claim": true
+  }
+}
