@@ -91,7 +91,9 @@ Ask the code
   stele slop diff --base A --head B     what became harder to maintain
   hotspots, refactor, clusters, and processes are signals, not findings.
 
-Plan a change
+Shape a change
+  stele plan shape plans/NAME.stele   inspect proposed behavior and the
+                                      intents behind touched code
   intent/catalog.stele                what the system is for: intents,
                                       definitions, exceptions, channels
   plans/NAME.stele                    decisions and ordered changes that

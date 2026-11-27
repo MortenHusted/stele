@@ -298,14 +298,22 @@ plugin directory.
 
 ## Plans
 
-A plan puts the decisions behind a change and its ordered steps beside
-the intents they serve, and `stele plan check` checks it against the
-catalog and the code. `intent/` holds Stele's own catalog of what it is
-for, and `plans/stele-plans.stele` is the plan for Stele plans:
+Shape a change in a typed plan. Begin with the product behavior someone
+needs. Read the existing catalog and inspect the code that already provides
+related behavior. A draft can contain proposed intents and observable
+examples before anyone knows which implementation steps it will take.
 
 ```sh
-stele plan check plans/stele-plans.stele
+stele plan shape plans/shape-a-change.stele --inspect crates/stele/src/plan.rs
+stele plan check plans/shape-a-change.stele
 ```
+
+The first command shows the product revision and the intent mappings for
+the code under consideration. When a mapping is missing, investigate
+the behavior and propose its product reason if the evidence supports one.
+The second command checks the implementation plan, including its ordering
+and code anchors. The [planning guide](plugins/stele/skills/stele/references/plans.md)
+walks through shaping and recording a human decision.
 
 `stele intent` backs the catalog with evidence: tests tagged as examples
 of a statement, their failing and passing runs (`stele intent record`),
