@@ -1,6 +1,12 @@
 plan shape_a_change {
   use "../intent/catalog.stele" as intent
 
+  definition draft_statements_are_proposals {
+    refines: intent.plans_trace_to_intent
+    realized_by: ["rust:crates/stele-plan/src/load.rs#load_plan"]
+    text: "People can explore a product rule in a plan while the existing catalog continues to describe the accepted system."
+    examples: ["An author reads a plan that proposes a change to a catalog definition. Reading the catalog on its own still yields the original definition."]
+  }
   decision shape_with_the_existing_plan {
     scope: product
     examples: ["A requester can inspect an intent before a change serves it.", "An author inspecting an existing unmapped symbol sees the gap and can propose a product reason."]
@@ -19,12 +25,21 @@ plan shape_a_change {
     serves: [intent.plans_trace_to_intent, intent.changes_trace_to_intent]
     follows: [shape_with_the_existing_plan]
     touches: ["crates/stele/src/plan.rs"]
+    creates: ["crates/stele/src/plan/shape.rs"]
+    state: done
     text: "Inspect a draft plan, surface unmapped touched code for investigation, and keep strict implementation checks intact."
   }
   change decision_reference {
     serves: [intent.plans_trace_to_intent]
     follows: [identify_product_wording]
     touches: ["crates/stele-plan/src/lib.rs"]
+    creates: ["crates/stele-plan/src/revision.rs"]
+    state: done
     text: "Identify the precise product revision and associate the human decision with its original evidence. A wording change must invalidate the association."
+  }
+  change adopt_draft_statement_intent {
+    serves: [draft_statements_are_proposals]
+    touches: ["rust:crates/stele-plan/src/load.rs#load_plan"]
+    text: "Review the proposed definition against the existing plan loader and its catalog separation tests for adoption into the intent catalog."
   }
 }
