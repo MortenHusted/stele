@@ -29,11 +29,12 @@ pub mod minitest;
 pub mod project;
 pub mod recorder;
 pub mod report;
+pub mod revision;
 pub mod runs;
 pub mod syntax;
 
-pub use evidence::{CHECKER, Code, WorkingTree, anchors, evidence, languages};
-pub use load::{APPROVALS_FILE, DirReader, RUNS_FILE, Reader, load, load_catalog};
+pub use evidence::{CHECKER, Code, WorkingTree, anchor_path, anchors, evidence, languages};
+pub use load::{APPROVALS_FILE, DirReader, RUNS_FILE, Reader, load, load_catalog, valid_anchor};
 pub use project::INTENT_CHECKER;
 
 /// A catalog root or a plan, loaded with every link checked.
@@ -54,7 +55,7 @@ pub struct Statement {
     pub file: String,
     pub line: usize,
     pub kind: StatementKind,
-    /// Code anchors that realize a catalog definition or exception, sorted;
+    /// Code anchors that realize a definition or exception, sorted;
     /// empty for every other statement. Not part of what is approved.
     pub realized_by: Vec<String>,
 }
@@ -116,6 +117,7 @@ pub struct Proposal {
     pub statement: Statement,
     /// The catalog statement of the same kind this one would replace.
     pub replaces: Option<String>,
+    pub examples: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -127,6 +129,14 @@ pub struct Decision {
     pub governs: Vec<String>,
     /// The alternatives considered and why they lost.
     pub rejected: Option<String>,
+    pub scope: DecisionScope,
+    pub examples: Vec<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DecisionScope {
+    Product,
+    Implementation,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
