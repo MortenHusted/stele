@@ -107,6 +107,8 @@ class ReleasePackage
       offset = Regexp.last_match.begin(0)
       start = [offset - 4096, 0].max
       prefix = bytes.byteslice(start, offset - start)[%r{[A-Za-z0-9_/.+@=:-]*\z}n]
+      # ARM64 links the method tag and vendor directory literals directly before a Rust source location.
+      prefix = prefix.delete_prefix(':method:/vendor/') if prefix.start_with?(':method:/vendor//stele/builder/.rustup/')
       slash = prefix.start_with?('http://', 'https://') ? prefix.rindex('/stele/') : prefix.index('/')
       raise ArgumentError, 'source path is outside /stele/ logical roots; no archive produced' unless slash && prefix.byteslice(slash..).start_with?('/stele/')
     end

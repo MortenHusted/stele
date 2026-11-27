@@ -1,6 +1,6 @@
 ---
 name: stele
-description: Answer questions about code from deterministic facts, and check code and typed specifications, with the `stele` command. Use when checking a codebase against architecture, unreached-symbol, entry-point complexity or rule-card citation rules; when asking what calls what, what a change would reach, how two symbols connect, or what changed structurally between commits; when measuring whether a change made code harder to maintain; when planning a change as decisions and ordered changes tied to what the system is for, and checking that plan against the code; when backing a catalog of intents with approved, tested examples and a map to the code; and when authoring, checking, mutation-testing or rendering a `.stele` specification from requirements, observed facts and acceptance criteria. Not for mutable runtime state or persistence.
+description: Answer questions about code from deterministic facts, and check code and typed specifications, with the `stele` command. Use when checking a codebase against architecture, unreached-symbol, entry-point complexity or rule-card citation rules; when asking what calls what, what a change would reach, how two symbols connect, or what changed structurally between commits; when measuring whether a change made code harder to maintain; when shaping a change against existing behavior, backfilling missing product intent, and planning it as decisions and ordered changes tied to what the system is for, and checking that plan against the code; when backing a catalog of intents with approved, tested examples and a map to the code; and when authoring, checking, mutation-testing or rendering a `.stele` specification from requirements, observed facts and acceptance criteria. Not for mutable runtime state or persistence.
 ---
 
 # Stele
@@ -39,6 +39,7 @@ project. Only when working on Stele's own source, run the checkout with
 | What calls a symbol, what does it reach, how do two connect? | `stele code context`, `stele code impact`, `stele code trace` | [code](references/code.md) |
 | What changed structurally between two commits? | `stele code diff`, `stele code history` | [code](references/code.md) |
 | Did a change make the code harder to maintain? | `stele slop diff`, `stele slop gate`, `stele slop report` | [code](references/code.md) |
+| Shape a change, discover missing intent, and show the product wording for confirmation | `stele plan shape plans/<name>.stele` | [plans](references/plans.md) |
 | Plan a change: decisions and ordered changes, tied to intents and the code; what is next? | `stele plan check plans/<name>.stele` | [plans](references/plans.md) |
 | Is what the system is for still true: which statements are verified, what awaits approval? | `stele intent report` | [catalog](references/catalog.md) |
 | Which statements does a code change touch, and which examples need recording again? | `stele intent impact main` | [catalog](references/catalog.md) |

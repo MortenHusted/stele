@@ -515,7 +515,7 @@ fn definitions_and_exceptions_name_the_code_that_realizes_them() {
 }
 
 #[test]
-fn realized_by_holds_distinct_anchors_on_catalog_definitions_and_exceptions_only() {
+fn realized_by_holds_distinct_anchors_on_definitions_and_exceptions_only() {
     for (anchors, error) in [
         (
             "[\"/etc/passwd\"]",
@@ -560,13 +560,20 @@ fn realized_by_holds_distinct_anchors_on_catalog_definitions_and_exceptions_only
         )),
         "intent/channels.stele:3: channel cli has no field realized_by"
     );
-    // A plan proposes what a statement says; the catalog maps it to code.
+    let plan = plan_with(
+        "    replaces: intent.walk_exit_status\n",
+        "    replaces: intent.walk_exit_status\n    realized_by: [\"src/lib.rs\"]\n",
+    );
+    let document = load(
+        &with("plans/honest_walk.stele", &plan),
+        "plans/honest_walk.stele",
+    )
+    .unwrap();
     assert_eq!(
-        plan_error(&plan_with(
-            "    replaces: intent.walk_exit_status\n",
-            "    replaces: intent.walk_exit_status\n    realized_by: [\"src/lib.rs\"]\n",
-        )),
-        "plans/honest_walk.stele:7: definition walk_reports_status has no field realized_by"
+        document.plan.unwrap().proposals["walk_reports_status"]
+            .statement
+            .realized_by,
+        ["src/lib.rs"]
     );
 }
 

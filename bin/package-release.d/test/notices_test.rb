@@ -173,6 +173,17 @@ class ReleaseNoticesTest < Minitest::Test
     end
   end
 
+  def test_accepts_a_toolchain_path_adjacent_to_the_method_and_vendor_literals
+    package = ReleasePackage.new
+    path = '/stele/builder/.rustup/toolchains/test/lib/rustlib/src/rust/library/core.rs'
+    literals = ':method:/vendor/'
+    package.send(:check_paths!, (literals + path).b, [])
+    [literals + '/unexpected' + path, '/unexpected' + literals + path].each do |physical|
+      assert_raises(ArgumentError) { package.send(:check_paths!, physical.b, []) }
+    end
+    assert_raises(ArgumentError) { package.send(:check_paths!, (literals + path).b, ['/vendor/']) }
+  end
+
   def test_accepts_remapped_source_paths_adjacent_to_urls_but_refuses_physical_paths
     package = ReleasePackage.new
     url = 'https://example.com/project/issues'

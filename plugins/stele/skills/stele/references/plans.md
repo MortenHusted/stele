@@ -91,6 +91,59 @@ plan farewell {
   documentation, manifests. A path anchor is present when the working
   tree holds the file, untracked included, unless git ignores it.
 
+## Shape a change
+
+Start with the smallest example a requester cares about. In a lending
+library, "let a librarian renew a loan for a member" leaves open what
+happens when another member has reserved the book. Look up the existing
+member renewal flow and its intent before deciding whether to reuse it.
+
+```text
+plan renew_for_member {
+  intent staff_renewals {
+    text: "A librarian can renew a loan on behalf of its borrower."
+    examples: ["A librarian renews an eligible loan and the borrower sees the new due date."]
+  }
+}
+```
+
+Run `stele plan shape plans/renew.stele --inspect src/renewals.rb` on the
+draft. Use the actual file or symbol for the behavior you are considering.
+Read the mapped statements, the code, and its tests. A mapping gap is a
+place to investigate. If the existing reservation rule matters to this
+change, find its product reason in the catalog or an earlier decision.
+Propose the missing statement and its code mapping when you can establish
+that reason. Ask the requester if extending the rule to staff renewals
+requires a product choice. Record the answer and an example in the plan.
+
+Distinguish observation from agreement. Cite the source and commit for an
+observation. Mark a decision about observable behavior with `scope: product`.
+Put technical choices such as which controller to reuse in ordinary
+decisions. Inspect callers with `stele code context` or `stele code impact`
+when sharing the implementation could affect another workflow. A measured
+snapshot can supply erosion context with `stele slop report`.
+
+Show the requester the product wording, examples and revision printed by
+`stele plan shape`. Verify their response in its original conversation,
+including who sent it and which revision they saw. Record that decision:
+
+```sh
+stele plan confirm plans/renew.stele --revision "$revision" --by "$actor" --source "$message" > decision.json
+stele plan shape plans/renew.stele --decision decision.json
+```
+
+Store the receipt where its audience may see the source reference. It
+records attribution supplied by the caller. Authentication of the original
+message belongs to the service where the decision was made. Approval into
+the long-lived catalog remains a separate owner action.
+
+Once the product behavior is settled, add the smallest implementation
+changes that serve it. During review, trace the agreed examples into the
+diff and trace each changed observable rule back to the approved wording.
+Use `stele intent impact` on the actual change to discover touched code
+that the original plan missed. Compare measured snapshots with
+`stele slop diff` when assessing the maintenance cost.
+
 ## Check it
 
 ```sh

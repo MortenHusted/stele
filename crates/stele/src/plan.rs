@@ -1,6 +1,8 @@
 //! `stele plan`: check a plan against its catalog and the code, or write the
 //! evidence and the checker to run the steps one at a time.
 
+mod shape;
+
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 use std::process::{Command, ExitCode};
@@ -20,6 +22,34 @@ use crate::check::CheckLanguage;
 
 #[derive(clap::Subcommand, Debug)]
 pub enum PlanCommand {
+    /// Shape a change. Inspect its product revision and the code whose behavior it touches.
+    Shape {
+        #[command(flatten)]
+        source: Source,
+        /// Inspect an existing file or symbol even before naming an implementation change. Repeatable.
+        #[arg(long, value_parser = shape::parse_anchor)]
+        inspect: Vec<String>,
+        /// Verify a previously recorded decision against this revision.
+        #[arg(long)]
+        decision: Option<PathBuf>,
+        /// Emit the shaping report as JSON.
+        #[arg(long)]
+        json: bool,
+    },
+    /// Emit a decision receipt for the product revision the person saw.
+    Confirm {
+        /// The plan whose product wording was confirmed.
+        file: PathBuf,
+        /// The digest shown by plan shape.
+        #[arg(long)]
+        revision: String,
+        /// Identity verified by the recorder at the original decision.
+        #[arg(long)]
+        by: String,
+        /// Reference to the original human decision, verified by the recorder.
+        #[arg(long)]
+        source: String,
+    },
     /// Check a plan, or a catalog root, against its catalog and the code.
     /// The report reads and exits as `stele spec check`; the changes that
     /// are ready and blocked follow it.
@@ -162,6 +192,24 @@ pub fn dispatch(command: PlanCommand) -> ExitCode {
 
 fn run(command: PlanCommand) -> Result<ExitCode> {
     match command {
+        PlanCommand::Shape {
+            source,
+            inspect,
+            decision,
+            json,
+        } => {
+            shape::show(&source, &inspect, decision.as_deref(), json)?;
+            Ok(ExitCode::SUCCESS)
+        }
+        PlanCommand::Confirm {
+            file,
+            revision,
+            by,
+            source,
+        } => {
+            shape::confirm(&file, &revision, &by, &source)?;
+            Ok(ExitCode::SUCCESS)
+        }
         PlanCommand::Check { source, json } => {
             let report = lemmaspec::check_artifact(stele_plan::CHECKER, &evidence(&source)?)
                 .map_err(|error| anyhow!("check the plan: {error}"))?;

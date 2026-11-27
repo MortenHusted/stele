@@ -7,7 +7,8 @@ use std::{
 };
 
 use crate::{
-    Change, Decision, Document, ExceptionKind, Plan, Proposal, State, Statement, StatementKind,
+    Change, Decision, DecisionScope, Document, ExceptionKind, Plan, Proposal, State, Statement,
+    StatementKind,
     syntax::{Block, Field, Fields, File, Header, Value, parse},
 };
 
@@ -347,7 +348,7 @@ fn catalog_statements(
     for loaded in files {
         let links = Links { loaded, declared };
         for block in &loaded.file.blocks {
-            let (statement, _) = links.statement(block, false)?;
+            let statement = links.statement(block, false)?.statement;
             statements.insert(statement.id.clone(), statement);
         }
     }
@@ -409,14 +410,9 @@ fn load_plan(reader: &dyn Reader, file: File) -> Result<Document, String> {
                     .insert(block.name.clone(), links.change(block)?);
             }
             _ => {
-                let (statement, replaces) = links.statement(block, true)?;
-                plan.proposals.insert(
-                    statement.id.clone(),
-                    Proposal {
-                        statement,
-                        replaces,
-                    },
-                );
+                let proposal = links.statement(block, true)?;
+                plan.proposals
+                    .insert(proposal.statement.id.clone(), proposal);
             }
         }
     }
@@ -527,11 +523,7 @@ impl Links<'_> {
         }
     }
 
-    fn statement(
-        &self,
-        block: &Block,
-        proposed: bool,
-    ) -> Result<(Statement, Option<String>), String> {
+    fn statement(&self, block: &Block, proposed: bool) -> Result<Proposal, String> {
         let id = block.name.as_str();
         let kind = self.declared[id].kind;
         let mut allowed = match kind {
@@ -540,8 +532,9 @@ impl Links<'_> {
             _ => vec!["text"],
         };
         if proposed {
-            allowed.push("replaces");
-        } else if matches!(kind, Kind::Definition | Kind::Exception) {
+            allowed.extend(["replaces", "examples"]);
+        }
+        if matches!(kind, Kind::Definition | Kind::Exception) {
             allowed.push("realized_by");
         }
         let fields =
@@ -585,7 +578,11 @@ impl Links<'_> {
             kind: statement_kind,
             realized_by: self.anchors(fields.get("realized_by"), id)?,
         };
-        Ok((statement, replaces))
+        Ok(Proposal {
+            statement,
+            replaces,
+            examples: self.examples(&fields, id)?,
+        })
     }
 
     fn exception(&self, fields: &Fields<'_>, id: &str) -> Result<StatementKind, String> {
@@ -624,11 +621,27 @@ impl Links<'_> {
         })
     }
 
+    fn examples(&self, fields: &Fields<'_>, id: &str) -> Result<Vec<String>, String> {
+        let Some(field) = fields.get("examples") else {
+            return Ok(Vec::new());
+        };
+        list(field, id, self.path())?
+            .iter()
+            .map(|value| match value {
+                Value::Str(text) if !text.trim().is_empty() => Ok(text.clone()),
+                _ => Err(format!(
+                    "{}: examples of {id} must list nonempty strings",
+                    self.at(field.line)
+                )),
+            })
+            .collect()
+    }
+
     fn decision(&self, block: &Block) -> Result<Decision, String> {
         let id = block.name.as_str();
         let fields = block.fields_by_name(
             self.path(),
-            &["text", "governs", "rejected"],
+            &["text", "governs", "rejected", "scope", "examples"],
             &format!("decision {id}"),
         )?;
         let governs = fields.required("governs")?;
@@ -639,7 +652,25 @@ impl Links<'_> {
                 self.at(block.line)
             ));
         }
+        let scope = match fields.get("scope") {
+            Some(field) if field.value.as_ident() == Some("product") => DecisionScope::Product,
+            Some(field) if field.value.as_ident() != Some("implementation") => {
+                return Err(format!(
+                    "{}: scope of {id} must be product or implementation",
+                    self.at(field.line)
+                ));
+            }
+            _ => DecisionScope::Implementation,
+        };
+        if scope == DecisionScope::Implementation && fields.get("examples").is_some() {
+            return Err(format!(
+                "{}: decision {id} needs scope: product to carry acceptance examples",
+                self.at(block.line)
+            ));
+        }
         Ok(Decision {
+            scope,
+            examples: self.examples(&fields, id)?,
             id: id.into(),
             text: self.text(fields.required("text")?, id)?,
             line: block.line,
@@ -725,7 +756,8 @@ fn list<'a>(field: &'a Field, id: &str, path: &str) -> Result<&'a [Value], Strin
     }
 }
 
-fn valid_anchor(anchor: &str) -> bool {
+/// Whether an anchor is a repository-relative file or a qualified symbol key.
+pub fn valid_anchor(anchor: &str) -> bool {
     let path = match anchor.split_once(':') {
         Some((language, symbol)) => {
             let Some((path, name)) = symbol.split_once('#') else {

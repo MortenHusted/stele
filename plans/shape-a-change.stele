@@ -1,0 +1,45 @@
+plan shape_a_change {
+  use "../intent/catalog.stele" as intent
+
+  definition draft_statements_are_proposals {
+    refines: intent.plans_trace_to_intent
+    realized_by: ["rust:crates/stele-plan/src/load.rs#load_plan"]
+    text: "People can explore a product rule in a plan while the existing catalog continues to describe the accepted system."
+    examples: ["An author reads a plan that proposes a change to a catalog definition. Reading the catalog on its own still yields the original definition."]
+  }
+  decision shape_with_the_existing_plan {
+    scope: product
+    examples: ["A requester can inspect an intent before a change serves it.", "An author inspecting an existing unmapped symbol sees the gap and can propose a product reason."]
+    governs: [intent.plans_trace_to_intent, intent.changes_trace_to_intent]
+    text: "People shape a change by comparing proposed behavior with the existing intents and code. An incomplete draft can be inspected before implementation units exist. A touched behavior without an intent prompts discovery of its product reason."
+    rejected: "A separate contract duplicates product statements. Inferring a business reason from a code anchor alone turns an observation into an unsupported product decision."
+  }
+  decision identify_product_wording {
+    scope: product
+    examples: ["A reviewer checks a decision after the implementation sequence changes.", "Changing an acceptance example makes the earlier decision stale."]
+    governs: [intent.plans_trace_to_intent]
+    text: "Show people the statements and examples covered by their decision and identify that wording independently of implementation edits. Preserve a reference to the original human decision."
+    rejected: "Signing the entire plan would invalidate a product decision whenever technical sequencing changes."
+  }
+  change shape {
+    serves: [intent.plans_trace_to_intent, intent.changes_trace_to_intent]
+    follows: [shape_with_the_existing_plan]
+    touches: ["crates/stele/src/plan.rs"]
+    creates: ["crates/stele/src/plan/shape.rs"]
+    state: done
+    text: "Inspect a draft plan, surface unmapped touched code for investigation, and keep strict implementation checks intact."
+  }
+  change decision_reference {
+    serves: [intent.plans_trace_to_intent]
+    follows: [identify_product_wording]
+    touches: ["crates/stele-plan/src/lib.rs"]
+    creates: ["crates/stele-plan/src/revision.rs"]
+    state: done
+    text: "Identify the precise product revision and associate the human decision with its original evidence. A wording change must invalidate the association."
+  }
+  change adopt_draft_statement_intent {
+    serves: [draft_statements_are_proposals]
+    touches: ["rust:crates/stele-plan/src/load.rs#load_plan"]
+    text: "Review the proposed definition against the existing plan loader and its catalog separation tests for adoption into the intent catalog."
+  }
+}
