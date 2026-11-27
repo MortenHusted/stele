@@ -2,11 +2,15 @@ plan shape_a_change {
   use "../intent/catalog.stele" as intent
 
   decision shape_with_the_existing_plan {
+    scope: product
+    examples: ["A requester can inspect an intent before a change serves it.", "An author inspecting an existing unmapped symbol sees the gap and can propose a product reason."]
     governs: [intent.plans_trace_to_intent, intent.changes_trace_to_intent]
     text: "People shape a change by comparing proposed behavior with the existing intents and code. An incomplete draft can be inspected before implementation units exist. A touched behavior without an intent prompts discovery of its product reason."
     rejected: "A separate contract duplicates product statements. Inferring a business reason from a code anchor alone turns an observation into an unsupported product decision."
   }
   decision identify_product_wording {
+    scope: product
+    examples: ["A reviewer checks a decision after the implementation sequence changes.", "Changing an acceptance example makes the earlier decision stale."]
     governs: [intent.plans_trace_to_intent]
     text: "Show people the statements and examples covered by their decision and identify that wording independently of implementation edits. Preserve a reference to the original human decision."
     rejected: "Signing the entire plan would invalidate a product decision whenever technical sequencing changes."
