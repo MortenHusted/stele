@@ -92,6 +92,12 @@ struct Shape<'a> {
     revision: String,
     wording: String,
     decision_matches_revision: bool,
+    #[serde(flatten)]
+    discovery: Discovery<'a>,
+}
+
+#[derive(Default, Serialize)]
+struct Discovery<'a> {
     sources: Vec<String>,
     inspected: Vec<Observation<'a>>,
 }
@@ -102,37 +108,43 @@ impl Shape<'_> {
         if self.decision_matches_revision {
             println!("Decision receipt matches this product revision.");
         }
-        for source in &self.sources {
+        for source in &self.discovery.sources {
             println!("Code source: {source}");
         }
-        for item in &self.inspected {
-            match &item.observed_at {
-                Some(identity) => println!("{}: present ({identity})", item.anchor),
-                None => println!("{}: not found in the inspected code", item.anchor),
-            }
-            for mapping in &item.mapped {
-                println!(
-                    "  mapped: {} ({}) {}",
-                    mapping.statement, mapping.source, mapping.text
-                );
-            }
-            for mapping in &item.same_file {
-                println!(
-                    "  same file: {} at {} ({})",
-                    mapping.statement, mapping.anchor, mapping.source
-                );
-            }
-            for mapping in &item.proposed {
-                println!(
-                    "  proposed mapping: {} ({}) {}",
-                    mapping.statement, mapping.source, mapping.text
-                );
-            }
-            if item.observed_at.is_some() && item.mapped.is_empty() && item.proposed.is_empty() {
-                println!(
-                    "  No exact catalog mapping. Check the current behavior and its product reason. Propose the missing statement when confirmed."
-                );
-            }
+        for item in &self.discovery.inspected {
+            item.print();
+        }
+    }
+}
+
+impl Observation<'_> {
+    fn print(&self) {
+        match &self.observed_at {
+            Some(identity) => println!("{}: present ({identity})", self.anchor),
+            None => println!("{}: not found in the inspected code", self.anchor),
+        }
+        for mapping in &self.mapped {
+            println!(
+                "  mapped: {} ({}) {}",
+                mapping.statement, mapping.source, mapping.text
+            );
+        }
+        for mapping in &self.same_file {
+            println!(
+                "  same file: {} at {} ({})",
+                mapping.statement, mapping.anchor, mapping.source
+            );
+        }
+        for mapping in &self.proposed {
+            println!(
+                "  proposed mapping: {} ({}) {}",
+                mapping.statement, mapping.source, mapping.text
+            );
+        }
+        if self.observed_at.is_some() && self.mapped.is_empty() && self.proposed.is_empty() {
+            println!(
+                "  No exact catalog mapping. Check the current behavior and its product reason. Propose the missing statement when confirmed."
+            );
         }
     }
 }
@@ -182,6 +194,28 @@ pub(super) fn show(
             .with_context(|| format!("read decision {}", file.display()))?;
         product.verify(&receipt).map_err(anyhow::Error::msg)?;
     }
+    let shape = Shape {
+        plan: &plan.name,
+        revision: product.digest,
+        wording: product.wording,
+        decision_matches_revision: decision.is_some(),
+        discovery: discover(source, &base, &document, inspect)?,
+    };
+    if json {
+        println!("{}", serde_json::to_string_pretty(&shape)?);
+    } else {
+        shape.print();
+    }
+    Ok(())
+}
+
+fn discover<'a>(
+    source: &Source,
+    base: &Path,
+    document: &'a Document,
+    inspect: &'a [String],
+) -> Result<Discovery<'a>> {
+    let plan = document.plan.as_ref().expect("loaded a plan");
     let anchors: BTreeSet<&str> = plan
         .changes
         .values()
@@ -194,66 +228,67 @@ pub(super) fn show(
         .chain(inspect)
         .map(String::as_str)
         .collect();
-    let mut shape = Shape {
-        plan: &plan.name,
-        revision: product.digest,
-        wording: product.wording,
-        decision_matches_revision: decision.is_some(),
-        sources: Vec::new(),
-        inspected: Vec::new(),
+    if anchors.is_empty() {
+        return Ok(Discovery::default());
+    }
+    let code = read_code(source, base, plan, &anchors)?;
+    let (sources, untracked) = code_sources(&code, source.code.path.as_deref().unwrap_or(base))?;
+    let mut inspected = Vec::new();
+    for anchor in anchors {
+        let (mapped, same_file) = mappings(anchor, document.catalog.values());
+        let (proposed, _) = mappings(anchor, plan.proposals.values().map(|p| &p.statement));
+        inspected.push(Observation {
+            anchor,
+            observed_at: observed_at(anchor, &code, &untracked)?,
+            mapped,
+            same_file,
+            proposed,
+        });
+    }
+    Ok(Discovery { sources, inspected })
+}
+
+fn code_sources(code: &stele_plan::Code, path: &Path) -> Result<(Vec<String>, BTreeSet<String>)> {
+    let mut sources = Vec::new();
+    for snapshot in &code.snapshots {
+        let id = &snapshot.identity;
+        sources.push(format!(
+            "{} {} tree {} ({}{})",
+            id.language.tag(),
+            id.commit_sha,
+            id.tree_sha,
+            id.snapshot_id,
+            if id.dirty { ", dirty" } else { "" }
+        ));
+    }
+    let Some(tree) = &code.working_tree else {
+        return Ok((sources, BTreeSet::new()));
     };
-    if !anchors.is_empty() {
-        let code = read_code(source, &base, plan, &anchors)?;
-        for snapshot in &code.snapshots {
-            let id = &snapshot.identity;
-            shape.sources.push(format!(
-                "{} {} tree {} ({}{})",
-                id.language.tag(),
-                id.commit_sha,
-                id.tree_sha,
-                id.snapshot_id,
-                if id.dirty { ", dirty" } else { "" }
-            ));
-        }
-        let mut untracked = BTreeSet::new();
-        if let Some(tree) = &code.working_tree {
-            let repo = Repo::of_catalog(source.code.path.as_deref().unwrap_or(&base))
-                .map_err(anyhow::Error::msg)?;
-            untracked = repo.untracked_files().map_err(anyhow::Error::msg)?;
-            let head = repo.head().unwrap_or_else(|_| "unavailable".into());
-            shape.sources.push(format!(
-                "working tree (HEAD {head}, tracked content identity {})",
-                tree.identity
-            ));
-        }
-        for anchor in anchors {
-            let mut observed_at = code
-                .find(anchor)
-                .map_err(anyhow::Error::msg)?
-                .and_then(|basis| basis.identity);
-            if untracked.contains(anchor)
-                && code
-                    .working_tree
-                    .as_ref()
-                    .is_some_and(|tree| observed_at.as_ref() == Some(&tree.identity))
-            {
-                observed_at = Some("untracked working tree file".into());
-            }
-            let (mapped, same_file) = mappings(anchor, document.catalog.values());
-            let (proposed, _) = mappings(anchor, plan.proposals.values().map(|p| &p.statement));
-            shape.inspected.push(Observation {
-                anchor,
-                observed_at,
-                mapped,
-                same_file,
-                proposed,
-            });
-        }
+    let repo = Repo::of_catalog(path).map_err(anyhow::Error::msg)?;
+    let head = repo.head().unwrap_or_else(|_| "unavailable".into());
+    sources.push(format!(
+        "working tree (HEAD {head}, tracked content identity {})",
+        tree.identity
+    ));
+    Ok((sources, repo.untracked_files().map_err(anyhow::Error::msg)?))
+}
+
+fn observed_at(
+    anchor: &str,
+    code: &stele_plan::Code,
+    untracked: &BTreeSet<String>,
+) -> Result<Option<String>> {
+    let identity = code
+        .find(anchor)
+        .map_err(anyhow::Error::msg)?
+        .and_then(|basis| basis.identity);
+    if untracked.contains(anchor)
+        && code
+            .working_tree
+            .as_ref()
+            .is_some_and(|tree| identity.as_ref() == Some(&tree.identity))
+    {
+        return Ok(Some("untracked working tree file".into()));
     }
-    if json {
-        println!("{}", serde_json::to_string_pretty(&shape)?);
-    } else {
-        shape.print();
-    }
-    Ok(())
+    Ok(identity)
 }
