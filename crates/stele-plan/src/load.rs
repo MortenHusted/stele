@@ -653,17 +653,14 @@ impl Links<'_> {
             ));
         }
         let scope = match fields.get("scope") {
-            None => DecisionScope::Implementation,
-            Some(field) => match field.value.as_ident() {
-                Some("product") => DecisionScope::Product,
-                Some("implementation") => DecisionScope::Implementation,
-                _ => {
-                    return Err(format!(
-                        "{}: scope of {id} must be product or implementation",
-                        self.at(field.line)
-                    ));
-                }
-            },
+            Some(field) if field.value.as_ident() == Some("product") => DecisionScope::Product,
+            Some(field) if field.value.as_ident() != Some("implementation") => {
+                return Err(format!(
+                    "{}: scope of {id} must be product or implementation",
+                    self.at(field.line)
+                ));
+            }
+            _ => DecisionScope::Implementation,
         };
         if scope == DecisionScope::Implementation && fields.get("examples").is_some() {
             return Err(format!(

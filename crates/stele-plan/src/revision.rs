@@ -1,10 +1,12 @@
 //! Product wording from a plan, and a decision reference bound to that wording.
 
-use std::{collections::BTreeSet, fmt::Write};
+use std::{collections::BTreeMap, fmt::Write};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{DecisionScope, Document, StatementKind, digest::sha256};
+use crate::{
+    Decision, DecisionScope, Document, Plan, Proposal, Statement, StatementKind, digest::sha256,
+};
 
 pub struct ProductRevision {
     pub digest: String,
@@ -83,6 +85,30 @@ impl ProductRevision {
 /// same rendering is presented to the requester and hashed for their decision.
 pub fn product_revision(document: &Document) -> Result<ProductRevision, String> {
     let plan = document.plan.as_ref().ok_or("shaping requires a plan")?;
+    let statements = product_statements(document, plan)?;
+    let mut wording = format!("Plan {}\n", plan.name);
+    for statement in statements.values() {
+        render_statement(&mut wording, statement, plan.proposals.get(&statement.id));
+    }
+    for decision in plan
+        .decisions
+        .values()
+        .filter(|d| d.scope == DecisionScope::Product)
+    {
+        render_decision(&mut wording, decision);
+    }
+    let digest = sha256(&format!("stele-product-revision/1\n{wording}"));
+    Ok(ProductRevision {
+        digest,
+        wording,
+        has_statements: !statements.is_empty(),
+    })
+}
+
+fn product_statements<'a>(
+    document: &'a Document,
+    plan: &'a Plan,
+) -> Result<BTreeMap<&'a str, &'a Statement>, String> {
     let mut pending: Vec<_> = plan.proposals.keys().collect();
     pending.extend(plan.changes.values().flat_map(|change| &change.serves));
     pending.extend(
@@ -90,9 +116,9 @@ pub fn product_revision(document: &Document) -> Result<ProductRevision, String> 
             .values()
             .flat_map(|decision| &decision.governs),
     );
-    let mut ids = BTreeSet::new();
+    let mut statements = BTreeMap::new();
     while let Some(id) = pending.pop() {
-        if !ids.insert(id) {
+        if statements.contains_key(id.as_str()) {
             continue;
         }
         let statement = if let Some(proposal) = plan.proposals.get(id) {
@@ -104,6 +130,7 @@ pub fn product_revision(document: &Document) -> Result<ProductRevision, String> 
                 .get(id)
                 .ok_or_else(|| format!("missing product statement {id}"))?
         };
+        statements.insert(id.as_str(), statement);
         match &statement.kind {
             StatementKind::Definition { refines } => pending.push(refines),
             StatementKind::Exception {
@@ -115,62 +142,53 @@ pub fn product_revision(document: &Document) -> Result<ProductRevision, String> 
             StatementKind::Intent | StatementKind::Channel => {}
         }
     }
-    let has_statements = !ids.is_empty();
-    let mut wording = format!("Plan {}\n", plan.name);
-    for id in ids {
-        let proposal = plan.proposals.get(id);
-        let (origin, statement) = proposal.map_or_else(
-            || ("Existing", &document.catalog[id]),
-            |p| ("Proposed", &p.statement),
-        );
-        let kind = match &statement.kind {
-            StatementKind::Intent => "intent".into(),
-            StatementKind::Channel => "channel".into(),
-            StatementKind::Definition { refines } => format!("definition of {refines}"),
-            StatementKind::Exception {
-                narrows,
-                channels,
-                kind,
-            } => {
-                format!(
-                    "exception to {narrows} ({} on {})",
-                    kind.as_str(),
-                    channels.join(", ")
-                )
-            }
-        };
-        writeln!(wording, "\n{origin} {kind}: {id}").unwrap();
-        line(&mut wording, "Wording", &statement.text);
-        if let Some(proposal) = proposal {
-            if let Some(previous) = &proposal.replaces {
-                line(&mut wording, "Replaces", previous);
-            }
-            for example in &proposal.examples {
-                line(&mut wording, "Example", example);
-            }
+    Ok(statements)
+}
+
+fn render_statement(wording: &mut String, statement: &Statement, proposal: Option<&Proposal>) {
+    let kind = match &statement.kind {
+        StatementKind::Intent => "intent".into(),
+        StatementKind::Channel => "channel".into(),
+        StatementKind::Definition { refines } => format!("definition of {refines}"),
+        StatementKind::Exception {
+            narrows,
+            channels,
+            kind,
+        } => {
+            format!(
+                "exception to {narrows} ({} on {})",
+                kind.as_str(),
+                channels.join(", ")
+            )
+        }
+    };
+    let origin = if proposal.is_some() {
+        "Proposed"
+    } else {
+        "Existing"
+    };
+    writeln!(wording, "\n{origin} {kind}: {}", statement.id).unwrap();
+    line(wording, "Wording", &statement.text);
+    if let Some(proposal) = proposal {
+        if let Some(previous) = &proposal.replaces {
+            line(wording, "Replaces", previous);
+        }
+        for example in &proposal.examples {
+            line(wording, "Example", example);
         }
     }
-    for decision in plan
-        .decisions
-        .values()
-        .filter(|d| d.scope == DecisionScope::Product)
-    {
-        writeln!(wording, "\nProduct decision: {}", decision.id).unwrap();
-        line(&mut wording, "Governs", &decision.governs.join(", "));
-        line(&mut wording, "Wording", &decision.text);
-        if let Some(rejected) = &decision.rejected {
-            line(&mut wording, "Rejected", rejected);
-        }
-        for example in &decision.examples {
-            line(&mut wording, "Example", example);
-        }
+}
+
+fn render_decision(wording: &mut String, decision: &Decision) {
+    writeln!(wording, "\nProduct decision: {}", decision.id).unwrap();
+    line(wording, "Governs", &decision.governs.join(", "));
+    line(wording, "Wording", &decision.text);
+    if let Some(rejected) = &decision.rejected {
+        line(wording, "Rejected", rejected);
     }
-    let digest = sha256(&format!("stele-product-revision/1\n{wording}"));
-    Ok(ProductRevision {
-        digest,
-        wording,
-        has_statements,
-    })
+    for example in &decision.examples {
+        line(wording, "Example", example);
+    }
 }
 
 fn line(wording: &mut String, label: &str, prose: &str) {
