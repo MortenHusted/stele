@@ -639,6 +639,7 @@ dependencies = [
  "codemap-topology",
  "lemmaspec",
  "libc",
+ "serde",
  "serde_json",
  "stele-plan",
  "tempfile",

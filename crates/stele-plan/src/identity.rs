@@ -5,7 +5,7 @@
 //! commit tree's identity on every platform.
 
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, BTreeSet},
     fmt::Write as _,
     fs,
     io::{self, Write},
@@ -135,6 +135,15 @@ impl Repo {
             files,
             identity: self.working_tree_identity()?,
         })
+    }
+
+    /// Nonignored file paths outside the tracked content identity.
+    pub fn untracked_files(&self) -> Result<BTreeSet<String>, String> {
+        let listing = git(
+            &self.root,
+            &["ls-files", "-z", "--others", "--exclude-standard"],
+        )?;
+        Ok(records(&listing).map(str::to_owned).collect())
     }
 
     /// The identity of the tracked files as `commit` has them.

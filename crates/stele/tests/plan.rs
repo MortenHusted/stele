@@ -429,3 +429,186 @@ fn stele_plans_itself_against_its_own_code() {
         .collect();
     assert!(open.is_empty(), "{open:#?}");
 }
+
+#[test]
+fn shape_can_inspect_an_unserved_proposal_before_the_plan_has_changes() {
+    let dir = project(
+        r#"plan next {
+        use "../intent/catalog.stele" as intent
+        definition polite { refines: intent.greets_people text: "Greet everyone politely." }
+    }"#,
+    );
+    let path = dir.path();
+    std::fs::write(
+        path.join("intent/catalog.stele"),
+        CATALOG.replace(
+            "\n}",
+            r#"
+        definition uses_the_name {
+          refines: greets_people text: "Use the person's name."
+          realized_by: ["rust:src/main.rs#entry"]
+        }
+    }"#,
+        ),
+    )
+    .unwrap();
+    let snapshot = snapshot();
+    let shaped = stele(
+        path,
+        &[
+            "plan",
+            "shape",
+            "plans/next.stele",
+            "--snapshot",
+            snapshot.to_str().unwrap(),
+            "--inspect",
+            "rust:src/main.rs#entry",
+            "--inspect",
+            "rust:src/main.rs#work",
+            "--inspect",
+            "rust:src/main.rs#gone",
+            "--json",
+        ],
+    );
+    assert!(shaped.status.success(), "{}", stderr(&shaped));
+    let report: serde_json::Value = serde_json::from_slice(&shaped.stdout).unwrap();
+    assert!(
+        report["wording"]
+            .as_str()
+            .unwrap()
+            .contains("Greet everyone politely.")
+    );
+    let inspected = report["inspected"].as_array().unwrap();
+    let entry = &inspected[0];
+    assert_eq!(entry["mapped"][0]["statement"], "uses_the_name");
+    assert!(entry["observed_at"].is_string());
+    let gone = &inspected[1];
+    assert!(gone["observed_at"].is_null());
+    let work = &inspected[2];
+    assert_eq!(work["same_file"][0]["statement"], "uses_the_name");
+    assert_eq!(work["mapped"].as_array().unwrap().len(), 0);
+    assert!(work["observed_at"].is_string());
+
+    let plan_file = path.join("plans/next.stele");
+    let proposal = std::fs::read_to_string(&plan_file).unwrap().replace(
+        "refines: intent.greets_people",
+        r#"realized_by: ["rust:src/main.rs#work"] refines: intent.greets_people"#,
+    );
+    std::fs::write(plan_file, proposal).unwrap();
+    let backfilled = stele(
+        path,
+        &[
+            "plan",
+            "shape",
+            "plans/next.stele",
+            "--snapshot",
+            snapshot.to_str().unwrap(),
+            "--json",
+        ],
+    );
+    assert!(backfilled.status.success(), "{}", stderr(&backfilled));
+    let report: serde_json::Value = serde_json::from_slice(&backfilled.stdout).unwrap();
+    assert_eq!(report["inspected"][0]["proposed"][0]["statement"], "polite");
+    assert_eq!(
+        report["inspected"][0]["mapped"].as_array().unwrap().len(),
+        0
+    );
+
+    let wrong_language = stele(
+        path,
+        &[
+            "plan",
+            "shape",
+            "plans/next.stele",
+            "--snapshot",
+            snapshot.to_str().unwrap(),
+            "--inspect",
+            "ruby:lib/greet.rb#hello",
+        ],
+    );
+    assert_eq!(wrong_language.status.code(), Some(2));
+    assert!(stderr(&wrong_language).contains("snapshot is rust"));
+
+    let strict = stele(path, &["plan", "check", "plans/next.stele"]);
+    assert_eq!(strict.status.code(), Some(1));
+    assert!(stdout(&strict).contains("unserved_proposal"));
+}
+
+#[test]
+fn confirm_binds_the_human_decision_to_the_reviewed_plan_wording() {
+    let dir = project(PLAN);
+    let path = dir.path();
+    let snapshot = snapshot();
+    let args = [
+        "plan",
+        "shape",
+        "plans/next.stele",
+        "--snapshot",
+        snapshot.to_str().unwrap(),
+        "--json",
+    ];
+    let output = stele(path, &args);
+    assert!(output.status.success(), "{}", stderr(&output));
+    let shaped: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    let confirmed = stele(
+        path,
+        &[
+            "plan",
+            "confirm",
+            "plans/next.stele",
+            "--revision",
+            shaped["revision"].as_str().unwrap(),
+            "--by",
+            "U007",
+            "--source",
+            "thread:message:12",
+        ],
+    );
+    assert!(confirmed.status.success(), "{}", stderr(&confirmed));
+    std::fs::write(path.join("decision.json"), confirmed.stdout).unwrap();
+
+    let mut verify = args.to_vec();
+    verify.extend(["--decision", "decision.json"]);
+    std::fs::write(
+        path.join("plans/next.stele"),
+        PLAN.replace("Write work.", "Reuse helper."),
+    )
+    .unwrap();
+    assert!(stele(path, &verify).status.success());
+    std::fs::write(
+        path.join("plans/next.stele"),
+        PLAN.replace("name of the person", "title of the person"),
+    )
+    .unwrap();
+    let stale = stele(path, &verify);
+    assert!(!stale.status.success());
+    assert!(stderr(&stale).contains("revision differs"));
+}
+
+#[test]
+fn shaping_reports_untracked_presence_separately_from_tracked_identity() {
+    let dir = project("plan next {}");
+    let path = dir.path();
+    git(path, &["init", "-q"]);
+    git(path, &["add", "."]);
+    git(path, &["commit", "-qm", "fixture"]);
+    std::fs::write(path.join("pending.txt"), "draft").unwrap();
+    let shaped = stele(
+        path,
+        &[
+            "plan",
+            "shape",
+            "plans/next.stele",
+            "--inspect",
+            "pending.txt",
+            "--json",
+        ],
+    );
+    assert!(shaped.status.success(), "{}", stderr(&shaped));
+    let report: serde_json::Value = serde_json::from_slice(&shaped.stdout).unwrap();
+    assert_eq!(
+        report["inspected"][0]["observed_at"],
+        "untracked working tree file"
+    );
+    assert!(report["sources"][0].as_str().unwrap().contains("HEAD "));
+}

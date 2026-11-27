@@ -16,13 +16,14 @@ codemap-lemmaspec = { path = "../codemap-lemmaspec" }
 codemap-slop = { path = "../codemap-slop" }
 codemap-topology = { path = "../codemap-topology" }
 lemmaspec = { path = "../lemmaspec" }
+serde = { workspace = true }
+serde_json = { workspace = true }
 stele-plan = { path = "../stele-plan" }
 
 [dev-dependencies]
 base64 = "=0.22.1"
 codemap-graph = { workspace = true }
 libc = "0.2"
-serde_json = { workspace = true }
 tempfile = "3"
 
 [lints]
